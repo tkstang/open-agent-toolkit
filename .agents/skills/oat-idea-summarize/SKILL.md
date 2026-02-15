@@ -121,7 +121,7 @@ In `{IDEAS_ROOT}/backlog.md`:
 - **{idea-name}** — {1-2 sentence overview from summary} *(Created: YYYY-MM-DD, Summarized: YYYY-MM-DD)*
 ```
 
-### Step 7: Confirm Completion
+### Step 7: Confirm and Offer Promotion
 
 Print a confirmation:
 
@@ -131,22 +131,15 @@ Idea "{Idea Name}" has been summarized.
 Level:   {project | global}
 Summary: {IDEAS_ROOT}/{idea-name}/summary.md
 Backlog: {IDEAS_ROOT}/backlog.md (updated)
-
-Next steps (suggest to the user — do not auto-invoke):
-- Start a new idea: run the `oat-idea-new` skill
-- Browse ideas: check {IDEAS_ROOT}/backlog.md
-- Quick capture: run the `oat-idea-scratchpad` skill to jot down a new idea seed
-- Promote to project: run the `oat-new-project` skill, then seed its
-  discovery phase with this idea's summary as the initial request
 ```
 
-**Promotion contract (v1):** To promote an idea to a full OAT project:
-1. Run `oat-new-project {idea-name}` to scaffold the project
-2. Run `oat-discovery` — use the idea's `summary.md` as the initial request input
-3. The idea's discovery and summary documents remain in `{IDEAS_ROOT}/` as reference
-4. Update the ideas backlog entry to `Archived` with reason: `promoted to project`
+Then ask: **"Would you like to promote this idea to a full project now?"**
 
-Future: a dedicated `oat-idea-promote` skill can automate steps 1-4.
+- **If yes:** Read the **`oat-new-project`** skill (`.agents/skills/oat-new-project/SKILL.md`) and invoke it with `--from-idea {idea-name}`. The `oat-new-project` skill handles all scaffolding, discovery seeding, backlog archiving, and optionally triggers `oat-discovery`.
+- **If no:** Suggest next steps (suggest to the user — do **not** auto-invoke):
+  - "Start a new idea: run the `oat-idea-new` skill"
+  - "Quick capture: run the `oat-idea-scratchpad` skill to jot down a new idea seed"
+  - "Promote later: run the `oat-new-project` skill — it will offer to promote from your summarized ideas"
 
 ## Success Criteria
 
