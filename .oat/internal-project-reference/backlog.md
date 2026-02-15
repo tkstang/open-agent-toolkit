@@ -198,28 +198,38 @@ Capture tasks and ideas that come up while dogfooding but aren’t ready to impl
     - Related: `oat init ideas` backlog entry
   - Created: 2026-02-14
 
-- [ ] **(P2) [skills] Add idea promotion and auto-discovery flow to `oat-new-project`**
+- [ ] **(P2) [skills] Add idea-to-project promotion flow**
   - Target milestone/phase: Ideas → Projects integration
   - Notes:
-    - Enhance `oat-new-project` Step 1 to check for existing summarized ideas (scan `{IDEAS_ROOT}/*/discovery.md` for `oat_idea_state: summarized`) and ask the user:
-      - "Is this a brand new project, or would you like to promote an existing idea?"
-      - If promoting: let user pick from summarized ideas, use the idea name as the project name (or let them rename), and stash the idea's `summary.md` path for later.
-    - Enhance `oat-new-project` Step 3 to offer auto-triggering discovery:
+    - **`oat-new-project` owns all promotion logic** (single entry point for project creation):
+      - Step 1: Check for summarized ideas (scan `{IDEAS_ROOT}/*/discovery.md` for `oat_idea_state: summarized`) and ask: "New project, or promote an existing idea?"
+      - If promoting: user picks from summarized ideas, can use idea name or rename.
+      - Seed project `discovery.md` from idea artifacts:
+        - Primary source: idea's `summary.md`
+        - Supplemental context: idea's `discovery.md`
+      - Add provenance frontmatter to project `discovery.md`: `oat_seeded_from_idea: <idea-name>` — cheap breadcrumb for tracing back to original brainstorming.
+      - Update ideas backlog: move entry to Archived with reason `promoted to project`.
+      - Set `.oat/active-project`; leave `.oat/active-idea` unchanged (or ask to clear).
+    - **`oat-new-project` Step 3: offer to auto-trigger discovery**:
       - Currently just says "Next command: `/oat:discovery`" — change to ask: "Would you like to start discovery now, or do it later?"
-      - If yes: agent reads `oat-discovery` skill and invokes it (same pattern as `oat-idea-new` → `oat-idea-ideate` handoff).
-      - If promoting an idea: pass the idea's `summary.md` content as the initial request context to `oat-discovery`, so the user doesn't have to re-explain the idea.
-    - On promotion, update the ideas backlog entry to Archived with reason: `promoted to project`.
-    - This keeps all promotion logic in `oat-new-project` (single entry point) rather than needing a separate `oat-idea-promote` skill.
+      - If yes: agent invokes `oat-discovery` skill (same handoff pattern as `oat-idea-new` → `oat-idea-ideate`).
+      - If promoted from idea: discovery starts with the seeded content already in place.
+    - **`oat-idea-summarize` is just a convenient shortcut** (no duplicated logic):
+      - Step 7 offers "Promote to project now?" — if yes, invokes `oat-new-project` with the idea name.
+      - All scaffolding, seeding, and backlog updates happen in `oat-new-project`.
+    - This design works for both entry points:
+      - Right after summarizing: `oat-idea-summarize` → offers promote → invokes `oat-new-project`
+      - Days later: user runs `oat-new-project` directly → picks idea from list
     - Should support both project-level and user-level ideas (respect `{IDEAS_ROOT}` resolution).
   - Success criteria:
-    - `oat-new-project` detects summarized ideas and offers to promote one.
-    - Promoted idea's summary is passed as seed context into discovery.
+    - `oat-new-project` offers promotion from summarized ideas.
+    - Project `discovery.md` seeded from idea summary + discovery with provenance frontmatter.
     - Ideas backlog updated on promotion (moved to Archived).
     - User can still create a brand new project with no idea connection.
     - Discovery auto-trigger is optional (user chooses).
+    - `oat-idea-summarize` offers shortcut without duplicating logic.
   - Links:
-    - Current skill: `.agents/skills/oat-new-project/SKILL.md`
-    - Promotion contract: `.agents/skills/oat-idea-summarize/SKILL.md` (Step 7)
+    - Skills to modify: `oat-new-project`, `oat-idea-summarize`
     - Discovery skill: `.agents/skills/oat-discovery/SKILL.md`
   - Created: 2026-02-14
 
