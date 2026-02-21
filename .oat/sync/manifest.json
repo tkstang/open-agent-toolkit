@@ -293,8 +293,8 @@
       "lastSynced": "2026-02-21T19:45:11.272Z"
     },
     {
-      "canonicalPath": ".agents/skills/oat-project-promote-full",
-      "providerPath": ".claude/skills/oat-project-promote-full",
+      "canonicalPath": ".agents/skills/oat-project-promote-spec-driven",
+      "providerPath": ".claude/skills/oat-project-promote-spec-driven",
       "provider": "claude",
       "contentType": "skill",
       "strategy": "symlink",
@@ -663,8 +663,8 @@
       "lastSynced": "2026-02-21T19:45:11.276Z"
     },
     {
-      "canonicalPath": ".agents/skills/oat-project-promote-full",
-      "providerPath": ".cursor/skills/oat-project-promote-full",
+      "canonicalPath": ".agents/skills/oat-project-promote-spec-driven",
+      "providerPath": ".cursor/skills/oat-project-promote-spec-driven",
       "provider": "cursor",
       "contentType": "skill",
       "strategy": "symlink",
