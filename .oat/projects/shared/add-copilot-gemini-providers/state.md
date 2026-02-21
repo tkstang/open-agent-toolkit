@@ -49,4 +49,4 @@ None
 
 ## Next Milestone
 
-Final review via `oat-project-review-provide code final`, then PR via `oat-project-pr-final`
+Run `oat-project-complete`.
