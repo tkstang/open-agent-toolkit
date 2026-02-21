@@ -1,4 +1,4 @@
-import { mkdir, mkdtemp, rm, writeFile } from 'node:fs/promises';
+import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -493,5 +493,51 @@ describe('validateOatSkills', () => {
         message: 'Frontmatter version must be valid semver (e.g., 1.0.0)',
       }),
     ]);
+  });
+
+  it('requires bundled oat skill files to include valid semver versions', async () => {
+    const repoRoot = join(process.cwd(), '..', '..');
+    const bundleScriptPath = join(
+      repoRoot,
+      'packages',
+      'cli',
+      'scripts',
+      'bundle-assets.sh',
+    );
+    const bundleScript = await readFile(bundleScriptPath, 'utf8');
+    const lines = bundleScript.split('\n');
+
+    const bundledSkills: string[] = [];
+    let inSkillsBlock = false;
+    for (const line of lines) {
+      if (line.trim() === 'SKILLS=(') {
+        inSkillsBlock = true;
+        continue;
+      }
+      if (inSkillsBlock && line.trim() === ')') {
+        break;
+      }
+      if (inSkillsBlock) {
+        const name = line.trim();
+        if (name.startsWith('oat-')) {
+          bundledSkills.push(name);
+        }
+      }
+    }
+
+    expect(bundledSkills.length).toBeGreaterThan(0);
+
+    for (const skillName of bundledSkills) {
+      const skillPath = join(
+        repoRoot,
+        '.agents',
+        'skills',
+        skillName,
+        'SKILL.md',
+      );
+      const content = await readFile(skillPath, 'utf8');
+      const match = content.match(/^version:\s*(.+)$/m);
+      expect(match?.[1]?.trim()).toMatch(/^\d+\.\d+\.\d+$/);
+    }
   });
 });
