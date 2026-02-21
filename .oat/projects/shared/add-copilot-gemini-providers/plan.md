@@ -291,7 +291,7 @@ git commit -m "fix(p02-t03): add agent mappings to Codex provider"
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | fixes_completed | 2026-02-21 | reviews/final-review-2026-02-21.md |
+| final | code | passed | 2026-02-21 | reviews/final-review-2026-02-21.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 | plan | artifact | passed | 2026-02-21 | reviews/artifact-plan-review-2026-02-21.md |
