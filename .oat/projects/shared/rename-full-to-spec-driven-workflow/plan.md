@@ -237,7 +237,6 @@ git commit -m "docs(p02-t02): update skills for spec-driven workflow mode"
 
 **Files:**
 - Modify: `packages/cli/src/commands/help-snapshots.test.ts`
-- Modify: `packages/cli/src/commands/commands.integration.test.ts`
 - Modify: `packages/cli/src/commands/project/new/index.test.ts`
 - Modify: `packages/cli/src/commands/project/new/scaffold.test.ts`
 - Modify: `packages/cli/src/commands/state/generate.test.ts`
@@ -558,18 +557,18 @@ Location: `plan.md` p03-t01 file list and related test file
 **Step 2: Implement fix**
 
 - Validate whether this file requires edits for workflow-mode rename.
-- If not required, remove it from p03-t01 file list to avoid unnecessary churn.
+- `commands.integration.test.ts` is not required for workflow-mode contract rename; remove it from p03-t01 file list to avoid unnecessary churn.
 - If required, keep and document exact assertion/name updates.
 
 **Step 3: Verify**
 
-Run: `rg -n "full workflow|--mode full|spec-driven" packages/cli/src/commands/commands.integration.test.ts plan.md`
+Run: `rg -n -e "--mode full|spec-driven" packages/cli/src/commands/commands.integration.test.ts plan.md`
 Expected: File list and verification intent match actual required changes
 
 **Step 4: Commit**
 
 ```bash
-git add plan.md packages/cli/src/commands/commands.integration.test.ts
+git add plan.md
 git commit -m "fix(p04-t09): tighten p03 test-scope to only necessary integration updates"
 ```
 
