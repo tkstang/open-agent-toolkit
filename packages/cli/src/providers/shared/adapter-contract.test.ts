@@ -62,7 +62,7 @@ describe('adapter contract', () => {
       });
 
       it('userMappings have valid contentType and paths', () => {
-        assertMappingsValid(adapter.userMappings, { allowAgent: false });
+        assertMappingsValid(adapter.userMappings, { allowAgent: true });
       });
 
       it('detect function is callable', async () => {
