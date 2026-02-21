@@ -301,7 +301,7 @@ Expected: Workspace checks pass
 **Step 5: Commit**
 
 ```bash
-git add -A
+git add README.md docs/oat .agents packages/cli .oat/templates .oat/repo .oat/sync
 git commit -m "chore(p03-t02): validate spec-driven workflow rename end-to-end"
 ```
 
@@ -445,7 +445,7 @@ Location: `plan.md` p03-t02 Step 5
 
 **Step 3: Verify**
 
-Run: `rg -n "git add -A" plan.md`
+Run: `rg -n "^git add -A$" plan.md`
 Expected: No broad staging command remains in plan tasks
 
 **Step 4: Commit**
