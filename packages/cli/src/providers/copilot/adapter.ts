@@ -5,6 +5,7 @@ import { COPILOT_PROJECT_MAPPINGS, COPILOT_USER_MAPPINGS } from './paths';
 
 async function detectCopilot(scopeRoot: string): Promise<boolean> {
   const markers = [
+    join(scopeRoot, '.copilot'),
     join(scopeRoot, '.github', 'copilot-instructions.md'),
     join(scopeRoot, '.github', 'agents'),
     join(scopeRoot, '.github', 'skills'),

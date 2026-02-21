@@ -65,6 +65,16 @@ describe('copilotAdapter', () => {
     );
   });
 
+  it('detect returns true when .copilot/ exists', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'oat-copilot-'));
+    tempDirs.push(root);
+    await mkdir(join(root, '.copilot'));
+
+    const detected = await copilotAdapter.detect(root);
+
+    expect(detected).toBe(true);
+  });
+
   it('detect returns true when .github/copilot-instructions.md exists', async () => {
     const root = await mkdtemp(join(tmpdir(), 'oat-copilot-'));
     tempDirs.push(root);
