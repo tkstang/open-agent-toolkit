@@ -201,7 +201,7 @@ git commit -m "docs(p02-t01): rename full workflow lane to spec-driven"
 
 Define mode-contract grep checks in skill/reviewer files.
 
-Run: `rg -n "oat_workflow_mode.*full|default.*full|\bfull mode\b" .agents/agents/oat-reviewer.md .agents/skills/oat-project-*.md`
+Run: `rg -n "oat_workflow_mode.*full|default.*full|\bfull mode\b" .agents/agents/oat-reviewer.md .agents/skills/oat-project-*/SKILL.md`
 Expected: Hits present before edits
 
 **Step 2: Implement (GREEN)**
@@ -210,7 +210,7 @@ Expected: Hits present before edits
 - Update defaults/examples/routing text accordingly.
 - Keep unrelated `full` wording untouched.
 
-Run: `rg -n "oat_workflow_mode.*full|default.*full|\bfull mode\b" .agents/agents/oat-reviewer.md .agents/skills/oat-project-*.md`
+Run: `rg -n "oat_workflow_mode.*full|default.*full|\bfull mode\b" .agents/agents/oat-reviewer.md .agents/skills/oat-project-*/SKILL.md`
 Expected: No contract hits for legacy full mode
 
 **Step 3: Refactor**
