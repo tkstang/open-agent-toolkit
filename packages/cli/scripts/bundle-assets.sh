@@ -30,10 +30,13 @@ SKILLS=(
   oat-project-quick-start
   oat-project-review-provide
   oat-project-review-receive
+  oat-project-review-receive-remote
   oat-project-spec
   oat-repo-knowledge-index
   oat-worktree-bootstrap
   oat-review-provide
+  oat-review-receive
+  oat-review-receive-remote
   oat-agent-instructions-analyze
   oat-agent-instructions-apply
 )
