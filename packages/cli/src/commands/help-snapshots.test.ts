@@ -255,12 +255,13 @@ describe('help output snapshots', () => {
       Manage OAT project workflows
 
       Options:
-        -h, --help            display help for command
+        -h, --help             display help for command
 
       Commands:
-        new [options] <name>  Create or update an OAT project scaffold
-        set-mode <mode>       Set project implementation execution mode
-        help [command]        display help for command
+        new [options] <name>   Create or update an OAT project scaffold
+        open [options] <name>  Open or switch to an OAT project
+        set-mode <mode>        Set project implementation execution mode
+        help [command]         display help for command
       "
     `);
   });
