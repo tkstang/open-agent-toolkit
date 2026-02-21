@@ -163,6 +163,31 @@ Completed review-fix tasks and commits:
 
 ---
 
+### Review Received: final
+
+**Date:** 2026-02-21
+**Review artifact:** reviews/final-review-2026-02-21.md
+
+**Findings:**
+- Critical: 0
+- Important: 0
+- Medium: 0
+- Minor: 1
+
+**New tasks added:** none
+
+**Deferred Findings (Minor):**
+- `m1` Archived external plan still references legacy `full/quick/import` wording (`.oat/repo/reference/external-plans/2026-02-19-subagent-implement-skill-refactor.md:92`).
+  - Disposition: deferred by explicit user decision (2026-02-21).
+  - Rationale: archived external-plans surface is historical/non-contract and out of scope for this rename.
+
+**Finding disposition map:**
+- `m1` -> deferred (explicit user approval; non-contract archived content)
+
+**Next:** Run `oat-project-pr-final`.
+
+---
+
 ## Implementation Log
 
 ### 2026-02-21
