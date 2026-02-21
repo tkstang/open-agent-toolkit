@@ -46,6 +46,7 @@ describe('help output snapshots', () => {
         providers        Inspect provider capabilities and paths
         doctor           Run environment and setup diagnostics
         cleanup          Cleanup OAT project and artifact hygiene issues
+        instructions     Manage AGENTS.md and CLAUDE.md instruction file integrity
         index            OAT index generation commands
         project          Manage OAT project workflows
         state            OAT repo state commands
