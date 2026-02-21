@@ -36,6 +36,10 @@ function getFrontmatterScalar(frontmatter: string, key: string): string | null {
   return match?.[1]?.trim() ?? null;
 }
 
+function isValidSemver(value: string): boolean {
+  return /^\d+\.\d+\.\d+$/.test(value);
+}
+
 function hasProgressIndicatorsSection(content: string): boolean {
   return /^## Progress Indicators \(User-Facing\)\s*$/m.test(content);
 }
@@ -126,6 +130,16 @@ export async function validateOatSkills(
             message: `Frontmatter description exceeds 500 characters (${frontmatterDescription.length})`,
           });
         }
+      }
+    }
+
+    if (frontmatterHasKey(fm, 'version')) {
+      const version = getFrontmatterScalar(fm, 'version') ?? '';
+      if (!isValidSemver(version)) {
+        findings.push({
+          file: skillPath,
+          message: 'Frontmatter version must be valid semver (e.g., 1.0.0)',
+        });
       }
     }
 
