@@ -5,7 +5,7 @@ oat_blockers: []
 oat_last_updated: 2026-02-21
 oat_phase: plan
 oat_phase_status: complete
-oat_plan_hill_phases: []
+oat_plan_hill_phases: ["p03"]
 oat_plan_source: quick
 oat_import_reference: null
 oat_import_source_path: null
@@ -584,7 +584,7 @@ git commit -m "fix(p04-t09): tighten p03 test-scope to only necessary integratio
 | final | code | pending | - | - |
 | spec | artifact | passed | 2026-02-21 | n/a (quick mode) |
 | design | artifact | passed | 2026-02-21 | n/a (quick mode) |
-| plan | artifact | fixes_added | 2026-02-21 | reviews/artifact-plan-review-2026-02-21.md |
+| plan | artifact | fixes_completed | 2026-02-21 | reviews/artifact-plan-review-2026-02-21.md |
 
 **Status values:** `pending` -> `received` -> `fixes_added` -> `fixes_completed` -> `passed`
 
