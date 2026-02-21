@@ -55,7 +55,7 @@ describe('command registration', () => {
     );
   });
 
-  it('program has project command with new, open, and set-mode', () => {
+  it('program has project command with new, open, pause, and set-mode', () => {
     const program = createProgram();
     registerCommands(program);
     const project = program.commands.find(
@@ -66,7 +66,7 @@ describe('command registration', () => {
     const subcommands =
       project?.commands.map((command) => command.name()) ?? [];
     expect(subcommands).toEqual(
-      expect.arrayContaining(['new', 'open', 'set-mode']),
+      expect.arrayContaining(['new', 'open', 'pause', 'set-mode']),
     );
   });
 
