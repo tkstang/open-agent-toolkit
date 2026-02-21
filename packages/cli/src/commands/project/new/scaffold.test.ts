@@ -398,7 +398,7 @@ describe('scaffoldProject', () => {
     expect(result.projectPath).toContain('throw-demo');
   });
 
-  it('updates active-project pointer and triggers dashboard refresh callback', async () => {
+  it('updates config.local activeProject and triggers dashboard refresh callback', async () => {
     const repoRoot = await createRepoRoot();
     tempDirs.push(repoRoot);
     const refreshDashboard = vi.fn();
@@ -411,11 +411,10 @@ describe('scaffoldProject', () => {
       today: '2026-02-16',
     });
 
-    const pointer = await readFile(
-      join(repoRoot, '.oat', 'active-project'),
-      'utf8',
+    const localConfig = JSON.parse(
+      await readFile(join(repoRoot, '.oat', 'config.local.json'), 'utf8'),
     );
-    expect(pointer).toBe(`${result.projectPath}\n`);
+    expect(localConfig.activeProject).toBe(result.projectPath);
     expect(refreshDashboard).toHaveBeenCalledWith(repoRoot);
   });
 });

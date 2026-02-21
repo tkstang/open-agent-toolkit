@@ -58,7 +58,9 @@ function reportSuccess(
   context.logger.info(`Created/updated OAT project: ${projectName}`);
   context.logger.info(`Project path: ${result.projectPath}`);
   if (result.activePointerUpdated) {
-    context.logger.info('Active project pointer updated: .oat/active-project');
+    context.logger.info(
+      'Active project updated in local config: .oat/config.local.json',
+    );
   }
 }
 
