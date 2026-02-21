@@ -7,6 +7,12 @@ export const CODEX_PROJECT_MAPPINGS: PathMapping[] = [
     providerDir: '.agents/skills',
     nativeRead: true,
   },
+  {
+    contentType: 'agent',
+    canonicalDir: '.agents/agents',
+    providerDir: '.agents/agents',
+    nativeRead: true,
+  },
 ];
 
 export const CODEX_USER_MAPPINGS: PathMapping[] = [
@@ -14,6 +20,12 @@ export const CODEX_USER_MAPPINGS: PathMapping[] = [
     contentType: 'skill',
     canonicalDir: '.agents/skills',
     providerDir: '.agents/skills',
+    nativeRead: true,
+  },
+  {
+    contentType: 'agent',
+    canonicalDir: '.agents/agents',
+    providerDir: '.agents/agents',
     nativeRead: true,
   },
 ];
