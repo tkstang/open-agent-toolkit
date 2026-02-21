@@ -24,7 +24,7 @@ Process local review artifacts into a normalized findings register and generate 
 **BLOCKED Activities:**
 - No implementation/code changes.
 - No `plan.md`, `state.md`, or `implementation.md` lifecycle mutations.
-- No automatic dismissal/defer decisions without explicit summary output.
+- No silent dismissal/defer decisions.
 
 **ALLOWED Activities:**
 - Locating review artifacts.
@@ -190,3 +190,4 @@ At completion, report:
 - Findings overview displayed before triage.
 - Every finding dispositioned with rationale where needed.
 - Standalone task list generated in requested output mode.
+- Skill remains within content budget (`<=500` lines).
