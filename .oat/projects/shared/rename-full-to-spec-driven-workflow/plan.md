@@ -66,7 +66,7 @@ Expected: Tests pass with `spec-driven`
 
 Run a targeted search to ensure no workflow-mode literals remain incorrectly set to `full`.
 
-Run: `rg -n "oat_workflow_mode:\s*full|oat_plan_source:\s*full|--mode full|\bfull mode\b" packages/cli .oat/templates`
+Run: `rg -n "oat_workflow_mode:\s*full|oat_plan_source:\s*full|--mode full|\bfull mode\b" packages/cli .oat/templates .oat/repo`
 Expected: No workflow-mode contract hits
 
 **Step 4: Verify**
