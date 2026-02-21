@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
-oat_ready_for: null
+oat_status: complete
+oat_ready_for: oat-project-pr-final
 oat_blockers: []
 oat_last_updated: 2026-02-21
-oat_current_task_id: p02-t03
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -26,9 +26,9 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 2 | 2/2 |
-| Phase 2 | in_progress | 3 | 2/3 |
+| Phase 2 | complete | 3 | 3/3 |
 
-**Total:** 4/5 tasks completed
+**Total:** 5/5 tasks completed
 
 ---
 
@@ -204,7 +204,7 @@ Track test execution during implementation.
 **What shipped:**
 - Gemini CLI provider adapter (`nativeRead: true`, reads `.agents/` natively)
 - GitHub Copilot provider adapter (`nativeRead: false`, syncs to `.github/skills`, `.github/agents`)
-- User-scope agent sync for all 5 providers (Claude, Cursor, Codex, Copilot, Gemini)
+- User-scope agent sync for all 5 providers (Claude, Cursor, Codex, Copilot, Gemini) — all with `nativeRead` or explicit mappings
 - Full command registration across init, sync, status, doctor, providers list/inspect/set
 
 **Behavioral changes (user-facing):**
