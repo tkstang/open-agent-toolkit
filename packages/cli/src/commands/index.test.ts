@@ -89,6 +89,7 @@ describe('command registration', () => {
     expect(help).toContain('init');
     expect(help).toContain('status');
     expect(help).toContain('sync');
+    expect(help).toContain('config');
     expect(help).toContain('providers');
     expect(help).toContain('doctor');
     expect(help).toContain('cleanup');

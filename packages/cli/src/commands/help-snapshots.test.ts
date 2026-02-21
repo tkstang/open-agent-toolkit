@@ -42,6 +42,7 @@ describe('help output snapshots', () => {
         init [options]   Initialize canonical directories, manifest, and tool packs
         status           Report provider sync and drift status
         sync [options]   Sync canonical content to provider views
+        config           Read and write OAT config values
         providers        Inspect provider capabilities and paths
         doctor           Run environment and setup diagnostics
         cleanup          Cleanup OAT project and artifact hygiene issues
