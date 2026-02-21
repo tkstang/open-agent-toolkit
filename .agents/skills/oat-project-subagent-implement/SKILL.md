@@ -239,7 +239,17 @@ disposition: merged | excluded | skipped
 
 ### Step 5: Fan-In Reconciliation
 
-Merge passing units back into the orchestration branch:
+Merge passing units back into the orchestration branch. Before executing any merge, apply the hard pre-merge verdict gate.
+
+**Pre-merge verdict gate (required):**
+
+For each unit eligible for merge, check its verdict map entry:
+
+1. **No verdict entry exists** → set disposition to `skipped`, reason `review_gate_missing`. Refuse merge. Log: "Unit {unit-id} skipped: no reviewer verdict recorded."
+2. **Verdict is not `pass`** → set disposition to `excluded`, reason `review_gate_failed`. Refuse merge. Log: "Unit {unit-id} excluded: reviewer verdict is {verdict}, not pass."
+3. **Verdict is `pass`** → unit may proceed to merge.
+
+Only units with `verdict == pass` in the verdict map enter the merge loop below. All other units are reported in the orchestration run log with their disposition and reason.
 
 **Merge ordering:** Deterministic by task ID (ascending). Example: p02-t01 before p02-t02.
 
