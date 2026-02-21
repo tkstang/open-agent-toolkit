@@ -478,7 +478,8 @@ Autonomous review verdicts are logged in `implementation.md` `## Orchestration R
 ## Constraints
 
 - **Never** use `AskUserQuestion` during execution between HiLL checkpoints.
-- **Never** merge a unit that did not pass the autonomous review gate (unless policy explicitly marks it `skipped`).
+- **Never** merge a unit without an explicit pass verdict from the reviewer gate.
+- **Always** dispatch reviewer as a peer subagent (`oat-reviewer`), not nested or inline.
 - **Never** silently lose work — failed units are reported, not deleted.
 - **Never** bypass existing `plan.md` review table semantics.
 - **Never** set the `final` review row to `passed` from the autonomous gate.
