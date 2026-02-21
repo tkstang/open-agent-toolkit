@@ -184,7 +184,17 @@ For each bootstrapped unit, dispatch a subagent via the `Task` tool with:
 
 ### Step 4: Autonomous Review Gate
 
-After each subagent completes, run a two-stage review gate:
+After each implementer subagent completes, run a mandatory reviewer gate as a **peer subagent** and record the verdict map entry before any merge decision.
+
+**Reviewer dispatch mechanism (required):**
+1. Dispatch `oat-reviewer` as a peer subagent (`subagent_type: "oat-reviewer"`) against the same unit worktree.
+2. Provide reviewer context:
+   - Unit scope (files changed in unit branch/worktree).
+   - Project artifacts (`plan.md`, `spec.md`, `design.md` when available).
+   - Review type: `code`.
+3. Reviewer writes artifact to:
+   - `reviews/{unit-id}-gate-review.md`
+4. Orchestrator reads the artifact and extracts stage verdict + finding severities.
 
 **Stage 1: Spec compliance**
 - Verify implementation matches plan task specification.
@@ -200,18 +210,26 @@ After each subagent completes, run a two-stage review gate:
 - No Critical or Important findings across both stages.
 - All verification commands from plan pass.
 
-**Fail handling — fix-loop retry:**
-1. On review failure, dispatch implementer subagent to fix identified issues.
-2. Re-run the same review stage that failed.
-3. Repeat up to `--retry-limit` times (default: 2).
-4. If retry limit exhausted: mark unit as `failed` and exclude from merge-back.
+**Fail handling — fix-loop dispatch (required):**
+1. On review failure, dispatch a fix implementer subagent in the same worktree.
+2. Provide fix input:
+   - Review artifact path (`reviews/{unit-id}-gate-review.md`)
+   - Critical/Important findings list
+   - Original unit task specification
+3. After fix subagent completes, re-dispatch reviewer peer subagent.
+4. Repeat until pass or retry limit (`--retry-limit`, default 2) is exhausted.
+5. If retry limit is exhausted:
+   - mark unit as `failed`
+   - set disposition to `excluded`
+   - record unresolved findings in orchestration log
 
-**Verdict capture (per unit):**
+**Verdict map (source of truth for Step 5):**
 ```yaml
 unit_id: "{unit-id}"
 reviewer_stage: spec | quality
 verdict: pass | fail
 retry_count: N
+review_artifact: "reviews/{unit-id}-gate-review.md"
 findings:
   critical: []
   important: []
