@@ -154,7 +154,7 @@ git commit -m "refactor(p01-t02): rename promote skill to spec-driven"
 
 Use grep-based checks to define expected terminology changes.
 
-Run: `rg -n "\bFull workflow lane\b|\bfull lifecycle\b|--mode full|workflow mode metadata \(`full`|promote-full" README.md docs/oat .oat/repo .oat/sync`
+Run: `rg -n "\bFull workflow lane\b|\bfull lifecycle\b|--mode full|\bfull mode\b|workflow mode metadata \(`full`|promote-full" README.md docs/oat .oat/repo .oat/sync`
 Expected: Hits present before edits
 
 **Step 2: Implement (GREEN)**
@@ -163,7 +163,7 @@ Expected: Hits present before edits
 - Update CLI examples to `--mode spec-driven`.
 - Keep Quick and Import lane behavior unchanged.
 
-Run: `rg -n "--mode full|\bFull workflow lane\b|workflow mode metadata \(`full`|promote-full" README.md docs/oat .oat/repo .oat/sync`
+Run: `rg -n "--mode full|\bFull workflow lane\b|\bfull mode\b|workflow mode metadata \(`full`|promote-full" README.md docs/oat .oat/repo .oat/sync`
 Expected: No hits for workflow contract contexts
 
 **Step 3: Refactor**
