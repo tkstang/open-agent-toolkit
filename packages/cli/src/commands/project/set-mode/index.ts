@@ -8,6 +8,10 @@ import {
   getFrontmatterBlock,
   getFrontmatterField,
 } from '@commands/shared/frontmatter';
+import {
+  replaceFrontmatter,
+  upsertFrontmatterField,
+} from '@commands/shared/frontmatter-write';
 import { readGlobalOptions } from '@commands/shared/shared.utils';
 import { resolveProjectRoot } from '@fs/paths';
 import { Command } from 'commander';
@@ -40,37 +44,6 @@ const DEFAULT_DEPENDENCIES: SetModeDependencies = {
 
 function isExecutionMode(value: string): value is ExecutionMode {
   return value === 'single-thread' || value === 'subagent-driven';
-}
-
-function upsertFrontmatterField(
-  block: string,
-  field: string,
-  value: string,
-  overwrite: boolean,
-): { nextBlock: string; changed: boolean; added: boolean } {
-  const matcher = new RegExp(`^${field}:\\s*([^\\n]*?)(\\s*#.*)?$`, 'm');
-  const match = block.match(matcher);
-
-  if (match) {
-    if (!overwrite) {
-      return { nextBlock: block, changed: false, added: false };
-    }
-
-    const comment = match[2] ?? '';
-    const nextBlock = block.replace(matcher, `${field}: ${value}${comment}`);
-    return { nextBlock, changed: nextBlock !== block, added: false };
-  }
-
-  const normalized = block.endsWith('\n') ? block : `${block}\n`;
-  return {
-    nextBlock: `${normalized}${field}: ${value}`,
-    changed: true,
-    added: true,
-  };
-}
-
-function replaceFrontmatter(content: string, nextBlock: string): string {
-  return content.replace(/^---\n([\s\S]*?)\n---/, `---\n${nextBlock}\n---`);
 }
 
 function resolveActiveProjectPath(
