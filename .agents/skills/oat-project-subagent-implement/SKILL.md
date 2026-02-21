@@ -307,8 +307,12 @@ If integration verification fails after a merge:
 #### Review Interaction Log
 
 **{unit-id}:**
+- **Reviewer dispatch:** peer subagent (`oat-reviewer`)
+- **Review artifact:** `reviews/{unit-id}-gate-review.md`
+- **review_gate_executed:** true
 - **Spec compliance:** pass (0 findings)
 - **Code quality:** fail → fix → pass (1 Important fixed, retry 1/2)
+- **Fix-loop iterations:** 1 of 2 — fixed: [finding-ids]; unresolved: none
 - **Verdict:** pass
 - **Disposition:** merged
 
