@@ -255,7 +255,7 @@ git commit -m "feat(p02-t02): register Copilot and Gemini providers in all comma
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | pending | - | - |
+| final | code | received | 2026-02-21 | reviews/final-review-2026-02-21.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 | plan | artifact | passed | 2026-02-21 | reviews/artifact-plan-review-2026-02-21.md |
