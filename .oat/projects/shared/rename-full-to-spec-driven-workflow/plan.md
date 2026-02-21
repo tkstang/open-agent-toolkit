@@ -583,8 +583,8 @@ git commit -m "fix(p04-t09): tighten p03 test-scope to only necessary integratio
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | final | code | pending | - | - |
-| spec | artifact | pending | - | - |
-| design | artifact | pending | - | - |
+| spec | artifact | passed | 2026-02-21 | n/a (quick mode) |
+| design | artifact | passed | 2026-02-21 | n/a (quick mode) |
 | plan | artifact | fixes_added | 2026-02-21 | reviews/artifact-plan-review-2026-02-21.md |
 
 **Status values:** `pending` -> `received` -> `fixes_added` -> `fixes_completed` -> `passed`
