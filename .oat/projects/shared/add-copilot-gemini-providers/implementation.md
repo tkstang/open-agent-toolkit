@@ -1,9 +1,9 @@
 ---
-oat_status: complete
-oat_ready_for: oat-project-pr-final
+oat_status: in_progress
+oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-21
-oat_current_task_id: null
+oat_current_task_id: p02-t03
 oat_generated: false
 ---
 
@@ -26,9 +26,9 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 2 | 2/2 |
-| Phase 2 | complete | 2 | 2/2 |
+| Phase 2 | in_progress | 3 | 2/3 |
 
-**Total:** 4/4 tasks completed
+**Total:** 4/5 tasks completed
 
 ---
 
@@ -160,6 +160,25 @@ Chronological log of implementation progress.
 - `m1`: Fixed HiLL checklist wording to clarify no gates configured
 
 **No fix tasks added** — all findings were direct artifact text corrections applied in-place.
+
+---
+
+### Review Received: final (code)
+
+**Date:** 2026-02-21
+**Review artifact:** reviews/final-review-2026-02-21.md
+
+**Findings:**
+- Critical: 0
+- Important: 0
+- Medium: 1
+- Minor: 0
+
+**New tasks added:** p02-t03
+
+**M1 disposition:** Convert to fix task — add agent mappings to Codex provider (same nativeRead pattern as Gemini). The TOML adapter backlog item is about converting markdown agents to Codex-executable role configs, which is a separate concern from declaring nativeRead path mappings.
+
+**Next:** Execute fix task p02-t03 via `oat-project-implement`.
 
 ---
 
