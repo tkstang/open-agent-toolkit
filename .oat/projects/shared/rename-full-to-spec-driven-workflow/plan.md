@@ -112,7 +112,7 @@ Expected: Test passes
 
 Check for stale promote-full references.
 
-Run: `rg -n "oat-project-promote-full" .agents docs packages/cli`
+Run: `rg -n "oat-project-promote-full" .agents docs packages/cli .oat/repo .oat/sync .oat/templates`
 Expected: No hits
 
 **Step 4: Verify**
