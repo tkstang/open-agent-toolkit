@@ -112,12 +112,12 @@ oat_generated: false
 ### Task p03-t02: End-to-end smoke + workspace validation
 
 **Status:** completed
-**Commit:** e33c1a5
+**Commit:** e33c1a5, 3f5424e
 
 **Outcome:**
 - Verified CLI smoke scaffolding with `--mode spec-driven` and dashboard refresh behavior.
 - Restored active project pointer back to this project after smoke validation.
-- No additional code changes were required from smoke/verification outcomes.
+- Reconciled provider-view drift by syncing manifest/provider links to `oat-project-promote-spec-driven` and removing stale `oat-project-promote-full` symlinks.
 
 **Verification:**
 - `pnpm run cli -- project new smoke-spec-driven --mode spec-driven --json` (pass)
@@ -173,6 +173,7 @@ Completed review-fix tasks and commits:
 - [x] p02-t02 - b90d5b9
 - [x] p03-t01 - 2b8ee3d
 - [x] p03-t02 - e33c1a5
+- [x] p03-t02 follow-up (provider sync) - 3f5424e
 - [x] p04-t01 - dae9910
 - [x] p04-t02 - 71674a1
 - [x] p04-t03 - 2823afe
@@ -190,4 +191,4 @@ Completed review-fix tasks and commits:
 - Replaced long-lifecycle mode contract from `full` to `spec-driven` across templates, CLI mode handling, skill wiring, and documentation.
 - Renamed promotion skill to `oat-project-promote-spec-driven` and aligned registry/manifest/reference surfaces.
 - Updated skill/reviewer mode contracts and CLI help snapshots to remove legacy `full` mode usage.
-- Validation completed with targeted CLI tests, skill validation, smoke scaffolding, and full workspace `lint/type-check/test`.
+- Validation completed with targeted CLI tests, skill validation, smoke scaffolding, provider sync reconciliation, and full workspace `lint/type-check/test`.

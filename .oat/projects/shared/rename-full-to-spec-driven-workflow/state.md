@@ -1,6 +1,6 @@
 ---
 oat_current_task: null
-oat_last_commit: e33c1a5
+oat_last_commit: 3f5424e
 oat_blockers: []
 oat_hill_checkpoints: []  # Quick mode: no discovery/spec/design HiLL gating
 oat_hill_completed: []
