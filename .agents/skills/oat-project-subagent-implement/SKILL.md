@@ -204,8 +204,7 @@ After each implementer subagent completes, run a mandatory reviewer gate as a **
 **Stage 2: Code quality**
 - Only runs if spec compliance passes.
 - Check: tests passing, lint clean, type-check clean, no Critical/Important findings.
-- Severity classification: Critical, Important, Minor (3-tier gate model).
-- **Severity reconciliation:** The autonomous gate uses 3-tier severity. If the reviewer reports Medium-severity findings (from the 4-tier model used by receive skills), classify them as Minor for gate verdict purposes. Only Critical and Important block the pass verdict.
+- Severity classification: Critical, Important, Medium, Minor (4-tier, consistent with receive skills).
 
 **Pass criteria:**
 - No Critical or Important findings across both stages.
@@ -443,8 +442,8 @@ The autonomous review gate (Step 4) operates alongside — not in place of — t
 
 The autonomous gate is a **fast, binary quality check** (pass/fail per unit). It does not replace the richer manual review:
 
-- **Autonomous gate findings** use `critical`/`important`/`minor` severity but are limited to what automated checks and spec-diffing can detect.
-- **Manual review findings** use the full `Critical`/`Important`/`Medium`/`Minor` taxonomy with deeper semantic analysis.
+- **Autonomous gate findings** use the same `Critical`/`Important`/`Medium`/`Minor` 4-tier severity model as receive skills, but are limited to what automated checks and spec-diffing can detect.
+- **Manual review findings** use the same 4-tier taxonomy with deeper semantic analysis.
 - If a unit passes the autonomous gate and merges, it is still subject to manual review via `oat-project-review-provide`.
 
 ### plan.md Review Table Integration
