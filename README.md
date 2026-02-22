@@ -92,7 +92,8 @@ Lane options (all converge on implementation + project review workflows):
 | Imported-plan | Plan with provider -> Import to OAT project -> Implement -> Project review loop | External/provider-authored plans you want normalized into OAT artifacts |
 
 Shared across lanes:
-- Review/fix loops (`oat-project-review-provide` + `oat-project-review-receive`)
+- Review/fix loops (`oat-project-review-provide` + `oat-project-review-receive` for local, `oat-project-review-receive-remote` for GitHub PR feedback)
+- Ad-hoc reviews (`oat-review-provide` + `oat-review-receive` for local, `oat-review-receive-remote` for GitHub PR feedback)
 - PR artifacts (`oat-project-pr-progress`, `oat-project-pr-final`)
 - Optional promotion to spec-driven lifecycle (`oat-project-promote-spec-driven`) where applicable
 
@@ -230,8 +231,10 @@ flowchart LR
   SetMode["oat project set-mode <mode>"] --> Mode
   ImplementSeq --> Review{"Review context?"}
   ImplementSub --> Review
-  Review -->|Project-scoped| ProjectReview["oat-project-review-provide + oat-project-review-receive"]
-  Review -->|Ad-hoc / non-project| AdHocReview["oat-review-provide"]
+  Review -->|Project-scoped local| ProjectReview["oat-project-review-provide + oat-project-review-receive"]
+  Review -->|Project-scoped remote| ProjectReviewRemote["oat-project-review-receive-remote"]
+  Review -->|Ad-hoc local| AdHocReview["oat-review-provide + oat-review-receive"]
+  Review -->|Ad-hoc remote| AdHocReviewRemote["oat-review-receive-remote"]
   ProjectReview --> PR["PR artifacts: oat-project-pr-progress / oat-project-pr-final"]
 ```
 
@@ -277,8 +280,8 @@ flowchart LR
 3. Canonical plan-writing contract:
    - `oat-project-plan-writing` (shared spec-driven/quick/import planning semantics)
 4. Review path selection:
-   - Project-scoped review: `oat-project-review-provide` + `oat-project-review-receive`
-   - Ad-hoc/non-project review: `oat-review-provide`
+   - Project-scoped review: `oat-project-review-provide` + `oat-project-review-receive` (local) / `oat-project-review-receive-remote` (GitHub PR)
+   - Ad-hoc/non-project review: `oat-review-provide` + `oat-review-receive` (local) / `oat-review-receive-remote` (GitHub PR)
 5. PR generation:
    - Progress PR: `oat-project-pr-progress`
    - Final PR: `oat-project-pr-final`
