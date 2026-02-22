@@ -2,7 +2,7 @@
 oat_status: complete
 oat_ready_for: oat-project-implement
 oat_blockers: []
-oat_last_updated: 2026-02-21
+oat_last_updated: 2026-02-22
 oat_phase: plan
 oat_phase_status: complete
 oat_plan_hill_phases: []
@@ -322,6 +322,74 @@ git commit -m "feat(p02-t03): add instructions integration tests and verificatio
 
 ---
 
+## Phase 3: Review Fixes (final)
+
+### Task p03-t01: (review) Add debug logging for scanner permission/read errors
+
+**Files:**
+- Modify: `packages/cli/src/commands/instructions/instructions.types.ts`
+- Modify: `packages/cli/src/commands/instructions/instructions.utils.ts`
+- Modify: `packages/cli/src/commands/instructions/instructions.utils.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding `m1`: scanner catch blocks currently swallow read/stat errors silently, which reduces observability when permissions or file-system errors occur.
+
+Location: `packages/cli/src/commands/instructions/instructions.utils.ts:74`, `packages/cli/src/commands/instructions/instructions.utils.ts:108`
+
+**Step 2: Implement fix**
+
+- Extend `InstructionsScanDependencies` with an optional debug callback.
+- Emit debug messages in scanner catch paths before continuing.
+- Preserve current behavior (continue scanning on errors).
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli exec vitest run src/commands/instructions/instructions.utils.test.ts`
+Expected: Tests pass and scanner behavior remains unchanged.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/instructions/instructions.types.ts packages/cli/src/commands/instructions/instructions.utils.ts packages/cli/src/commands/instructions/instructions.utils.test.ts
+git commit -m "fix(p03-t01): add scanner debug logging for graceful error handling"
+```
+
+---
+
+### Task p03-t02: (review) Add help snapshots for instructions command group
+
+**Files:**
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding `m2`: help snapshots currently cover root help but do not assert `instructions` parent/subcommand help output.
+
+Location: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 2: Implement fix**
+
+- Add snapshot tests for:
+  - `instructions --help`
+  - `instructions validate --help`
+  - `instructions sync --help`
+- Follow existing snapshot style and structure.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli exec vitest run src/commands/help-snapshots.test.ts`
+Expected: Snapshot tests pass and new instruction command help output is locked.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "fix(p03-t02): add instructions help snapshots"
+```
+
+---
+
 ## Reviews
 
 Track reviews here after running the `oat-project-review-provide` and `oat-project-review-receive` skills.
@@ -330,7 +398,8 @@ Track reviews here after running the `oat-project-review-provide` and `oat-proje
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | received | 2026-02-21 | reviews/final-review-2026-02-21.md |
+| p03 | code | pending | - | - |
+| final | code | fixes_completed | 2026-02-22 | reviews/final-review-2026-02-21.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
@@ -343,8 +412,9 @@ Track reviews here after running the `oat-project-review-provide` and `oat-proje
 **Summary:**
 - Phase 1: 3 tasks - Types, scanning utilities, and validate command.
 - Phase 2: 3 tasks - Sync command, command registration, integration and verification.
+- Phase 3: 2 tasks - Final review fixes for scanner observability and help snapshots.
 
-**Total: 6 tasks**
+**Total: 8 tasks**
 
 Ready for implementation execution.
 
