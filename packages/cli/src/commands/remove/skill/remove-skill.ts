@@ -76,7 +76,7 @@ export interface RemoveSkillDependencies {
   removeDirectory: (path: string) => Promise<void>;
 }
 
-function defaultDependencies(): RemoveSkillDependencies {
+export function createDefaultRemoveSkillDependencies(): RemoveSkillDependencies {
   return {
     buildCommandContext,
     async resolveScopeRoot(scope, context) {
@@ -255,12 +255,12 @@ async function applyPlan(
   }
 }
 
-async function runRemoveSkill(
+export async function runRemoveSkill(
   context: CommandContext,
   skillName: string,
   apply: boolean,
   dependencies: RemoveSkillDependencies,
-): Promise<void> {
+): Promise<boolean> {
   const scopes = resolveConcreteScopes(context.scope);
   const plans: ScopePlan[] = [];
 
@@ -284,30 +284,28 @@ async function runRemoveSkill(
     } else {
       context.logger.warn(message);
     }
-    process.exitCode = 1;
-    return;
+    return false;
   }
 
   if (!apply) {
     for (const plan of plans) {
       logDryRun(context, plan);
     }
-    process.exitCode = 0;
-    return;
+    return true;
   }
 
   for (const plan of plans) {
     await applyPlan(context, plan, dependencies);
   }
 
-  process.exitCode = 0;
+  return true;
 }
 
 export function createRemoveSkillCommand(
   overrides: Partial<RemoveSkillDependencies> = {},
 ): Command {
   const dependencies: RemoveSkillDependencies = {
-    ...defaultDependencies(),
+    ...createDefaultRemoveSkillDependencies(),
     ...overrides,
   };
 
@@ -326,12 +324,13 @@ export function createRemoveSkillCommand(
         );
 
         try {
-          await runRemoveSkill(
+          const removed = await runRemoveSkill(
             context,
             skillName,
             options.apply ?? false,
             dependencies,
           );
+          process.exitCode = removed ? 0 : 1;
         } catch (error) {
           const message =
             error instanceof Error ? error.message : String(error);
