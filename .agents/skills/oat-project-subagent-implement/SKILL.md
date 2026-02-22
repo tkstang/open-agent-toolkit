@@ -204,7 +204,8 @@ After each implementer subagent completes, run a mandatory reviewer gate as a **
 **Stage 2: Code quality**
 - Only runs if spec compliance passes.
 - Check: tests passing, lint clean, type-check clean, no Critical/Important findings.
-- Severity classification: Critical, Important, Minor.
+- Severity classification: Critical, Important, Minor (3-tier gate model).
+- **Severity reconciliation:** The autonomous gate uses 3-tier severity. If the reviewer reports Medium-severity findings (from the 4-tier model used by receive skills), classify them as Minor for gate verdict purposes. Only Critical and Important block the pass verdict.
 
 **Pass criteria:**
 - No Critical or Important findings across both stages.
@@ -233,6 +234,7 @@ review_artifact: "reviews/{unit-id}-gate-review.md"
 findings:
   critical: []
   important: []
+  medium: []
   minor: []
 disposition: merged | excluded | skipped
 ```

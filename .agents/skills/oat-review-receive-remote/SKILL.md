@@ -34,6 +34,12 @@ Process unresolved GitHub PR review feedback into normalized findings and standa
 - Interactive triage and task-list generation.
 - Optional explicit replies to processed comments.
 
+**Self-Correction Protocol:**
+If you catch yourself:
+- Replying on GitHub without explicit user confirmation -> STOP and present reply content for approval first.
+- Editing project lifecycle artifacts (`plan.md`, `state.md`, `implementation.md`) in ad-hoc mode -> STOP and revert to task-list output only.
+- Skipping the findings overview before triage prompts -> STOP and show overview first.
+
 ## Progress Indicators (User-Facing)
 
 Print this banner once at start:

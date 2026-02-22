@@ -34,6 +34,12 @@ Fetch unresolved GitHub PR feedback and convert it into review-fix tasks inside 
 - Plan/implementation/state bookkeeping updates.
 - Optional GitHub replies tied to dispositions.
 
+**Self-Correction Protocol:**
+If you catch yourself:
+- Making code changes in receive mode -> STOP and return to triage/bookkeeping only.
+- Reusing existing task IDs instead of generating next sequential `pNN-tNN` -> STOP and recalculate the next available ID.
+- Posting GitHub replies without explicit user approval -> STOP and present reply content for confirmation first.
+
 ## Progress Indicators (User-Facing)
 
 Print this banner once at start:
