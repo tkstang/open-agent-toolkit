@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-22
-oat_current_task_id: null
+oat_current_task_id: p12-t01
 oat_generated: false
 ---
 
@@ -16,9 +16,9 @@ oat_generated: false
 
 ## Current Pointer
 
-- Next task: `null` (all plan tasks complete)
+- Next task: `p12-t01`
 - Plan source: `plan.md` (imported)
-- Status: Implementation tasks complete; awaiting final review
+- Status: Review fix tasks added; awaiting implementation of review fixes
 
 ## Progress Overview
 
@@ -35,8 +35,9 @@ oat_generated: false
 | Phase 9 | completed | 1 | 1/1 |
 | Phase 10 | completed | 1 | 1/1 |
 | Phase 11 | completed | 2 | 2/2 |
+| Phase 12 | in_progress | 5 | 0/5 |
 
-**Total:** 14/14 tasks completed
+**Total:** 14/19 tasks completed
 
 ---
 
@@ -56,6 +57,11 @@ oat_generated: false
 - [x] `p10-t01` Remove legacy pointer fallbacks (`14cfdc2`)
 - [x] `p11-t01` Add ADR-012 and ADR-013 decision records (`80b500f`)
 - [x] `p11-t02` Execute full verification + follow-up capture (`1073192`)
+- [ ] `p12-t01` (review) Update stale active-project storage documentation across project skills
+- [ ] `p12-t02` (review) Update create-oat-skill projects-root resolution documentation
+- [ ] `p12-t03` (review) Extract removeFrontmatterField into shared frontmatter utilities
+- [ ] `p12-t04` (review) Add regression test for unknown oat config get key handling
+- [ ] `p12-t05` (review) Update subagent-implement active-project documentation reference
 
 ---
 
@@ -105,6 +111,10 @@ oat_generated: false
 
 **Outcome:** Added ADR-012/013 for config-local lifecycle state and open/pause semantics, completed full test/build/lint/type-check + command smoke checks, and captured active-idea migration follow-up in backlog.
 
+### Phase 12: Review Fixes from Final Code Review
+
+**Outcome:** Pending implementation. Converted final review findings into five fix tasks (`p12-t01`..`p12-t05`) with selected minor coverage (`m1`, `m4`) and deferred minor findings (`m2`, `m3`) recorded with rationale.
+
 ---
 
 ## Orchestration Runs
@@ -129,6 +139,35 @@ oat_generated: false
 - Completed `p10-t01` with commit `14cfdc2`; fallback scan clean for migrated command/skill scope.
 - Completed `p11-t01` with commit `80b500f`.
 - Completed `p11-t02` with commit `1073192` after full verification and smoke checks.
+- Processed `reviews/final-review-2026-02-22.md` via review-receive; added Phase 12 review-fix tasks.
+
+### Review Received: final
+
+**Date:** 2026-02-22
+**Review artifact:** reviews/final-review-2026-02-22.md
+
+**Findings:**
+- Critical: 0
+- Important: 3
+- Medium: 0
+- Minor: 4
+
+**New tasks added:** `p12-t01`, `p12-t02`, `p12-t03`, `p12-t04`, `p12-t05`
+
+**Deferred Findings (Minor):**
+- `m2` (legacy `.oat/projects-root` fallback test-spec drift): deferred because Phase 10 intentionally removed fallback behavior and current tests already verify config/default behavior.
+- `m3` (inert `.oat/active-project` commit-risk note): deferred as operational/documentation follow-up; file is intentionally inert and currently tracked by explicit user request.
+
+**Finding disposition map:**
+- `I1` -> converted (`p12-t01`)
+- `I2` -> converted (`p12-t02`)
+- `I3` -> converted (`p12-t03`)
+- `m1` -> converted (`p12-t04`)
+- `m4` -> converted (`p12-t05`)
+- `m2` -> deferred (documented rationale)
+- `m3` -> deferred (documented rationale)
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill starting at `p12-t01`. After fixes complete, set review status to `fixes_completed`, then re-run `oat-project-review-provide code final` and `oat-project-review-receive` to reach `passed`.
 
 ---
 
@@ -147,6 +186,7 @@ oat_generated: false
 | 9 | `pnpm oat:validate-skills` | yes | 0 | n/a |
 | 10 | Focused CLI suites for config/path/new/help/install-workflows | yes | 0 | n/a |
 | 11 | `pnpm --filter @oat/cli test` + `pnpm build` + `pnpm lint` + `pnpm type-check` + smoke checks + `pnpm oat:validate-skills` | yes | 0 | n/a |
+| 12 | Pending review-fix implementation | n/a | n/a | n/a |
 
 ## Final Summary (for PR/docs)
 

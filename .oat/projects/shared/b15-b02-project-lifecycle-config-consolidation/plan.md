@@ -2,7 +2,7 @@
 oat_status: complete
 oat_ready_for: oat-project-implement
 oat_blockers: []
-oat_last_updated: 2026-02-21
+oat_last_updated: 2026-02-22
 oat_phase: plan
 oat_phase_status: complete
 oat_plan_hill_phases: ["p10"]
@@ -644,6 +644,151 @@ git commit -m "chore(p11-t02): complete lifecycle config consolidation verificat
 
 ---
 
+## Phase 12: Review Fixes from Final Code Review
+
+### Task p12-t01: (review) Update stale active-project storage documentation across project skills
+
+**Files:**
+- Modify: `.agents/skills/*/SKILL.md` (project-scope skill docs that still mention `.oat/active-project`)
+
+**Step 1: Understand the issue**
+
+Review finding: Skill snippets were migrated to `oat config get activeProject`, but descriptive text still states active project storage is `.oat/active-project`.
+Location: multiple skill documentation references called out in `reviews/final-review-2026-02-22.md`.
+
+**Step 2: Implement fix**
+
+Update descriptive text to refer to `.oat/config.local.json` or "local config" as the active-project state source so documentation matches command behavior.
+
+**Step 3: Verify**
+
+Run: `rg -n "\.oat/active-project" .agents/skills`
+Expected: No stale active-project storage references remain in migrated project-scope docs (except explicitly intentional inert/legacy notes).
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills
+git commit -m "docs(p12-t01): align skill docs with config-local active project state"
+```
+
+---
+
+### Task p12-t02: (review) Update create-oat-skill projects-root resolution documentation
+
+**Files:**
+- Modify: `.agents/skills/create-oat-skill/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: `create-oat-skill` docs still reference `.oat/projects-root` as a resolution source despite fallback removal in migrated command paths.
+Location: `.agents/skills/create-oat-skill/SKILL.md:70`.
+
+**Step 2: Implement fix**
+
+Update the documented resolution chain to use `oat config get projects.root` terminology and remove stale `.oat/projects-root` guidance.
+
+**Step 3: Verify**
+
+Run: `rg -n "\.oat/projects-root|projects.root" .agents/skills/create-oat-skill/SKILL.md`
+Expected: The file reflects config-command-based projects-root guidance.
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/create-oat-skill/SKILL.md
+git commit -m "docs(p12-t02): update create-oat-skill projects root guidance"
+```
+
+---
+
+### Task p12-t03: (review) Extract removeFrontmatterField into shared frontmatter utilities
+
+**Files:**
+- Modify: `packages/cli/src/commands/shared/frontmatter-write.ts`
+- Modify: `packages/cli/src/commands/project/open/index.ts`
+- Modify: `packages/cli/src/commands/project/pause/index.ts`
+- Modify: related tests for open/pause/frontmatter shared helpers
+
+**Step 1: Understand the issue**
+
+Review finding: `removeFrontmatterField` is duplicated in open/pause commands.
+Location: `packages/cli/src/commands/project/open/index.ts` and `packages/cli/src/commands/project/pause/index.ts`.
+
+**Step 2: Implement fix**
+
+Export `removeFrontmatterField` from shared frontmatter utilities and consume it in open/pause command implementations.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/project/open/index.test.ts packages/cli/src/commands/project/pause/index.test.ts packages/cli/src/commands/shared/frontmatter-write.test.ts`
+Expected: Open/pause behavior and shared helper tests pass without duplicated helper definitions.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/shared/frontmatter-write.ts packages/cli/src/commands/project/open/index.ts packages/cli/src/commands/project/pause/index.ts
+git commit -m "refactor(p12-t03): share removeFrontmatterField helper"
+```
+
+---
+
+### Task p12-t04: (review) Add regression test for unknown oat config get key handling
+
+**Files:**
+- Modify: `packages/cli/src/commands/config/index.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: No explicit test validates exit-code/error behavior for unknown key passed to `oat config get`.
+Location: `packages/cli/src/commands/config/index.test.ts`.
+
+**Step 2: Implement fix**
+
+Add a focused test asserting unknown key returns exit code 1 and an error message containing "Unknown config key".
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/config/index.test.ts`
+Expected: Unknown-key behavior is covered and tests pass.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/config/index.test.ts
+git commit -m "test(p12-t04): cover unknown config key get behavior"
+```
+
+---
+
+### Task p12-t05: (review) Update subagent-implement active-project documentation reference
+
+**Files:**
+- Modify: `.agents/skills/oat-project-subagent-implement/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: `oat-project-subagent-implement` still references `.oat/active-project` in descriptive text.
+Location: `.agents/skills/oat-project-subagent-implement/SKILL.md:116`.
+
+**Step 2: Implement fix**
+
+Update the active-project resolution description to refer to `oat config get activeProject` / local config state.
+
+**Step 3: Verify**
+
+Run: `rg -n "\.oat/active-project|activeProject" .agents/skills/oat-project-subagent-implement/SKILL.md`
+Expected: Reference is updated to config-local semantics.
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-subagent-implement/SKILL.md
+git commit -m "docs(p12-t05): align subagent-implement active project docs"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
@@ -659,7 +804,7 @@ git commit -m "chore(p11-t02): complete lifecycle config consolidation verificat
 | p09 | code | pending | - | - |
 | p10 | code | pending | - | - |
 | p11 | code | pending | - | - |
-| final | code | received | 2026-02-22 | reviews/final-review-2026-02-22.md |
+| final | code | fixes_added | 2026-02-22 | reviews/final-review-2026-02-22.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
@@ -687,8 +832,9 @@ git commit -m "chore(p11-t02): complete lifecycle config consolidation verificat
 - Phase 9: 1 task - Worktree bootstrap propagation update
 - Phase 10: 1 task - Legacy fallback removal and skill flow retirement
 - Phase 11: 2 tasks - ADR updates and full verification/regression sweep
+- Phase 12: 5 tasks - Final review fix tasks (3 important + 2 selected minor)
 
-**Total: 14 tasks**
+**Total: 19 tasks**
 
 Ready for implementation.
 
