@@ -64,4 +64,4 @@ None
 
 ## Next Milestone
 
-Implementation complete. Final review passed. Ready for PR.
+Run `oat-project-complete`.
