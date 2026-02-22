@@ -47,6 +47,24 @@ Capture tasks and ideas that come up while dogfooding but aren’t ready to impl
     - Related artifacts: `implementation.md`, `plan.md` (task status)
   - Created: 2026-02-21
 
+- [ ] **(P2) [tooling] Migrate active-idea pointers to config-local state**
+  - Context:
+    - `activeProject` / `lastPausedProject` have moved to `.oat/config.local.json`, but idea context still relies on pointer files (`.oat/active-idea` and `~/.oat/active-idea`).
+    - This split keeps lifecycle semantics consistent but leaves idea context on a separate storage/read model.
+  - Proposed change:
+    - Move active-idea state to config-local surfaces with explicit dual-level precedence (repo-local + user-level), preserving existing behavior where needed.
+    - Update idea skills/commands and worktree propagation logic to use config-based reads/writes instead of direct pointer-file access.
+    - Keep a bounded compatibility window for legacy pointer reads before removal.
+  - Success criteria:
+    - Idea commands/skills resolve active idea from config-backed sources with deterministic precedence.
+    - Worktree bootstrap/copy behavior preserves active-idea context without pointer-file special cases.
+    - Legacy pointer-file fallback can be removed after migration validation.
+  - Links:
+    - `.oat/repo/reference/external-plans/b15-b02-project-lifecycle-config-consolidation.md`
+    - `packages/cli/src/config/oat-config.ts`
+    - `.agents/skills/oat-worktree-bootstrap/SKILL.md`
+  - Created: 2026-02-22
+
 - [ ] **(P1) [skills] Enforce autonomous review gates in `oat-project-subagent-implement`**
   - Context: The skill's autonomous review gate (Step 4) has no hard enforcement before merge (Step 5). During first real usage (adding Copilot/Gemini providers), Phase 1 subagents were dispatched and merged without the review gate running.
   - Proposed change:
