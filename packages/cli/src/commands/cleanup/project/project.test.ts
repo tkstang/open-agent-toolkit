@@ -76,8 +76,8 @@ function createCommandHarness(options: CommandHarnessOptions = {}): {
             ? [
                 {
                   type: 'clear',
-                  target: '.oat/active-project',
-                  reason: 'invalid .oat/active-project pointer',
+                  target: '.oat/config.local.json',
+                  reason: 'invalid activeProject in .oat/config.local.json',
                   phase: 'project-scan',
                   result: 'planned',
                 },
@@ -126,12 +126,12 @@ describe('cleanup project drift scanning', () => {
     tempDirs.length = 0;
   });
 
-  it('detects invalid active project pointer', async () => {
+  it('detects invalid active project in config.local.json', async () => {
     const root = await createRepoRoot();
     tempDirs.push(root);
     await writeFile(
-      join(root, '.oat', 'active-project'),
-      '.oat/projects/shared/missing\n',
+      join(root, '.oat', 'config.local.json'),
+      `${JSON.stringify({ version: 1, activeProject: '.oat/projects/shared/missing' })}\n`,
       'utf8',
     );
 
@@ -141,7 +141,7 @@ describe('cleanup project drift scanning', () => {
       expect.arrayContaining([
         expect.objectContaining({
           type: 'clear',
-          target: '.oat/active-project',
+          target: '.oat/config.local.json',
         }),
       ]),
     );
@@ -206,8 +206,8 @@ describe('cleanup project drift scanning', () => {
     const root = await createRepoRoot();
     tempDirs.push(root);
     await writeFile(
-      join(root, '.oat', 'active-project'),
-      '.oat/projects/shared/missing\n',
+      join(root, '.oat', 'config.local.json'),
+      `${JSON.stringify({ version: 1, activeProject: '.oat/projects/shared/missing' })}\n`,
       'utf8',
     );
 
@@ -224,7 +224,9 @@ describe('cleanup project drift scanning', () => {
       },
     );
 
-    await expect(stat(join(root, '.oat', 'active-project'))).rejects.toThrow();
+    await expect(
+      readFile(join(root, '.oat', 'config.local.json'), 'utf8'),
+    ).resolves.toContain('"activeProject": null');
     expect(refreshCalls).toBe(1);
   });
 
@@ -307,8 +309,8 @@ describe('cleanup project drift scanning', () => {
     const root = await createRepoRoot();
     tempDirs.push(root);
     await writeFile(
-      join(root, '.oat', 'active-project'),
-      '.oat/projects/shared/missing\n',
+      join(root, '.oat', 'config.local.json'),
+      `${JSON.stringify({ version: 1, activeProject: '.oat/projects/shared/missing' })}\n`,
       'utf8',
     );
     const projectDir = join(root, '.oat', 'projects', 'shared', 'demo');
@@ -349,8 +351,8 @@ describe('cleanup project drift scanning', () => {
       'utf8',
     );
     await writeFile(
-      join(root, '.oat', 'active-project'),
-      '.oat/projects/shared/missing\n',
+      join(root, '.oat', 'config.local.json'),
+      `${JSON.stringify({ version: 1, activeProject: '.oat/projects/shared/missing' })}\n`,
       'utf8',
     );
     const projectDir = join(root, '.oat', 'projects', 'shared', 'demo');
