@@ -15,6 +15,16 @@ interface HarnessOptions {
   fileContents?: Record<string, string>;
   loadManifestThrows?: boolean;
   symlinkSupported?: boolean;
+  resolveAssetsRootThrows?: boolean;
+  skillVersions?: {
+    installedSkillCount: number;
+    skippedMissingBundledCount: number;
+    outdatedSkills: Array<{
+      skill: string;
+      installedVersion: string;
+      bundledVersion: string;
+    }>;
+  };
   providers?: Array<{
     name: string;
     detected: boolean;
@@ -89,6 +99,21 @@ function createHarness(options: HarnessOptions = {}): {
         throw new Error(`ENOENT: no such file or directory, open '${path}'`);
       }
       return content;
+    }),
+    resolveAssetsRoot: vi.fn(async () => {
+      if (options.resolveAssetsRootThrows) {
+        throw new Error('assets unavailable');
+      }
+      return '/tmp/assets';
+    }),
+    checkSkillVersions: vi.fn(async () => {
+      return (
+        options.skillVersions ?? {
+          installedSkillCount: 0,
+          skippedMissingBundledCount: 0,
+          outdatedSkills: [],
+        }
+      );
     }),
   });
 
@@ -171,6 +196,56 @@ describe('createDoctorCommand', () => {
 
     expect(capture.info[0]).toContain('providers');
     expect(capture.info[0]).toContain('claude@2.0.0');
+  });
+
+  it('warns when outdated installed skills are detected', async () => {
+    const { command, capture } = createHarness({
+      skillVersions: {
+        installedSkillCount: 2,
+        skippedMissingBundledCount: 0,
+        outdatedSkills: [
+          {
+            skill: 'oat-project-implement',
+            installedVersion: '1.0.0',
+            bundledVersion: '1.2.0',
+          },
+        ],
+      },
+    });
+
+    await runDoctor(command);
+
+    expect(capture.info[0]).toContain('skill_versions');
+    expect(capture.info[0]).toContain('oat-project-implement');
+    expect(capture.info[0]).toContain('oat init tools');
+  });
+
+  it('passes skill version check when no installed oat skills exist', async () => {
+    const { command, capture } = createHarness({
+      skillVersions: {
+        installedSkillCount: 0,
+        skippedMissingBundledCount: 0,
+        outdatedSkills: [],
+      },
+    });
+
+    await runDoctor(command);
+
+    expect(capture.info[0]).toContain('No installed oat-* skills found');
+  });
+
+  it('passes skill version check when bundled counterpart is missing', async () => {
+    const { command, capture } = createHarness({
+      skillVersions: {
+        installedSkillCount: 1,
+        skippedMissingBundledCount: 1,
+        outdatedSkills: [],
+      },
+    });
+
+    await runDoctor(command);
+
+    expect(capture.info[0]).toContain('Skipped 1 skill(s)');
   });
 
   it('reports pass/warn/fail with fix suggestions', async () => {
