@@ -21,6 +21,12 @@ interface BuildInstructionsPayloadArgs {
   actions: InstructionActionRecord[];
 }
 
+function getErrorCode(error: unknown): string | null {
+  return error && typeof error === 'object' && 'code' in error
+    ? String(error.code)
+    : null;
+}
+
 function normalizeLineEndings(content: string): string {
   return content.replaceAll('\r\n', '\n');
 }
@@ -71,7 +77,11 @@ async function scanAgentsFiles(
       entries = await dependencies.readdir(currentDirectory, {
         withFileTypes: true,
       });
-    } catch {
+    } catch (error) {
+      const errorCode = getErrorCode(error);
+      dependencies.debug?.(
+        `Skipping directory scan for ${toPosixPath(currentDirectory)} (${errorCode ?? 'unknown error'})`,
+      );
       continue;
     }
 
@@ -104,7 +114,11 @@ async function scanAgentsFiles(
       let entryStats: Awaited<ReturnType<InstructionsScanDependencies['stat']>>;
       try {
         entryStats = await dependencies.stat(entryPath);
-      } catch {
+      } catch (error) {
+        const errorCode = getErrorCode(error);
+        dependencies.debug?.(
+          `Skipping symlink target stat for ${toPosixPath(entryPath)} (${errorCode ?? 'unknown error'})`,
+        );
         continue;
       }
 
@@ -156,10 +170,7 @@ export async function scanInstructionFiles(
         });
       }
     } catch (error) {
-      const errorCode =
-        error && typeof error === 'object' && 'code' in error
-          ? String(error.code)
-          : null;
+      const errorCode = getErrorCode(error);
       if (errorCode === 'ENOENT') {
         entries.push({
           agentsPath,

@@ -50,6 +50,7 @@ export interface InstructionsScanDependencies {
   ) => Promise<Dirent[]>;
   readFile: (path: string, encoding: 'utf8') => Promise<string>;
   stat: (path: string) => Promise<Stats>;
+  debug?: (message: string) => void;
 }
 
 export interface InstructionsValidateCommandDependencies {

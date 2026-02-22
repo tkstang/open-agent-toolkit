@@ -1,4 +1,13 @@
-import { mkdir, mkdtemp, rm, symlink, writeFile } from 'node:fs/promises';
+import {
+  readdir as fsReaddir,
+  readFile as fsReadFile,
+  stat as fsStat,
+  mkdir,
+  mkdtemp,
+  rm,
+  symlink,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, relative } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -143,6 +152,57 @@ describe('instructions utils', () => {
     expect(entries).toHaveLength(1);
     expect(relative(repoRoot, entries[0]?.agentsPath ?? '')).toBe(
       'real/AGENTS.md',
+    );
+  });
+
+  it('logs debug messages on scan errors and continues', async () => {
+    const repoRoot = await createRepoRoot();
+    const debugLogs: string[] = [];
+
+    await mkdir(join(repoRoot, 'good'), { recursive: true });
+    await writeFile(
+      join(repoRoot, 'good', 'AGENTS.md'),
+      '# good instructions\n',
+      'utf8',
+    );
+
+    await mkdir(join(repoRoot, 'bad-dir'), { recursive: true });
+    await symlink(
+      join(repoRoot, 'missing-target'),
+      join(repoRoot, 'broken-link'),
+    );
+
+    const entries = await scanInstructionFiles(repoRoot, {
+      readdir: async (path, options) => {
+        if (path === join(repoRoot, 'bad-dir')) {
+          throw Object.assign(new Error('permission denied'), {
+            code: 'EACCES',
+          });
+        }
+        return fsReaddir(path, options);
+      },
+      readFile: fsReadFile,
+      stat: async (path) => {
+        if (path === join(repoRoot, 'broken-link')) {
+          throw Object.assign(new Error('permission denied'), {
+            code: 'EACCES',
+          });
+        }
+        return fsStat(path);
+      },
+      debug: (message) => {
+        debugLogs.push(message);
+      },
+    });
+
+    expect(relative(repoRoot, entries[0]?.agentsPath ?? '')).toBe(
+      'good/AGENTS.md',
+    );
+    expect(debugLogs).toContain(
+      `Skipping directory scan for ${join(repoRoot, 'bad-dir').replaceAll('\\', '/')} (EACCES)`,
+    );
+    expect(debugLogs).toContain(
+      `Skipping symlink target stat for ${join(repoRoot, 'broken-link').replaceAll('\\', '/')} (EACCES)`,
     );
   });
 
