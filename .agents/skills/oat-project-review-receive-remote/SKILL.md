@@ -49,13 +49,14 @@ Print this banner once at start:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Use step indicators:
-- `[1/7] Resolving project...`
-- `[2/7] Resolving PR...`
-- `[3/7] Fetching comments...`
-- `[4/7] Classifying findings...`
-- `[5/7] Triaging findings...`
-- `[6/7] Updating project artifacts...`
-- `[7/7] Summary...`
+- `[1/8] Resolving project...`
+- `[2/8] Resolving PR...`
+- `[3/8] Fetching comments...`
+- `[4/8] Classifying findings...`
+- `[5/8] Triaging findings...`
+- `[6/8] Updating project artifacts...`
+- `[7/8] Enforcing cycle limit...`
+- `[8/8] Posting replies (optional)...`
 
 ## Findings Model
 

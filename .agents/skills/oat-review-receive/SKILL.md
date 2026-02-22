@@ -39,6 +39,11 @@ If you catch yourself:
 - Triaging without presenting a findings overview first -> STOP and show overview before disposition prompts.
 - Skipping Medium finding rationale when proposing deferral -> STOP and collect explicit rationale.
 
+**Recovery:**
+1. Re-locate review artifact from the path provided or last known location.
+2. Re-parse findings from the artifact (idempotent — no state mutation in ad-hoc mode).
+3. Resume triage from the first un-dispositioned finding.
+
 ## Progress Indicators (User-Facing)
 
 Print this banner once at start:

@@ -9,6 +9,8 @@ rm -rf "${ASSETS}"
 mkdir -p "${ASSETS}/skills" "${ASSETS}/agents" "${ASSETS}/templates" "${ASSETS}/scripts"
 
 SKILLS=(
+  oat-agent-instructions-analyze
+  oat-agent-instructions-apply
   oat-idea-ideate
   oat-idea-new
   oat-idea-scratchpad
@@ -33,12 +35,10 @@ SKILLS=(
   oat-project-review-receive-remote
   oat-project-spec
   oat-repo-knowledge-index
-  oat-worktree-bootstrap
   oat-review-provide
   oat-review-receive
   oat-review-receive-remote
-  oat-agent-instructions-analyze
-  oat-agent-instructions-apply
+  oat-worktree-bootstrap
 )
 
 for skill in "${SKILLS[@]}"; do

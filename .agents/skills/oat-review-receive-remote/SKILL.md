@@ -49,11 +49,12 @@ Print this banner once at start:
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 Use step indicators:
-- `[1/5] Resolving PR...`
-- `[2/5] Fetching comments...`
-- `[3/5] Classifying findings...`
-- `[4/5] Triaging findings...`
-- `[5/5] Generating task list...`
+- `[1/6] Resolving PR...`
+- `[2/6] Fetching comments...`
+- `[3/6] Classifying findings...`
+- `[4/6] Triaging findings...`
+- `[5/6] Generating task list...`
+- `[6/6] Posting replies (optional)...`
 
 ## Findings Model
 
