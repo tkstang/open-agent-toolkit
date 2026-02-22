@@ -30,7 +30,7 @@ When executing this skill, provide lightweight progress feedback so the user can
 
 ```bash
 if [[ -f ".oat/active-project" ]]; then
-  current=$(cat .oat/active-project)
+  current=$(oat config get activeProject 2>/dev/null || true)
   echo "Current active project: $current"
 else
   echo "No active project is currently set."
@@ -41,7 +41,7 @@ fi
 ### Step 2: Clear Pointer
 
 ```bash
-rm -f .oat/active-project
+oat config set activeProject ""
 echo "Active project cleared."
 ```
 

@@ -31,7 +31,7 @@ Create a new OAT project directory, scaffold standard artifacts from `.oat/templ
 Resolve `{PROJECTS_ROOT}` (same order as other OAT skills):
 
 ```bash
-PROJECTS_ROOT="${OAT_PROJECTS_ROOT:-$(cat .oat/projects-root 2>/dev/null || echo \".oat/projects/shared\")}"
+PROJECTS_ROOT="${OAT_PROJECTS_ROOT:-$(oat config get projects.root 2>/dev/null || echo \".oat/projects/shared\")}"
 PROJECTS_ROOT="${PROJECTS_ROOT%/}"
 ```
 

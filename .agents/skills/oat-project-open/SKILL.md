@@ -30,7 +30,7 @@ When executing this skill, provide lightweight progress feedback so the user can
 ### Step 1: Resolve Projects Root
 
 ```bash
-PROJECTS_ROOT="${OAT_PROJECTS_ROOT:-$(cat .oat/projects-root 2>/dev/null || echo ".oat/projects/shared")}"
+PROJECTS_ROOT="${OAT_PROJECTS_ROOT:-$(oat config get projects.root 2>/dev/null || echo ".oat/projects/shared")}"
 PROJECTS_ROOT="${PROJECTS_ROOT%/}"
 ```
 
@@ -87,7 +87,7 @@ Write full path for v1 compatibility:
 
 ```bash
 mkdir -p .oat
-echo "$PROJECT_PATH" > .oat/active-project
+oat config set activeProject "$PROJECT_PATH"
 echo "Active project set to: $PROJECT_NAME"
 ```
 

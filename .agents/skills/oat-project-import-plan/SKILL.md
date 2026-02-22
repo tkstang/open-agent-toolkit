@@ -62,8 +62,8 @@ When executing this skill, provide lightweight progress feedback so the user can
 ### Step 0: Resolve Active Project
 
 ```bash
-PROJECT_PATH=$(cat .oat/active-project 2>/dev/null || true)
-PROJECTS_ROOT="${OAT_PROJECTS_ROOT:-$(cat .oat/projects-root 2>/dev/null || echo ".oat/projects/shared")}"
+PROJECT_PATH=$(oat config get activeProject 2>/dev/null || true)
+PROJECTS_ROOT="${OAT_PROJECTS_ROOT:-$(oat config get projects.root 2>/dev/null || echo ".oat/projects/shared")}"
 PROJECTS_ROOT="${PROJECTS_ROOT%/}"
 ```
 
@@ -72,7 +72,7 @@ If no valid active project exists:
 - Resolve `TARGET_PROJECT_PATH="${PROJECTS_ROOT}/{project-name}"`.
 - If `TARGET_PROJECT_PATH/state.md` exists, set:
   ```bash
-  echo "$TARGET_PROJECT_PATH" > .oat/active-project
+  oat config set activeProject "$TARGET_PROJECT_PATH"
   PROJECT_PATH="$TARGET_PROJECT_PATH"
   ```
 - Otherwise create an import-mode scaffold (which sets active project by default):
@@ -172,7 +172,7 @@ fi
 ```
 
 ```bash
-echo "$PROJECT_PATH" > .oat/active-project
+oat config set activeProject "$PROJECT_PATH"
 oat state refresh
 ```
 

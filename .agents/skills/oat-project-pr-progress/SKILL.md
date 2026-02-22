@@ -81,8 +81,8 @@ Run the `oat-project-pr-progress` skill and it will ask:
 OAT stores the active project path in `.oat/active-project` (single line, local-only).
 
 ```bash
-PROJECT_PATH=$(cat .oat/active-project 2>/dev/null || true)
-PROJECTS_ROOT="${OAT_PROJECTS_ROOT:-$(cat .oat/projects-root 2>/dev/null || echo ".oat/projects/shared")}"
+PROJECT_PATH=$(oat config get activeProject 2>/dev/null || true)
+PROJECTS_ROOT="${OAT_PROJECTS_ROOT:-$(oat config get projects.root 2>/dev/null || echo ".oat/projects/shared")}"
 PROJECTS_ROOT="${PROJECTS_ROOT%/}"
 ```
 
@@ -92,7 +92,7 @@ If missing/invalid:
 - Write it:
   ```bash
   mkdir -p .oat
-  echo "$PROJECT_PATH" > .oat/active-project
+  oat config set activeProject "$PROJECT_PATH"
   ```
 
 ### Step 1: Determine Scope (Phase or Range)
