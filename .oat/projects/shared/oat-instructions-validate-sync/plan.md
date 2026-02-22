@@ -399,7 +399,7 @@ Track reviews here after running the `oat-project-review-provide` and `oat-proje
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
-| final | code | fixes_completed | 2026-02-22 | reviews/final-review-2026-02-21.md |
+| final | code | passed | 2026-02-22 | reviews/final-review-2026-02-22.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
