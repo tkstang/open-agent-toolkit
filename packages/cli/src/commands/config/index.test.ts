@@ -125,21 +125,6 @@ describe('oat config', () => {
     expect(process.exitCode).toBe(0);
   });
 
-  it('gets projects.root from legacy .oat/projects-root fallback', async () => {
-    const root = await createRepoRoot();
-    await writeFile(
-      join(root, '.oat', 'projects-root'),
-      '.oat/projects/from-file\n',
-      'utf8',
-    );
-
-    const { command, capture } = createHarness({ cwd: root });
-    await runCommand(command, ['get', 'projects.root']);
-
-    expect(capture.info[0]).toBe('.oat/projects/from-file');
-    expect(process.exitCode).toBe(0);
-  });
-
   it('sets local config keys in config.local.json', async () => {
     const root = await createRepoRoot();
     const { command } = createHarness({ cwd: root });
@@ -217,19 +202,13 @@ describe('oat config', () => {
       `${JSON.stringify({ version: 1, activeProject: '.oat/projects/shared/demo' })}\n`,
       'utf8',
     );
-    await writeFile(
-      join(root, '.oat', 'projects-root'),
-      '.oat/projects/from-file\n',
-      'utf8',
-    );
-
     const { command, capture } = createHarness({ cwd: root });
     await runCommand(command, ['list']);
 
     expect(capture.info[0]).toContain('activeProject');
     expect(capture.info[0]).toContain('config.local.json');
     expect(capture.info[0]).toContain('projects.root');
-    expect(capture.info[0]).toContain('.oat/projects-root');
+    expect(capture.info[0]).toContain('.oat/projects/shared');
     expect(capture.info[0]).toContain('worktrees.root');
     expect(capture.info[0]).toContain('config.json');
     expect(process.exitCode).toBe(0);

@@ -133,7 +133,7 @@ describe('installWorkflows', () => {
     expect(scriptStat.mode & 0o111).not.toBe(0);
   });
 
-  it('writes .oat/projects-root and config.json.projects.root defaults when absent and does not overwrite when present', async () => {
+  it('writes project-root defaults when absent and does not overwrite when present', async () => {
     const root = await makeTempDir();
     const assetsRoot = join(root, 'assets');
     const targetRoot = join(root, 'target');

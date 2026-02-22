@@ -110,7 +110,7 @@ export function createProjectNewCommand(
         .default('spec-driven'),
     )
     .option('--force', 'Non-destructive scaffold; create missing files only')
-    .option('--no-set-active', 'Do not update .oat/active-project')
+    .option('--no-set-active', 'Do not update active project in local config')
     .option('--no-dashboard', 'Do not refresh .oat/state.md after scaffold')
     .action(
       async (

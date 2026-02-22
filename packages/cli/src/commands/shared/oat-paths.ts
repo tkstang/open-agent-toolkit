@@ -1,7 +1,4 @@
-import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { readOatConfig } from '@config/oat-config';
-import { fileExists } from '@fs/io';
 
 export async function resolveProjectsRoot(
   repoRoot: string,
@@ -16,14 +13,6 @@ export async function resolveProjectsRoot(
   const configRoot = config.projects?.root?.trim();
   if (configRoot) {
     return configRoot.replace(/\/+$/, '');
-  }
-
-  const rootFile = join(repoRoot, '.oat', 'projects-root');
-  if (await fileExists(rootFile)) {
-    const fromFile = (await readFile(rootFile, 'utf8')).trim();
-    if (fromFile) {
-      return fromFile.replace(/\/+$/, '');
-    }
   }
 
   return '.oat/projects/shared';

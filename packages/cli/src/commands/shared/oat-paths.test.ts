@@ -44,25 +44,7 @@ describe('resolveProjectsRoot', () => {
     expect(result).toBe('.oat/projects/from-config');
   });
 
-  it('falls back to .oat/projects-root when config.json has no projects root', async () => {
-    const repoRoot = await createRepoRoot();
-    await writeFile(
-      join(repoRoot, '.oat', 'config.json'),
-      `${JSON.stringify({ version: 1 })}\n`,
-      'utf8',
-    );
-    await writeFile(
-      join(repoRoot, '.oat', 'projects-root'),
-      '.oat/projects/from-file\n',
-      'utf8',
-    );
-
-    const result = await resolveProjectsRoot(repoRoot, {} as NodeJS.ProcessEnv);
-
-    expect(result).toBe('.oat/projects/from-file');
-  });
-
-  it('uses default when env, config, and projects-root file are unset', async () => {
+  it('uses default when env and config are unset', async () => {
     const repoRoot = await createRepoRoot();
 
     const result = await resolveProjectsRoot(repoRoot, {} as NodeJS.ProcessEnv);

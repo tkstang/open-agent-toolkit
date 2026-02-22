@@ -69,12 +69,12 @@ describe('scaffoldProject', () => {
     expect(result.projectPath).toBe('.oat/projects/custom-root/my_project');
   });
 
-  it('falls back to .oat/projects-root file when env var missing', async () => {
+  it('uses config.json projects root when env var missing', async () => {
     const repoRoot = await createRepoRoot();
     tempDirs.push(repoRoot);
     await writeFile(
-      join(repoRoot, '.oat', 'projects-root'),
-      '.oat/projects/from-file\n',
+      join(repoRoot, '.oat', 'config.json'),
+      `${JSON.stringify({ version: 1, projects: { root: '.oat/projects/from-config' } })}\n`,
       'utf8',
     );
 
@@ -86,7 +86,7 @@ describe('scaffoldProject', () => {
       today: '2026-02-16',
     });
 
-    expect(result.projectPath).toBe('.oat/projects/from-file/my_project');
+    expect(result.projectPath).toBe('.oat/projects/from-config/my_project');
   });
 
   it('uses .oat/projects/shared when env and projects-root are missing', async () => {

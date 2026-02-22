@@ -1,5 +1,3 @@
-import { readFile as defaultReadFile } from 'node:fs/promises';
-import { join } from 'node:path';
 import { buildCommandContext, type CommandContext } from '@app/command-context';
 import { resolveProjectsRoot } from '@commands/shared/oat-paths';
 import { readGlobalOptions } from '@commands/shared/shared.utils';
@@ -42,7 +40,6 @@ interface ConfigCommandDependencies {
     repoRoot: string,
     env: NodeJS.ProcessEnv,
   ) => Promise<string>;
-  readFile: typeof defaultReadFile;
   processEnv: NodeJS.ProcessEnv;
 }
 
@@ -61,7 +58,6 @@ const DEFAULT_DEPENDENCIES: ConfigCommandDependencies = {
   readOatLocalConfig,
   writeOatLocalConfig,
   resolveProjectsRoot,
-  readFile: defaultReadFile,
   processEnv: process.env,
 };
 
@@ -98,20 +94,6 @@ async function resolveProjectsRootWithSource(
       value: configRoot.replace(/\/+$/, ''),
       source: 'config.json',
     };
-  }
-
-  const rootFile = join(repoRoot, '.oat', 'projects-root');
-  try {
-    const fromFile = (await dependencies.readFile(rootFile, 'utf8')).trim();
-    if (fromFile) {
-      return {
-        key: 'projects.root',
-        value: fromFile.replace(/\/+$/, ''),
-        source: '.oat/projects-root',
-      };
-    }
-  } catch {
-    // Legacy file is optional.
   }
 
   const value = await dependencies.resolveProjectsRoot(
