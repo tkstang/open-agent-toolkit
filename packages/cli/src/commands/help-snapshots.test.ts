@@ -214,6 +214,16 @@ describe('help output snapshots', () => {
     `);
   });
 
+  it('remove command exposes both skill and skills subcommands', () => {
+    const program = createRegisteredProgram();
+    const removeCommand = getCommandByPath(program, ['remove']);
+    const commandNames = removeCommand.commands.map((command) =>
+      command.name(),
+    );
+    expect(commandNames).toContain('skill');
+    expect(commandNames).toContain('skills');
+  });
+
   it('remove skill --help matches snapshot', () => {
     const program = createRegisteredProgram();
     const help = getCommandByPath(program, [

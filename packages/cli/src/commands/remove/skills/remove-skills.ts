@@ -100,10 +100,13 @@ export function createRemoveSkillsCommand(
 
         let removedCount = 0;
         let skippedCount = 0;
+        const executionContext = context.json
+          ? { ...context, json: false }
+          : context;
 
         for (const skillName of skills) {
           const removed = await dependencies.runRemoveSkill(
-            context,
+            executionContext,
             skillName,
             options.apply ?? false,
             dependencies.removeSkillDependencies,

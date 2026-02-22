@@ -305,4 +305,83 @@ describe('createRemoveSkillCommand', () => {
     expect(capture.info.join('\n')).not.toContain('[dry-run][project] remove');
     expect(process.exitCode).toBe(0);
   });
+
+  it('applies removal across project and user scopes when both contain the skill', async () => {
+    const projectRoot = await makeTempDir();
+    const userRoot = await makeTempDir();
+    const skillName = 'oat-demo';
+
+    await mkdir(join(projectRoot, '.agents', 'skills', skillName), {
+      recursive: true,
+    });
+    await mkdir(join(projectRoot, '.claude', 'skills', skillName), {
+      recursive: true,
+    });
+    await mkdir(join(userRoot, '.agents', 'skills', skillName), {
+      recursive: true,
+    });
+    await mkdir(join(userRoot, '.claude', 'skills', skillName), {
+      recursive: true,
+    });
+
+    await saveManifest(
+      join(projectRoot, '.oat', 'sync', 'manifest.json'),
+      withSkillEntry(
+        createEmptyManifest(),
+        skillName,
+        'claude',
+        `.claude/skills/${skillName}`,
+      ),
+    );
+    await saveManifest(
+      join(userRoot, '.oat', 'sync', 'manifest.json'),
+      withSkillEntry(
+        createEmptyManifest(),
+        skillName,
+        'claude',
+        `.claude/skills/${skillName}`,
+      ),
+    );
+
+    const { command } = createHarness({ projectRoot, userRoot, scope: 'all' });
+    await runRemoveSkillCommand(
+      command,
+      ['--scope', 'all'],
+      [skillName, '--apply'],
+    );
+
+    await expect(
+      dirExists(join(projectRoot, '.agents', 'skills', skillName)),
+    ).resolves.toBe(false);
+    await expect(
+      dirExists(join(userRoot, '.agents', 'skills', skillName)),
+    ).resolves.toBe(false);
+
+    const projectManifest = await loadManifest(
+      join(projectRoot, '.oat', 'sync', 'manifest.json'),
+    );
+    const userManifest = await loadManifest(
+      join(userRoot, '.oat', 'sync', 'manifest.json'),
+    );
+    expect(projectManifest.entries).toEqual([]);
+    expect(userManifest.entries).toEqual([]);
+    expect(process.exitCode).toBe(0);
+  });
+
+  it('emits not_found JSON payload in json mode', async () => {
+    const root = await makeTempDir();
+    const { command, capture } = createHarness({ projectRoot: root });
+
+    await runRemoveSkillCommand(
+      command,
+      ['--json', '--scope', 'project'],
+      ['oat-missing'],
+    );
+
+    expect(capture.jsonPayloads[0]).toEqual({
+      status: 'not_found',
+      skill: 'oat-missing',
+    });
+    expect(process.exitCode).toBe(1);
+  });
 });

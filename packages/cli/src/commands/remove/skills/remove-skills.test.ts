@@ -145,4 +145,43 @@ describe('createRemoveSkillsCommand', () => {
     );
     expect(process.exitCode).toBe(0);
   });
+
+  it('passes scope=all through to remove-skill invocations', async () => {
+    const { command, runRemoveSkill } = createHarness({ interactive: false });
+    await runCommand(command, ['--scope', 'all'], ['--pack', 'utility']);
+
+    expect(runRemoveSkill).toHaveBeenCalledTimes(3);
+    expect(runRemoveSkill).toHaveBeenCalledWith(
+      expect.objectContaining({ scope: 'all' }),
+      expect.any(String),
+      false,
+      expect.any(Object),
+    );
+    expect(process.exitCode).toBe(0);
+  });
+
+  it('emits a single aggregate json payload in json mode', async () => {
+    const { command, runRemoveSkill, capture } = createHarness({
+      interactive: false,
+    });
+
+    runRemoveSkill.mockImplementation(async (context: CommandContext) => {
+      if (context.json) {
+        context.logger.json({ status: 'not_found', skill: 'oat-missing' });
+      }
+      return false;
+    });
+
+    await runCommand(command, ['--json'], ['--pack', 'utility']);
+
+    expect(capture.jsonPayloads).toEqual([
+      {
+        status: 'ok',
+        pack: 'utility',
+        removedCount: 0,
+        skippedCount: 3,
+      },
+    ]);
+    expect(process.exitCode).toBe(0);
+  });
 });
