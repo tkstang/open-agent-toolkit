@@ -87,7 +87,7 @@ Lane options (all converge on implementation + project review workflows):
 
 | Lane | Typical sequence | Best fit |
 |---|---|---|
-| Spec-Driven | Discovery -> Spec -> Design -> Plan -> Implement -> Project review loop | New initiatives or higher-risk changes that need full artifact rigor |
+| Spec-Driven | Discovery -> Spec -> Design -> Plan -> Implement -> Project review loop | New initiatives or higher-risk changes that need strong artifact rigor |
 | Quick | Quick start (discovery + plan baseline) -> Implement -> Project review loop | Smaller scoped work that still needs structured execution |
 | Imported-plan | Plan with provider -> Import to OAT project -> Implement -> Project review loop | External/provider-authored plans you want normalized into OAT artifacts |
 
