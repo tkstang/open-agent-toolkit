@@ -201,8 +201,13 @@ function createDependencies(): DoctorDependencies {
     checkProviders: checkProvidersDefault,
     readFile: async (path) => readFile(path, 'utf8'),
     resolveAssetsRoot,
-    checkSkillVersions: (scopeRoot, assetsRoot) =>
-      checkSkillVersionsDefault(scopeRoot, assetsRoot, pathExistsDefault),
+    // Default binding remains self-contained, but still honors the caller-
+    // provided pathExists dependency from runChecksForScope when available.
+    checkSkillVersions: (
+      scopeRoot,
+      assetsRoot,
+      pathExists = pathExistsDefault,
+    ) => checkSkillVersionsDefault(scopeRoot, assetsRoot, pathExists),
   };
 }
 
