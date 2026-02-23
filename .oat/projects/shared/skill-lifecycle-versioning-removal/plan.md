@@ -741,6 +741,125 @@ git commit -m "fix(p04-t08): clarify unversioned outdated skill display"
 
 ---
 
+### Task p04-t09: (review) Align `oat doctor` unversioned skill display with init-tools
+
+**Files:**
+- Modify: `packages/cli/src/commands/doctor/index.ts`
+- Modify: `packages/cli/src/commands/doctor/index.test.ts`
+
+**Step 1: Understand the issue**
+
+Final re-review minor finding: doctor still formats missing versions as `0.0.0`, which is inconsistent with `oat init tools` `(unversioned)` display.
+Location: `packages/cli/src/commands/doctor/index.ts`
+
+**Step 2: Implement fix**
+
+Preserve comparison semantics while updating doctor output formatting to represent missing installed/bundled versions explicitly (for example `(unversioned)`), matching init-tools UX conventions.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/doctor/index.test.ts`
+Expected: Doctor diagnostics remain correct and display formatting is covered.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/doctor/index.ts packages/cli/src/commands/doctor/index.test.ts
+git commit -m "fix(p04-t09): align doctor unversioned display formatting"
+```
+
+---
+
+### Task p04-t10: (review) Clarify/default-bind doctor `checkSkillVersions` pathExists behavior
+
+**Files:**
+- Modify: `packages/cli/src/commands/doctor/index.ts`
+- Modify: `packages/cli/src/commands/doctor/index.test.ts` (if needed)
+
+**Step 1: Understand the issue**
+
+Final re-review minor finding: default `checkSkillVersions` binding inside `createDependencies()` closes over `pathExistsDefault`, which is acceptable but subtle versus the consumer-level DI path.
+Location: `packages/cli/src/commands/doctor/index.ts`
+
+**Step 2: Implement fix**
+
+Make the default-binding behavior explicit and defensive (documentation and/or small refactor) so the DI contract is unambiguous and future tests do not misinterpret the closure behavior.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/doctor/index.test.ts`
+Expected: Doctor dependency threading behavior remains correct.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/doctor/index.ts packages/cli/src/commands/doctor/index.test.ts
+git commit -m "fix(p04-t10): clarify doctor skill-version default binding"
+```
+
+---
+
+### Task p04-t11: Ensure all repo skills include version frontmatter
+
+**Files:**
+- Modify: repo skill files under `.agents/skills/**/SKILL.md` that are missing `version:`
+- Modify: `packages/cli/src/validation/skills.test.ts`
+
+**Step 1: Understand the issue**
+
+User-requested follow-up: version coverage currently focuses on bundled OAT skills, but some repository skills (including some non-bundled skills) still lack `version:` frontmatter.
+
+**Step 2: Implement fix**
+
+Add `version: 1.0.0` (or appropriate semver baseline) to all repository `SKILL.md` files missing a version field, and extend test coverage to enforce version presence across the repo skill inventory (not only bundled OAT skills).
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/validation/skills.test.ts`
+Expected: Version enforcement passes for bundled and non-bundled repo skills.
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills packages/cli/src/validation/skills.test.ts
+git commit -m "fix(p04-t11): require version metadata across repo skills"
+```
+
+---
+
+### Task p04-t12: Add versioning guidance to skill creation workflows and templates
+
+**Files:**
+- Modify: `.agents/skills/create-skill/SKILL.md`
+- Modify: `.agents/skills/create-oat-skill/SKILL.md`
+- Modify: `.agents/skills/create-skill/references/skill-template.md`
+- Modify: `.agents/skills/create-oat-skill/references/oat-skill-template.md`
+
+**Step 1: Understand the issue**
+
+User-requested follow-up: skill creation workflows and templates do not currently provide explicit guidance to include and maintain `version:` frontmatter in `SKILL.md`.
+
+**Step 2: Implement fix**
+
+Update `create-skill` and `create-oat-skill` instructions plus their template references to:
+- require `version:` frontmatter for new skills,
+- include `version: 1.0.0` in examples/templates,
+- provide concise version-bump guidance for future edits (at least patch/minor/major expectations).
+
+**Step 3: Verify**
+
+Run: `pnpm oat:validate-skills`
+Expected: Skill docs remain valid and templates/examples consistently include version metadata.
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/create-skill/SKILL.md .agents/skills/create-oat-skill/SKILL.md .agents/skills/create-skill/references/skill-template.md .agents/skills/create-oat-skill/references/oat-skill-template.md
+git commit -m "fix(p04-t12): add skill versioning guidance to creation workflows"
+```
+
+---
+
 ## Reviews
 
 Track reviews here after running the `oat-project-review-provide` and `oat-project-review-receive` skills.
@@ -752,7 +871,7 @@ Track reviews here after running the `oat-project-review-provide` and `oat-proje
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
 | final | code | fixes_completed | 2026-02-23 | reviews/final-review-2026-02-22.md |
-| final-v2 | code | received | 2026-02-23 | reviews/final-review-2026-02-22-v2.md |
+| final-v2 | code | fixes_added | 2026-02-23 | reviews/final-review-2026-02-22-v2.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
@@ -778,9 +897,9 @@ These changes do not alter planned task scope; they reconcile this project's del
 - Phase 1: 3 tasks - Add version metadata parsing, validation, utility functions, and bundled skill version frontmatter.
 - Phase 2: 3 tasks - Make `oat init tools` version-aware with interactive outdated-update selection and non-interactive report-only behavior.
 - Phase 3: 4 tasks - Add full `oat remove` lifecycle commands (single + pack) with scope-aware, manifest-safe cleanup and hardened tests.
-- Phase 4: 8 tasks - Integrate outdated-skill diagnostics into `oat doctor`, complete end-to-end regression verification, and close final review findings.
+- Phase 4: 12 tasks - Integrate outdated-skill diagnostics into `oat doctor`, complete end-to-end regression verification, close final review findings, and address final re-review minor follow-ups plus repo-wide skill version coverage and creation-workflow version guidance.
 
-**Total: 18 tasks**
+**Total: 22 tasks**
 
 Ready for implementation execution.
 

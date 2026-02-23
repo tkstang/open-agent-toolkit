@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-23
-oat_current_task_id: null
+oat_current_task_id: p04-t09
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1 | complete | 3 | 3/3 |
 | Phase 2 | complete | 3 | 3/3 |
 | Phase 3 | complete | 4 | 4/4 |
-| Phase 4 | complete | 8 | 8/8 |
+| Phase 4 | in_progress | 12 | 8/12 |
 
-**Total:** 18/18 tasks completed
+**Total:** 18/22 tasks completed
 
 ---
 
@@ -541,6 +541,26 @@ oat_generated: false
 - Verification:
   - `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/init/tools/index.test.ts packages/cli/src/commands/init/tools/workflows/install-workflows.test.ts packages/cli/src/commands/init/tools/ideas/install-ideas.test.ts packages/cli/src/commands/init/tools/utility/install-utility.test.ts` (pass)
 
+### Task p04-t09: (review) Align `oat doctor` unversioned skill display with init-tools
+
+**Status:** pending
+**Commit:** -
+
+### Task p04-t10: (review) Clarify/default-bind doctor `checkSkillVersions` pathExists behavior
+
+**Status:** pending
+**Commit:** -
+
+### Task p04-t11: Ensure all repo skills include version frontmatter
+
+**Status:** pending
+**Commit:** -
+
+### Task p04-t12: Add versioning guidance to skill creation workflows and templates
+
+**Status:** pending
+**Commit:** -
+
 ### Review Received: final
 
 **Date:** 2026-02-23
@@ -563,6 +583,33 @@ oat_generated: false
 **Next:** Re-run final code review (`oat-project-review-provide code final`) and process results with `oat-project-review-receive`.
 
 Review-fix implementation is complete. Update the review row status to `fixes_completed` before re-running final review.
+
+### Review Received: final-v2
+
+**Date:** 2026-02-23
+**Review artifact:** `reviews/final-review-2026-02-22-v2.md`
+
+**Findings:**
+- Critical: 0
+- Important: 0
+- Medium: 0
+- Minor: 2 (`m1`, `m2`)
+
+**New tasks added:** `p04-t09`, `p04-t10`
+
+**Additional user-requested tasks added:** `p04-t11` (repo-wide skill version frontmatter coverage), `p04-t12` (create-skill/create-oat-skill versioning guidance + templates)
+
+**Deferred Findings (Minor):**
+- None (user chose to convert `m1` and `m2` to tasks).
+
+**Deferred Findings (Medium):**
+- None
+
+**Next:** Execute review-fix tasks via the `oat-project-implement` skill, starting at `p04-t09`.
+
+After the fix tasks are complete:
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ## Orchestration Runs
 
@@ -674,13 +721,62 @@ Chronological log of implementation progress.
 
 ---
 
+### 2026-02-23 (Post-Rebase Reconciliation)
+
+**Session Start:** 20:40
+
+- [x] Rebased branch onto updated `origin/main` after merged upstream PRs (`#29`, `#30`, `#32`)
+- [x] Resolved rebase conflicts in bundled skill frontmatter and `doctor` diagnostics/tests
+- [x] Applied post-rebase integration fixes captured in `d16e681`
+- [x] Re-ran targeted lifecycle + overlap regression suites
+- [x] Verified push-hook checks (`check`, `type-check`, `test`) passed during branch push
+
+**What changed (high level):**
+- Preserved `spec-driven` skill rename content from upstream while retaining this project's bundled skill version frontmatter requirements.
+- Merged lifecycle `doctor` skill-version diagnostics with upstream Codex doctor diagnostics and maintained DI path-existence threading.
+- Reconciled utility pack removal test expectations with expanded `UTILITY_SKILLS` introduced upstream.
+- Added `version: 1.0.0` to newly introduced bundled review-receive skills so bundled version coverage remains valid after rebase.
+
+**Decisions:**
+- Treat upstream merged behavior as source of truth, then re-apply lifecycle/versioning guarantees on top during conflict resolution.
+- Keep post-rebase reconciliation as a separate commit for auditability (`d16e681`).
+
+**Blockers:**
+- None.
+
+**Session End:** 21:05
+
+---
+
+### 2026-02-23 (Final Re-Review v2 Receive)
+
+- [x] Processed latest final re-review artifact `reviews/final-review-2026-02-22-v2.md`
+- [x] Converted final-scope minor findings `m1` and `m2` into review-fix tasks (`p04-t09`, `p04-t10`) per user decision
+- [x] Added user-requested follow-up tasks `p04-t11` (repo-wide skill version frontmatter coverage) and `p04-t12` (creation workflow version guidance/templates)
+- [x] Updated review bookkeeping (`final-v2` -> `fixes_added`) and reset implementation resume pointer to `p04-t09`
+
+**What changed (high level):**
+- Reopened Phase 4 implementation with three additional follow-up tasks after the final re-review pass identified low-priority polish items and the user requested stronger version metadata coverage across non-bundled skills.
+
+**Decisions:**
+- Override prior minor deferral for `final-v2`; convert both minors to tasks for consistency hardening before merge.
+- Track repo-wide skill versioning as an explicit scoped task rather than folding it silently into a rebase note.
+
+**Blockers:**
+- None.
+
+---
+
 ## Deviations from Plan
 
 Document any deviations from the original plan.
 
 | Task | Planned | Actual | Reason |
 |------|---------|--------|--------|
-| - | - | - | - |
+| p01-t03 / p04 review fixes | Version all bundled oat skills present during implementation | Added `version: 1.0.0` to three review-receive skills introduced by upstream `PR #29` during rebase reconciliation | Upstream merged new bundled oat skills after this project's versioning task completed; bundled-version invariant still needed to hold on rebased branch |
+| p03-t04 test coverage | Utility pack regression tests asserted fixed pack size assumptions | Updated tests to use `UTILITY_SKILLS.length` during rebase reconciliation | Upstream `PR #29` expanded utility pack membership, making fixed-count assertions stale |
+| p04-t01 / p04-t04 doctor integration | Doctor skill-version checks developed against pre-Codex-doctor baseline | Manually merged skill-version diagnostics + DI path wiring with upstream Codex doctor diagnostics during rebase | Upstream `PR #32` added overlapping `doctor` command/test functionality after implementation |
+| final-v2 minor disposition | Auto-defer final minor findings after successful re-review | Converted `m1` and `m2` to follow-up tasks (`p04-t09`, `p04-t10`) and added `p04-t11` + `p04-t12` by user request | User chose additional hardening, repo-wide version coverage, and creation-workflow version guidance before merge |
 
 ## Test Results
 
@@ -692,6 +788,8 @@ Track test execution during implementation.
 | 2 | init-tools suites + lint + type-check + build | yes | 0 | n/a |
 | 3 | remove command suites + help snapshots + lint + type-check | yes | 0 | n/a |
 | 4 | doctor suite + full test/build/lint/type-check + manual lifecycle checks | yes | 0 | n/a |
+| rebase | targeted lifecycle/doctor/remove/init-tools suites + push-hook `check`/`type-check`/`test` after rebase reconciliation | yes | 0 | n/a |
+| review-v2 receive | review artifact parsing + plan/implementation/state bookkeeping (no code changes) | yes | 0 | n/a |
 
 ## Final Summary (for PR/docs)
 
@@ -720,6 +818,9 @@ Track test execution during implementation.
 - `pnpm --filter @oat/cli test -- --run` (pass)
 - `pnpm build && pnpm test` (pass)
 - `pnpm lint && pnpm type-check` (pass)
+- Post-rebase reconciliation verification (pass):
+  - targeted lifecycle overlap suites (`doctor`, `init-tools`, `remove`, validation/frontmatter/version`)
+  - push-hook workspace checks during `git push` (`pnpm check`, `pnpm type-check`, `pnpm test`)
 - Manual lifecycle checks in temp repo:
   - init tools outdated reporting (pass)
   - init tools TTY outdated prompt (pass)
