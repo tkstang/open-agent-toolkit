@@ -1,4 +1,11 @@
-import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import {
+  mkdir,
+  mkdtemp,
+  readdir,
+  readFile,
+  rm,
+  writeFile,
+} from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -539,5 +546,29 @@ describe('validateOatSkills', () => {
       const match = content.match(/^version:\s*(.+)$/m);
       expect(match?.[1]?.trim()).toMatch(/^\d+\.\d+\.\d+$/);
     }
+  });
+
+  it('requires all repo skill files to include valid semver versions', async () => {
+    const repoRoot = join(process.cwd(), '..', '..');
+    const skillsRoot = join(repoRoot, '.agents', 'skills');
+    const entries = await readdir(skillsRoot, { withFileTypes: true });
+    const skillDirs = entries
+      .filter((entry) => entry.isDirectory() && !entry.name.startsWith('.'))
+      .map((entry) => entry.name)
+      .sort();
+
+    expect(skillDirs.length).toBeGreaterThan(0);
+
+    const invalidVersions: string[] = [];
+    for (const skillName of skillDirs) {
+      const skillPath = join(skillsRoot, skillName, 'SKILL.md');
+      const content = await readFile(skillPath, 'utf8');
+      const version = content.match(/^version:\s*(.+)$/m)?.[1]?.trim();
+      if (!version || !/^\d+\.\d+\.\d+$/.test(version)) {
+        invalidVersions.push(`${skillName}: ${version ?? '<missing>'}`);
+      }
+    }
+
+    expect(invalidVersions).toEqual([]);
   });
 });
