@@ -151,7 +151,14 @@ If `IS_SHARED_PROJECT` is `true`, ask user:
 If user approves:
 
 ```bash
-MAIN_REPO_ARCHIVE="/Users/thomas.stang/Code/open-agent-toolkit/.oat/projects/archived"
+MAIN_WORKTREE_PATH=$(git worktree list --porcelain 2>/dev/null | awk '
+  /^worktree / { wt=$2 }
+  /^branch refs\\/heads\\/main$/ { print wt; exit }
+')
+MAIN_REPO_ARCHIVE=""
+if [[ -n "$MAIN_WORKTREE_PATH" ]]; then
+  MAIN_REPO_ARCHIVE="${MAIN_WORKTREE_PATH}/.oat/projects/archived"
+fi
 LOCAL_ARCHIVED_ROOT=".oat/projects/archived"
 USE_MAIN_REPO_ARCHIVE="false"
 
@@ -193,6 +200,7 @@ echo "Project archived to $ARCHIVE_PATH"
 - If running in a worktree and `MAIN_REPO_ARCHIVE` is unavailable, do not silently continue with a local-only archive.
 - Ask the user explicitly: "Main repo archive path is unavailable, so this archive may be lost when the worktree is deleted. Continue with local-only archive anyway?"
 - If the user declines, skip archiving and continue the completion flow without archive.
+- If your repository does not use `main` as the default branch, use `git worktree list --porcelain` to identify the primary worktree path by another stable rule (for example the non-ephemeral root checkout), then append `/.oat/projects/archived`.
 
 **Git handling after archive:**
 
@@ -211,13 +219,18 @@ If running from a git worktree, the primary repo archive directory is the canoni
 Reference path:
 
 ```bash
-MAIN_REPO_ARCHIVE="/Users/thomas.stang/Code/open-agent-toolkit/.oat/projects/archived"
+MAIN_WORKTREE_PATH=$(git worktree list --porcelain | awk '
+  /^worktree / { wt=$2 }
+  /^branch refs\\/heads\\/main$/ { print wt; exit }
+')
+MAIN_REPO_ARCHIVE="${MAIN_WORKTREE_PATH}/.oat/projects/archived"
 ```
 
 Guidance:
 - In a worktree, prefer moving directly to `MAIN_REPO_ARCHIVE` instead of archiving locally and copying later.
 - Do not treat the worktree-local archive as durable.
 - If forced to use a local-only archive, warn and require explicit user confirmation.
+- Do not hardcode user-specific absolute paths.
 
 ### Step 7: Offer to Clear Active Project
 
