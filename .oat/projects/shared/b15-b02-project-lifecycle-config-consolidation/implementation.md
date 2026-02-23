@@ -1,6 +1,6 @@
 ---
-oat_status: in_progress
-oat_ready_for: null
+oat_status: complete
+oat_ready_for: oat-project-pr-final
 oat_blockers: []
 oat_last_updated: 2026-02-23
 oat_current_task_id: null
@@ -18,7 +18,7 @@ oat_generated: false
 
 - Next task: `null`
 - Plan source: `plan.md` (imported)
-- Status: Review-fix tasks complete; awaiting final re-review
+- Status: Final re-review passed; ready for PR generation
 
 ## Progress Overview
 
@@ -176,7 +176,35 @@ oat_generated: false
 - `m2` -> deferred (documented rationale)
 - `m3` -> deferred (documented rationale)
 
-**Next:** Review-fix tasks are complete and marked `fixes_completed`. Run `oat-project-review-provide code final`, then `oat-project-review-receive` to confirm `passed`.
+**Next:** Completed in the 2026-02-23 re-review cycle (`reviews/final-review-2026-02-23.md`), with final status now `passed`.
+
+### Review Received: final (re-review)
+
+**Date:** 2026-02-23
+**Review artifact:** reviews/final-review-2026-02-23.md
+
+**Findings:**
+- Critical: 0
+- Important: 0
+- Medium: 0
+- Minor: 0
+
+**New tasks added:** none
+
+**Deferred Findings (Medium):**
+- None
+
+**Deferred Findings (Minor carry-forward):**
+- `m2` retained as deferred with prior documented rationale.
+- `m3` retained as deferred with prior documented rationale.
+
+**Finding disposition map:**
+- `m2` -> deferred (accepted carry-forward; prior rationale retained)
+- `m3` -> deferred (accepted carry-forward; prior rationale retained)
+
+**Review cycle:** 2 of 3 (`final`)
+
+**Next:** Final review is now `passed`. Run `oat-project-pr-final` to generate the lifecycle PR description.
 
 ---
 
@@ -203,7 +231,7 @@ oat_generated: false
 - Delivered project lifecycle CLI behavior (`oat project open` / `oat project pause`) with pause/resume semantics and dashboard guidance.
 - Removed legacy pointer fallback logic from migrated command paths and simplified legacy skill wrappers to command delegation.
 - Added formal decision records (ADR-012, ADR-013) and captured follow-up backlog scope for active-idea migration.
-- Implemented final review-fix follow-ups (docs consistency, shared helper extraction, and config unknown-key regression coverage) and advanced review state to `fixes_completed`.
+- Implemented final review-fix follow-ups (docs consistency, shared helper extraction, and config unknown-key regression coverage), then passed final re-review.
 - Verification performed:
   - `pnpm --filter @oat/cli test`
   - `pnpm build`
