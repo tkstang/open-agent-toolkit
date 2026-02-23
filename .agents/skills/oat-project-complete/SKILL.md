@@ -146,11 +146,36 @@ esac
 
 If `IS_SHARED_PROJECT` is `true`, ask user:
 
-"This is a shared project. Move it to `.oat/projects/archived/` now?"
+"This is a shared project. Archive it now?"
 
 If user approves:
 
 ```bash
+MAIN_REPO_ARCHIVE="/Users/thomas.stang/Code/open-agent-toolkit/.oat/projects/archived"
+LOCAL_ARCHIVED_ROOT=".oat/projects/archived"
+USE_MAIN_REPO_ARCHIVE="false"
+
+# Heuristic: if this checkout is a worktree and the main repo archive parent exists,
+# use the main repo archive as the canonical archive destination.
+if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then
+  GIT_COMMON_DIR=$(git rev-parse --git-common-dir 2>/dev/null || true)
+  GIT_DIR=$(git rev-parse --git-dir 2>/dev/null || true)
+  if [[ -n "$GIT_COMMON_DIR" && -n "$GIT_DIR" && "$GIT_COMMON_DIR" != "$GIT_DIR" ]]; then
+    if [[ -d "$(dirname "$MAIN_REPO_ARCHIVE")" ]]; then
+      USE_MAIN_REPO_ARCHIVE="true"
+      ARCHIVED_ROOT="$MAIN_REPO_ARCHIVE"
+    else
+      echo "Warning: Running in a worktree, but main repo archive path is unavailable: $MAIN_REPO_ARCHIVE"
+      echo "A worktree-local archive may be deleted when the worktree is removed and is not a durable archive."
+      echo "Require explicit confirmation before proceeding with local-only archive."
+    fi
+  fi
+fi
+
+if [[ "$USE_MAIN_REPO_ARCHIVE" != "true" ]]; then
+  ARCHIVED_ROOT="$LOCAL_ARCHIVED_ROOT"
+fi
+
 mkdir -p "$ARCHIVED_ROOT"
 ARCHIVE_PATH="${ARCHIVED_ROOT}/${PROJECT_NAME}"
 
@@ -162,6 +187,12 @@ mv "$PROJECT_PATH" "$ARCHIVE_PATH"
 PROJECT_PATH="$ARCHIVE_PATH"
 echo "Project archived to $ARCHIVE_PATH"
 ```
+
+**Worktree durability guard (required):**
+
+- If running in a worktree and `MAIN_REPO_ARCHIVE` is unavailable, do not silently continue with a local-only archive.
+- Ask the user explicitly: "Main repo archive path is unavailable, so this archive may be lost when the worktree is deleted. Continue with local-only archive anyway?"
+- If the user declines, skip archiving and continue the completion flow without archive.
 
 **Git handling after archive:**
 
@@ -175,23 +206,18 @@ This stages the deletions from the shared directory. The archived copy is preser
 
 **Worktree archive target (required when available):**
 
-If running from a git worktree, the canonical archive destination should be the primary repo archive directory (not only the worktree-local `.oat/projects/archived`, which may be deleted with the worktree).
+If running from a git worktree, the primary repo archive directory is the canonical/durable archive destination.
 
-Use the main repo archive path when it is accessible:
+Reference path:
 
 ```bash
 MAIN_REPO_ARCHIVE="/Users/thomas.stang/Code/open-agent-toolkit/.oat/projects/archived"
-
-if [[ -d "$(dirname "$MAIN_REPO_ARCHIVE")" ]]; then
-  mkdir -p "$MAIN_REPO_ARCHIVE"
-  cp -R "$ARCHIVE_PATH" "$MAIN_REPO_ARCHIVE/"
-fi
 ```
 
 Guidance:
-- In a worktree, do not treat the worktree-local archive as the only archive copy.
-- The main repo archive copy is the durable archive of record.
-- Report both paths to the user when both copies exist.
+- In a worktree, prefer moving directly to `MAIN_REPO_ARCHIVE` instead of archiving locally and copying later.
+- Do not treat the worktree-local archive as durable.
+- If forced to use a local-only archive, warn and require explicit user confirmation.
 
 ### Step 7: Offer to Clear Active Project
 
