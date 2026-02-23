@@ -51,6 +51,7 @@ interface DoctorDependencies {
   checkSkillVersions: (
     scopeRoot: string,
     assetsRoot: string,
+    pathExists: (path: string) => Promise<boolean>,
   ) => Promise<SkillVersionReport>;
 }
 
@@ -117,6 +118,7 @@ async function checkProvidersDefault(
 async function checkSkillVersionsDefault(
   scopeRoot: string,
   assetsRoot: string,
+  pathExists: (path: string) => Promise<boolean>,
 ): Promise<SkillVersionReport> {
   const installedSkillsRoot = join(scopeRoot, '.agents', 'skills');
   const entries = await readdir(installedSkillsRoot, {
@@ -142,7 +144,7 @@ async function checkSkillVersionsDefault(
   for (const skillName of skillNames) {
     const installedSkillDir = join(installedSkillsRoot, skillName);
     const bundledSkillDir = join(assetsRoot, 'skills', skillName);
-    const bundledExists = await pathExistsDefault(bundledSkillDir);
+    const bundledExists = await pathExists(bundledSkillDir);
     if (!bundledExists) {
       skippedMissingBundledCount += 1;
       continue;
@@ -194,9 +196,9 @@ function createDependencies(): DoctorDependencies {
     checkSymlinkSupport: checkSymlinkSupportDefault,
     checkProviders: checkProvidersDefault,
     readFile: async (path) => readFile(path, 'utf8'),
-    readFile: async (path) => readFile(path, 'utf8'),
     resolveAssetsRoot,
-    checkSkillVersions: checkSkillVersionsDefault,
+    checkSkillVersions: (scopeRoot, assetsRoot) =>
+      checkSkillVersionsDefault(scopeRoot, assetsRoot, pathExistsDefault),
   };
 }
 
@@ -291,12 +293,14 @@ async function runChecksForScope(
         : 'Install or enable a provider directory (e.g. .claude, .cursor, .codex).',
   });
 
+<<<<<<< HEAD
   if (scope === 'project') {
     try {
       const assetsRoot = await dependencies.resolveAssetsRoot();
       const skillVersions = await dependencies.checkSkillVersions(
         scopeRoot,
         assetsRoot,
+        dependencies.pathExists,
       );
       if (skillVersions.outdatedSkills.length > 0) {
         checks.push({
@@ -331,6 +335,16 @@ async function runChecksForScope(
         });
       }
     } catch (error) {
+=======
+  try {
+    const assetsRoot = await dependencies.resolveAssetsRoot();
+    const skillVersions = await dependencies.checkSkillVersions(
+      scopeRoot,
+      assetsRoot,
+      dependencies.pathExists,
+    );
+    if (skillVersions.outdatedSkills.length > 0) {
+>>>>>>> 273a845 (fix(p04-t04): use DI path checks in doctor skill version scan)
       checks.push({
         name: `${scope}:skill_versions`,
         description: 'Installed skill version parity with bundled assets',

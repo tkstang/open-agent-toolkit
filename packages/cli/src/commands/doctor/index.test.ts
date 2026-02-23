@@ -25,6 +25,19 @@ interface HarnessOptions {
       bundledVersion: string;
     }>;
   };
+  checkSkillVersionsOverride?: (
+    scopeRoot: string,
+    assetsRoot: string,
+    pathExists: (path: string) => Promise<boolean>,
+  ) => Promise<{
+    installedSkillCount: number;
+    skippedMissingBundledCount: number;
+    outdatedSkills: Array<{
+      skill: string;
+      installedVersion: string;
+      bundledVersion: string;
+    }>;
+  }>;
   providers?: Array<{
     name: string;
     detected: boolean;
@@ -48,6 +61,7 @@ function defaultManifest(): Manifest {
 function createHarness(options: HarnessOptions = {}): {
   capture: LoggerCapture;
   command: Command;
+  checkSkillVersions: ReturnType<typeof vi.fn>;
 } {
   const capture = createLoggerCapture();
   const scope = options.scope ?? 'project';
@@ -63,6 +77,28 @@ function createHarness(options: HarnessOptions = {}): {
   const fileContents = {
     ...(options.fileContents ?? {}),
   };
+  const checkSkillVersions = vi.fn(
+    async (
+      scopeRoot: string,
+      assetsRoot: string,
+      pathExistsFn: (path: string) => Promise<boolean>,
+    ) => {
+      if (options.checkSkillVersionsOverride) {
+        return options.checkSkillVersionsOverride(
+          scopeRoot,
+          assetsRoot,
+          pathExistsFn,
+        );
+      }
+      return (
+        options.skillVersions ?? {
+          installedSkillCount: 0,
+          skippedMissingBundledCount: 0,
+          outdatedSkills: [],
+        }
+      );
+    },
+  );
   const command = createDoctorCommand({
     buildCommandContext: (globalOptions: GlobalOptions): CommandContext => ({
       scope: (globalOptions.scope ?? scope) as Scope,
@@ -106,18 +142,10 @@ function createHarness(options: HarnessOptions = {}): {
       }
       return '/tmp/assets';
     }),
-    checkSkillVersions: vi.fn(async () => {
-      return (
-        options.skillVersions ?? {
-          installedSkillCount: 0,
-          skippedMissingBundledCount: 0,
-          outdatedSkills: [],
-        }
-      );
-    }),
+    checkSkillVersions,
   });
 
-  return { capture, command };
+  return { capture, command, checkSkillVersions };
 }
 
 async function runDoctor(
@@ -246,6 +274,36 @@ describe('createDoctorCommand', () => {
     await runDoctor(command);
 
     expect(capture.info[0]).toContain('Skipped 1 skill(s)');
+  });
+
+  it('threads dependency pathExists into skill version checks', async () => {
+    const { command, capture, checkSkillVersions } = createHarness({
+      pathExists: {
+        '/tmp/workspace/.agents/skills': true,
+        '/tmp/workspace/.agents/agents': true,
+        '/tmp/workspace/.oat/sync/manifest.json': true,
+        '/tmp/assets/skills/oat-demo': true,
+      },
+      checkSkillVersionsOverride: async (
+        _scopeRoot,
+        _assetsRoot,
+        pathExists,
+      ) => {
+        const exists = await pathExists('/tmp/assets/skills/oat-demo');
+        return {
+          installedSkillCount: exists ? 1 : 0,
+          skippedMissingBundledCount: 0,
+          outdatedSkills: [],
+        };
+      },
+    });
+
+    await runDoctor(command);
+
+    expect(checkSkillVersions).toHaveBeenCalled();
+    expect(capture.info[0]).toContain(
+      'All installed skill versions are current',
+    );
   });
 
   it('reports pass/warn/fail with fix suggestions', async () => {
