@@ -17,6 +17,7 @@ describe('version utilities', () => {
       expect(parseVersion('1.2')).toEqual([0, 0, 0]);
       expect(parseVersion('1.2.3.4')).toEqual([0, 0, 0]);
       expect(parseVersion('1.x.3')).toEqual([0, 0, 0]);
+      expect(parseVersion('-1.2.3')).toEqual([0, 0, 0]);
     });
   });
 

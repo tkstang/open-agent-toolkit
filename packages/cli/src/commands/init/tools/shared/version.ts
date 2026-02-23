@@ -9,7 +9,7 @@ export function parseVersion(version: string | null): [number, number, number] {
   }
 
   const parsed = parts.map((part) => Number.parseInt(part, 10));
-  if (parsed.some((part) => Number.isNaN(part))) {
+  if (parsed.some((part) => Number.isNaN(part) || part < 0)) {
     return [0, 0, 0];
   }
 
