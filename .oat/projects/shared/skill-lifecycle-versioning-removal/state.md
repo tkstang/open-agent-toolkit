@@ -68,4 +68,4 @@ None
 
 ## Next Milestone
 
-Run `oat-project-pr-final`.
+Run `oat-project-complete`.
