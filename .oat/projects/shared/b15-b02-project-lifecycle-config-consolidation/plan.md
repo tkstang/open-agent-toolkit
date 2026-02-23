@@ -804,7 +804,7 @@ git commit -m "docs(p12-t05): align subagent-implement active project docs"
 | p09 | code | pending | - | - |
 | p10 | code | pending | - | - |
 | p11 | code | pending | - | - |
-| final | code | fixes_completed | 2026-02-23 | reviews/final-review-2026-02-22.md |
+| final | code | passed | 2026-02-23 | reviews/final-review-2026-02-23.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
