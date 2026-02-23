@@ -564,6 +564,183 @@ git commit -m "chore(p04-t02): complete lifecycle feature verification"
 
 ---
 
+### Task p04-t03: (review) Document `getSkillVersion` missing-file contract
+
+**Files:**
+- Modify: `packages/cli/src/commands/shared/frontmatter.ts`
+- Modify: `packages/cli/src/commands/shared/frontmatter.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `getSkillVersion` implicitly relies on `parseFrontmatterField` returning empty string on read failure.
+Location: `packages/cli/src/commands/shared/frontmatter.ts:36`
+
+**Step 2: Implement fix**
+
+Add inline documentation and test coverage that codifies the missing/unreadable `SKILL.md` behavior as a safe `null` return contract.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/shared/frontmatter.test.ts`
+Expected: Contract coverage passes and behavior remains backward-compatible.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/shared/frontmatter.ts packages/cli/src/commands/shared/frontmatter.test.ts
+git commit -m "fix(p04-t03): document getSkillVersion read-failure contract"
+```
+
+---
+
+### Task p04-t04: (review) Align doctor bundled-skill existence checks with DI
+
+**Files:**
+- Modify: `packages/cli/src/commands/doctor/index.ts`
+- Modify: `packages/cli/src/commands/doctor/index.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: default doctor skill-version logic bypasses dependency-injected existence checks.
+Location: `packages/cli/src/commands/doctor/index.ts:136`
+
+**Step 2: Implement fix**
+
+Refactor `checkSkillVersionsDefault` to use dependency-injected path checks (or equivalent injected helper) so behavior is consistent with the command’s DI contract.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/doctor/index.test.ts`
+Expected: Existing and added DI contract checks pass.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/doctor/index.ts packages/cli/src/commands/doctor/index.test.ts
+git commit -m "fix(p04-t04): use DI path checks in doctor skill version scan"
+```
+
+---
+
+### Task p04-t05: (review) Add JSON success payloads for `oat remove skill`
+
+**Files:**
+- Modify: `packages/cli/src/commands/remove/skill/remove-skill.ts`
+- Modify: `packages/cli/src/commands/remove/skill/remove-skill.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: JSON mode emits payload only for `not_found`; successful dry-run/apply paths return no structured JSON.
+Location: `packages/cli/src/commands/remove/skill/remove-skill.ts:290-302`
+
+**Step 2: Implement fix**
+
+Emit structured JSON payloads for successful dry-run and apply execution paths while preserving existing text output behavior for non-JSON mode.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/remove/skill/remove-skill.test.ts packages/cli/src/commands/remove/skills/remove-skills.test.ts`
+Expected: JSON success-path assertions pass and existing remove behavior remains stable.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/remove/skill/remove-skill.ts packages/cli/src/commands/remove/skill/remove-skill.test.ts packages/cli/src/commands/remove/skills/remove-skills.test.ts
+git commit -m "fix(p04-t05): emit JSON success payloads for remove skill"
+```
+
+---
+
+### Task p04-t06: (review) Unify frontmatter block parsing in validation
+
+**Files:**
+- Modify: `packages/cli/src/validation/skills.ts`
+- Modify: `packages/cli/src/validation/skills.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: frontmatter parsing regex differs between validation and shared parser helpers.
+Location: `packages/cli/src/validation/skills.ts:23-25`
+
+**Step 2: Implement fix**
+
+Reuse shared frontmatter block parsing logic (or equivalent normalized behavior) in validation so parser behavior is consistent across modules.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/validation/skills.test.ts`
+Expected: Validation behavior remains correct and newline-edge parsing stays consistent.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/validation/skills.ts packages/cli/src/validation/skills.test.ts
+git commit -m "fix(p04-t06): unify frontmatter parsing behavior in validation"
+```
+
+---
+
+### Task p04-t07: (review) Guard version parser against negative segments
+
+**Files:**
+- Modify: `packages/cli/src/commands/init/tools/shared/version.ts`
+- Modify: `packages/cli/src/commands/init/tools/shared/version.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: version parsing accepts negative numeric segments defensively.
+Location: `packages/cli/src/commands/init/tools/shared/version.ts:12`
+
+**Step 2: Implement fix**
+
+Add guard logic so negative segments are treated as invalid and normalized to `0.0.0`, with explicit regression tests.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/init/tools/shared/version.test.ts`
+Expected: Negative-segment cases fail before fix and pass after fix.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/shared/version.ts packages/cli/src/commands/init/tools/shared/version.test.ts
+git commit -m "fix(p04-t07): reject negative semver segments in parser"
+```
+
+---
+
+### Task p04-t08: (review) Improve unversioned outdated display clarity
+
+**Files:**
+- Modify: `packages/cli/src/commands/init/tools/index.ts`
+- Modify: `packages/cli/src/commands/init/tools/workflows/install-workflows.ts`
+- Modify: `packages/cli/src/commands/init/tools/ideas/install-ideas.ts`
+- Modify: `packages/cli/src/commands/init/tools/utility/install-utility.ts`
+- Modify: relevant tests under `packages/cli/src/commands/init/tools/**`
+
+**Step 1: Understand the issue**
+
+Review finding: outdated reporting uses fallback `0.0.0` display, which can be unclear for unversioned skills.
+Location: `packages/cli/src/commands/init/tools/workflows/install-workflows.ts:112`
+
+**Step 2: Implement fix**
+
+Keep comparison semantics unchanged while improving user-facing output to represent missing versions explicitly (e.g., `(unversioned)`), with deterministic prompt/report text.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/init/tools/index.test.ts packages/cli/src/commands/init/tools/workflows/install-workflows.test.ts packages/cli/src/commands/init/tools/ideas/install-ideas.test.ts packages/cli/src/commands/init/tools/utility/install-utility.test.ts`
+Expected: Updated display behavior is covered and stable across packs.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/index.ts packages/cli/src/commands/init/tools/workflows/install-workflows.ts packages/cli/src/commands/init/tools/ideas/install-ideas.ts packages/cli/src/commands/init/tools/utility/install-utility.ts packages/cli/src/commands/init/tools/index.test.ts packages/cli/src/commands/init/tools/workflows/install-workflows.test.ts packages/cli/src/commands/init/tools/ideas/install-ideas.test.ts packages/cli/src/commands/init/tools/utility/install-utility.test.ts
+git commit -m "fix(p04-t08): clarify unversioned outdated skill display"
+```
+
+---
+
 ## Reviews
 
 Track reviews here after running the `oat-project-review-provide` and `oat-project-review-receive` skills.
@@ -574,7 +751,7 @@ Track reviews here after running the `oat-project-review-provide` and `oat-proje
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
-| final | code | received | 2026-02-22 | reviews/final-review-2026-02-22.md |
+| final | code | fixes_added | 2026-02-23 | reviews/final-review-2026-02-22.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
@@ -588,9 +765,9 @@ Track reviews here after running the `oat-project-review-provide` and `oat-proje
 - Phase 1: 3 tasks - Add version metadata parsing, validation, utility functions, and bundled skill version frontmatter.
 - Phase 2: 3 tasks - Make `oat init tools` version-aware with interactive outdated-update selection and non-interactive report-only behavior.
 - Phase 3: 4 tasks - Add full `oat remove` lifecycle commands (single + pack) with scope-aware, manifest-safe cleanup and hardened tests.
-- Phase 4: 2 tasks - Integrate outdated-skill diagnostics into `oat doctor` and complete end-to-end regression verification.
+- Phase 4: 8 tasks - Integrate outdated-skill diagnostics into `oat doctor`, complete end-to-end regression verification, and close final review findings.
 
-**Total: 12 tasks**
+**Total: 18 tasks**
 
 Ready for implementation execution.
 

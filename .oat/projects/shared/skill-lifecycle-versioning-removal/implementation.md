@@ -1,16 +1,16 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
-oat_last_updated: 2026-02-22
-oat_current_task_id: null
+oat_last_updated: 2026-02-23
+oat_current_task_id: p04-t03
 oat_generated: false
 ---
 
 # Implementation: skill-lifecycle-versioning-removal
 
 **Started:** 2026-02-21
-**Last Updated:** 2026-02-22
+**Last Updated:** 2026-02-23
 
 > This document is used to resume interrupted implementation sessions.
 >
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1 | complete | 3 | 3/3 |
 | Phase 2 | complete | 3 | 3/3 |
 | Phase 3 | complete | 4 | 4/4 |
-| Phase 4 | complete | 2 | 2/2 |
+| Phase 4 | in_progress | 8 | 2/8 |
 
-**Total:** 12/12 tasks completed
+**Total:** 12/18 tasks completed
 
 ---
 
@@ -345,7 +345,7 @@ oat_generated: false
 
 ## Phase 4: Doctor Integration and End-to-End Validation
 
-**Status:** complete
+**Status:** in_progress
 **Started:** 2026-02-22
 
 ### Phase Summary
@@ -425,6 +425,63 @@ oat_generated: false
 **Notes / Decisions:**
 - Used an empty commit to preserve one-commit-per-task traceability for this verification-only phase task.
 
+---
+
+### Task p04-t03: (review) Document `getSkillVersion` missing-file contract
+
+**Status:** pending
+**Commit:** -
+
+### Task p04-t04: (review) Align doctor bundled-skill existence checks with DI
+
+**Status:** pending
+**Commit:** -
+
+### Task p04-t05: (review) Add JSON success payloads for `oat remove skill`
+
+**Status:** pending
+**Commit:** -
+
+### Task p04-t06: (review) Unify frontmatter block parsing in validation
+
+**Status:** pending
+**Commit:** -
+
+### Task p04-t07: (review) Guard version parser against negative segments
+
+**Status:** pending
+**Commit:** -
+
+### Task p04-t08: (review) Improve unversioned outdated display clarity
+
+**Status:** pending
+**Commit:** -
+
+### Review Received: final
+
+**Date:** 2026-02-23
+**Review artifact:** `reviews/final-review-2026-02-22.md`
+
+**Findings:**
+- Critical: 0
+- Important: 3 (`I1`, `I2`, `I3`)
+- Medium: 0
+- Minor: 4 (`m1`, `m2`, `m3`, `m4`)
+
+**New tasks added:** `p04-t03`, `p04-t04`, `p04-t05`, `p04-t06`, `p04-t07`, `p04-t08`
+
+**Deferred Findings (Minor):**
+- `m2` (`remove-skill.test.ts` missing `getSkillVersion` failure-path test) — deferred because `remove` is intentionally version-agnostic and does not call `getSkillVersion`; no behavior gap to close in this scope.
+
+**Deferred Findings (Medium):**
+- None
+
+**Next:** Execute review fix tasks via the `oat-project-implement` skill, starting at `p04-t03`.
+
+After the fix tasks are complete:
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+
 ## Orchestration Runs
 
 > This section is used by `oat-project-subagent-implement` to log parallel execution runs.
@@ -501,6 +558,31 @@ Chronological log of implementation progress.
 - None.
 
 **Session End:** 19:16
+
+---
+
+### 2026-02-23
+
+**Session Start:** 09:20
+
+- [x] Received final review artifact `reviews/final-review-2026-02-22.md`
+- [x] Converted findings `I1`, `I2`, `I3`, `m1`, `m3`, `m4` into review-fix tasks
+- [x] Deferred minor finding `m2` with rationale
+- [ ] Execute review-fix implementation tasks (`p04-t03` ... `p04-t08`)
+
+**What changed (high level):**
+- Added six review-generated implementation tasks to the Phase 4 plan.
+- Moved final review status to `fixes_added` and reset implementation to in-progress.
+- Repointed resume cursor to first fix task (`p04-t03`) for restart safety.
+
+**Decisions:**
+- Convert selected minors (`m1`, `m3`, `m4`) to implementation tasks now.
+- Keep `m2` deferred because it does not represent a behavioral gap in a version-agnostic remove flow.
+
+**Blockers:**
+- None.
+
+**Session End:** 09:24
 
 ---
 
