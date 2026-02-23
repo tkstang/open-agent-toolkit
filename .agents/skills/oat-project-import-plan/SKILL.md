@@ -176,7 +176,7 @@ oat config set activeProject "$PROJECT_PATH"
 oat state refresh
 ```
 
-If `.oat/active-project` already exists with a different path, treat this as a project switch and note it in output.
+If `activeProject` in local config already exists with a different path, treat this as a project switch and note it in output.
 
 ### Step 6: Ensure Implementation Artifact Exists
 
@@ -204,5 +204,5 @@ Report:
 - ✅ `plan.md` metadata marks `oat_plan_source: imported`.
 - ✅ `state.md` marks `oat_workflow_mode: import`.
 - ✅ `implementation.md` is present and resumable.
-- ✅ `.oat/active-project` points to the imported project.
+- ✅ `activeProject` in `.oat/config.local.json` points to the imported project.
 - ✅ `.oat/state.md` has been refreshed after pointer update.

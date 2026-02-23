@@ -99,7 +99,7 @@ Consider running the oat-repo-knowledge-index skill to refresh.
 
 ### Step 3: List Projects (Highlight Active Project)
 
-OAT stores the active project path in `.oat/active-project` (single line, local-only).
+OAT stores active project context in `.oat/config.local.json` (`activeProject`, local-only).
 
 ```bash
 ACTIVE_PROJECT_PATH=$(oat config get activeProject 2>/dev/null || true)

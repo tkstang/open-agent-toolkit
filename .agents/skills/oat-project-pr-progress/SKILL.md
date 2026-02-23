@@ -20,7 +20,7 @@ Generate a PR-ready summary that is:
 ## Prerequisites
 
 **Required:**
-- `.oat/active-project` points at an active project directory (or you can provide project name when prompted)
+- `activeProject` in `.oat/config.local.json` points at an active project directory (or you can provide project name when prompted)
 - `{PROJECT_PATH}/plan.md` exists
 
 **Recommended:**
@@ -78,7 +78,7 @@ Run the `oat-project-pr-progress` skill and it will ask:
 
 ### Step 0: Resolve Active Project
 
-OAT stores the active project path in `.oat/active-project` (single line, local-only).
+OAT stores active project context in `.oat/config.local.json` (`activeProject`, local-only).
 
 ```bash
 PROJECT_PATH=$(oat config get activeProject 2>/dev/null || true)

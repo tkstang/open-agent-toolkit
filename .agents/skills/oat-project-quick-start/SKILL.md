@@ -77,7 +77,7 @@ oat project new "{project-name}" --mode quick
 
 This guarantees:
 - standard artifact scaffolding from `.oat/templates/`
-- `.oat/active-project` pointer update
+- `activeProject` update in `.oat/config.local.json`
 - repo dashboard refresh (`.oat/state.md`) via existing scaffolder behavior
 
 ### Step 1: Set Quick Workflow Metadata

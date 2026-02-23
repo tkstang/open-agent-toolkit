@@ -34,7 +34,7 @@ When executing this skill, provide lightweight progress feedback so the user can
 
 ### Step 0: Resolve Active Project
 
-OAT stores the active project path in `.oat/active-project` (single line, local-only).
+OAT stores active project context in `.oat/config.local.json` (`activeProject`, local-only).
 
 ```bash
 PROJECT_PATH=$(oat config get activeProject 2>/dev/null || true)

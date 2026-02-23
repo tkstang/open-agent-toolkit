@@ -20,7 +20,7 @@ Generate a PR-ready summary grounded in canonical OAT artifacts, including:
 ## Prerequisites
 
 **Required:**
-- `.oat/active-project` points at an active project directory (or you can provide project name when prompted)
+- `activeProject` in `.oat/config.local.json` points at an active project directory (or you can provide project name when prompted)
 - `{PROJECT_PATH}/plan.md` exists
 - In `spec-driven` mode: `{PROJECT_PATH}/spec.md` and `{PROJECT_PATH}/design.md` are required
 - In `quick`/`import` mode: `spec.md`/`design.md` are optional
@@ -80,7 +80,7 @@ Run the `oat-project-pr-final` skill and it will ask for:
 
 ### Step 0: Resolve Active Project
 
-OAT stores the active project path in `.oat/active-project` (single line, local-only).
+OAT stores active project context in `.oat/config.local.json` (`activeProject`, local-only).
 
 ```bash
 PROJECT_PATH=$(oat config get activeProject 2>/dev/null || true)
