@@ -2,23 +2,23 @@
 oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
-oat_last_updated: 2026-02-22
-oat_current_task_id: p12-t01
+oat_last_updated: 2026-02-23
+oat_current_task_id: null
 oat_generated: false
 ---
 
 # Implementation: b15-b02-project-lifecycle-config-consolidation
 
 **Started:** 2026-02-21
-**Last Updated:** 2026-02-22
+**Last Updated:** 2026-02-23
 
 > Plan phase checkpoint config: `oat_plan_hill_phases: ["p10"]`.
 
 ## Current Pointer
 
-- Next task: `p12-t01`
+- Next task: `null`
 - Plan source: `plan.md` (imported)
-- Status: Review fix tasks added; awaiting implementation of review fixes
+- Status: Review-fix tasks complete; awaiting final re-review
 
 ## Progress Overview
 
@@ -35,9 +35,9 @@ oat_generated: false
 | Phase 9 | completed | 1 | 1/1 |
 | Phase 10 | completed | 1 | 1/1 |
 | Phase 11 | completed | 2 | 2/2 |
-| Phase 12 | in_progress | 5 | 0/5 |
+| Phase 12 | completed | 5 | 5/5 |
 
-**Total:** 14/19 tasks completed
+**Total:** 19/19 tasks completed
 
 ---
 
@@ -57,11 +57,11 @@ oat_generated: false
 - [x] `p10-t01` Remove legacy pointer fallbacks (`14cfdc2`)
 - [x] `p11-t01` Add ADR-012 and ADR-013 decision records (`80b500f`)
 - [x] `p11-t02` Execute full verification + follow-up capture (`1073192`)
-- [ ] `p12-t01` (review) Update stale active-project storage documentation across project skills
-- [ ] `p12-t02` (review) Update create-oat-skill projects-root resolution documentation
-- [ ] `p12-t03` (review) Extract removeFrontmatterField into shared frontmatter utilities
-- [ ] `p12-t04` (review) Add regression test for unknown oat config get key handling
-- [ ] `p12-t05` (review) Update subagent-implement active-project documentation reference
+- [x] `p12-t01` (review) Update stale active-project storage documentation across project skills (`a84cf20`)
+- [x] `p12-t02` (review) Update create-oat-skill projects-root resolution documentation (`02d475d`)
+- [x] `p12-t03` (review) Extract removeFrontmatterField into shared frontmatter utilities (`d13cf60`)
+- [x] `p12-t04` (review) Add regression test for unknown oat config get key handling (`a8bcc53`)
+- [x] `p12-t05` (review) Update subagent-implement active-project documentation reference (`b200074`)
 
 ---
 
@@ -113,7 +113,7 @@ oat_generated: false
 
 ### Phase 12: Review Fixes from Final Code Review
 
-**Outcome:** Pending implementation. Converted final review findings into five fix tasks (`p12-t01`..`p12-t05`) with selected minor coverage (`m1`, `m4`) and deferred minor findings (`m2`, `m3`) recorded with rationale.
+**Outcome:** Completed all five review-fix tasks (`p12-t01`..`p12-t05`), including selected minor coverage (`m1`, `m4`), and updated lifecycle artifacts to `fixes_completed` pending final re-review.
 
 ---
 
@@ -141,6 +141,15 @@ oat_generated: false
 - Completed `p11-t02` with commit `1073192` after full verification and smoke checks.
 - Processed `reviews/final-review-2026-02-22.md` via review-receive; added Phase 12 review-fix tasks.
 
+### 2026-02-23
+
+- Completed `p12-t01` with commit `a84cf20` (doc alignment for config-local active project state across project skills).
+- Completed `p12-t02` with commit `02d475d` (create-oat-skill projects root guidance aligned to `oat config get projects.root`).
+- Completed `p12-t03` with commit `d13cf60` (shared `removeFrontmatterField` extraction and reuse in open/pause commands).
+- Completed `p12-t04` with commit `a8bcc53` (unknown `oat config get` key regression test for exit code and error message).
+- Completed `p12-t05` with commit `b200074` (subagent-implement active project docs aligned to config-local semantics).
+- Updated final review row in `plan.md` to `fixes_completed` and set implementation/state pointers to `null` while awaiting re-review.
+
 ### Review Received: final
 
 **Date:** 2026-02-22
@@ -167,7 +176,7 @@ oat_generated: false
 - `m2` -> deferred (documented rationale)
 - `m3` -> deferred (documented rationale)
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill starting at `p12-t01`. After fixes complete, set review status to `fixes_completed`, then re-run `oat-project-review-provide code final` and `oat-project-review-receive` to reach `passed`.
+**Next:** Review-fix tasks are complete and marked `fixes_completed`. Run `oat-project-review-provide code final`, then `oat-project-review-receive` to confirm `passed`.
 
 ---
 
@@ -186,7 +195,7 @@ oat_generated: false
 | 9 | `pnpm oat:validate-skills` | yes | 0 | n/a |
 | 10 | Focused CLI suites for config/path/new/help/install-workflows | yes | 0 | n/a |
 | 11 | `pnpm --filter @oat/cli test` + `pnpm build` + `pnpm lint` + `pnpm type-check` + smoke checks + `pnpm oat:validate-skills` | yes | 0 | n/a |
-| 12 | Pending review-fix implementation | n/a | n/a | n/a |
+| 12 | `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/project/open/index.test.ts packages/cli/src/commands/project/pause/index.test.ts packages/cli/src/commands/shared/frontmatter-write.test.ts` + `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/config/index.test.ts` + scoped `rg` checks for skill docs | yes | 0 | n/a |
 
 ## Final Summary (for PR/docs)
 
@@ -194,6 +203,7 @@ oat_generated: false
 - Delivered project lifecycle CLI behavior (`oat project open` / `oat project pause`) with pause/resume semantics and dashboard guidance.
 - Removed legacy pointer fallback logic from migrated command paths and simplified legacy skill wrappers to command delegation.
 - Added formal decision records (ADR-012, ADR-013) and captured follow-up backlog scope for active-idea migration.
+- Implemented final review-fix follow-ups (docs consistency, shared helper extraction, and config unknown-key regression coverage) and advanced review state to `fixes_completed`.
 - Verification performed:
   - `pnpm --filter @oat/cli test`
   - `pnpm build`
