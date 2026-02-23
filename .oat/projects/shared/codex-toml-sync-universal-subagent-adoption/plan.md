@@ -892,7 +892,7 @@ git commit -m "refactor(p08-t10): share codex post-adoption regeneration flow"
 | p05 | code | pending | - | - |
 | p06 | code | pending | - | - |
 | p07 | code | pending | - | - |
-| final | code | received | 2026-02-22 | reviews/final-review-2026-02-22.md |
+| final | code | passed | 2026-02-22 | reviews/final-review-2026-02-22.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 | plan | artifact | pending | - | - |
@@ -921,7 +921,7 @@ git commit -m "refactor(p08-t10): share codex post-adoption regeneration flow"
 
 **Total: 22 tasks**
 
-Status: Review fixes implemented; awaiting final re-review.
+Status: Final re-review passed; project ready for PR/finalization.
 
 ---
 
