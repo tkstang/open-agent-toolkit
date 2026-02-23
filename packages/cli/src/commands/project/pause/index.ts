@@ -6,6 +6,7 @@ import { join } from 'node:path';
 import { buildCommandContext, type CommandContext } from '@app/command-context';
 import { getFrontmatterBlock } from '@commands/shared/frontmatter';
 import {
+  removeFrontmatterField,
   replaceFrontmatter,
   upsertFrontmatterField,
 } from '@commands/shared/frontmatter-write';
@@ -67,13 +68,6 @@ const DEFAULT_DEPENDENCIES: ProjectPauseDependencies = {
   processEnv: process.env,
   now: () => new Date(),
 };
-
-function removeFrontmatterField(block: string, field: string): string {
-  return block
-    .split('\n')
-    .filter((line) => !line.startsWith(`${field}:`))
-    .join('\n');
-}
 
 async function runProjectPause(
   projectName: string | undefined,

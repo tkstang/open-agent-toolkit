@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+  removeFrontmatterField,
   replaceFrontmatter,
   upsertFrontmatterField,
 } from './frontmatter-write';
@@ -84,5 +85,18 @@ describe('replaceFrontmatter', () => {
     expect(result).toContain('oat_execution_mode: single-thread');
     expect(result).toContain('\n# Project State\n');
     expect(result).not.toContain('oat_phase: plan');
+  });
+});
+
+describe('removeFrontmatterField', () => {
+  it('removes the requested field and keeps other fields', () => {
+    const input =
+      'oat_lifecycle: paused\noat_pause_timestamp: 2026-02-22T00:00:00.000Z\noat_phase: implement';
+
+    const result = removeFrontmatterField(input, 'oat_pause_timestamp');
+
+    expect(result).toContain('oat_lifecycle: paused');
+    expect(result).toContain('oat_phase: implement');
+    expect(result).not.toContain('oat_pause_timestamp:');
   });
 });

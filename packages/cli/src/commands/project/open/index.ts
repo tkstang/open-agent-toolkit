@@ -9,6 +9,7 @@ import {
   getFrontmatterField,
 } from '@commands/shared/frontmatter';
 import {
+  removeFrontmatterField,
   replaceFrontmatter,
   upsertFrontmatterField,
 } from '@commands/shared/frontmatter-write';
@@ -71,13 +72,6 @@ const DEFAULT_DEPENDENCIES: ProjectOpenDependencies = {
   fileExists,
   processEnv: process.env,
 };
-
-function removeFrontmatterField(block: string, field: string): string {
-  return block
-    .split('\n')
-    .filter((line) => !line.startsWith(`${field}:`))
-    .join('\n');
-}
 
 async function maybeResumePausedProject(
   statePath: string,
