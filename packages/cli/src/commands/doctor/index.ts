@@ -57,8 +57,8 @@ interface DoctorDependencies {
 
 interface OutdatedSkillVersion {
   skill: string;
-  installedVersion: string;
-  bundledVersion: string;
+  installedVersion: string | null;
+  bundledVersion: string | null;
 }
 
 interface SkillVersionReport {
@@ -158,8 +158,8 @@ async function checkSkillVersionsDefault(
     if (comparison === 'outdated') {
       outdatedSkills.push({
         skill: skillName,
-        installedVersion: installedVersion ?? '0.0.0',
-        bundledVersion: bundledVersion ?? '0.0.0',
+        installedVersion: installedVersion ?? null,
+        bundledVersion: bundledVersion ?? null,
       });
     }
   }
@@ -171,13 +171,17 @@ async function checkSkillVersionsDefault(
   };
 }
 
+function formatVersionForDisplay(version: string | null): string {
+  return version ?? '(unversioned)';
+}
+
 function formatOutdatedSkillList(
   outdatedSkills: OutdatedSkillVersion[],
 ): string {
   return outdatedSkills
     .map(
       (skillVersion) =>
-        `${skillVersion.skill} (${skillVersion.installedVersion} < ${skillVersion.bundledVersion})`,
+        `${skillVersion.skill} (${formatVersionForDisplay(skillVersion.installedVersion)} < ${formatVersionForDisplay(skillVersion.bundledVersion)})`,
     )
     .join(', ');
 }

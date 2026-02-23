@@ -21,8 +21,8 @@ interface HarnessOptions {
     skippedMissingBundledCount: number;
     outdatedSkills: Array<{
       skill: string;
-      installedVersion: string;
-      bundledVersion: string;
+      installedVersion: string | null;
+      bundledVersion: string | null;
     }>;
   };
   checkSkillVersionsOverride?: (
@@ -246,6 +246,26 @@ describe('createDoctorCommand', () => {
     expect(capture.info[0]).toContain('skill_versions');
     expect(capture.info[0]).toContain('oat-project-implement');
     expect(capture.info[0]).toContain('oat init tools');
+  });
+
+  it('renders unversioned outdated doctor entries clearly', async () => {
+    const { command, capture } = createHarness({
+      skillVersions: {
+        installedSkillCount: 1,
+        skippedMissingBundledCount: 0,
+        outdatedSkills: [
+          {
+            skill: 'oat-project-implement',
+            installedVersion: null,
+            bundledVersion: '1.2.0',
+          },
+        ],
+      },
+    });
+
+    await runDoctor(command);
+
+    expect(capture.info[0]).toContain('(unversioned) < 1.2.0');
   });
 
   it('passes skill version check when no installed oat skills exist', async () => {
