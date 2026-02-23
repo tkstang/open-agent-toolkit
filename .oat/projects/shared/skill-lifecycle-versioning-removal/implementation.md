@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-23
-oat_current_task_id: p04-t09
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1 | complete | 3 | 3/3 |
 | Phase 2 | complete | 3 | 3/3 |
 | Phase 3 | complete | 4 | 4/4 |
-| Phase 4 | in_progress | 12 | 8/12 |
+| Phase 4 | complete | 12 | 12/12 |
 
-**Total:** 18/22 tasks completed
+**Total:** 22/22 tasks completed
 
 ---
 
@@ -543,23 +543,85 @@ oat_generated: false
 
 ### Task p04-t09: (review) Align `oat doctor` unversioned skill display with init-tools
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** e3cbca8
+
+**Outcome (required when completed):**
+- Updated doctor outdated-skill diagnostics to preserve nullable version provenance for display.
+- Rendered missing versions as `(unversioned)` in doctor output, aligning UX with `oat init tools`.
+- Added doctor regression coverage for unversioned outdated-skill display.
+
+**Files changed:**
+- `packages/cli/src/commands/doctor/index.ts` - Added display formatter and nullable version formatting for outdated skill diagnostics.
+- `packages/cli/src/commands/doctor/index.test.ts` - Added coverage for `(unversioned)` doctor output.
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/doctor/index.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+- Kept version comparison behavior unchanged; only doctor display formatting was aligned to init-tools conventions.
 
 ### Task p04-t10: (review) Clarify/default-bind doctor `checkSkillVersions` pathExists behavior
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** ca5b9cd
+
+**Outcome (required when completed):**
+- Clarified the default `createDependencies()` binding for `checkSkillVersions` so it explicitly honors the caller-provided `pathExists` dependency while retaining a safe default fallback.
+- Documented the intent with an inline comment to make the DI contract clearer for future refactors.
+
+**Files changed:**
+- `packages/cli/src/commands/doctor/index.ts` - Updated `checkSkillVersions` default closure to forward the optional `pathExists` dependency with a fallback.
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/doctor/index.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+- Kept the existing runtime injection path unchanged; this is a clarity/default-binding hardening fix, not a behavior change.
 
 ### Task p04-t11: Ensure all repo skills include version frontmatter
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** ed19801
+
+**Outcome (required when completed):**
+- Added `version: 1.0.0` frontmatter to all repository skill docs that were missing version metadata (including non-bundled skills).
+- Extended validation coverage to enforce valid semver `version:` metadata across the full `.agents/skills` repo inventory, not only bundled `oat-*` skills.
+
+**Files changed:**
+- `.agents/skills/*/SKILL.md` (10 files) - Added `version: 1.0.0` frontmatter baseline.
+- `packages/cli/src/validation/skills.test.ts` - Added repo-wide skill version enforcement test.
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/validation/skills.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+- Kept the existing bundled-skill test and added a separate repo-wide test to preserve coverage intent for both surfaces.
 
 ### Task p04-t12: Add versioning guidance to skill creation workflows and templates
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** a638e15
+
+**Outcome (required when completed):**
+- Updated `create-skill` and `create-oat-skill` guidance to require versioned skill frontmatter and document semver bump expectations for future edits.
+- Added `version: 1.0.0` to the shared skill template example and OAT skill template reference, including concise patch/minor/major bump guidance.
+
+**Files changed:**
+- `.agents/skills/create-skill/SKILL.md` - Added explicit version-frontmatter requirements and semver bump guidance in workflow/frontmatter notes.
+- `.agents/skills/create-oat-skill/SKILL.md` - Added OAT-specific version-frontmatter requirements and success criteria coverage.
+- `.agents/skills/create-skill/references/skill-template.md` - Added `version: 1.0.0` to annotated template and versioning guidance notes.
+- `.agents/skills/create-oat-skill/references/oat-skill-template.md` - Added `version: 1.0.0` and inline bump guidance comment.
+
+**Verification:**
+- Run: `pnpm oat:validate-skills`
+- Result: pass
+
+**Notes / Decisions:**
+- Kept version guidance concise and workflow-oriented to avoid over-prescribing release semantics for internal-only skill edits.
 
 ### Review Received: final
 
