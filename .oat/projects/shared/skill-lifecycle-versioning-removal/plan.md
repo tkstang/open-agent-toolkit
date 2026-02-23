@@ -752,10 +752,23 @@ Track reviews here after running the `oat-project-review-provide` and `oat-proje
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
 | final | code | fixes_completed | 2026-02-23 | reviews/final-review-2026-02-22.md |
+| final-v2 | code | received | 2026-02-23 | reviews/final-review-2026-02-22-v2.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
 **Status values:** `pending` -> `received` -> `fixes_added` -> `fixes_completed` -> `passed`
+
+### Post-Rebase Reconciliation (2026-02-23)
+
+After implementation and review-fix completion, the branch was rebased onto a newer `origin/main` that included merged PRs with overlapping surfaces (`#29`, `#30`, `#32`).
+
+Rebase-driven integration updates applied (recorded in `d16e681`):
+- Preserved upstream `spec-driven` skill rename content while retaining bundled skill `version:` frontmatter requirements.
+- Merged lifecycle `doctor` skill-version diagnostics with upstream Codex doctor diagnostics and DI path wiring.
+- Adjusted utility pack removal regression tests to use dynamic `UTILITY_SKILLS.length` after upstream pack expansion.
+- Added `version: 1.0.0` to newly introduced bundled review-receive skills so bundled-version coverage remains valid on the rebased branch.
+
+These changes do not alter planned task scope; they reconcile this project's delivered behavior with upstream merges that landed after original implementation commits.
 
 ---
 
