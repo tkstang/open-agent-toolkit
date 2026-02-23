@@ -173,9 +173,11 @@ git add -A "$PROJECTS_ROOT/$PROJECT_NAME" 2>/dev/null || true
 
 This stages the deletions from the shared directory. The archived copy is preserved locally but not tracked by git.
 
-**Worktree safeguard (required when available):**
+**Worktree archive target (required when available):**
 
-If running from a git worktree and the primary repo archive path is accessible, also copy the archived project there so it is retained outside the worktree lifecycle:
+If running from a git worktree, the canonical archive destination should be the primary repo archive directory (not only the worktree-local `.oat/projects/archived`, which may be deleted with the worktree).
+
+Use the main repo archive path when it is accessible:
 
 ```bash
 MAIN_REPO_ARCHIVE="/Users/thomas.stang/Code/open-agent-toolkit/.oat/projects/archived"
@@ -185,6 +187,11 @@ if [[ -d "$(dirname "$MAIN_REPO_ARCHIVE")" ]]; then
   cp -R "$ARCHIVE_PATH" "$MAIN_REPO_ARCHIVE/"
 fi
 ```
+
+Guidance:
+- In a worktree, do not treat the worktree-local archive as the only archive copy.
+- The main repo archive copy is the durable archive of record.
+- Report both paths to the user when both copies exist.
 
 ### Step 7: Offer to Clear Active Project
 
