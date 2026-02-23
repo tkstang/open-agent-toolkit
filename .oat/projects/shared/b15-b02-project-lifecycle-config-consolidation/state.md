@@ -46,4 +46,4 @@ None
 
 ## Next Milestone
 
-Run `oat-project-pr-final` to generate final PR description and proceed to merge workflow.
+Run `oat-project-complete`.
