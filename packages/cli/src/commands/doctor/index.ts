@@ -293,7 +293,6 @@ async function runChecksForScope(
         : 'Install or enable a provider directory (e.g. .claude, .cursor, .codex).',
   });
 
-<<<<<<< HEAD
   if (scope === 'project') {
     try {
       const assetsRoot = await dependencies.resolveAssetsRoot();
@@ -335,16 +334,6 @@ async function runChecksForScope(
         });
       }
     } catch (error) {
-=======
-  try {
-    const assetsRoot = await dependencies.resolveAssetsRoot();
-    const skillVersions = await dependencies.checkSkillVersions(
-      scopeRoot,
-      assetsRoot,
-      dependencies.pathExists,
-    );
-    if (skillVersions.outdatedSkills.length > 0) {
->>>>>>> 273a845 (fix(p04-t04): use DI path checks in doctor skill version scan)
       checks.push({
         name: `${scope}:skill_versions`,
         description: 'Installed skill version parity with bundled assets',
@@ -460,6 +449,7 @@ async function runChecksForScope(
           });
         }
       }
+    }
   }
 
   return checks;

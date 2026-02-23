@@ -3,6 +3,7 @@ import {
   createLoggerCapture,
   type LoggerCapture,
 } from '@commands/__tests__/helpers';
+import { UTILITY_SKILLS } from '@commands/init/tools/utility/install-utility';
 import { WORKFLOW_SKILLS } from '@commands/init/tools/workflows/install-workflows';
 import type { Scope } from '@shared/types';
 import { Command } from 'commander';
@@ -96,7 +97,7 @@ describe('createRemoveSkillsCommand', () => {
     const { command, runRemoveSkill } = createHarness({ interactive: false });
     await runCommand(command, [], ['--pack', 'utility']);
 
-    expect(runRemoveSkill).toHaveBeenCalledTimes(3);
+    expect(runRemoveSkill).toHaveBeenCalledTimes(UTILITY_SKILLS.length);
     expect(process.exitCode).toBe(0);
   });
 
@@ -150,7 +151,7 @@ describe('createRemoveSkillsCommand', () => {
     const { command, runRemoveSkill } = createHarness({ interactive: false });
     await runCommand(command, ['--scope', 'all'], ['--pack', 'utility']);
 
-    expect(runRemoveSkill).toHaveBeenCalledTimes(3);
+    expect(runRemoveSkill).toHaveBeenCalledTimes(UTILITY_SKILLS.length);
     expect(runRemoveSkill).toHaveBeenCalledWith(
       expect.objectContaining({ scope: 'all' }),
       expect.any(String),
@@ -179,7 +180,7 @@ describe('createRemoveSkillsCommand', () => {
         status: 'ok',
         pack: 'utility',
         removedCount: 0,
-        skippedCount: 3,
+        skippedCount: UTILITY_SKILLS.length,
       },
     ]);
     expect(process.exitCode).toBe(0);
