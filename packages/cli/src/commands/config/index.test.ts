@@ -107,6 +107,16 @@ describe('oat config', () => {
     expect(process.exitCode).toBe(0);
   });
 
+  it('returns exit code 1 for unknown get keys', async () => {
+    const root = await createRepoRoot();
+    const { command, capture } = createHarness({ cwd: root });
+
+    await runCommand(command, ['get', 'unknown.key']);
+
+    expect(capture.error[0]).toContain('Unknown config key: unknown.key');
+    expect(process.exitCode).toBe(1);
+  });
+
   it('gets projects.root with env override precedence', async () => {
     const root = await createRepoRoot();
     await writeFile(
