@@ -23,7 +23,7 @@ When executing this skill, provide lightweight progress feedback so the user can
   - `[1/4] Checking completion gates…`
   - `[2/4] Marking lifecycle complete…`
   - `[3/4] Archiving project (if approved)…`
-  - `[4/4] Refreshing dashboard…`
+  - `[4/4] Refreshing dashboard + committing bookkeeping…`
 
 ## Process
 
@@ -202,8 +202,34 @@ echo "Active project cleared."
 oat state refresh
 ```
 
-### Step 9: Confirm to User
+### Step 9: Commit + Push Bookkeeping (Required)
+
+Completion is not done until bookkeeping changes are committed and pushed. This prevents local-only `state.md` updates that leave project status stale for later sessions/reviews.
+
+Expected changes may include:
+- `{PROJECT_PATH}/state.md`
+- `{PROJECT_PATH}/implementation.md` (if touched earlier in the lifecycle closeout)
+- `{PROJECT_PATH}/plan.md` (if review receive just ran)
+- `.oat/active-project` (if cleared)
+- Shared-project deletions under `{PROJECTS_ROOT}/{PROJECT_NAME}` (if archived)
+
+Run:
+
+```bash
+git status --short
+git add -A
+git commit -m "chore(oat): complete project lifecycle for ${PROJECT_NAME}"
+git push
+```
+
+Rules:
+- If there are unrelated unstaged/staged changes, stage and commit only the completion/bookkeeping files (do not sweep unrelated work into this commit).
+- If there is nothing to commit, state that explicitly and verify whether the completion bookkeeping was already committed in a prior commit.
+- If push fails, report the failure and do not claim completion is fully recorded.
+
+### Step 10: Confirm to User
 
 Show user:
 - "Project **{PROJECT_NAME}** marked as complete."
 - If archived: "Archived location: **{PROJECT_PATH}**"
+- Include commit hash and push result for the bookkeeping changes.
