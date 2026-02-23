@@ -3,17 +3,29 @@
 ## Claude
 
 - Project: `.agents/skills` -> `.claude/skills`, `.agents/agents` -> `.claude/agents`
-- User: `~/.agents/skills` -> `~/.claude/skills`
+- User: `~/.agents/skills` -> `~/.claude/skills`, `~/.agents/agents` -> `~/.claude/agents`
 
 ## Cursor
 
 - Project: `.agents/skills` -> `.cursor/skills`, `.agents/agents` -> `.cursor/agents`
-- User: `~/.agents/skills` -> `~/.cursor/skills`
+- User: `~/.agents/skills` -> `~/.cursor/skills`, `~/.agents/agents` -> `~/.cursor/agents`
 - Subagent invocation in Cursor is prompt-driven (`/name` or natural mention), not `subagent_type`
+
+## Copilot
+
+- Project: `.agents/skills` -> `.github/skills`, `.agents/agents` -> `.github/agents`
+- User: `~/.agents/skills` -> `~/.copilot/skills`, `~/.agents/agents` -> `~/.copilot/agents`
+
+## Gemini
+
+- Project: native-read canonical mappings (`.agents/skills` and `.agents/agents`)
+- User: native-read canonical mappings (`~/.agents/skills` and `~/.agents/agents`)
+- Gemini provider sync does not mirror to a provider-specific directory because canonical paths are read directly
 
 ## Codex
 
 - Skills are native-read from `.agents/skills` (no mirrored sync action for skill mappings)
+- Agents are native-read from `.agents/agents` for canonical source-of-truth workflows
 - Canonical markdown agents in `.agents/agents/*.md` are exported to Codex runtime roles:
   - `.codex/agents/<role>.toml`
   - `.codex/config.toml` (`[features] multi_agent = true`, `[agents.<role>]` upserts)
@@ -26,7 +38,8 @@
 ## Scope rules
 
 - Project scope: skills + agents
-- User scope: skills only
+- User scope: skills + agents (provider mappings vary by adapter)
+- Codex user-scope role generation under `~/.codex` remains deferred in this release
 
 ## Adoption model
 

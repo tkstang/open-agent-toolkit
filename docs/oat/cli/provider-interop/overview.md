@@ -8,6 +8,7 @@ This capability is intentionally independent from OAT workflow artifacts. Teams 
 
 - Canonical directories: `.agents/skills`, `.agents/agents`
 - Managed provider views: `.claude/*`, `.cursor/*`, `.github/*`, `.copilot/*`, `.codex/*` (where applicable)
+- Native-read providers may use canonical `.agents/*` directly without mirrored provider directories (for example, Gemini and Codex canonical mappings)
 - Manifest tracking: `.oat/sync/manifest.json` (project) and `~/.oat/sync/manifest.json` (user)
 
 ## Design principles
