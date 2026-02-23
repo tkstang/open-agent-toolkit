@@ -132,5 +132,12 @@ describe('frontmatter', () => {
 
       expect(await getSkillVersion(dir)).toBeNull();
     });
+
+    it('returns null when SKILL.md is missing', async () => {
+      const dir = await mkdtemp(join(tmpdir(), 'oat-skill-'));
+      tempDirs.push(dir);
+
+      await expect(getSkillVersion(dir)).resolves.toBeNull();
+    });
   });
 });

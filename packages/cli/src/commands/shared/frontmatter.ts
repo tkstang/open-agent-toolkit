@@ -33,6 +33,8 @@ export async function parseFrontmatterField(
 export async function getSkillVersion(
   skillDir: string,
 ): Promise<string | null> {
+  // parseFrontmatterField() returns '' when SKILL.md is missing or unreadable,
+  // so read failures are normalized to null here.
   const version = await parseFrontmatterField(
     join(skillDir, 'SKILL.md'),
     'version',
