@@ -574,7 +574,7 @@ Track reviews here after running the `oat-project-review-provide` and `oat-proje
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
-| final | code | pending | - | - |
+| final | code | received | 2026-02-22 | reviews/final-review-2026-02-22.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
