@@ -54,6 +54,13 @@ interface ScopePlan {
   unmanagedProviderViews: ProviderView[];
 }
 
+interface JsonScopeResult {
+  scope: ConcreteScope;
+  canonicalPath: string;
+  managedProviderViews: string[];
+  unmanagedProviderViews: string[];
+}
+
 export interface RemoveSkillDependencies {
   buildCommandContext: (
     options: ReturnType<typeof readGlobalOptions>,
@@ -220,6 +227,19 @@ function logDryRun(context: CommandContext, plan: ScopePlan): void {
   }
 }
 
+function toJsonScopeResults(plans: ScopePlan[]): JsonScopeResult[] {
+  return plans.map((plan) => ({
+    scope: plan.scope,
+    canonicalPath: plan.canonicalRelativePath,
+    managedProviderViews: plan.managedProviderViews
+      .map((view) => view.relativePath)
+      .sort(),
+    unmanagedProviderViews: plan.unmanagedProviderViews
+      .map((view) => view.relativePath)
+      .sort(),
+  }));
+}
+
 async function applyPlan(
   context: CommandContext,
   plan: ScopePlan,
@@ -291,11 +311,26 @@ export async function runRemoveSkill(
     for (const plan of plans) {
       logDryRun(context, plan);
     }
+    if (context.json) {
+      context.logger.json({
+        status: 'dry_run',
+        skill: skillName,
+        scopes: toJsonScopeResults(plans),
+      });
+    }
     return true;
   }
 
   for (const plan of plans) {
     await applyPlan(context, plan, dependencies);
+  }
+
+  if (context.json) {
+    context.logger.json({
+      status: 'removed',
+      skill: skillName,
+      scopes: toJsonScopeResults(plans),
+    });
   }
 
   return true;

@@ -384,4 +384,91 @@ describe('createRemoveSkillCommand', () => {
     });
     expect(process.exitCode).toBe(1);
   });
+
+  it('emits dry_run JSON payload when skill is found in json mode', async () => {
+    const root = await makeTempDir();
+    const skillName = 'oat-demo';
+    await mkdir(join(root, '.agents', 'skills', skillName), {
+      recursive: true,
+    });
+    await mkdir(join(root, '.claude', 'skills', skillName), {
+      recursive: true,
+    });
+    await mkdir(join(root, '.cursor', 'skills', skillName), {
+      recursive: true,
+    });
+
+    await saveManifest(
+      join(root, '.oat', 'sync', 'manifest.json'),
+      withSkillEntry(
+        createEmptyManifest(),
+        skillName,
+        'claude',
+        `.claude/skills/${skillName}`,
+      ),
+    );
+
+    const { command, capture } = createHarness({ projectRoot: root });
+    await runRemoveSkillCommand(
+      command,
+      ['--json', '--scope', 'project'],
+      [skillName],
+    );
+
+    expect(capture.jsonPayloads[0]).toEqual({
+      status: 'dry_run',
+      skill: skillName,
+      scopes: [
+        {
+          scope: 'project',
+          canonicalPath: `.agents/skills/${skillName}`,
+          managedProviderViews: [`.claude/skills/${skillName}`],
+          unmanagedProviderViews: [`.cursor/skills/${skillName}`],
+        },
+      ],
+    });
+    expect(process.exitCode).toBe(0);
+  });
+
+  it('emits removed JSON payload when apply succeeds in json mode', async () => {
+    const root = await makeTempDir();
+    const skillName = 'oat-demo';
+    await mkdir(join(root, '.agents', 'skills', skillName), {
+      recursive: true,
+    });
+    await mkdir(join(root, '.claude', 'skills', skillName), {
+      recursive: true,
+    });
+
+    await saveManifest(
+      join(root, '.oat', 'sync', 'manifest.json'),
+      withSkillEntry(
+        createEmptyManifest(),
+        skillName,
+        'claude',
+        `.claude/skills/${skillName}`,
+      ),
+    );
+
+    const { command, capture } = createHarness({ projectRoot: root });
+    await runRemoveSkillCommand(
+      command,
+      ['--json', '--scope', 'project'],
+      [skillName, '--apply'],
+    );
+
+    expect(capture.jsonPayloads[0]).toEqual({
+      status: 'removed',
+      skill: skillName,
+      scopes: [
+        {
+          scope: 'project',
+          canonicalPath: `.agents/skills/${skillName}`,
+          managedProviderViews: [`.claude/skills/${skillName}`],
+          unmanagedProviderViews: [],
+        },
+      ],
+    });
+    expect(process.exitCode).toBe(0);
+  });
 });
