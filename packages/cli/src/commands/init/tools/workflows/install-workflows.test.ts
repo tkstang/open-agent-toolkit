@@ -265,4 +265,29 @@ describe('installWorkflows', () => {
       ),
     ).resolves.toContain('version: 1.0.0');
   });
+
+  it('preserves null version fields for unversioned outdated skills', async () => {
+    const root = await makeTempDir();
+    const assetsRoot = join(root, 'assets');
+    const targetRoot = join(root, 'target');
+    await seedAssets(assetsRoot);
+    await installWorkflows({ assetsRoot, targetRoot });
+
+    await writeFile(
+      join(targetRoot, '.agents', 'skills', 'oat-project-new', 'SKILL.md'),
+      '---\nname: oat-project-new\n---\n',
+      'utf8',
+    );
+    await writeFile(
+      join(assetsRoot, 'skills', 'oat-project-new', 'SKILL.md'),
+      '---\nname: oat-project-new\nversion: 1.1.0\n---\n',
+      'utf8',
+    );
+
+    const result = await installWorkflows({ assetsRoot, targetRoot });
+
+    expect(result.outdatedSkills).toEqual([
+      { name: 'oat-project-new', installed: null, bundled: '1.1.0' },
+    ]);
+  });
 });

@@ -31,7 +31,11 @@ export interface InstallIdeasResult {
   copiedSkills: string[];
   updatedSkills: string[];
   skippedSkills: string[];
-  outdatedSkills: Array<{ name: string; installed: string; bundled: string }>;
+  outdatedSkills: Array<{
+    name: string;
+    installed: string | null;
+    bundled: string | null;
+  }>;
   copiedInfraFiles: string[];
   updatedInfraFiles: string[];
   skippedInfraFiles: string[];
@@ -75,8 +79,8 @@ export async function installIdeas(
     } else if (copyResult.status === 'outdated') {
       result.outdatedSkills.push({
         name: skill,
-        installed: copyResult.installedVersion ?? '0.0.0',
-        bundled: copyResult.bundledVersion ?? '0.0.0',
+        installed: copyResult.installedVersion ?? null,
+        bundled: copyResult.bundledVersion ?? null,
       });
     } else {
       result.skippedSkills.push(skill);

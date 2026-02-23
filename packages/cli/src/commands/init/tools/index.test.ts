@@ -302,4 +302,35 @@ describe('createInitToolsCommand', () => {
       'Non-interactive mode: outdated skills were not updated.',
     );
   });
+
+  it('renders unversioned outdated skill entries clearly in non-json output', async () => {
+    const { command, capture, installWorkflows } = createHarness({
+      interactive: false,
+    });
+
+    installWorkflows.mockResolvedValueOnce({
+      copiedSkills: [],
+      updatedSkills: [],
+      skippedSkills: ['oat-project-plan'],
+      outdatedSkills: [
+        { name: 'oat-project-new', installed: null, bundled: '1.1.0' },
+      ],
+      copiedAgents: [],
+      updatedAgents: [],
+      skippedAgents: [],
+      copiedTemplates: [],
+      updatedTemplates: [],
+      skippedTemplates: [],
+      copiedScripts: [],
+      updatedScripts: [],
+      skippedScripts: [],
+      projectsRootInitialized: false,
+    });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    expect(capture.info.join('\n')).toContain(
+      'oat-project-new  (unversioned) -> 1.1.0',
+    );
+  });
 });

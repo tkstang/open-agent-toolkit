@@ -60,7 +60,11 @@ export interface InstallWorkflowsResult {
   copiedSkills: string[];
   updatedSkills: string[];
   skippedSkills: string[];
-  outdatedSkills: Array<{ name: string; installed: string; bundled: string }>;
+  outdatedSkills: Array<{
+    name: string;
+    installed: string | null;
+    bundled: string | null;
+  }>;
   copiedAgents: string[];
   updatedAgents: string[];
   skippedAgents: string[];
@@ -113,8 +117,8 @@ export async function installWorkflows(
     } else if (copyResult.status === 'outdated') {
       result.outdatedSkills.push({
         name: skill,
-        installed: copyResult.installedVersion ?? '0.0.0',
-        bundled: copyResult.bundledVersion ?? '0.0.0',
+        installed: copyResult.installedVersion ?? null,
+        bundled: copyResult.bundledVersion ?? null,
       });
     } else {
       result.skippedSkills.push(skill);

@@ -70,9 +70,13 @@ interface InitToolsDependencies {
 
 interface OutdatedSkillRecord {
   name: string;
-  installed: string;
-  bundled: string;
+  installed: string | null;
+  bundled: string | null;
   targetRoot: string;
+}
+
+function formatVersionForDisplay(version: string | null): string {
+  return version ?? '(unversioned)';
 }
 
 const PACK_CHOICES: MultiSelectChoice<ToolPack>[] = [
@@ -164,7 +168,7 @@ function reportOutdatedSkills(
   context.logger.info('Outdated skills:');
   for (const skill of outdatedSkills) {
     context.logger.info(
-      `  ${skill.name}  ${skill.installed} -> ${skill.bundled}`,
+      `  ${skill.name}  ${formatVersionForDisplay(skill.installed)} -> ${formatVersionForDisplay(skill.bundled)}`,
     );
   }
 }

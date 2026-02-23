@@ -20,7 +20,11 @@ export interface InstallUtilityResult {
   copiedSkills: string[];
   updatedSkills: string[];
   skippedSkills: string[];
-  outdatedSkills: Array<{ name: string; installed: string; bundled: string }>;
+  outdatedSkills: Array<{
+    name: string;
+    installed: string | null;
+    bundled: string | null;
+  }>;
 }
 
 export async function installUtility(
@@ -50,8 +54,8 @@ export async function installUtility(
     } else if (resultWithVersion.status === 'outdated') {
       result.outdatedSkills.push({
         name: skill,
-        installed: resultWithVersion.installedVersion ?? '0.0.0',
-        bundled: resultWithVersion.bundledVersion ?? '0.0.0',
+        installed: resultWithVersion.installedVersion ?? null,
+        bundled: resultWithVersion.bundledVersion ?? null,
       });
     } else {
       result.skippedSkills.push(skill);
