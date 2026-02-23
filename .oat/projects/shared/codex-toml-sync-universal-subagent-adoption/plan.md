@@ -425,29 +425,30 @@ git commit -m "feat(p06-t01): add codex post-plan sync extension"
 
 ---
 
-### Task p06-t02: Add aggregate codex config tracking and manifest compatibility guarantees
+### Task p06-t02: Add aggregate codex config tracking metadata with manifest compatibility guarantees
 
 **Files:**
 - Modify: `packages/cli/src/commands/sync/index.ts`
 - Modify: `packages/cli/src/commands/status/index.ts`
-- Modify: `packages/cli/src/manifest/*.ts`
 - Create/Modify: `packages/cli/src/**/__tests__/*.test.ts`
+- Modify: `docs/oat/cli/provider-interop/overview.md`
+- Modify: `docs/oat/cli/provider-interop/providers.md`
 
 **Step 1: Write test (RED)**
 
 Add tests ensuring:
 - role files remain tracked as normal file entries
-- `.codex/config.toml` is tracked via extension metadata (contributor set + hash)
-- existing one-to-one manifest entry schema remains backward compatible
+- `.codex/config.toml` aggregate state is surfaced via codex extension metadata (`aggregateConfigHash`) in sync/status output
+- existing one-to-one manifest entry schema remains unchanged and backward compatible
 
-Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/manifest packages/cli/src/commands/status`
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/sync packages/cli/src/commands/status`
 Expected: Tests fail before tracking extension is implemented.
 
 **Step 2: Implement (GREEN)**
 
-Implement aggregate config tracking in extension result metadata and keep manifest schema additive-only.
+Implement aggregate config tracking in codex extension result metadata (command output layer) while keeping manifest schema unchanged.
 
-Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/manifest packages/cli/src/commands/status`
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/sync packages/cli/src/commands/status`
 Expected: Tests pass.
 
 **Step 3: Refactor**
@@ -462,7 +463,7 @@ Expected: No errors.
 **Step 5: Commit**
 
 ```bash
-git add packages/cli/src/commands/sync packages/cli/src/commands/status packages/cli/src/manifest
+git add packages/cli/src/commands/sync packages/cli/src/commands/status docs/oat/cli/provider-interop/overview.md docs/oat/cli/provider-interop/providers.md
 git commit -m "feat(p06-t02): add aggregate codex config tracking metadata"
 ```
 
@@ -562,6 +563,324 @@ git commit -m "docs(p07-t02): document codex generation and universal adoption w
 
 ---
 
+## Phase 8: Review Fixes from Final Code Review
+
+### Task p08-t01: (review C1) Fix non-interactive status conflict handling
+
+**Task Scope:** Moderate
+
+**Files:**
+- Modify: `packages/cli/src/commands/status/index.ts`
+- Modify: `packages/cli/src/commands/status/index.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `status` conflict handling throws in non-interactive mode instead of deterministic skip + warning.
+Location: `packages/cli/src/commands/status/index.ts:517`
+
+**Step 2: Implement fix**
+
+Replace prompt-only conflict resolution path with `confirmAction`/non-interactive-safe guard, preserving interactive replacement behavior and non-interactive warning + issue count behavior.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/status`
+Expected: Status conflict tests pass for both interactive and non-interactive paths.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/status/index.ts packages/cli/src/commands/status/index.test.ts
+git commit -m "fix(p08-t01): make status conflict flow non-interactive safe"
+```
+
+---
+
+### Task p08-t02: (review I1) Add doctor codex integration coverage
+
+**Task Scope:** Moderate
+
+**Files:**
+- Modify: `packages/cli/src/commands/doctor/index.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Doctor codex drift/misconfiguration checks were implemented without command-level integration coverage.
+Location: `packages/cli/src/commands/doctor/index.test.ts`
+
+**Step 2: Implement fix**
+
+Add tests for parseable TOML pass, unparseable TOML failure, missing/false `features.multi_agent` warning, and missing referenced role file warning.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/doctor`
+Expected: New codex doctor scenarios pass.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/doctor/index.test.ts
+git commit -m "test(p08-t02): add doctor codex integration scenarios"
+```
+
+---
+
+### Task p08-t03: (review I2) Add status codex integration coverage
+
+**Task Scope:** Moderate
+
+**Files:**
+- Modify: `packages/cli/src/commands/status/index.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Status codex drift and codex stray reporting lack command-level integration tests.
+Location: `packages/cli/src/commands/status/index.test.ts`
+
+**Step 2: Implement fix**
+
+Add tests for codex drift reporting and codex stray candidate detection in status output.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/status`
+Expected: Codex status scenarios pass and regressions are prevented.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/status/index.test.ts
+git commit -m "test(p08-t03): add status codex drift and stray coverage"
+```
+
+---
+
+### Task p08-t04: (review I3) Add init codex stray/adoption integration coverage
+
+**Task Scope:** Moderate
+
+**Files:**
+- Modify: `packages/cli/src/commands/init/index.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `init` codex stray detection/adoption behavior lacks command-level integration tests.
+Location: `packages/cli/src/commands/init/index.test.ts`
+
+**Step 2: Implement fix**
+
+Add tests validating codex role strays are discovered and presented for adoption in init flows.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/init`
+Expected: Init codex stray scenarios pass.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/index.test.ts
+git commit -m "test(p08-t04): add init codex stray adoption coverage"
+```
+
+---
+
+### Task p08-t05: (review I4) Add sync codex extension integration coverage
+
+**Task Scope:** Moderate
+
+**Files:**
+- Modify: `packages/cli/src/commands/sync/index.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Sync codex extension planning/apply behavior lacks command-level integration tests.
+Location: `packages/cli/src/commands/sync/index.test.ts`
+
+**Step 2: Implement fix**
+
+Add tests that verify codex extension operations appear in dry-run/apply output and are wired when codex adapter is active.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/sync`
+Expected: Sync codex extension scenarios pass.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/sync/index.test.ts
+git commit -m "test(p08-t05): add sync codex extension integration coverage"
+```
+
+---
+
+### Task p08-t06: (review I5) Add conflict policy tests for init/status adoption paths
+
+**Task Scope:** Moderate
+
+**Files:**
+- Modify: `packages/cli/src/commands/init/index.test.ts`
+- Modify: `packages/cli/src/commands/status/index.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Adoption conflict behavior tests do not cover interactive replace vs non-interactive skip + warning at command level.
+Location: `packages/cli/src/commands/init/index.test.ts`, `packages/cli/src/commands/status/index.test.ts`
+
+**Step 2: Implement fix**
+
+Add tests that exercise conflict handling for both modes across init and status.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/init packages/cli/src/commands/status`
+Expected: Conflict mode handling is fully covered.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/index.test.ts packages/cli/src/commands/status/index.test.ts
+git commit -m "test(p08-t06): cover adoption conflict behavior by interaction mode"
+```
+
+---
+
+### Task p08-t07: (review I6) Close aggregate codex config tracking gap against p06-t02 contract
+
+**Task Scope:** Large
+
+**Files:**
+- Modify: `packages/cli/src/commands/sync/index.ts`
+- Modify: `packages/cli/src/commands/status/index.ts`
+- Modify: `packages/cli/src/**/__tests__/*.test.ts`
+- Modify: `docs/oat/cli/provider-interop/overview.md`
+- Modify: `docs/oat/cli/provider-interop/providers.md`
+- Modify: `.oat/projects/shared/codex-toml-sync-universal-subagent-adoption/plan.md` (contract clarification)
+
+**Step 1: Understand the issue**
+
+Review finding: p06-t02 contract text implied manifest-level tracking, while implementation exposes aggregate hash via extension output metadata.
+Location: `packages/cli/src/commands/sync/*`, `packages/cli/src/commands/status/*`, `docs/oat/cli/provider-interop/*`
+
+**Step 2: Implement fix**
+
+Formally align contract + docs to the implemented extension-only metadata model and add command-level tests proving codex aggregate metadata is emitted in dry-run/apply outputs.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/sync packages/cli/src/commands/status`
+Expected: p06-t02 behavior and tests are aligned with final contract.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/sync packages/cli/src/commands/status docs/oat/cli/provider-interop/overview.md docs/oat/cli/provider-interop/providers.md .oat/projects/shared/codex-toml-sync-universal-subagent-adoption/plan.md
+git commit -m "fix(p08-t07): align aggregate codex config tracking with p06-t02 contract"
+```
+
+---
+
+### Task p08-t08: (review m1) Centralize TOML stringify cast helper
+
+**Task Scope:** Minor
+
+**Files:**
+- Modify: `packages/cli/src/providers/codex/codec/shared.ts`
+- Modify: `packages/cli/src/providers/codex/codec/export-to-codex.ts`
+- Modify: `packages/cli/src/providers/codex/codec/config-merge.ts`
+- Modify: `packages/cli/src/providers/codex/codec/*.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: repeated `as never` casts for `TOML.stringify` reduce type safety and clarity.
+Location: `packages/cli/src/providers/codex/codec/export-to-codex.ts:65`, `packages/cli/src/providers/codex/codec/config-merge.ts:87`
+
+**Step 2: Implement fix**
+
+Introduce a typed helper in shared codec utilities to centralize TOML stringify casting and replace direct call-site casts.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/providers/codex/codec && pnpm --filter @oat/cli type-check`
+Expected: Existing codec behavior unchanged and type-check remains clean.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/providers/codex/codec/
+git commit -m "refactor(p08-t08): centralize toml stringify casting helper"
+```
+
+---
+
+### Task p08-t09: (review m2) Deduplicate adoption conflict error helper
+
+**Task Scope:** Minor
+
+**Files:**
+- Modify: `packages/cli/src/commands/shared/adopt-stray.ts`
+- Modify: `packages/cli/src/commands/init/index.ts`
+- Modify: `packages/cli/src/commands/status/index.ts`
+- Modify: `packages/cli/src/commands/**/__tests__/*.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `isAdoptionConflictError` helper is duplicated in init and status.
+Location: `packages/cli/src/commands/init/index.ts:305`, `packages/cli/src/commands/status/index.ts:256`
+
+**Step 2: Implement fix**
+
+Extract helper to shared adoption module and update callers/tests.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/init packages/cli/src/commands/status packages/cli/src/commands/shared`
+Expected: Behavior unchanged, duplicate logic removed.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/shared/adopt-stray.ts packages/cli/src/commands/init/index.ts packages/cli/src/commands/status/index.ts packages/cli/src/commands
+git commit -m "refactor(p08-t09): share adoption conflict error helper"
+```
+
+---
+
+### Task p08-t10: (review m4) Deduplicate codex post-adoption regeneration flow
+
+**Task Scope:** Moderate
+
+**Files:**
+- Modify: `packages/cli/src/commands/shared/codex-strays.ts`
+- Modify: `packages/cli/src/commands/init/index.ts`
+- Modify: `packages/cli/src/commands/status/index.ts`
+- Modify: `packages/cli/src/commands/**/__tests__/*.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: codex regeneration block after adoption is duplicated between init and status.
+Location: `packages/cli/src/commands/init/index.ts:500-509`, `packages/cli/src/commands/status/index.ts:550-563`
+
+**Step 2: Implement fix**
+
+Extract a shared post-adoption codex regeneration helper and update both command paths.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/init packages/cli/src/commands/status packages/cli/src/commands/shared`
+Expected: Post-adoption codex regeneration stays behaviorally identical while duplicate code is removed.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/shared/codex-strays.ts packages/cli/src/commands/init/index.ts packages/cli/src/commands/status/index.ts packages/cli/src/commands
+git commit -m "refactor(p08-t10): share codex post-adoption regeneration flow"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
@@ -573,7 +892,7 @@ git commit -m "docs(p07-t02): document codex generation and universal adoption w
 | p05 | code | pending | - | - |
 | p06 | code | pending | - | - |
 | p07 | code | pending | - | - |
-| final | code | received | 2026-02-21 | reviews/final-review-2026-02-21.md |
+| final | code | received | 2026-02-22 | reviews/final-review-2026-02-22.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 | plan | artifact | pending | - | - |
@@ -598,10 +917,11 @@ git commit -m "docs(p07-t02): document codex generation and universal adoption w
 - Phase 5: 2 tasks - Universal stray detection and adoption conversion/conflicts
 - Phase 6: 2 tasks - Sync codex extension and aggregate config tracking
 - Phase 7: 2 tasks - Status/doctor drift checks and docs completion
+- Phase 8: 10 tasks - Final review fixes (critical/important + selected minor findings)
 
-**Total: 12 tasks**
+**Total: 22 tasks**
 
-Status: Implemented; awaiting final code review pass.
+Status: Review fixes implemented; awaiting final re-review.
 
 ---
 
