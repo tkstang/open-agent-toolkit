@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-23
-oat_current_task_id: p04-t03
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1 | complete | 3 | 3/3 |
 | Phase 2 | complete | 3 | 3/3 |
 | Phase 3 | complete | 4 | 4/4 |
-| Phase 4 | in_progress | 8 | 2/8 |
+| Phase 4 | complete | 8 | 8/8 |
 
-**Total:** 12/18 tasks completed
+**Total:** 18/18 tasks completed
 
 ---
 
@@ -429,33 +429,117 @@ oat_generated: false
 
 ### Task p04-t03: (review) Document `getSkillVersion` missing-file contract
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 3544c6f
+
+**Outcome (required when completed):**
+- Added an explicit inline contract note that missing/unreadable `SKILL.md` resolves safely to `null`.
+- Added regression coverage for the missing `SKILL.md` path in `getSkillVersion`.
+
+**Files changed:**
+- `packages/cli/src/commands/shared/frontmatter.ts` - Documented read-failure normalization behavior.
+- `packages/cli/src/commands/shared/frontmatter.test.ts` - Added missing-file contract test.
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/shared/frontmatter.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+- Kept behavior unchanged and codified the existing contract explicitly for maintainability.
 
 ### Task p04-t04: (review) Align doctor bundled-skill existence checks with DI
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 273a845
+
+**Outcome (required when completed):**
+- Refactored doctor skill-version dependency contract to thread `pathExists` into `checkSkillVersions`.
+- Updated default skill-version scanner to use injected existence checks for bundled skill paths.
+- Added regression coverage verifying dependency threading behavior.
+
+**Files changed:**
+- `packages/cli/src/commands/doctor/index.ts` - Updated `checkSkillVersions` signature and dependency usage.
+- `packages/cli/src/commands/doctor/index.test.ts` - Added test that asserts injected `pathExists` is used by version checks.
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/doctor/index.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+- Kept override compatibility by preserving the same high-level test harness API while extending internal dependency arguments.
 
 ### Task p04-t05: (review) Add JSON success payloads for `oat remove skill`
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 968328f
+
+**Outcome (required when completed):**
+- Added structured JSON success payloads for `oat remove skill` dry-run and apply paths.
+- Preserved existing not-found JSON behavior while making success mode machine-readable.
+- Extended tests to cover both JSON dry-run and JSON apply responses.
+
+**Files changed:**
+- `packages/cli/src/commands/remove/skill/remove-skill.ts` - Added JSON serialization for success paths.
+- `packages/cli/src/commands/remove/skill/remove-skill.test.ts` - Added JSON payload assertions for dry-run/apply success.
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/remove/skill/remove-skill.test.ts packages/cli/src/commands/remove/skills/remove-skills.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+- Continued to execute child removals in non-JSON mode under pack removal, preserving single aggregate JSON output from `remove skills`.
 
 ### Task p04-t06: (review) Unify frontmatter block parsing in validation
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 3ade398
+
+**Outcome (required when completed):**
+- Reused the shared frontmatter block parser in the OAT skills validator.
+- Removed duplicate regex parsing logic from `validation/skills.ts`.
+- Preserved validator behavior while aligning parsing semantics across modules.
+
+**Files changed:**
+- `packages/cli/src/validation/skills.ts` - Switched to shared `getFrontmatterBlock()` helper import.
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/validation/skills.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+- Validation coverage already exercises frontmatter presence behavior, so no additional test fixture changes were needed.
 
 ### Task p04-t07: (review) Guard version parser against negative segments
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** e762cdb
+
+**Outcome (required when completed):**
+- Hardened version parsing to reject negative semver segments and normalize them to `0.0.0`.
+- Added regression coverage for negative-segment parsing behavior.
+
+**Files changed:**
+- `packages/cli/src/commands/init/tools/shared/version.ts` - Added negative-value guard.
+- `packages/cli/src/commands/init/tools/shared/version.test.ts` - Added negative version fixture assertion.
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/init/tools/shared/version.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+- Kept comparison semantics unchanged; only parsing normalization behavior was tightened.
 
 ### Task p04-t08: (review) Improve unversioned outdated display clarity
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 249ac22
+
+**Notes:**
+- Preserved unversioned skill provenance in installer `outdatedSkills` results (`null` instead of `0.0.0` fallback).
+- Updated `oat init tools` outdated-skill reporting to display `(unversioned)` in human-readable output.
+- Added coverage for unversioned display text and installer null-version propagation.
+- Verification:
+  - `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/init/tools/index.test.ts packages/cli/src/commands/init/tools/workflows/install-workflows.test.ts packages/cli/src/commands/init/tools/ideas/install-ideas.test.ts packages/cli/src/commands/init/tools/utility/install-utility.test.ts` (pass)
 
 ### Review Received: final
 
@@ -476,11 +560,9 @@ oat_generated: false
 **Deferred Findings (Medium):**
 - None
 
-**Next:** Execute review fix tasks via the `oat-project-implement` skill, starting at `p04-t03`.
+**Next:** Re-run final code review (`oat-project-review-provide code final`) and process results with `oat-project-review-receive`.
 
-After the fix tasks are complete:
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+Review-fix implementation is complete. Update the review row status to `fixes_completed` before re-running final review.
 
 ## Orchestration Runs
 
@@ -568,7 +650,13 @@ Chronological log of implementation progress.
 - [x] Received final review artifact `reviews/final-review-2026-02-22.md`
 - [x] Converted findings `I1`, `I2`, `I3`, `m1`, `m3`, `m4` into review-fix tasks
 - [x] Deferred minor finding `m2` with rationale
-- [ ] Execute review-fix implementation tasks (`p04-t03` ... `p04-t08`)
+- [x] Execute review-fix implementation tasks (`p04-t03` ... `p04-t08`)
+
+**What changed (high level):**
+- Closed all six review-generated fix tasks (`p04-t03` through `p04-t08`) across frontmatter, doctor DI, remove JSON output, validation parsing, version parsing hardening, and init-tools unversioned display.
+- Completed final review-fix implementation pass and restored implementation cursor to `null` for re-review.
+
+**Session End:** 20:18
 
 **What changed (high level):**
 - Added six review-generated implementation tasks to the Phase 4 plan.
