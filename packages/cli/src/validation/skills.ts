@@ -1,5 +1,6 @@
 import { readdir, readFile, stat } from 'node:fs/promises';
 import { join } from 'node:path';
+import { getFrontmatterBlock } from '@commands/shared/frontmatter';
 
 export interface ValidationFinding {
   file: string;
@@ -18,11 +19,6 @@ async function isDirectory(path: string): Promise<boolean> {
   } catch {
     return false;
   }
-}
-
-function getFrontmatterBlock(content: string): string | null {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n/m);
-  return match?.[1] ?? null;
 }
 
 function frontmatterHasKey(frontmatter: string, key: string): boolean {
