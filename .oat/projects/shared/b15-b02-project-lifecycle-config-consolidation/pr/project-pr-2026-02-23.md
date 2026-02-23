@@ -58,8 +58,12 @@ Implementation artifact records the following verification coverage:
   - scoped `rg` checks for migrated skill docs
 
 Git change summary from merge-base vs `main`:
-- 25 commits (`cb613bb..c20d94f` on top of merge-base `b31c0776`)
-- `68 files changed, 4537 insertions(+), 396 deletions(-)`
+- 28 commits (`947aa93..9f9fbd9` on top of merge-base `983de1d`)
+- `79 files changed, 4703 insertions(+), 500 deletions(-)`
+
+Post-rebase note:
+- Rebased onto `origin/main` after merged PRs #28, #29, #30, and #32.
+- No additional functional changes were required for this project beyond conflict resolution and doc wording preservation (config-backed lifecycle state + newer review workflow docs).
 
 ## Reviews
 
