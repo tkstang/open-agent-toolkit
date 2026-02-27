@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p01-t05
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -18,16 +18,16 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 5 | 4/5 |
-| Phase 2 | pending | 4 | 0/4 |
+| Phase 1 | complete | 5 | 5/5 |
+| Phase 2 | in_progress | 4 | 0/4 |
 
-**Total:** 4/9 tasks completed
+**Total:** 5/9 tasks completed
 
 ---
 
 ## Phase 1: Skill Scaffold and Output Policy
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-02-27
 
 ### Task p01-t01: Scaffold Skill Package Files
@@ -131,15 +131,45 @@ oat_generated: false
 
 ### Task p01-t05: Author Artifact Template and Rubric Contracts
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 1e4ef54
+
+**Outcome (required):**
+- Replaced placeholder references with concrete artifact contract, scoring rubric, and DX checklist.
+- Added required artifact frontmatter schema and required top-level section structure.
+- Added scoring vocab (`Concern`, `Value`, `Scope`, `Confidence`) and required category map including `Maintainability`.
+- Added explicit evidence and actionability quality rules for findings.
+
+**Files changed:**
+- `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md` - defined output structure and finding schema.
+- `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md` - defined label vocab and category requirements.
+- `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md` - defined DX analysis checklist.
+
+**Verification:**
+- Run: `rg -n "Maintainability|Testing|Confidence|recommendedAction|successCriteria" .agents/skills/oat-repo-review-analyze/references/*.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Reliability checks are included under the `Testing` category in v1.
+
+### Phase 1 Summary
+
+- **Outcome:** Established complete skill scaffolding and contract surfaces for invocation, progress behavior, output resolution, and artifact schemas.
+- **Key files touched:**
+  - `.agents/skills/oat-repo-review-analyze/SKILL.md`
+  - `.agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh`
+  - `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md`
+  - `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
+  - `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md`
+- **Verification run:** Task-level checks for file existence, invocation contract patterns, resolver outputs, and reference schema markers all passed.
+- **Notable decisions/deviations:** No scope deviations; phase executed in-plan order.
 
 ---
 
 ## Phase 2: Analysis Flow and Artifact Contract
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-02-27
 
 ### Task p02-t01: Author End-to-End Analysis Workflow in `SKILL.md`
 
@@ -186,7 +216,7 @@ oat_generated: false
 - [x] p01-t02: Encode Frontmatter and Invocation Contract
 - [x] p01-t03: Add Clarification and Progress Interaction Flow
 - [x] p01-t04: Implement Output Resolver Behavior and Path Rules
-- [ ] p01-t05: Author Artifact Template and Rubric Contracts
+- [x] p01-t05: Author Artifact Template and Rubric Contracts
 - [ ] p02-t01: Author End-to-End Analysis Workflow in `SKILL.md`
 - [ ] p02-t02: Finalize Artifact Schema and Example Output Guidance
 - [ ] p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
