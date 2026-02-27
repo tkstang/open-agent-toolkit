@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p02-t02
+oat_current_task_id: p02-t03
 oat_generated: false
 ---
 
@@ -19,9 +19,9 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 5 | 5/5 |
-| Phase 2 | in_progress | 4 | 1/4 |
+| Phase 2 | in_progress | 4 | 2/4 |
 
-**Total:** 6/9 tasks completed
+**Total:** 7/9 tasks completed
 
 ---
 
@@ -195,8 +195,25 @@ oat_generated: false
 
 ### Task p02-t02: Finalize Artifact Schema and Example Output Guidance
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 621e346
+
+**Outcome (required):**
+- Added deterministic overlap and dedupe policy to synthesis instructions.
+- Added Concern precedence and explicit material disagreement threshold.
+- Added required merge-note behavior for reconciled conflicts.
+- Mirrored policy language in the rubric reference to keep guidance synchronized.
+
+**Files changed:**
+- `.agents/skills/oat-repo-review-analyze/SKILL.md` - added synthesis and dedupe rules.
+- `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md` - added merge/dedupe policy section.
+
+**Verification:**
+- Run: `rg -n "2\\+|Critical > High > Medium > Low|merge note" .agents/skills/oat-repo-review-analyze/SKILL.md .agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Merge policy was intentionally text-level deterministic to support both single-agent and fan-out synthesis paths.
 
 ---
 
@@ -233,7 +250,7 @@ oat_generated: false
 - [x] p01-t04: Implement Output Resolver Behavior and Path Rules
 - [x] p01-t05: Author Artifact Template and Rubric Contracts
 - [x] p02-t01: Author End-to-End Analysis Workflow in `SKILL.md`
-- [ ] p02-t02: Finalize Artifact Schema and Example Output Guidance
+- [x] p02-t02: Finalize Artifact Schema and Example Output Guidance
 - [ ] p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
 - [ ] p02-t04: Finalize Summary Output and Verification Runbook
 
