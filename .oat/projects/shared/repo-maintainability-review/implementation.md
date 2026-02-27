@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p03-t05
+oat_current_task_id: p03-t06
 oat_generated: false
 ---
 
@@ -20,9 +20,9 @@ oat_generated: false
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 5 | 5/5 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 7 | 4/7 |
+| Phase 3 | in_progress | 7 | 5/7 |
 
-**Total:** 13/16 tasks completed
+**Total:** 14/16 tasks completed
 
 ---
 
@@ -379,8 +379,23 @@ oat_generated: false
 
 ### Task p03-t05: Add Explicit Prioritization Split Guidance
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** f879f2a
+
+**Outcome (required):**
+- Added explicit prioritization split rules to skill instructions.
+- Required findings split into Quick Wins (XS/S) and Strategic Initiatives (M/L/XL).
+- Added explicit Now/Next/Later sequencing requirement.
+
+**Files changed:**
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - added prioritization output requirements section.
+
+**Verification:**
+- Run: `rg -n "Quick Wins|Strategic Initiatives|Now / Next / Later|XS/S|M/L/XL" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Prioritization guidance mirrors artifact template terminology for consistency.
 
 ---
 
@@ -424,7 +439,7 @@ oat_generated: false
 - [x] p03-t02: Update Repo References to New Skill Name/Path
 - [x] p03-t03: Add `oat_output_mode` to Required Artifact Metadata
 - [x] p03-t04: Add Explicit Invalid-Target Error Contract
-- [ ] p03-t05: Add Explicit Prioritization Split Guidance
+- [x] p03-t05: Add Explicit Prioritization Split Guidance
 - [ ] p03-t06: Make Delegation Automatic with Provider Notes
 - [ ] p03-t07: Improve Resolver Warnings for Custom Output and Ignore Status
 
