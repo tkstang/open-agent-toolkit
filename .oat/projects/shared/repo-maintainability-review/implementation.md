@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: null
+oat_current_task_id: p03-t02
 oat_generated: false
 ---
 
@@ -20,8 +20,9 @@ oat_generated: false
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 5 | 5/5 |
 | Phase 2 | complete | 4 | 4/4 |
+| Phase 3 | in_progress | 7 | 1/7 |
 
-**Total:** 9/9 tasks completed
+**Total:** 10/16 tasks completed
 
 ---
 
@@ -168,7 +169,7 @@ oat_generated: false
 
 ## Phase 2: Analysis Flow and Artifact Contract
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-02-27
 
 ### Task p02-t01: Author End-to-End Analysis Workflow in `SKILL.md`
@@ -276,6 +277,79 @@ oat_generated: false
 
 ---
 
+## Phase 3: Final Review Fixes
+
+**Status:** in_progress
+**Started:** 2026-02-27
+
+### Task p03-t01: Rename Skill to `oat-repo-maintainability-review`
+
+**Status:** completed
+**Commit:** 42c93ce
+
+**Outcome (required):**
+- Renamed skill directory from `oat-repo-review-analyze` to `oat-repo-maintainability-review`.
+- Updated skill frontmatter `name` and user-facing headings to "Repo Maintainability Review".
+- Updated internal resolver script reference path in skill instructions.
+
+**Files changed:**
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - renamed frontmatter id and presentation wording.
+- `.agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh` - moved with skill directory rename.
+- `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md` - moved with skill directory rename.
+- `.agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md` - moved with skill directory rename.
+- `.agents/skills/oat-repo-maintainability-review/references/dx-checklist.md` - moved with skill directory rename.
+
+**Verification:**
+- Run: `test -d .agents/skills/oat-repo-maintainability-review && rg -n "name: oat-repo-maintainability-review|Repo Maintainability Review" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Path-sensitive references in project artifacts are handled in follow-up task `p03-t02`.
+
+---
+
+### Task p03-t02: Update Repo References to New Skill Name/Path
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p03-t03: Add `oat_output_mode` to Required Artifact Metadata
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p03-t04: Add Explicit Invalid-Target Error Contract
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p03-t05: Add Explicit Prioritization Split Guidance
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p03-t06: Make Delegation Automatic with Provider Notes
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p03-t07: Improve Resolver Warnings for Custom Output and Ignore Status
+
+**Status:** pending
+**Commit:** -
+
+---
+
 ## Orchestration Runs
 
 <!-- orchestration-runs-start -->
@@ -298,6 +372,13 @@ oat_generated: false
 - [x] p02-t02: Finalize Artifact Schema and Example Output Guidance
 - [x] p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
 - [x] p02-t04: Finalize Summary Output and Verification Runbook
+- [x] p03-t01: Rename Skill to `oat-repo-maintainability-review`
+- [ ] p03-t02: Update Repo References to New Skill Name/Path
+- [ ] p03-t03: Add `oat_output_mode` to Required Artifact Metadata
+- [ ] p03-t04: Add Explicit Invalid-Target Error Contract
+- [ ] p03-t05: Add Explicit Prioritization Split Guidance
+- [ ] p03-t06: Make Delegation Automatic with Provider Notes
+- [ ] p03-t07: Improve Resolver Warnings for Custom Output and Ignore Status
 
 ### Artifact Review Receive: design
 
@@ -348,6 +429,10 @@ oat_generated: false
 **Verification performed:**
 - Task-level contract checks and resolver command runs completed successfully.
 - Workspace-wide verification completed successfully: `pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build`.
+
+**Review-fix continuation:**
+- Final review received additional findings and follow-up tasks were added in Phase 3.
+- Next: execute `p03-t01` through `p03-t07`, then request re-review.
 
 ## References
 

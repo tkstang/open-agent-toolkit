@@ -5,7 +5,7 @@ oat_blockers: []
 oat_last_updated: 2026-02-27
 oat_phase: plan
 oat_phase_status: complete
-oat_plan_hill_phases: ["p02"]
+oat_plan_hill_phases: ["p03"]
 oat_plan_source: spec-driven
 oat_import_reference: null
 oat_import_source_path: null
@@ -17,7 +17,7 @@ oat_generated: false
 
 > Execute this plan using `oat-project-implement` (sequential) or `oat-project-subagent-implement` (parallel).
 
-**Goal:** Implement `oat-repo-review-analyze` with the updated design contracts for argument clarity, provider-aware user questions, deterministic outputs, and maintainability-focused analysis synthesis.
+**Goal:** Implement `oat-repo-maintainability-review` with the updated design contracts for naming, argument clarity, provider-aware user questions, deterministic outputs, and maintainability-focused analysis synthesis.
 
 **Architecture:** Create a skill package (`SKILL.md` + references + resolver script) with single-agent baseline analysis and optional fan-out guidance, then validate the artifact contract and merge rules.
 
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Planning Checklist
 
-- [x] Confirmed HiLL checkpoints with user (carried forward: `p01`, `p02`, `final`)
+- [x] Confirmed HiLL checkpoints with user (final-gate-only; current last phase is `p03`)
 - [x] Set `oat_plan_hill_phases` in frontmatter
 - [x] Preserved existing `## Reviews` rows and statuses
 - [x] Updated `spec.md` Requirement Index Planned Tasks mappings
@@ -313,13 +313,225 @@ git commit -m "feat(p02-t04): finalize summary contract and verification runbook
 
 ---
 
+## Phase 3: Final Review Fixes
+
+### Task p03-t01: Rename Skill to `oat-repo-maintainability-review`
+
+**Files:**
+- Move: `.agents/skills/oat-repo-review-analyze/` -> `.agents/skills/oat-repo-maintainability-review/`
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+
+**Step 1: Write test (RED)**
+- Run: `test -d .agents/skills/oat-repo-maintainability-review`
+- Expected: fails before rename.
+
+**Step 2: Implement (GREEN)**
+- Rename directory and update skill frontmatter `name`.
+- Replace user-facing phrasing to "Repo Maintainability Review" in skill title/mode labels.
+
+**Step 3: Refactor**
+- Ensure internal relative paths remain valid after directory move.
+
+**Step 4: Verify**
+- Run: `test -d .agents/skills/oat-repo-maintainability-review && rg -n "name: oat-repo-maintainability-review|Repo Maintainability Review" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Expected: renamed path and phrasing verified.
+
+**Step 5: Commit**
+```bash
+git add .agents/skills/oat-repo-maintainability-review .agents/skills/oat-repo-review-analyze
+git commit -m "fix(p03-t01): rename skill to repo maintainability review"
+```
+
+---
+
+### Task p03-t02: Update Repo References to New Skill Name/Path
+
+**Files:**
+- Modify: `.oat/projects/shared/repo-maintainability-review/plan.md`
+- Modify: `.oat/projects/shared/repo-maintainability-review/implementation.md`
+- Modify: `.oat/projects/shared/repo-maintainability-review/spec.md`
+- Modify: `.oat/projects/shared/repo-maintainability-review/design.md`
+- Modify: `.oat/projects/shared/repo-maintainability-review/discovery.md`
+
+**Step 1: Write test (RED)**
+- Run: `rg -n "oat-repo-review-analyze|Repo Review Analysis" .oat/projects/shared/repo-maintainability-review`
+- Expected: matches found.
+
+**Step 2: Implement (GREEN)**
+- Update active project artifacts to canonical skill name and phrasing.
+- Leave historical review artifacts unchanged.
+
+**Step 3: Refactor**
+- Keep existing requirement intent unchanged while updating naming only.
+
+**Step 4: Verify**
+- Run: `rg -n "oat-repo-review-analyze|Repo Review Analysis" .oat/projects/shared/repo-maintainability-review/plan.md .oat/projects/shared/repo-maintainability-review/implementation.md .oat/projects/shared/repo-maintainability-review/spec.md .oat/projects/shared/repo-maintainability-review/design.md .oat/projects/shared/repo-maintainability-review/discovery.md`
+- Expected: no matches in updated active artifacts.
+
+**Step 5: Commit**
+```bash
+git add .oat/projects/shared/repo-maintainability-review
+git commit -m "fix(p03-t02): align project artifacts to renamed skill"
+```
+
+---
+
+### Task p03-t03: Add `oat_output_mode` to Required Artifact Metadata
+
+**Files:**
+- Modify: `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
+
+**Step 1: Write test (RED)**
+- Run: `rg -n "oat_output_mode" .agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
+- Expected: missing before fix.
+
+**Step 2: Implement (GREEN)**
+- Add `oat_output_mode: auto|tracked|local|inline` to required frontmatter block.
+
+**Step 3: Refactor**
+- Keep field ordering aligned with design metadata schema.
+
+**Step 4: Verify**
+- Run: `rg -n "oat_output_mode: auto\\|tracked\\|local\\|inline" .agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
+- Expected: required field present.
+
+**Step 5: Commit**
+```bash
+git add .agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md
+git commit -m "fix(p03-t03): include output mode in artifact metadata"
+```
+
+---
+
+### Task p03-t04: Add Explicit Invalid-Target Error Contract
+
+**Files:**
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+
+**Step 1: Write test (RED)**
+- Run: `rg -n "invalid target|outside the repository root|valid target examples" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Expected: explicit error contract missing/incomplete.
+
+**Step 2: Implement (GREEN)**
+- Add invalid-target handling section requiring:
+  - resolved target path
+  - invalidity reason
+  - examples of valid targets
+  - stop behavior until corrected input
+
+**Step 3: Refactor**
+- Keep language concise and actionable.
+
+**Step 4: Verify**
+- Run: `rg -n "resolved target|why it is invalid|examples of valid targets" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Expected: explicit guidance present.
+
+**Step 5: Commit**
+```bash
+git add .agents/skills/oat-repo-maintainability-review/SKILL.md
+git commit -m "fix(p03-t04): define invalid target handling guidance"
+```
+
+---
+
+### Task p03-t05: Add Explicit Prioritization Split Guidance
+
+**Files:**
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+
+**Step 1: Write test (RED)**
+- Run: `rg -n "Quick Wins|Strategic Initiatives|Now / Next / Later|XS/S|M/L/XL" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Expected: split guidance missing/incomplete.
+
+**Step 2: Implement (GREEN)**
+- Add explicit synthesis guidance to split findings:
+  - Quick Wins -> XS/S
+  - Strategic Initiatives -> M/L/XL
+- Require Now/Next/Later execution framing.
+
+**Step 3: Refactor**
+- Align with artifact template wording.
+
+**Step 4: Verify**
+- Run: `rg -n "Quick Wins|Strategic Initiatives|Now / Next / Later|XS/S|M/L/XL" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Expected: prioritization rules present.
+
+**Step 5: Commit**
+```bash
+git add .agents/skills/oat-repo-maintainability-review/SKILL.md
+git commit -m "fix(p03-t05): require quick wins and strategic split"
+```
+
+---
+
+### Task p03-t06: Make Delegation Automatic with Provider Notes
+
+**Files:**
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+
+**Step 1: Write test (RED)**
+- Run: `rg -n "automatic|spawn one worker per analysis track|Provider notes|Codex|Claude|Cursor" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Expected: automatic provider-aware delegation language missing/incomplete.
+
+**Step 2: Implement (GREEN)**
+- Define automatic delegation behavior when multi-agent is supported.
+- Use generic workers (no custom role required) with orchestrator-provided prompt contract.
+- Add provider notes for Claude Code, Codex ("spawn a worker"), and Cursor.
+
+**Step 3: Refactor**
+- Remove wording that presents delegation as a user-selected mode.
+
+**Step 4: Verify**
+- Run: `rg -n "spawn one worker per analysis track|Provider notes|Codex: spawn a worker per track|Do not require a custom subagent role" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Expected: explicit provider-aware language present.
+
+**Step 5: Commit**
+```bash
+git add .agents/skills/oat-repo-maintainability-review/SKILL.md
+git commit -m "fix(p03-t06): enforce automatic provider-aware delegation"
+```
+
+---
+
+### Task p03-t07: Improve Resolver Warnings for Custom Output and Ignore Status
+
+**Files:**
+- Modify: `.agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh`
+
+**Step 1: Write test (RED)**
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode inline --output ./tmp/review.md`
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode local --output /nonexistent/path/review.md`
+- Expected: missing warning/advisory behavior for precedence and parent-directory checks.
+
+**Step 2: Implement (GREEN)**
+- Emit stderr note when `--output` overrides `--mode inline`.
+- Add advisory warning if output parent directory is missing or not writable.
+- Add code comment clarifying `output_gitignored` as best-effort for non-existent paths.
+
+**Step 3: Refactor**
+- Keep resolver non-destructive and machine-readable on stdout.
+
+**Step 4: Verify**
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode inline --output ./tmp/review.md 2>&1 | rg -n "overrides --mode inline|advisory|warning"`
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode local --output /nonexistent/path/review.md 2>&1 | rg -n "parent directory|warning|advisory"`
+- Expected: warnings are emitted while resolver still returns structured stdout.
+
+**Step 5: Commit**
+```bash
+git add .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh
+git commit -m "fix(p03-t07): add resolver advisories for output path edge cases"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | received | 2026-02-27 | reviews/final-review-2026-02-27.md |
+| p03 | code | pending | - | - |
+| final | code | fixes_added | 2026-02-27 | reviews/final-review-2026-02-27.md |
 | spec | artifact | pending | - | - |
 | design | artifact | fixes_completed | 2026-02-27 | reviews/artifact-design-review-2026-02-27.md |
 
@@ -332,8 +544,9 @@ git commit -m "feat(p02-t04): finalize summary contract and verification runbook
 **Summary:**
 - Phase 1: 5 tasks - scaffold skill package, encode invocation contract, add clarification/progress flow, implement output resolver, and finalize artifact references.
 - Phase 2: 4 tasks - define dimension workflow, codify synthesis merge policy, add optional fan-out parity guidance, and finalize summary/verification runbook.
+- Phase 3: 7 tasks - apply final review fixes for naming, metadata, invalid-target handling, prioritization guidance, delegation behavior, and resolver advisories.
 
-**Total: 9 tasks**
+**Total: 16 tasks**
 
 Ready for execution via `oat-project-implement`.
 
@@ -345,4 +558,5 @@ Ready for execution via `oat-project-implement`.
 - Specification: `spec.md`
 - Design: `design.md`
 - Design review artifact: `reviews/artifact-design-review-2026-02-27.md`
+- Final review artifact: `reviews/final-review-2026-02-27.md`
 - Plan format contract: `.agents/skills/oat-project-plan-writing/SKILL.md`
