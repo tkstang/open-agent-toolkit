@@ -147,6 +147,19 @@ Provider notes:
   - `focus` selection (or `none`)
 - Clarification channel details are for internal logging only; do not expose channel identifiers in the end-user summary.
 
+### Invalid Target Handling
+
+- If target path is invalid, stop execution and return actionable guidance.
+- Invalid target conditions:
+  - target does not exist
+  - target resolves outside the repository root
+  - target type is incompatible with requested scope
+- Error output must include:
+  - resolved target path
+  - why it is invalid
+  - valid target examples
+- Do not continue analysis until a corrected target is provided.
+
 ### Completion Summary Contract
 
 Final user-facing summary must include:
