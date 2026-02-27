@@ -106,6 +106,14 @@ Every run must cover all required dimensions:
   - Value differs by 2+ levels
 - When material disagreement is detected, add a `merge note` evidence bullet explaining the reconciliation decision.
 
+### Prioritization Output Requirements
+
+- Split findings into:
+  - `Quick Wins (XS/S)`
+  - `Strategic Initiatives (M/L/XL)`
+- Build an execution sequence using `Now / Next / Later`.
+- Ensure prioritization appears in both artifact sections and final summary guidance.
+
 ### Automatic Delegation (When Supported)
 
 - If runtime supports subagents or multi-agent execution, delegate automatically.
