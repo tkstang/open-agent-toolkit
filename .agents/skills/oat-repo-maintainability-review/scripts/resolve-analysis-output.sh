@@ -73,6 +73,7 @@ fi
 
 is_gitignored() {
   local path="$1"
+  # Best-effort for non-existent paths: gitignore evaluation may be incomplete.
   if git check-ignore -q "$path" 2>/dev/null; then
     echo "true"
   else
@@ -112,9 +113,22 @@ emit_file_result() {
 }
 
 if [[ -n "$OUTPUT" ]]; then
+  if [[ "$MODE" == "inline" ]]; then
+    echo "warning: --output overrides --mode inline; artifact will be written to file." >&2
+  fi
+
   if [[ -d "$OUTPUT" ]]; then
+    if [[ ! -w "$OUTPUT" ]]; then
+      echo "warning: advisory: output directory is not writable: $OUTPUT" >&2
+    fi
     emit_file_result "custom" "$(next_default_output_path "$OUTPUT")" "explicit_output_dir"
   else
+    parent_dir=$(dirname "$OUTPUT")
+    if [[ ! -d "$parent_dir" ]]; then
+      echo "warning: advisory: parent directory does not exist: $parent_dir" >&2
+    elif [[ ! -w "$parent_dir" ]]; then
+      echo "warning: advisory: parent directory is not writable: $parent_dir" >&2
+    fi
     emit_file_result "custom" "$OUTPUT" "explicit_output_path"
   fi
   exit 0
