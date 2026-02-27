@@ -1,5 +1,5 @@
 ---
-name: oat-repo-review-analyze
+name: oat-repo-maintainability-review
 version: 1.0.0
 description: Use when you need a structured maintainability analysis for a repository or directory target with actionable findings.
 argument-hint: "[--scope repo|directory] [--target <path>] [--mode auto|tracked|local|inline] [--output <path>] [--focus <areas>] [--analysis-mode full] [--fan-out]"
@@ -8,7 +8,7 @@ user-invocable: true
 allowed-tools: Read, Write, Bash, Glob, Grep, AskUserQuestion
 ---
 
-# Repo Review Analysis
+# Repo Maintainability Review
 
 Analyze repository maintainability and developer experience using a deterministic rubric and output contract.
 
@@ -20,7 +20,7 @@ Analyze repository maintainability and developer experience using a deterministi
 
 ## Mode Assertion
 
-**OAT MODE: Repo Review Analysis**
+**OAT MODE: Repo Maintainability Review**
 
 **Purpose:** Produce evidence-backed maintainability findings and a prioritized execution plan.
 
@@ -37,12 +37,12 @@ Analyze repository maintainability and developer experience using a deterministi
 
 - Print a phase banner once at start:
   - `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
-  - ` OAT ▸ REPO REVIEW ANALYZE`
+  - ` OAT ▸ REPO MAINTAINABILITY REVIEW`
   - `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
 - Print step indicators before major work:
   - `[1/5] Resolving scope, arguments, and output policy...`
   - `[2/5] Collecting repository evidence...`
-  - `[3/5] Running dimension analysis (single-agent or fan-out)...`
+  - `[3/5] Running dimension analysis (single-agent or multi-agent)...`
   - `[4/5] Synthesizing findings and scoring...`
   - `[5/5] Rendering artifact and summary...`
 - For long-running fan-out or large scans, print start + completion lines.
@@ -62,7 +62,7 @@ Analyze repository maintainability and developer experience using a deterministi
 Use the helper script to resolve destination policy:
 
 ```bash
-bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode auto
+bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode auto
 ```
 
 Rules:
@@ -106,13 +106,29 @@ Every run must cover all required dimensions:
   - Value differs by 2+ levels
 - When material disagreement is detected, add a `merge note` evidence bullet explaining the reconciliation decision.
 
-### Execution Mode: Baseline and Optional Fan-Out
+### Automatic Delegation (When Supported)
 
-- Default mode is `single-agent baseline` and must always be fully supported.
-- `optional fan-out` may be used for large repositories by running dimension tracks in parallel.
-- Fan-out workers must return findings in the same schema as baseline results.
-- Final synthesis step must enforce `schema parity` across baseline and fan-out outputs before rendering.
-- If fan-out orchestration is unavailable in the current provider/runtime, continue in single-agent mode without behavior loss.
+- If runtime supports subagents or multi-agent execution, delegate automatically.
+- Do not require a custom subagent role; use generic spawned workers with explicit prompts.
+- Spawn one worker per analysis track:
+  - `Architecture`
+  - `Conventions`
+  - `Documentation`
+  - `DX`
+  - `Testing`
+  - `Maintainability`
+- Worker prompt must include:
+  - scope and target path
+  - required finding schema
+  - evidence and confidence requirements
+- Wait for all workers to complete, then synthesize using dedupe/merge rules.
+- Enforce schema parity between delegated outputs and single-agent baseline outputs.
+- If delegation is unavailable, run the same tracks sequentially without behavior loss.
+
+Provider notes:
+- Claude Code: use Task/subagent dispatch when available.
+- Codex: spawn a worker per track (generic multi-agent worker), wait for all, then merge.
+- Cursor: invoke available subagent capability (`/name` or natural mention) per track when supported.
 
 ### Required-Argument Clarification
 
@@ -127,7 +143,7 @@ Every run must cover all required dimensions:
   - `target`
   - `mode`
   - `analysis-mode`
-  - `fan-out` state
+  - delegation state (`multi-agent` or `single-agent`)
   - `focus` selection (or `none`)
 - Clarification channel details are for internal logging only; do not expose channel identifiers in the end-user summary.
 
@@ -145,7 +161,7 @@ Final user-facing summary must include:
   - `Medium`
   - `Low`
 - Artifact path (`inline-only` when no file is emitted)
-- Execution mode (`single-agent` or `fan-out`)
+- Execution mode (`single-agent` or `multi-agent`)
 
 ## Success Criteria
 
