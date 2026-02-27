@@ -331,8 +331,9 @@ oat_generated: false
 
 | Phase | Tests Run | Passed | Failed | Coverage |
 |-------|-----------|--------|--------|----------|
-| 1 | - | - | - | - |
-| 2 | - | - | - | - |
+| 1 | Task-level verification commands | yes | 0 | n/a |
+| 2 | Task-level verification commands | yes | 0 | n/a |
+| Final | `pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build` | yes | 0 | n/a |
 
 ## Final Summary (for PR/docs)
 
@@ -346,7 +347,7 @@ oat_generated: false
 
 **Verification performed:**
 - Task-level contract checks and resolver command runs completed successfully.
-- Workspace-wide verification pending in current step (`pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build`).
+- Workspace-wide verification completed successfully: `pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build`.
 
 ## References
 
