@@ -71,6 +71,27 @@ Rules:
 - Tracked naming contract: `.oat/repo/analysis/<YYYY-MM-DD>-repo-review-analysis.md`.
 - If the same-day filename already exists, append `-2`, `-3`, etc.
 
+### Required Analysis Dimensions
+
+Every run must cover all required dimensions:
+
+- `Architecture` - module boundaries, coupling, and system organization.
+- `Conventions` - coding patterns, consistency, and repository standards.
+- `Documentation` - onboarding quality, runbooks, and operational docs.
+- `DX` - developer workflows, tooling friction, and feedback loops.
+- `Testing` - test strategy depth, reliability signals, and failure clarity.
+- `Maintainability` - ownership clarity, change safety, and delivery risk.
+
+### Evidence and Confidence Rules
+
+- Every finding must include at least one concrete evidence bullet.
+- Evidence should reference specific files, commands, or repository structures.
+- Confidence must align with evidence depth:
+  - `High` when multiple strong signals agree.
+  - `Medium` when evidence is sufficient but incomplete.
+  - `Low` when evidence is directional and requires validation.
+- If no issue is found for a dimension, provide a concise "no critical issues observed" note with supporting context.
+
 ### Required-Argument Clarification
 
 - Required arguments must be resolved before analysis starts.
