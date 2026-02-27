@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p03-t04
+oat_current_task_id: p03-t05
 oat_generated: false
 ---
 
@@ -20,9 +20,9 @@ oat_generated: false
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 5 | 5/5 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 7 | 3/7 |
+| Phase 3 | in_progress | 7 | 4/7 |
 
-**Total:** 12/16 tasks completed
+**Total:** 13/16 tasks completed
 
 ---
 
@@ -357,8 +357,23 @@ oat_generated: false
 
 ### Task p03-t04: Add Explicit Invalid-Target Error Contract
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** a95d7ef
+
+**Outcome (required):**
+- Added explicit invalid-target handling guidance to skill instructions.
+- Documented stop conditions and required actionable error output fields.
+- Enforced blocking behavior until corrected target input is provided.
+
+**Files changed:**
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - added invalid target handling contract.
+
+**Verification:**
+- Run: `rg -n "resolved target|why it is invalid|valid target examples" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Guidance is implementation-agnostic and works across provider runtimes.
 
 ---
 
@@ -408,7 +423,7 @@ oat_generated: false
 - [x] p03-t01: Rename Skill to `oat-repo-maintainability-review`
 - [x] p03-t02: Update Repo References to New Skill Name/Path
 - [x] p03-t03: Add `oat_output_mode` to Required Artifact Metadata
-- [ ] p03-t04: Add Explicit Invalid-Target Error Contract
+- [x] p03-t04: Add Explicit Invalid-Target Error Contract
 - [ ] p03-t05: Add Explicit Prioritization Split Guidance
 - [ ] p03-t06: Make Delegation Automatic with Provider Notes
 - [ ] p03-t07: Improve Resolver Warnings for Custom Output and Ignore Status
