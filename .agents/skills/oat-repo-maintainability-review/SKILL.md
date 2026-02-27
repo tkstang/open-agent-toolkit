@@ -117,6 +117,7 @@ Every run must cover all required dimensions:
 ### Automatic Delegation (When Supported)
 
 - If runtime supports subagents or multi-agent execution, delegate automatically.
+- Delegation is orchestrator-selected behavior, not a user-selected execution mode.
 - Do not require a custom subagent role; use generic spawned workers with explicit prompts.
 - Spawn one worker per analysis track:
   - `Architecture`
@@ -130,6 +131,7 @@ Every run must cover all required dimensions:
   - required finding schema
   - evidence and confidence requirements
 - Wait for all workers to complete, then synthesize using dedupe/merge rules.
+- Summarize one result block per analysis track before final merged summary.
 - Enforce schema parity between delegated outputs and single-agent baseline outputs.
 - If delegation is unavailable, run the same tracks sequentially without behavior loss.
 
