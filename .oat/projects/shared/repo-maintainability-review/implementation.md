@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p02-t03
+oat_current_task_id: p02-t04
 oat_generated: false
 ---
 
@@ -19,9 +19,9 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 5 | 5/5 |
-| Phase 2 | in_progress | 4 | 2/4 |
+| Phase 2 | in_progress | 4 | 3/4 |
 
-**Total:** 7/9 tasks completed
+**Total:** 8/9 tasks completed
 
 ---
 
@@ -219,8 +219,24 @@ oat_generated: false
 
 ### Task p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** ea2faa7
+
+**Outcome (required):**
+- Added explicit execution-mode rules establishing single-agent baseline as the default.
+- Added optional fan-out guidance with parallel dimension track behavior.
+- Added explicit schema-parity requirement before artifact rendering.
+- Added fallback rule to preserve baseline behavior when fan-out tooling is unavailable.
+
+**Files changed:**
+- `.agents/skills/oat-repo-review-analyze/SKILL.md` - added execution-mode and parity guardrails.
+
+**Verification:**
+- Run: `rg -n "single-agent|fan-out|parity|same schema" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Fan-out remains optional and non-blocking for provider portability.
 
 ---
 
@@ -251,7 +267,7 @@ oat_generated: false
 - [x] p01-t05: Author Artifact Template and Rubric Contracts
 - [x] p02-t01: Author End-to-End Analysis Workflow in `SKILL.md`
 - [x] p02-t02: Finalize Artifact Schema and Example Output Guidance
-- [ ] p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
+- [x] p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
 - [ ] p02-t04: Finalize Summary Output and Verification Runbook
 
 ### Artifact Review Receive: design
