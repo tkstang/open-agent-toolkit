@@ -1,6 +1,6 @@
 ---
-oat_current_task: p02-t04
-oat_last_commit: ea2faa7
+oat_current_task: null
+oat_last_commit: 7977e0b
 oat_blockers: []
 oat_hill_checkpoints: ["discovery", "spec", "design"]
 oat_hill_completed: ["discovery", "spec", "design"]
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation in progress from `p02-t04`.
+Implementation - Tasks complete; awaiting final review.
 
 ## Artifacts
 
@@ -29,7 +29,7 @@ Implementation in progress from `p02-t04`.
 - **Spec:** `spec.md` (complete)
 - **Design:** `design.md` (complete)
 - **Plan:** `plan.md` (complete, checkpoints set to final-gate-only)
-- **Implementation:** `implementation.md` (in_progress)
+- **Implementation:** `implementation.md` (tasks complete)
 
 ## Progress
 
@@ -40,8 +40,9 @@ Implementation in progress from `p02-t04`.
 - ✓ HiLL checkpoint passed: `design`
 - ✓ Plan refreshed to match latest design updates
 - ✓ Phase 1 implementation complete (`p01-t01` through `p01-t05`)
-- ✓ Phase 2 in progress (`p02-t01` through `p02-t03` complete)
-- ⧗ Executing next task (`p02-t04`)
+- ✓ Phase 2 implementation complete (`p02-t01` through `p02-t04`)
+- ✓ Implementation tasks complete
+- ⧗ Awaiting final review
 
 ## Blockers
 
@@ -49,4 +50,4 @@ None
 
 ## Next Milestone
 
-Complete Phase 1 tasks and proceed through `p02` before final review gate.
+Run final verification and then complete final code review (`final` scope).

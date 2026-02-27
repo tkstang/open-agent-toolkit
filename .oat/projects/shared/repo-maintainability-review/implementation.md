@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p02-t04
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -19,9 +19,9 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 5 | 5/5 |
-| Phase 2 | in_progress | 4 | 3/4 |
+| Phase 2 | complete | 4 | 4/4 |
 
-**Total:** 8/9 tasks completed
+**Total:** 9/9 tasks completed
 
 ---
 
@@ -242,8 +242,37 @@ oat_generated: false
 
 ### Task p02-t04: Finalize Summary Output and Verification Runbook
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 7977e0b
+
+**Outcome (required):**
+- Added final completion-summary contract with findings-by-Concern, findings-by-Value, artifact path, and execution mode fields.
+- Clarified that clarification channel details remain internal logging and are excluded from user-facing summaries.
+- Added explicit verification-command guidance in artifact template references.
+- Added DX verification runbook checks for repo, directory, and inline modes.
+
+**Files changed:**
+- `.agents/skills/oat-repo-review-analyze/SKILL.md` - added completion summary contract.
+- `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md` - added completion summary + verification command guidance.
+- `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md` - added verification runbook section.
+
+**Verification:**
+- Run: `rg -n "findings by Concern|findings by Value|artifact path|verification commands|clarification channel" .agents/skills/oat-repo-review-analyze/SKILL.md .agents/skills/oat-repo-review-analyze/references/*.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Kept summary fields concise and portable across provider runtimes.
+
+### Phase 2 Summary
+
+- **Outcome:** Completed analysis workflow rules for dimension coverage, synthesis normalization, optional fan-out parity, and output summary/verification contracts.
+- **Key files touched:**
+  - `.agents/skills/oat-repo-review-analyze/SKILL.md`
+  - `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
+  - `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md`
+  - `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md`
+- **Verification run:** All phase-level grep-based contract checks passed.
+- **Notable decisions/deviations:** No deviations; maintained single-agent baseline with optional fan-out guidance.
 
 ---
 
@@ -268,7 +297,7 @@ oat_generated: false
 - [x] p02-t01: Author End-to-End Analysis Workflow in `SKILL.md`
 - [x] p02-t02: Finalize Artifact Schema and Example Output Guidance
 - [x] p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
-- [ ] p02-t04: Finalize Summary Output and Verification Runbook
+- [x] p02-t04: Finalize Summary Output and Verification Runbook
 
 ### Artifact Review Receive: design
 
@@ -308,7 +337,16 @@ oat_generated: false
 ## Final Summary (for PR/docs)
 
 **What shipped:**
-- Pending implementation.
+- New skill package: `.agents/skills/oat-repo-review-analyze/` with:
+  - `SKILL.md` including invocation contract, progress indicators, clarification policy, required dimensions, synthesis rules, and completion summary contract.
+  - `scripts/resolve-analysis-output.sh` implementing deterministic output policy for `auto|tracked|local|inline` with `--output` precedence.
+  - `references/` artifacts defining output template, rubric, and DX checklist.
+- Deterministic tracked output naming contract: `.oat/repo/analysis/<YYYY-MM-DD>-repo-review-analysis.md` with same-day numeric suffixes.
+- Provider-aware clarification rules with portable fallback behavior.
+
+**Verification performed:**
+- Task-level contract checks and resolver command runs completed successfully.
+- Workspace-wide verification pending in current step (`pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build`).
 
 ## References
 
