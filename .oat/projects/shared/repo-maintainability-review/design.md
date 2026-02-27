@@ -1,6 +1,6 @@
 ---
-oat_status: in_progress
-oat_ready_for: null
+oat_status: complete
+oat_ready_for: oat-project-plan
 oat_blockers: []
 oat_last_updated: 2026-02-27
 oat_generated: false
@@ -12,7 +12,7 @@ oat_template_name: design
 
 ## Overview
 
-This design defines `oat-repo-review-analyze` as an analysis-only workflow skill that produces deterministic, evidence-based maintainability review artifacts. The design preserves OAT conventions around mode resolution, output policy, progress indicators, and artifact quality gates while avoiding implementation-coupled behavior.
+This design defines `oat-repo-maintainability-review` as an analysis-only workflow skill that produces deterministic, evidence-based maintainability review artifacts. The design preserves OAT conventions around mode resolution, output policy, progress indicators, and artifact quality gates while avoiding implementation-coupled behavior.
 
 The architecture uses a single-agent baseline as the default execution model and introduces optional fan-out/fan-in subagent orchestration for large repositories. The core contract is the artifact schema: consistent sections, normalized scoring, explicit confidence, and actionable recommendations mapped to staged execution. Invocation UX is also explicit: argument expectations are surfaced through `argument-hint`, required arguments are clarified before run start, and resolved run options are printed at execution start.
 
@@ -20,7 +20,7 @@ The architecture uses a single-agent baseline as the default execution model and
 
 ### System Context
 
-`oat-repo-review-analyze` is a new workflow skill under `.agents/skills/` that composes with existing OAT capabilities. It follows the same operational model as `oat-review-provide` (scope + mode resolution, output policy) and the same structured analysis posture as `oat-agent-instructions-analyze` (explicit process steps, result summary, reproducible artifacts).
+`oat-repo-maintainability-review` is a new workflow skill under `.agents/skills/` that composes with existing OAT capabilities. It follows the same operational model as `oat-review-provide` (scope + mode resolution, output policy) and the same structured analysis posture as `oat-agent-instructions-analyze` (explicit process steps, result summary, reproducible artifacts).
 
 Boundaries:
 - In scope: repository analysis and artifact generation.
@@ -44,7 +44,8 @@ User Invocation
      -> Output Policy Resolver
      -> Evidence Collection
      -> Dimension Analysis
-        -> (optional) parallel fan-out workers
+        -> baseline path: sequential analyzer pass
+        -> optional fan-out path: parallel workers by dimension
      -> Synthesis Engine
      -> Artifact Renderer
   -> Summary + artifact path (or inline output)
@@ -54,7 +55,7 @@ User Invocation
 
 ```text
 Input args + repo context
-  -> RunConfig {scope,target,mode,focus,analysisMode}
+  -> RunConfig {scope,target,mode,focus}
   -> EvidenceSet {files,signals,notes}
   -> FindingSet {category,concern,value,scope,confidence,evidence,...}
   -> PrioritizedPlan {quickWins,strategicInitiatives,nowNextLater}
@@ -80,7 +81,7 @@ Input args + repo context
 ```typescript
 type ScopeMode = 'repo' | 'directory';
 type OutputMode = 'auto' | 'tracked' | 'local' | 'inline';
-type AnalysisMode = 'full' | 'delta';
+type AnalysisMode = 'full';
 
 interface RepoReviewRunConfig {
   scope: ScopeMode;
@@ -95,7 +96,7 @@ interface RunOptionsSummary {
   scope: ScopeMode;
   target: string;
   mode: OutputMode;
-  analysisMode: AnalysisMode;
+  analysisMode: AnalysisMode; // v1 fixed to 'full'
   useFanOut: boolean;
   focusAreas: string[];
 }
@@ -109,6 +110,39 @@ interface RunOptionsSummary {
 **Design Decisions:**
 - Keep orchestration declarative in skill instructions for portability.
 - Enforce mandatory dimensions regardless of focus-area hints.
+- Keep v1 analysis mode fixed to `full`; defer `delta` until baseline comparison semantics are designed.
+
+### Skill Frontmatter Contract
+
+**Purpose:** Keep invocation UX and tool boundaries explicit at design time.
+
+**Required frontmatter keys for v1:**
+- `disable-model-invocation: true`
+- `user-invocable: true`
+- `allowed-tools: Read, Write, Bash, Glob, Grep, AskUserQuestion`
+- `argument-hint: "[--scope repo|directory] [--target <path>] [--mode auto|tracked|local|inline] [--output <path>] [--focus <areas>] [--analysis-mode full] [--fan-out]"`
+
+**Design Decisions:**
+- `argument-hint` is required for invocation discoverability; runtime clarification still handles missing/ambiguous required arguments.
+- `allowed-tools` must include filesystem + shell access for evidence collection and provider-native interactive questioning support.
+
+### Progress Indicators
+
+**Purpose:** Match OAT workflow conventions and keep long analyses observable.
+
+**Required user-facing format:**
+- Start banner:
+  - `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+  - ` OAT ▸ REPO MAINTAINABILITY REVIEW`
+  - `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
+- Step indicators (2-5 lines before major work):
+  - `[1/5] Resolving scope, arguments, and output policy...`
+  - `[2/5] Collecting repository evidence...`
+  - `[3/5] Running dimension analysis (single-agent or fan-out)...`
+  - `[4/5] Synthesizing findings and scoring...`
+  - `[5/5] Rendering artifact and summary...`
+- Print resolved run options immediately after argument resolution and before evidence collection.
+- For long-running fan-out, print a start + completion line for the fan-out stage.
 
 ### Clarification Interaction Adapter
 
@@ -154,12 +188,13 @@ interface ClarificationResponse {
 
 **Interfaces:**
 ```bash
-bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode auto
+bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode auto
 ```
 
 **Design Decisions:**
 - Mirror `oat-review-provide` destination behavior to reduce user surprise.
 - Surface explicit errors for invalid combinations.
+- If `--output` is provided, it takes precedence over `--mode` destination policy.
 
 ### Dimension Analyzers
 
@@ -173,6 +208,7 @@ bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh -
 **Design Decisions:**
 - Keep analyzer outputs schema-compatible to simplify synthesis.
 - Include DX checks as required, never optional.
+- Map categories to required dimensions exactly: `Architecture`, `Conventions`, `Documentation`, `DX`, `Testing` (including reliability), and `Maintainability`.
 
 ### Synthesis Engine
 
@@ -185,8 +221,10 @@ bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh -
 - Build Now/Next/Later execution plan.
 
 **Design Decisions:**
-- Preserve strongest Concern when overlap exists; merge evidence lists.
-- Require explanation when two analyzers disagree materially.
+- Overlap detection key: same `category` and same normalized path token (file path, module, or package) with semantically equivalent title.
+- Concern precedence for overlap: `Critical > High > Medium > Low`; merged finding keeps strongest Concern.
+- Material disagreement threshold: Concern differs by 2+ levels or Value differs by 2+ levels.
+- Require a merge note when disagreement threshold is met and append that note to the merged finding evidence list.
 
 ### Artifact Renderer
 
@@ -199,7 +237,8 @@ bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh -
 
 **Design Decisions:**
 - Standard section order for comparability across runs.
-- Deterministic naming for tracked artifacts by date + scope slug.
+- Deterministic tracked artifact path: `.oat/repo/analysis/<YYYY-MM-DD>-repo-review-analysis.md`.
+- If multiple runs occur on the same day, append a deterministic numeric suffix (`-2`, `-3`, ...) after `repo-review-analysis`.
 
 ## Data Models
 
@@ -214,7 +253,7 @@ interface AnalysisRunMetadata {
   analysisType: 'repo-review';
   analysisScope: 'repo' | 'directory';
   analysisTarget: string;
-  analysisMode: 'full' | 'delta';
+  analysisMode: 'full';
   analysisCommit: string;
   outputMode: 'auto' | 'tracked' | 'local' | 'inline';
 }
@@ -239,13 +278,12 @@ type Scope = 'XS' | 'S' | 'M' | 'L' | 'XL';
 type Confidence = 'High' | 'Medium' | 'Low';
 
 type FindingCategory =
-  | 'Organization'
+  | 'Architecture'
   | 'Conventions'
   | 'Documentation'
   | 'DX'
-  | 'Architecture'
   | 'Testing'
-  | 'Reliability';
+  | 'Maintainability';
 
 interface RepoReviewFinding {
   id: string;
@@ -299,9 +337,13 @@ interface RepoReviewAnalyzeArgs {
   mode?: 'auto' | 'tracked' | 'local' | 'inline';
   output?: string;
   focus?: string; // comma-separated areas
-  analysisMode?: 'full' | 'delta';
+  analysisMode?: 'full';
 }
 ```
+
+**Argument precedence:**
+- `output` (if provided) overrides destination derived from `mode`.
+- `analysisMode` is accepted only as `full` in v1 for forward compatibility.
 
 **Response:**
 ```typescript
@@ -311,7 +353,6 @@ interface RepoReviewAnalyzeSummary {
   findingsByValue: Record<string, number>;
   artifactPath: string | 'inline-only';
   executionMode: 'single-agent' | 'fan-out';
-  clarificationChannel: 'ask_user_question' | 'request_user_input' | 'plain_prompt';
 }
 ```
 
@@ -447,7 +488,7 @@ Not applicable; no database usage.
 
 ### Build Process
 
-- Keep skill assets in `.agents/skills/oat-repo-review-analyze/`.
+- Keep skill assets in `.agents/skills/oat-repo-maintainability-review/`.
 - Validate via repository checks: lint/type-check/tests as appropriate for touched code/scripts.
 - Refresh provider views with `oat sync --scope all --apply` when needed.
 
@@ -485,10 +526,13 @@ Potential compatibility adjustments:
 
 ## Open Questions
 
-- Should delta mode be default once tracking primitives are stable?
-- Should numeric scoring be introduced beside label scoring?
-- Should there be a dedicated follow-up skill to convert findings to implementation plans?
+- Should numeric scoring be introduced beside label scoring in v2 without weakening readability?
 - Should category-specific templates be introduced for different repo archetypes?
+
+### Resolved Design Decisions
+
+- `delta` analysis mode is out of v1 scope; `full` is the only supported mode until baseline-comparison behavior is specified.
+- Follow-up implementation planning remains external (`oat-project-plan` / `oat-project-implement`) rather than adding a dedicated converter skill in v1.
 
 ## Implementation Phases
 

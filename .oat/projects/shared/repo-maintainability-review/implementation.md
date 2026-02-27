@@ -37,20 +37,20 @@ oat_generated: false
 **Commit:** 729e045
 
 **Outcome (required):**
-- Created `.agents/skills/oat-repo-review-analyze/` directory with `SKILL.md`, `scripts/`, and `references/` subfolders.
+- Created `.agents/skills/oat-repo-maintainability-review/` directory with `SKILL.md`, `scripts/`, and `references/` subfolders.
 - Added placeholder `SKILL.md` with required top-level section headers.
 - Added placeholder artifact references (`repo-review-artifact-template.md`, `repo-review-rubric.md`, `dx-checklist.md`).
 - Added executable placeholder resolver script at `scripts/resolve-analysis-output.sh`.
 
 **Files changed:**
-- `.agents/skills/oat-repo-review-analyze/SKILL.md` - scaffolded initial skill document.
-- `.agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh` - scaffolded resolver script entrypoint.
-- `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md` - scaffolded template placeholder.
-- `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md` - scaffolded rubric placeholder.
-- `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md` - scaffolded checklist placeholder.
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - scaffolded initial skill document.
+- `.agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh` - scaffolded resolver script entrypoint.
+- `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md` - scaffolded template placeholder.
+- `.agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md` - scaffolded rubric placeholder.
+- `.agents/skills/oat-repo-maintainability-review/references/dx-checklist.md` - scaffolded checklist placeholder.
 
 **Verification:**
-- Run: `test -f .agents/skills/oat-repo-review-analyze/SKILL.md && test -f .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh && test -f .agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md`
+- Run: `test -f .agents/skills/oat-repo-maintainability-review/SKILL.md && test -f .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh && test -f .agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
 - Result: pass
 
 **Notes / Decisions:**
@@ -70,10 +70,10 @@ oat_generated: false
 - Added baseline mode assertion and process skeleton to prepare for deeper workflow steps.
 
 **Files changed:**
-- `.agents/skills/oat-repo-review-analyze/SKILL.md` - added frontmatter + invocation contract baseline.
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - added frontmatter + invocation contract baseline.
 
 **Verification:**
-- Run: `rg -n "allowed-tools: Read, Write, Bash, Glob, Grep, AskUserQuestion|argument-hint: \"\\[--scope repo\\|directory\\]" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "allowed-tools: Read, Write, Bash, Glob, Grep, AskUserQuestion|argument-hint: \"\\[--scope repo\\|directory\\]" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Result: pass
 
 **Notes / Decisions:**
@@ -93,10 +93,10 @@ oat_generated: false
 - Added required run-options summary output fields before evidence collection.
 
 **Files changed:**
-- `.agents/skills/oat-repo-review-analyze/SKILL.md` - expanded progress + interaction flow requirements.
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - expanded progress + interaction flow requirements.
 
 **Verification:**
-- Run: `rg -n "AskUserQuestion|request_user_input|plain-language|OAT ▸ REPO REVIEW ANALYZE|resolved run-options|\\[1/5\\]" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "AskUserQuestion|request_user_input|plain-language|OAT ▸ REPO MAINTAINABILITY REVIEW|resolved run-options|\\[1/5\\]" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Result: pass
 
 **Notes / Decisions:**
@@ -116,13 +116,13 @@ oat_generated: false
 - Added machine-readable resolver output fields (`analysis_mode`, `output_path`, `output_kind`, `reason`).
 
 **Files changed:**
-- `.agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh` - implemented resolver behavior.
-- `.agents/skills/oat-repo-review-analyze/SKILL.md` - documented resolver invocation and naming contract.
+- `.agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh` - implemented resolver behavior.
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - documented resolver invocation and naming contract.
 
 **Verification:**
-- Run: `bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode tracked`
-- Run: `bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode inline`
-- Run: `bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode local --output ./tmp/review.md`
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode tracked`
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode inline`
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode local --output ./tmp/review.md`
 - Result: pass
 
 **Notes / Decisions:**
@@ -142,12 +142,12 @@ oat_generated: false
 - Added explicit evidence and actionability quality rules for findings.
 
 **Files changed:**
-- `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md` - defined output structure and finding schema.
-- `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md` - defined label vocab and category requirements.
-- `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md` - defined DX analysis checklist.
+- `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md` - defined output structure and finding schema.
+- `.agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md` - defined label vocab and category requirements.
+- `.agents/skills/oat-repo-maintainability-review/references/dx-checklist.md` - defined DX analysis checklist.
 
 **Verification:**
-- Run: `rg -n "Maintainability|Testing|Confidence|recommendedAction|successCriteria" .agents/skills/oat-repo-review-analyze/references/*.md`
+- Run: `rg -n "Maintainability|Testing|Confidence|recommendedAction|successCriteria" .agents/skills/oat-repo-maintainability-review/references/*.md`
 - Result: pass
 
 **Notes / Decisions:**
@@ -157,11 +157,11 @@ oat_generated: false
 
 - **Outcome:** Established complete skill scaffolding and contract surfaces for invocation, progress behavior, output resolution, and artifact schemas.
 - **Key files touched:**
-  - `.agents/skills/oat-repo-review-analyze/SKILL.md`
-  - `.agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh`
-  - `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md`
-  - `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
-  - `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md`
+  - `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+  - `.agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh`
+  - `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
+  - `.agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md`
+  - `.agents/skills/oat-repo-maintainability-review/references/dx-checklist.md`
 - **Verification run:** Task-level checks for file existence, invocation contract patterns, resolver outputs, and reference schema markers all passed.
 - **Notable decisions/deviations:** No scope deviations; phase executed in-plan order.
 
@@ -183,10 +183,10 @@ oat_generated: false
 - Added fallback guidance for dimensions with no critical findings observed.
 
 **Files changed:**
-- `.agents/skills/oat-repo-review-analyze/SKILL.md` - added dimension workflow + evidence rules.
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - added dimension workflow + evidence rules.
 
 **Verification:**
-- Run: `rg -n "evidence|confidence|Architecture|Maintainability" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "evidence|confidence|Architecture|Maintainability" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Result: pass
 
 **Notes / Decisions:**
@@ -206,11 +206,11 @@ oat_generated: false
 - Mirrored policy language in the rubric reference to keep guidance synchronized.
 
 **Files changed:**
-- `.agents/skills/oat-repo-review-analyze/SKILL.md` - added synthesis and dedupe rules.
-- `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md` - added merge/dedupe policy section.
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - added synthesis and dedupe rules.
+- `.agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md` - added merge/dedupe policy section.
 
 **Verification:**
-- Run: `rg -n "2\\+|Critical > High > Medium > Low|merge note" .agents/skills/oat-repo-review-analyze/SKILL.md .agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
+- Run: `rg -n "2\\+|Critical > High > Medium > Low|merge note" .agents/skills/oat-repo-maintainability-review/SKILL.md .agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md`
 - Result: pass
 
 **Notes / Decisions:**
@@ -230,10 +230,10 @@ oat_generated: false
 - Added fallback rule to preserve baseline behavior when fan-out tooling is unavailable.
 
 **Files changed:**
-- `.agents/skills/oat-repo-review-analyze/SKILL.md` - added execution-mode and parity guardrails.
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - added execution-mode and parity guardrails.
 
 **Verification:**
-- Run: `rg -n "single-agent|fan-out|parity|same schema" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "single-agent|fan-out|parity|same schema" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Result: pass
 
 **Notes / Decisions:**
@@ -253,12 +253,12 @@ oat_generated: false
 - Added DX verification runbook checks for repo, directory, and inline modes.
 
 **Files changed:**
-- `.agents/skills/oat-repo-review-analyze/SKILL.md` - added completion summary contract.
-- `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md` - added completion summary + verification command guidance.
-- `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md` - added verification runbook section.
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - added completion summary contract.
+- `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md` - added completion summary + verification command guidance.
+- `.agents/skills/oat-repo-maintainability-review/references/dx-checklist.md` - added verification runbook section.
 
 **Verification:**
-- Run: `rg -n "findings by Concern|findings by Value|artifact path|verification commands|clarification channel" .agents/skills/oat-repo-review-analyze/SKILL.md .agents/skills/oat-repo-review-analyze/references/*.md`
+- Run: `rg -n "findings by Concern|findings by Value|artifact path|verification commands|clarification channel" .agents/skills/oat-repo-maintainability-review/SKILL.md .agents/skills/oat-repo-maintainability-review/references/*.md`
 - Result: pass
 
 **Notes / Decisions:**
@@ -268,10 +268,10 @@ oat_generated: false
 
 - **Outcome:** Completed analysis workflow rules for dimension coverage, synthesis normalization, optional fan-out parity, and output summary/verification contracts.
 - **Key files touched:**
-  - `.agents/skills/oat-repo-review-analyze/SKILL.md`
-  - `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
-  - `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md`
-  - `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md`
+  - `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+  - `.agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md`
+  - `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
+  - `.agents/skills/oat-repo-maintainability-review/references/dx-checklist.md`
 - **Verification run:** All phase-level grep-based contract checks passed.
 - **Notable decisions/deviations:** No deviations; maintained single-agent baseline with optional fan-out guidance.
 
@@ -288,7 +288,7 @@ oat_generated: false
 **Commit:** 42c93ce
 
 **Outcome (required):**
-- Renamed skill directory from `oat-repo-review-analyze` to `oat-repo-maintainability-review`.
+- Renamed skill directory from `oat-repo-maintainability-review` to `oat-repo-maintainability-review`.
 - Updated skill frontmatter `name` and user-facing headings to "Repo Maintainability Review".
 - Updated internal resolver script reference path in skill instructions.
 
@@ -419,7 +419,7 @@ oat_generated: false
 ## Final Summary (for PR/docs)
 
 **What shipped:**
-- New skill package: `.agents/skills/oat-repo-review-analyze/` with:
+- New skill package: `.agents/skills/oat-repo-maintainability-review/` with:
   - `SKILL.md` including invocation contract, progress indicators, clarification policy, required dimensions, synthesis rules, and completion summary contract.
   - `scripts/resolve-analysis-output.sh` implementing deterministic output policy for `auto|tracked|local|inline` with `--output` precedence.
   - `references/` artifacts defining output template, rubric, and DX checklist.

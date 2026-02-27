@@ -20,7 +20,7 @@ The project needs a repeatable way to evaluate repository maintainability and de
 
 Without a standardized rubric and output structure, teams get uneven findings quality, weak comparability over time, and unclear follow-through. The main failure mode is that outputs are descriptive but not actionable, especially when evidence quality or scope sizing is inconsistent.
 
-This specification formalizes a requirements baseline for `oat-repo-review-analyze`: a structured, evidence-based analysis workflow that can run repo-wide or on a directory target, produce prioritized findings, and provide practical execution guidance while preserving portability across provider ecosystems.
+This specification formalizes a requirements baseline for `oat-repo-maintainability-review`: a structured, evidence-based analysis workflow that can run repo-wide or on a directory target, produce prioritized findings, and provide practical execution guidance while preserving portability across provider ecosystems.
 
 ## Goals
 
@@ -197,19 +197,19 @@ The baseline path is single-agent: one orchestrator executes all required dimens
 
 | ID | Description | Priority | Verification | Planned Tasks |
 |----|-------------|----------|--------------|---------------|
-| FR1 | Support repository and directory scope modes | P0 | manual: scope mode and target validation behavior | TBD - see plan.md |
-| FR2 | Produce standardized artifact structure | P0 | manual: section and metadata completeness review | TBD - see plan.md |
-| FR3 | Enforce normalized finding scoring fields | P0 | manual: finding schema conformance check | TBD - see plan.md |
-| FR4 | Cover all required analysis dimensions | P0 | manual: dimension coverage checklist review | TBD - see plan.md |
-| FR5 | Support mode-aware output destinations | P0 | unit + manual: output mode resolution scenarios | TBD - see plan.md |
-| FR6 | Provide actionable prioritization and sequencing | P1 | manual: quick-win/strategic split and staged plan review | TBD - see plan.md |
-| FR7 | Support optional subagent fan-out with deterministic synthesis | P1 | manual: documented fan-out and merge-policy validation | TBD - see plan.md |
-| FR8 | Ensure argument-hint and required-argument clarity at invocation | P0 | manual: missing/ambiguous argument clarification and startup options summary check | TBD - see plan.md |
-| FR9 | Use provider-native question tools for clarification when available | P0 | manual: provider-aware question tooling selection and fallback confirmation flow | TBD - see plan.md |
-| NFR1 | Ensure evidence-backed findings quality | P0 | manual: evidence completeness and confidence alignment | TBD - see plan.md |
-| NFR2 | Ensure constructive and actionable communication | P0 | manual: language and recommendation quality review | TBD - see plan.md |
-| NFR3 | Ensure repeatability and traceability | P1 | manual: metadata and deterministic naming validation | TBD - see plan.md |
-| NFR4 | Preserve provider portability of core behavior | P1 | manual: single-agent baseline viability review | TBD - see plan.md |
+| FR1 | Support repository and directory scope modes | P0 | manual: scope mode and target validation behavior | p01-t02, p01-t03 |
+| FR2 | Produce standardized artifact structure | P0 | manual: section and metadata completeness review | p01-t05, p02-t04 |
+| FR3 | Enforce normalized finding scoring fields | P0 | manual: finding schema conformance check | p01-t05, p02-t01, p02-t02 |
+| FR4 | Cover all required analysis dimensions | P0 | manual: dimension coverage checklist review | p01-t05, p02-t01 |
+| FR5 | Support mode-aware output destinations | P0 | unit + manual: output mode resolution scenarios | p01-t04 |
+| FR6 | Provide actionable prioritization and sequencing | P1 | manual: quick-win/strategic split and staged plan review | p02-t02, p02-t04 |
+| FR7 | Support optional subagent fan-out with deterministic synthesis | P1 | manual: documented fan-out and merge-policy validation | p02-t02, p02-t03 |
+| FR8 | Ensure argument-hint and required-argument clarity at invocation | P0 | manual: missing/ambiguous argument clarification and startup options summary check | p01-t02, p01-t03 |
+| FR9 | Use provider-native question tools for clarification when available | P0 | manual: provider-aware question tooling selection and fallback confirmation flow | p01-t03 |
+| NFR1 | Ensure evidence-backed findings quality | P0 | manual: evidence completeness and confidence alignment | p02-t01, p02-t02 |
+| NFR2 | Ensure constructive and actionable communication | P0 | manual: language and recommendation quality review | p01-t05, p02-t04 |
+| NFR3 | Ensure repeatability and traceability | P1 | manual: metadata and deterministic naming validation | p01-t04, p02-t04 |
+| NFR4 | Preserve provider portability of core behavior | P1 | manual: single-agent baseline viability review | p01-t03, p02-t03 |
 
 ## Open Questions
 

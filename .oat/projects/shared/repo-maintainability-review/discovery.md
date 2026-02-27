@@ -15,7 +15,7 @@ Bootstrap this quick-start project from `.oat/ideas/repo-analyze-skill` and carr
 ## Source Idea
 
 - Canonical source: `.oat/ideas/repo-analyze-skill/discovery.md`
-- Proposed deliverable: reusable skill `oat-repo-review-analyze`
+- Proposed deliverable: reusable skill `oat-repo-maintainability-review`
 
 ## Problem
 
@@ -31,7 +31,7 @@ OAT has strong workflows for instruction analysis (`oat-agent-instructions-analy
 
 ## Idea
 
-Create `oat-repo-review-analyze`, an evidence-based, non-judgmental repository analysis skill that outputs a standardized artifact with:
+Create `oat-repo-maintainability-review`, an evidence-based, non-judgmental repository analysis skill that outputs a standardized artifact with:
 
 - prioritized findings
 - dual scoring (`Concern` + `Value`)
@@ -223,7 +223,7 @@ Skill-local references to add:
 
 ### Option A: No Subagents in v1
 
-**Description:** Keep `oat-repo-review-analyze` strictly single-agent for v1 and defer all subagent behavior.
+**Description:** Keep `oat-repo-maintainability-review` strictly single-agent for v1 and defer all subagent behavior.
 
 **Pros:**
 - Lowest implementation complexity and fastest delivery.
@@ -301,7 +301,7 @@ Skill-local references to add:
 
 ## Initial Rollout Plan
 
-1. Implement `oat-repo-review-analyze` as v1 skill draft.
+1. Implement `oat-repo-maintainability-review` as v1 skill draft.
 2. Test on multiple repository shapes.
 3. Calibrate scoring language consistency.
 4. Add optional deterministic metrics helper script.

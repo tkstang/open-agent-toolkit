@@ -37,14 +37,14 @@ oat_generated: false
 ### Task p01-t01: Scaffold Skill Package Files
 
 **Files:**
-- Create: `.agents/skills/oat-repo-review-analyze/SKILL.md`
-- Create: `.agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh`
-- Create: `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md`
-- Create: `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
-- Create: `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md`
+- Create: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Create: `.agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh`
+- Create: `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
+- Create: `.agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md`
+- Create: `.agents/skills/oat-repo-maintainability-review/references/dx-checklist.md`
 
 **Step 1: Write test (RED)**
-- Run: `test -f .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `test -f .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Expected: command fails before scaffold exists.
 
 **Step 2: Implement (GREEN)**
@@ -54,12 +54,12 @@ oat_generated: false
 - Ensure file names and paths follow OAT conventions and are one-level reference friendly.
 
 **Step 4: Verify**
-- Run: `test -f .agents/skills/oat-repo-review-analyze/SKILL.md && test -f .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh && test -f .agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md`
+- Run: `test -f .agents/skills/oat-repo-maintainability-review/SKILL.md && test -f .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh && test -f .agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
 - Expected: all scaffold files exist.
 
 **Step 5: Commit**
 ```bash
-git add .agents/skills/oat-repo-review-analyze
+git add .agents/skills/oat-repo-maintainability-review
 git commit -m "feat(p01-t01): scaffold repo review analyze skill package"
 ```
 
@@ -68,10 +68,10 @@ git commit -m "feat(p01-t01): scaffold repo review analyze skill package"
 ### Task p01-t02: Encode Frontmatter and Invocation Contract
 
 **Files:**
-- Modify: `.agents/skills/oat-repo-review-analyze/SKILL.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
 
 **Step 1: Write test (RED)**
-- Run: `rg -n "argument-hint|allowed-tools|disable-model-invocation|user-invocable" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "argument-hint|allowed-tools|disable-model-invocation|user-invocable" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Expected: required contract entries are missing/incomplete.
 
 **Step 2: Implement (GREEN)**
@@ -86,12 +86,12 @@ git commit -m "feat(p01-t01): scaffold repo review analyze skill package"
 - Align wording to existing OAT skill style and keep description routing-focused.
 
 **Step 4: Verify**
-- Run: `rg -n "allowed-tools: Read, Write, Bash, Glob, Grep, AskUserQuestion|argument-hint: \"\[--scope repo\|directory\]" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "allowed-tools: Read, Write, Bash, Glob, Grep, AskUserQuestion|argument-hint: \"\[--scope repo\|directory\]" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Expected: exact contract lines found.
 
 **Step 5: Commit**
 ```bash
-git add .agents/skills/oat-repo-review-analyze/SKILL.md
+git add .agents/skills/oat-repo-maintainability-review/SKILL.md
 git commit -m "feat(p01-t02): add skill frontmatter argument contract"
 ```
 
@@ -100,10 +100,10 @@ git commit -m "feat(p01-t02): add skill frontmatter argument contract"
 ### Task p01-t03: Add Clarification and Progress Interaction Flow
 
 **Files:**
-- Modify: `.agents/skills/oat-repo-review-analyze/SKILL.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
 
 **Step 1: Write test (RED)**
-- Run: `rg -n "AskUserQuestion|request_user_input|fallback|resolved run options|\[1/[0-9]+\]" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "AskUserQuestion|request_user_input|fallback|resolved run options|\[1/[0-9]+\]" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Expected: provider-aware clarification and progress conventions are incomplete.
 
 **Step 2: Implement (GREEN)**
@@ -118,12 +118,12 @@ git commit -m "feat(p01-t02): add skill frontmatter argument contract"
 - Keep prompts concise and deterministic; remove duplicate guidance.
 
 **Step 4: Verify**
-- Run: `rg -n "AskUserQuestion|request_user_input|plain-language clarification|OAT ▸ REPO REVIEW ANALYZE|resolved run options" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "AskUserQuestion|request_user_input|plain-language clarification|OAT ▸ REPO MAINTAINABILITY REVIEW|resolved run options" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Expected: all interaction requirements present.
 
 **Step 5: Commit**
 ```bash
-git add .agents/skills/oat-repo-review-analyze/SKILL.md
+git add .agents/skills/oat-repo-maintainability-review/SKILL.md
 git commit -m "feat(p01-t03): add provider-aware clarification and progress flow"
 ```
 
@@ -132,11 +132,11 @@ git commit -m "feat(p01-t03): add provider-aware clarification and progress flow
 ### Task p01-t04: Implement Output Resolver Behavior and Path Rules
 
 **Files:**
-- Modify: `.agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh`
-- Modify: `.agents/skills/oat-repo-review-analyze/SKILL.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh`
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
 
 **Step 1: Write test (RED)**
-- Run: `bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode auto`
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode auto`
 - Expected: failure or missing behavior before implementation.
 
 **Step 2: Implement (GREEN)**
@@ -149,14 +149,14 @@ git commit -m "feat(p01-t03): add provider-aware clarification and progress flow
 - Use strict shell mode and quoted variables; keep stdout machine-readable.
 
 **Step 4: Verify**
-- Run: `bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode tracked`
-- Run: `bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode inline`
-- Run: `bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode local --output ./tmp/review.md`
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode tracked`
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode inline`
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode local --output ./tmp/review.md`
 - Expected: each run returns deterministic mode/path semantics and no silent fallback.
 
 **Step 5: Commit**
 ```bash
-git add .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh .agents/skills/oat-repo-review-analyze/SKILL.md
+git add .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh .agents/skills/oat-repo-maintainability-review/SKILL.md
 git commit -m "feat(p01-t04): implement deterministic analysis output resolver"
 ```
 
@@ -165,12 +165,12 @@ git commit -m "feat(p01-t04): implement deterministic analysis output resolver"
 ### Task p01-t05: Author Artifact Template and Rubric Contracts
 
 **Files:**
-- Modify: `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md`
-- Modify: `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
-- Modify: `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/references/dx-checklist.md`
 
 **Step 1: Write test (RED)**
-- Run: `rg -n "Executive Summary|Scoring Summary|Prioritized Findings|Quick Wins|Strategic Initiatives|Now / Next / Later|oat_analysis_type" .agents/skills/oat-repo-review-analyze/references/*.md`
+- Run: `rg -n "Executive Summary|Scoring Summary|Prioritized Findings|Quick Wins|Strategic Initiatives|Now / Next / Later|oat_analysis_type" .agents/skills/oat-repo-maintainability-review/references/*.md`
 - Expected: required section/schema markers missing before content is authored.
 
 **Step 2: Implement (GREEN)**
@@ -182,12 +182,12 @@ git commit -m "feat(p01-t04): implement deterministic analysis output resolver"
 - Normalize terminology with design and spec vocabulary.
 
 **Step 4: Verify**
-- Run: `rg -n "Maintainability|Testing|Confidence|recommendedAction|successCriteria" .agents/skills/oat-repo-review-analyze/references/*.md`
+- Run: `rg -n "Maintainability|Testing|Confidence|recommendedAction|successCriteria" .agents/skills/oat-repo-maintainability-review/references/*.md`
 - Expected: schema and category mappings are explicit.
 
 **Step 5: Commit**
 ```bash
-git add .agents/skills/oat-repo-review-analyze/references
+git add .agents/skills/oat-repo-maintainability-review/references
 git commit -m "feat(p01-t05): finalize repo review artifact and rubric contracts"
 ```
 
@@ -198,10 +198,10 @@ git commit -m "feat(p01-t05): finalize repo review artifact and rubric contracts
 ### Task p02-t01: Define Dimension Analysis Workflow in SKILL.md
 
 **Files:**
-- Modify: `.agents/skills/oat-repo-review-analyze/SKILL.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
 
 **Step 1: Write test (RED)**
-- Run: `rg -n "Architecture|Conventions|Documentation|DX|Testing|Maintainability" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "Architecture|Conventions|Documentation|DX|Testing|Maintainability" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Expected: one or more required analysis dimensions missing.
 
 **Step 2: Implement (GREEN)**
@@ -212,12 +212,12 @@ git commit -m "feat(p01-t05): finalize repo review artifact and rubric contracts
 - Deduplicate overlapping guidance between skill body and references.
 
 **Step 4: Verify**
-- Run: `rg -n "evidence|confidence|Architecture|Maintainability" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "evidence|confidence|Architecture|Maintainability" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Expected: all required dimensions and evidence constraints present.
 
 **Step 5: Commit**
 ```bash
-git add .agents/skills/oat-repo-review-analyze/SKILL.md
+git add .agents/skills/oat-repo-maintainability-review/SKILL.md
 git commit -m "feat(p02-t01): define required analysis dimensions and evidence rules"
 ```
 
@@ -226,11 +226,11 @@ git commit -m "feat(p02-t01): define required analysis dimensions and evidence r
 ### Task p02-t02: Codify Deterministic Synthesis Merge Policy
 
 **Files:**
-- Modify: `.agents/skills/oat-repo-review-analyze/SKILL.md`
-- Modify: `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md`
 
 **Step 1: Write test (RED)**
-- Run: `rg -n "overlap|material disagreement|Concern|merge note|dedupe" .agents/skills/oat-repo-review-analyze/SKILL.md .agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
+- Run: `rg -n "overlap|material disagreement|Concern|merge note|dedupe" .agents/skills/oat-repo-maintainability-review/SKILL.md .agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md`
 - Expected: threshold and overlap rules incomplete.
 
 **Step 2: Implement (GREEN)**
@@ -242,12 +242,12 @@ git commit -m "feat(p02-t01): define required analysis dimensions and evidence r
 - Keep rubric and skill wording aligned with identical rule names.
 
 **Step 4: Verify**
-- Run: `rg -n "2\+|Critical > High > Medium > Low|merge note" .agents/skills/oat-repo-review-analyze/SKILL.md .agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md`
+- Run: `rg -n "2\+|Critical > High > Medium > Low|merge note" .agents/skills/oat-repo-maintainability-review/SKILL.md .agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md`
 - Expected: deterministic merge policy documented end-to-end.
 
 **Step 5: Commit**
 ```bash
-git add .agents/skills/oat-repo-review-analyze/SKILL.md .agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md
+git add .agents/skills/oat-repo-maintainability-review/SKILL.md .agents/skills/oat-repo-maintainability-review/references/repo-review-rubric.md
 git commit -m "feat(p02-t02): codify deterministic synthesis merge policy"
 ```
 
@@ -256,10 +256,10 @@ git commit -m "feat(p02-t02): codify deterministic synthesis merge policy"
 ### Task p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
 
 **Files:**
-- Modify: `.agents/skills/oat-repo-review-analyze/SKILL.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
 
 **Step 1: Write test (RED)**
-- Run: `rg -n "single-agent baseline|optional fan-out|parallel|schema parity" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "single-agent baseline|optional fan-out|parallel|schema parity" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Expected: fan-out parity requirements incomplete.
 
 **Step 2: Implement (GREEN)**
@@ -271,12 +271,12 @@ git commit -m "feat(p02-t02): codify deterministic synthesis merge policy"
 - Keep fan-out path explicitly optional; avoid mandatory provider-specific dependencies.
 
 **Step 4: Verify**
-- Run: `rg -n "single-agent|fan-out|parity|same schema" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Run: `rg -n "single-agent|fan-out|parity|same schema" .agents/skills/oat-repo-maintainability-review/SKILL.md`
 - Expected: optional fan-out behavior and parity rules are explicit.
 
 **Step 5: Commit**
 ```bash
-git add .agents/skills/oat-repo-review-analyze/SKILL.md
+git add .agents/skills/oat-repo-maintainability-review/SKILL.md
 git commit -m "feat(p02-t03): document optional fan-out with schema parity guardrails"
 ```
 
@@ -285,12 +285,12 @@ git commit -m "feat(p02-t03): document optional fan-out with schema parity guard
 ### Task p02-t04: Finalize Summary Output and Verification Runbook
 
 **Files:**
-- Modify: `.agents/skills/oat-repo-review-analyze/SKILL.md`
-- Modify: `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md`
-- Modify: `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
+- Modify: `.agents/skills/oat-repo-maintainability-review/references/dx-checklist.md`
 
 **Step 1: Write test (RED)**
-- Run: `rg -n "findings by Concern|findings by Value|artifact path|verification commands|clarification channel" .agents/skills/oat-repo-review-analyze/SKILL.md .agents/skills/oat-repo-review-analyze/references/*.md`
+- Run: `rg -n "findings by Concern|findings by Value|artifact path|verification commands|clarification channel" .agents/skills/oat-repo-maintainability-review/SKILL.md .agents/skills/oat-repo-maintainability-review/references/*.md`
 - Expected: final summary or verification checklist fields incomplete.
 
 **Step 2: Implement (GREEN)**
@@ -302,12 +302,12 @@ git commit -m "feat(p02-t03): document optional fan-out with schema parity guard
 - Ensure completion summary language remains concise and action-oriented.
 
 **Step 4: Verify**
-- Run: `rg -n "Concern|Value|artifact path|inline|directory scope|internal logging" .agents/skills/oat-repo-review-analyze/SKILL.md .agents/skills/oat-repo-review-analyze/references/*.md`
+- Run: `rg -n "Concern|Value|artifact path|inline|directory scope|internal logging" .agents/skills/oat-repo-maintainability-review/SKILL.md .agents/skills/oat-repo-maintainability-review/references/*.md`
 - Expected: summary and validation runbook are complete.
 
 **Step 5: Commit**
 ```bash
-git add .agents/skills/oat-repo-review-analyze/SKILL.md .agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md .agents/skills/oat-repo-review-analyze/references/dx-checklist.md
+git add .agents/skills/oat-repo-maintainability-review/SKILL.md .agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md .agents/skills/oat-repo-maintainability-review/references/dx-checklist.md
 git commit -m "feat(p02-t04): finalize summary contract and verification runbook"
 ```
 
@@ -318,7 +318,7 @@ git commit -m "feat(p02-t04): finalize summary contract and verification runbook
 ### Task p03-t01: Rename Skill to `oat-repo-maintainability-review`
 
 **Files:**
-- Move: `.agents/skills/oat-repo-review-analyze/` -> `.agents/skills/oat-repo-maintainability-review/`
+- Move: `.agents/skills/oat-repo-maintainability-review/` -> `.agents/skills/oat-repo-maintainability-review/`
 - Modify: `.agents/skills/oat-repo-maintainability-review/SKILL.md`
 
 **Step 1: Write test (RED)**
@@ -338,7 +338,7 @@ git commit -m "feat(p02-t04): finalize summary contract and verification runbook
 
 **Step 5: Commit**
 ```bash
-git add .agents/skills/oat-repo-maintainability-review .agents/skills/oat-repo-review-analyze
+git add .agents/skills/oat-repo-maintainability-review .agents/skills/oat-repo-maintainability-review
 git commit -m "fix(p03-t01): rename skill to repo maintainability review"
 ```
 
@@ -354,7 +354,7 @@ git commit -m "fix(p03-t01): rename skill to repo maintainability review"
 - Modify: `.oat/projects/shared/repo-maintainability-review/discovery.md`
 
 **Step 1: Write test (RED)**
-- Run: `rg -n "oat-repo-review-analyze|Repo Review Analysis" .oat/projects/shared/repo-maintainability-review`
+- Run: `rg -n "oat-repo-maintainability-review|Repo Maintainability Review" .oat/projects/shared/repo-maintainability-review`
 - Expected: matches found.
 
 **Step 2: Implement (GREEN)**
@@ -365,7 +365,7 @@ git commit -m "fix(p03-t01): rename skill to repo maintainability review"
 - Keep existing requirement intent unchanged while updating naming only.
 
 **Step 4: Verify**
-- Run: `rg -n "oat-repo-review-analyze|Repo Review Analysis" .oat/projects/shared/repo-maintainability-review/plan.md .oat/projects/shared/repo-maintainability-review/implementation.md .oat/projects/shared/repo-maintainability-review/spec.md .oat/projects/shared/repo-maintainability-review/design.md .oat/projects/shared/repo-maintainability-review/discovery.md`
+- Run: `rg -n "oat-repo-maintainability-review|Repo Maintainability Review" .oat/projects/shared/repo-maintainability-review/plan.md .oat/projects/shared/repo-maintainability-review/implementation.md .oat/projects/shared/repo-maintainability-review/spec.md .oat/projects/shared/repo-maintainability-review/design.md .oat/projects/shared/repo-maintainability-review/discovery.md`
 - Expected: no matches in updated active artifacts.
 
 **Step 5: Commit**
