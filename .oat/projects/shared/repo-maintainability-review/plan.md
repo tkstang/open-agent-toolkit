@@ -531,7 +531,7 @@ git commit -m "fix(p03-t07): add resolver advisories for output path edge cases"
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
-| final | code | fixes_added | 2026-02-27 | reviews/final-review-2026-02-27.md |
+| final | code | fixes_completed | 2026-02-27 | reviews/final-review-2026-02-27.md |
 | spec | artifact | pending | - | - |
 | design | artifact | fixes_completed | 2026-02-27 | reviews/artifact-design-review-2026-02-27.md |
 

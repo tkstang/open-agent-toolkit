@@ -1,6 +1,6 @@
 ---
-oat_current_task: p03-t07
-oat_last_commit: 8cb0b38
+oat_current_task: null
+oat_last_commit: c65f940
 oat_blockers: []
 oat_hill_checkpoints: ["discovery", "spec", "design"]
 oat_hill_completed: ["discovery", "spec", "design"]
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation in progress from `p03-t07` (final review fixes).
+Implementation - Review-fix tasks complete; awaiting final re-review.
 
 ## Artifacts
 
@@ -29,7 +29,7 @@ Implementation in progress from `p03-t07` (final review fixes).
 - **Spec:** `spec.md` (complete)
 - **Design:** `design.md` (complete)
 - **Plan:** `plan.md` (complete, checkpoints set to final-gate-only)
-- **Implementation:** `implementation.md` (in_progress)
+- **Implementation:** `implementation.md` (review-fix tasks complete)
 
 ## Progress
 
@@ -48,7 +48,8 @@ Implementation in progress from `p03-t07` (final review fixes).
 - ✓ Review-fix task `p03-t04` complete (invalid target guidance added)
 - ✓ Review-fix task `p03-t05` complete (prioritization split added)
 - ✓ Review-fix task `p03-t06` complete (automatic delegation + provider notes)
-- ⧗ Executing review-fix tasks (`p03-t07` onward)
+- ✓ Review-fix task `p03-t07` complete (resolver advisories added)
+- ⧗ Awaiting final re-review (`oat-project-review-provide code final`)
 
 ## Blockers
 
@@ -56,4 +57,4 @@ None
 
 ## Next Milestone
 
-Complete Phase 3 review-fix tasks, then request final re-review.
+Run final re-review (`oat-project-review-provide code final`), then process with `oat-project-review-receive`.

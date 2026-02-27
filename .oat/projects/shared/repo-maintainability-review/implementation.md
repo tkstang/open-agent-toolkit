@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p03-t07
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -20,9 +20,9 @@ oat_generated: false
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 5 | 5/5 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 7 | 6/7 |
+| Phase 3 | complete | 7 | 7/7 |
 
-**Total:** 15/16 tasks completed
+**Total:** 16/16 tasks completed
 
 ---
 
@@ -279,7 +279,7 @@ oat_generated: false
 
 ## Phase 3: Final Review Fixes
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-02-27
 
 ### Task p03-t01: Rename Skill to `oat-repo-maintainability-review`
@@ -288,7 +288,7 @@ oat_generated: false
 **Commit:** 42c93ce
 
 **Outcome (required):**
-- Renamed skill directory from `oat-repo-maintainability-review` to `oat-repo-maintainability-review`.
+- Renamed skill directory from `oat-repo-review-analyze` to `oat-repo-maintainability-review`.
 - Updated skill frontmatter `name` and user-facing headings to "Repo Maintainability Review".
 - Updated internal resolver script reference path in skill instructions.
 
@@ -423,8 +423,35 @@ oat_generated: false
 
 ### Task p03-t07: Improve Resolver Warnings for Custom Output and Ignore Status
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** c65f940
+
+**Outcome (required):**
+- Added stderr warning when `--output` overrides `--mode inline`.
+- Added advisory warnings for missing or non-writable parent directories on explicit output paths.
+- Documented `output_gitignored` as best-effort for non-existent paths.
+
+**Files changed:**
+- `.agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh` - added warning/advisory handling and gitignore caveat comment.
+
+**Verification:**
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode inline --output ./tmp/review.md 2>&1 | rg -n "overrides --mode inline|advisory|warning"`
+- Run: `bash .agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh --mode local --output /nonexistent/path/review.md 2>&1 | rg -n "parent directory|warning|advisory"`
+- Result: pass
+
+**Notes / Decisions:**
+- Resolver remains non-destructive and keeps machine-readable outputs on stdout.
+
+### Phase 3 Summary
+
+- **Outcome:** Completed final-review fix set for naming alignment, metadata coverage, target validation guidance, prioritization rules, automatic delegation notes, and resolver warnings.
+- **Key files touched:**
+  - `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+  - `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
+  - `.agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh`
+  - `.oat/projects/shared/repo-maintainability-review/{discovery,spec,design,plan,implementation}.md`
+- **Verification run:** All p03 task checks passed.
+- **Notable decisions/deviations:** `m3` and `m4` remained deferred by explicit user direction.
 
 ---
 
@@ -456,7 +483,7 @@ oat_generated: false
 - [x] p03-t04: Add Explicit Invalid-Target Error Contract
 - [x] p03-t05: Add Explicit Prioritization Split Guidance
 - [x] p03-t06: Make Delegation Automatic with Provider Notes
-- [ ] p03-t07: Improve Resolver Warnings for Custom Output and Ignore Status
+- [x] p03-t07: Improve Resolver Warnings for Custom Output and Ignore Status
 
 ### Artifact Review Receive: design
 
@@ -492,6 +519,7 @@ oat_generated: false
 |-------|-----------|--------|--------|----------|
 | 1 | Task-level verification commands | yes | 0 | n/a |
 | 2 | Task-level verification commands | yes | 0 | n/a |
+| 3 | Task-level verification commands | yes | 0 | n/a |
 | Final | `pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build` | yes | 0 | n/a |
 
 ## Final Summary (for PR/docs)
@@ -510,7 +538,7 @@ oat_generated: false
 
 **Review-fix continuation:**
 - Final review received additional findings and follow-up tasks were added in Phase 3.
-- Next: execute `p03-t01` through `p03-t07`, then request re-review.
+- Next: request re-review (`oat-project-review-provide code final`) and process results.
 
 ## References
 
