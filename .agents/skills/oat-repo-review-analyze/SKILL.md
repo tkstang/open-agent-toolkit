@@ -106,6 +106,14 @@ Every run must cover all required dimensions:
   - Value differs by 2+ levels
 - When material disagreement is detected, add a `merge note` evidence bullet explaining the reconciliation decision.
 
+### Execution Mode: Baseline and Optional Fan-Out
+
+- Default mode is `single-agent baseline` and must always be fully supported.
+- `optional fan-out` may be used for large repositories by running dimension tracks in parallel.
+- Fan-out workers must return findings in the same schema as baseline results.
+- Final synthesis step must enforce `schema parity` across baseline and fan-out outputs before rendering.
+- If fan-out orchestration is unavailable in the current provider/runtime, continue in single-agent mode without behavior loss.
+
 ### Required-Argument Clarification
 
 - Required arguments must be resolved before analysis starts.
