@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p01-t03
+oat_current_task_id: p01-t04
 oat_generated: false
 ---
 
@@ -18,10 +18,10 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 5 | 2/5 |
+| Phase 1 | in_progress | 5 | 3/5 |
 | Phase 2 | pending | 4 | 0/4 |
 
-**Total:** 2/9 tasks completed
+**Total:** 3/9 tasks completed
 
 ---
 
@@ -82,8 +82,24 @@ oat_generated: false
 
 ### Task p01-t03: Add Clarification and Progress Interaction Flow
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** b3427af
+
+**Outcome (required):**
+- Added explicit progress banner and step indicator contract for analysis runs.
+- Added provider-aware clarification routing rules (`AskUserQuestion`, `request_user_input`, plain fallback).
+- Added blocking clarification requirement for missing/ambiguous required args.
+- Added required run-options summary output fields before evidence collection.
+
+**Files changed:**
+- `.agents/skills/oat-repo-review-analyze/SKILL.md` - expanded progress + interaction flow requirements.
+
+**Verification:**
+- Run: `rg -n "AskUserQuestion|request_user_input|plain-language|OAT ▸ REPO REVIEW ANALYZE|resolved run-options|\\[1/5\\]" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Clarification behavior is documented as provider-aware policy, not provider-locked implementation.
 
 ---
 
@@ -149,7 +165,7 @@ oat_generated: false
 
 - [x] p01-t01: Scaffold Skill Package Files
 - [x] p01-t02: Encode Frontmatter and Invocation Contract
-- [ ] p01-t03: Add Clarification and Progress Interaction Flow
+- [x] p01-t03: Add Clarification and Progress Interaction Flow
 - [ ] p01-t04: Implement Output Resolver Behavior and Path Rules
 - [ ] p01-t05: Author Artifact Template and Rubric Contracts
 - [ ] p02-t01: Author End-to-End Analysis Workflow in `SKILL.md`
