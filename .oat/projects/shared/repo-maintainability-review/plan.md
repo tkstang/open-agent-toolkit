@@ -141,7 +141,7 @@ git commit -m "feat(p02-t02): finalize repo review artifact contract"
 | p02 | code | pending | - | - |
 | final | code | pending | - | - |
 | spec | artifact | pending | - | - |
-| design | artifact | pending | - | - |
+| design | artifact | received | 2026-02-27 | reviews/artifact-design-review-2026-02-27.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
