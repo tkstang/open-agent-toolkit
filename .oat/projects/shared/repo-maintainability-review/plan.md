@@ -531,7 +531,7 @@ git commit -m "fix(p03-t07): add resolver advisories for output path edge cases"
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
-| final | code | fixes_completed | 2026-02-27 | reviews/final-review-2026-02-27.md |
+| final | code | passed | 2026-02-27 | reviews/final-review-2026-02-27-v2.md |
 | spec | artifact | pending | - | - |
 | design | artifact | fixes_completed | 2026-02-27 | reviews/artifact-design-review-2026-02-27.md |
 
@@ -558,5 +558,5 @@ Ready for execution via `oat-project-implement`.
 - Specification: `spec.md`
 - Design: `design.md`
 - Design review artifact: `reviews/artifact-design-review-2026-02-27.md`
-- Final review artifact: `reviews/final-review-2026-02-27.md`
+- Final review artifact: `reviews/final-review-2026-02-27-v2.md`
 - Plan format contract: `.agents/skills/oat-project-plan-writing/SKILL.md`

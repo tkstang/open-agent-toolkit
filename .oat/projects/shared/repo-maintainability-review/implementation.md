@@ -1,5 +1,5 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
@@ -451,7 +451,7 @@ oat_generated: false
   - `.agents/skills/oat-repo-maintainability-review/scripts/resolve-analysis-output.sh`
   - `.oat/projects/shared/repo-maintainability-review/{discovery,spec,design,plan,implementation}.md`
 - **Verification run:** All p03 task checks passed.
-- **Notable decisions/deviations:** `m3` and `m4` remained deferred by explicit user direction.
+- **Notable decisions/deviations:** `m3` and `m4` were accepted deferred by explicit user direction.
 
 ---
 
@@ -503,6 +503,29 @@ oat_generated: false
 **Routing decision:**
 - User selected "Continue phase flow" (2026-02-27) instead of immediate artifact re-review.
 
+### Review Received: final (re-review v2)
+
+**Date:** 2026-02-27  
+**Review artifact:** `reviews/final-review-2026-02-27-v2.md`
+
+**Findings:**
+- Critical: 0
+- Important: 0
+- Medium: 0
+- Minor: 0
+
+**New tasks added:** none
+
+**Deferred Findings (accepted):**
+- `m3` rubric scope definitions remain qualitative (vs discovery time estimates); accepted deferred as non-blocking.
+- `m4` `--mode inline` plus explicit `--output` warning UX polish; accepted deferred as non-blocking.
+
+**Finding disposition map:**
+- Converted to tasks: none
+- Deferred accepted: `m3`, `m4`
+
+**Next:** Final review is passed; proceed to PR with `oat-project-pr-final`.
+
 **Session End:** {time}
 
 ---
@@ -537,8 +560,8 @@ oat_generated: false
 - Workspace-wide verification completed successfully: `pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build`.
 
 **Review-fix continuation:**
-- Final review received additional findings and follow-up tasks were added in Phase 3.
-- Next: request re-review (`oat-project-review-provide code final`) and process results.
+- Final re-review v2 passed with no new findings requiring tasks.
+- Final gate is closed; proceed with `oat-project-pr-final`.
 
 ## References
 
