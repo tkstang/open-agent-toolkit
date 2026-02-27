@@ -129,6 +129,23 @@ Every run must cover all required dimensions:
   - `analysis-mode`
   - `fan-out` state
   - `focus` selection (or `none`)
+- Clarification channel details are for internal logging only; do not expose channel identifiers in the end-user summary.
+
+### Completion Summary Contract
+
+Final user-facing summary must include:
+
+- Findings by Concern
+  - `Critical`
+  - `High`
+  - `Medium`
+  - `Low`
+- Findings by Value
+  - `High`
+  - `Medium`
+  - `Low`
+- Artifact path (`inline-only` when no file is emitted)
+- Execution mode (`single-agent` or `fan-out`)
 
 ## Success Criteria
 

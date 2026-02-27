@@ -42,3 +42,29 @@ Each finding entry should include:
 - `Suggested owner`
 - `Dependencies`
 - `Success criteria`
+
+## Completion Summary (User-Facing)
+
+Include a concise completion summary after analysis:
+
+- `findings by Concern` (`Critical`, `High`, `Medium`, `Low`)
+- `findings by Value` (`High`, `Medium`, `Low`)
+- `artifact path` (or `inline-only`)
+- `execution mode` (`single-agent` or `fan-out`)
+
+Do not include the clarification channel in this summary.
+
+## Verification Commands
+
+Use these checks before declaring completion:
+
+```bash
+# Repo scope dry check
+rg -n "Executive Summary|Scoring Summary|Prioritized Findings|Quick Wins|Strategic Initiatives|Now / Next / Later" <artifact-or-inline-draft>
+
+# Directory-scope dry check
+echo "<resolved-target>" | rg -n "^[^/]|."
+
+# Inline-mode contract check
+rg -n "findings by Concern|findings by Value|artifact path|execution mode" <artifact-or-inline-draft>
+```

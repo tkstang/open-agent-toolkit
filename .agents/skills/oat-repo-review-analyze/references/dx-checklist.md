@@ -25,3 +25,9 @@ Use this checklist during analysis. Include relevant checks in repo and director
 - Do tests/lint/type-check cover common change paths?
 - Are flaky or non-deterministic workflows identified?
 - Are confidence notes included when evidence is weak?
+
+## Verification Runbook
+
+- Validate repo scope run includes all required sections and scoring summary.
+- Validate directory scope run remains constrained to the requested target.
+- Validate inline mode returns complete summary fields without file writes.
