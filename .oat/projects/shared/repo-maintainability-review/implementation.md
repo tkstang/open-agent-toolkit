@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p01-t02
+oat_current_task_id: p01-t03
 oat_generated: false
 ---
 
@@ -18,10 +18,10 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 5 | 1/5 |
+| Phase 1 | in_progress | 5 | 2/5 |
 | Phase 2 | pending | 4 | 0/4 |
 
-**Total:** 1/9 tasks completed
+**Total:** 2/9 tasks completed
 
 ---
 
@@ -59,8 +59,24 @@ oat_generated: false
 
 ### Task p01-t02: Encode Frontmatter and Invocation Contract
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 38b8651
+
+**Outcome (required):**
+- Added stable frontmatter contract fields for invocation and visibility controls.
+- Added explicit `argument-hint` covering scope, target, output mode, output path, focus, analysis mode, and fan-out toggle.
+- Added deterministic tool policy via `allowed-tools`.
+- Added baseline mode assertion and process skeleton to prepare for deeper workflow steps.
+
+**Files changed:**
+- `.agents/skills/oat-repo-review-analyze/SKILL.md` - added frontmatter + invocation contract baseline.
+
+**Verification:**
+- Run: `rg -n "allowed-tools: Read, Write, Bash, Glob, Grep, AskUserQuestion|argument-hint: \"\\[--scope repo\\|directory\\]" .agents/skills/oat-repo-review-analyze/SKILL.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Kept progress/clarification details intentionally light for completion in subsequent tasks.
 
 ---
 
@@ -132,7 +148,7 @@ oat_generated: false
 **Session Start:** {time}
 
 - [x] p01-t01: Scaffold Skill Package Files
-- [ ] p01-t02: Encode Frontmatter and Invocation Contract
+- [x] p01-t02: Encode Frontmatter and Invocation Contract
 - [ ] p01-t03: Add Clarification and Progress Interaction Flow
 - [ ] p01-t04: Implement Output Resolver Behavior and Path Rules
 - [ ] p01-t05: Author Artifact Template and Rubric Contracts
