@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p03-t02
+oat_current_task_id: p03-t03
 oat_generated: false
 ---
 
@@ -20,9 +20,9 @@ oat_generated: false
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 5 | 5/5 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 7 | 1/7 |
+| Phase 3 | in_progress | 7 | 2/7 |
 
-**Total:** 10/16 tasks completed
+**Total:** 11/16 tasks completed
 
 ---
 
@@ -310,8 +310,27 @@ oat_generated: false
 
 ### Task p03-t02: Update Repo References to New Skill Name/Path
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 64df50f
+
+**Outcome (required):**
+- Updated active project artifacts to use `oat-repo-maintainability-review`.
+- Replaced "Repo Review Analysis" phrasing with "Repo Maintainability Review" in active design/spec/plan/implementation/discovery docs.
+- Kept historical review artifact files untouched.
+
+**Files changed:**
+- `.oat/projects/shared/repo-maintainability-review/plan.md` - updated skill path/name references.
+- `.oat/projects/shared/repo-maintainability-review/implementation.md` - updated skill path/name references in logs and summaries.
+- `.oat/projects/shared/repo-maintainability-review/spec.md` - updated canonical skill name.
+- `.oat/projects/shared/repo-maintainability-review/design.md` - updated canonical skill name and path references.
+- `.oat/projects/shared/repo-maintainability-review/discovery.md` - updated deliverable naming.
+
+**Verification:**
+- Run: `rg -n "oat-repo-review-analyze|Repo Review Analysis|REPO REVIEW ANALYZE" .oat/projects/shared/repo-maintainability-review/discovery.md .oat/projects/shared/repo-maintainability-review/design.md .oat/projects/shared/repo-maintainability-review/spec.md .oat/projects/shared/repo-maintainability-review/plan.md .oat/projects/shared/repo-maintainability-review/implementation.md`
+- Result: pass (no matches)
+
+**Notes / Decisions:**
+- Active artifacts now align to renamed skill; legacy review artifacts preserve original historical wording.
 
 ---
 
@@ -373,7 +392,7 @@ oat_generated: false
 - [x] p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
 - [x] p02-t04: Finalize Summary Output and Verification Runbook
 - [x] p03-t01: Rename Skill to `oat-repo-maintainability-review`
-- [ ] p03-t02: Update Repo References to New Skill Name/Path
+- [x] p03-t02: Update Repo References to New Skill Name/Path
 - [ ] p03-t03: Add `oat_output_mode` to Required Artifact Metadata
 - [ ] p03-t04: Add Explicit Invalid-Target Error Contract
 - [ ] p03-t05: Add Explicit Prioritization Split Guidance
