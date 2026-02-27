@@ -1,6 +1,6 @@
 ---
-oat_current_task: p03-t03
-oat_last_commit: 64df50f
+oat_current_task: p03-t04
+oat_last_commit: 78ea223
 oat_blockers: []
 oat_hill_checkpoints: ["discovery", "spec", "design"]
 oat_hill_completed: ["discovery", "spec", "design"]
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation in progress from `p03-t03` (final review fixes).
+Implementation in progress from `p03-t04` (final review fixes).
 
 ## Artifacts
 
@@ -44,7 +44,8 @@ Implementation in progress from `p03-t03` (final review fixes).
 - ✓ Final review findings received and converted to Phase 3 tasks
 - ✓ Review-fix task `p03-t01` complete (skill renamed)
 - ✓ Review-fix task `p03-t02` complete (project references aligned)
-- ⧗ Executing review-fix tasks (`p03-t03` onward)
+- ✓ Review-fix task `p03-t03` complete (metadata contract aligned)
+- ⧗ Executing review-fix tasks (`p03-t04` onward)
 
 ## Blockers
 

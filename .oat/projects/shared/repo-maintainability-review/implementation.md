@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p03-t03
+oat_current_task_id: p03-t04
 oat_generated: false
 ---
 
@@ -20,9 +20,9 @@ oat_generated: false
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 5 | 5/5 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 7 | 2/7 |
+| Phase 3 | in_progress | 7 | 3/7 |
 
-**Total:** 11/16 tasks completed
+**Total:** 12/16 tasks completed
 
 ---
 
@@ -336,8 +336,22 @@ oat_generated: false
 
 ### Task p03-t03: Add `oat_output_mode` to Required Artifact Metadata
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 78ea223
+
+**Outcome (required):**
+- Added `oat_output_mode` to required artifact frontmatter metadata.
+- Aligned frontmatter contract with design schema requirement for execution context traceability.
+
+**Files changed:**
+- `.agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md` - added `oat_output_mode` required field.
+
+**Verification:**
+- Run: `rg -n "oat_output_mode: auto\\|tracked\\|local\\|inline" .agents/skills/oat-repo-maintainability-review/references/repo-review-artifact-template.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Field kept adjacent to analysis mode and commit metadata for readability.
 
 ---
 
@@ -393,7 +407,7 @@ oat_generated: false
 - [x] p02-t04: Finalize Summary Output and Verification Runbook
 - [x] p03-t01: Rename Skill to `oat-repo-maintainability-review`
 - [x] p03-t02: Update Repo References to New Skill Name/Path
-- [ ] p03-t03: Add `oat_output_mode` to Required Artifact Metadata
+- [x] p03-t03: Add `oat_output_mode` to Required Artifact Metadata
 - [ ] p03-t04: Add Explicit Invalid-Target Error Contract
 - [ ] p03-t05: Add Explicit Prioritization Split Guidance
 - [ ] p03-t06: Make Delegation Automatic with Provider Notes
