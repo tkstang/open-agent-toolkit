@@ -57,6 +57,20 @@ Analyze repository maintainability and developer experience using a deterministi
 5. Synthesize findings into prioritized recommendations.
 6. Render artifact or return inline output.
 
+### Output Policy Resolution
+
+Use the helper script to resolve destination policy:
+
+```bash
+bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode auto
+```
+
+Rules:
+- `--output` takes precedence over mode-derived destination.
+- `inline` emits no file artifact.
+- Tracked naming contract: `.oat/repo/analysis/<YYYY-MM-DD>-repo-review-analysis.md`.
+- If the same-day filename already exists, append `-2`, `-3`, etc.
+
 ### Required-Argument Clarification
 
 - Required arguments must be resolved before analysis starts.
