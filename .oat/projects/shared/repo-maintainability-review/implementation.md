@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p01-t04
+oat_current_task_id: p01-t05
 oat_generated: false
 ---
 
@@ -18,10 +18,10 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 5 | 3/5 |
+| Phase 1 | in_progress | 5 | 4/5 |
 | Phase 2 | pending | 4 | 0/4 |
 
-**Total:** 3/9 tasks completed
+**Total:** 4/9 tasks completed
 
 ---
 
@@ -105,8 +105,27 @@ oat_generated: false
 
 ### Task p01-t04: Implement Output Resolver Behavior and Path Rules
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 9056ed4
+
+**Outcome (required):**
+- Implemented full `resolve-analysis-output.sh` support for `auto|tracked|local|inline`.
+- Added precedence behavior so `--output` overrides mode-derived destination.
+- Implemented deterministic file naming contract with same-day suffix increments.
+- Added machine-readable resolver output fields (`analysis_mode`, `output_path`, `output_kind`, `reason`).
+
+**Files changed:**
+- `.agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh` - implemented resolver behavior.
+- `.agents/skills/oat-repo-review-analyze/SKILL.md` - documented resolver invocation and naming contract.
+
+**Verification:**
+- Run: `bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode tracked`
+- Run: `bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode inline`
+- Run: `bash .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh --mode local --output ./tmp/review.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Resolver computes paths but does not write files; writers consume returned `output_path`.
 
 ---
 
@@ -166,7 +185,7 @@ oat_generated: false
 - [x] p01-t01: Scaffold Skill Package Files
 - [x] p01-t02: Encode Frontmatter and Invocation Contract
 - [x] p01-t03: Add Clarification and Progress Interaction Flow
-- [ ] p01-t04: Implement Output Resolver Behavior and Path Rules
+- [x] p01-t04: Implement Output Resolver Behavior and Path Rules
 - [ ] p01-t05: Author Artifact Template and Rubric Contracts
 - [ ] p02-t01: Author End-to-End Analysis Workflow in `SKILL.md`
 - [ ] p02-t02: Finalize Artifact Schema and Example Output Guidance
