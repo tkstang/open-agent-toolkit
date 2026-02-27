@@ -319,7 +319,7 @@ git commit -m "feat(p02-t04): finalize summary contract and verification runbook
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | pending | - | - |
+| final | code | received | 2026-02-27 | reviews/final-review-2026-02-27.md |
 | spec | artifact | pending | - | - |
 | design | artifact | fixes_completed | 2026-02-27 | reviews/artifact-design-review-2026-02-27.md |
 
