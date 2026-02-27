@@ -1,6 +1,6 @@
 ---
-oat_current_task: p03-t06
-oat_last_commit: f879f2a
+oat_current_task: p03-t07
+oat_last_commit: 8cb0b38
 oat_blockers: []
 oat_hill_checkpoints: ["discovery", "spec", "design"]
 oat_hill_completed: ["discovery", "spec", "design"]
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation in progress from `p03-t06` (final review fixes).
+Implementation in progress from `p03-t07` (final review fixes).
 
 ## Artifacts
 
@@ -47,7 +47,8 @@ Implementation in progress from `p03-t06` (final review fixes).
 - ✓ Review-fix task `p03-t03` complete (metadata contract aligned)
 - ✓ Review-fix task `p03-t04` complete (invalid target guidance added)
 - ✓ Review-fix task `p03-t05` complete (prioritization split added)
-- ⧗ Executing review-fix tasks (`p03-t06` onward)
+- ✓ Review-fix task `p03-t06` complete (automatic delegation + provider notes)
+- ⧗ Executing review-fix tasks (`p03-t07` onward)
 
 ## Blockers
 

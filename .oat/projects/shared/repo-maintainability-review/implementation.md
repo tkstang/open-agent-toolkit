@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p03-t06
+oat_current_task_id: p03-t07
 oat_generated: false
 ---
 
@@ -20,9 +20,9 @@ oat_generated: false
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 5 | 5/5 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 7 | 5/7 |
+| Phase 3 | in_progress | 7 | 6/7 |
 
-**Total:** 14/16 tasks completed
+**Total:** 15/16 tasks completed
 
 ---
 
@@ -401,8 +401,23 @@ oat_generated: false
 
 ### Task p03-t06: Make Delegation Automatic with Provider Notes
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 8cb0b38
+
+**Outcome (required):**
+- Enforced automatic delegation behavior when subagent/multi-agent runtime support exists.
+- Clarified delegation is orchestrator-selected, not user-selected.
+- Added per-track summary requirement prior to merged final summary.
+
+**Files changed:**
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - strengthened automatic delegation contract and provider-aware expectations.
+
+**Verification:**
+- Run: `rg -n "automatic|spawn one worker per analysis track|Provider notes|Codex|Claude|Cursor|Do not require a custom subagent role" .agents/skills/oat-repo-maintainability-review/SKILL.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Delegation remains generic-worker based to avoid custom-agent coupling in v1.
 
 ---
 
@@ -440,7 +455,7 @@ oat_generated: false
 - [x] p03-t03: Add `oat_output_mode` to Required Artifact Metadata
 - [x] p03-t04: Add Explicit Invalid-Target Error Contract
 - [x] p03-t05: Add Explicit Prioritization Split Guidance
-- [ ] p03-t06: Make Delegation Automatic with Provider Notes
+- [x] p03-t06: Make Delegation Automatic with Provider Notes
 - [ ] p03-t07: Improve Resolver Warnings for Custom Output and Ignore Status
 
 ### Artifact Review Receive: design
