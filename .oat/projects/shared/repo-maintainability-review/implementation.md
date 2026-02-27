@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-02-27
-oat_current_task_id: p01-t01
+oat_current_task_id: p01-t02
 oat_generated: false
 ---
 
@@ -18,10 +18,10 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 2 | 0/2 |
-| Phase 2 | pending | 2 | 0/2 |
+| Phase 1 | in_progress | 5 | 1/5 |
+| Phase 2 | pending | 4 | 0/4 |
 
-**Total:** 0/4 tasks completed
+**Total:** 1/9 tasks completed
 
 ---
 
@@ -30,23 +30,58 @@ oat_generated: false
 **Status:** in_progress
 **Started:** 2026-02-27
 
-### Task p01-t01: Scaffold `oat-repo-review-analyze` Skill Package
+### Task p01-t01: Scaffold Skill Package Files
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 729e045
 
-**Notes:**
-- Create new skill + references using the idea as source requirements.
+**Outcome (required):**
+- Created `.agents/skills/oat-repo-review-analyze/` directory with `SKILL.md`, `scripts/`, and `references/` subfolders.
+- Added placeholder `SKILL.md` with required top-level section headers.
+- Added placeholder artifact references (`repo-review-artifact-template.md`, `repo-review-rubric.md`, `dx-checklist.md`).
+- Added executable placeholder resolver script at `scripts/resolve-analysis-output.sh`.
+
+**Files changed:**
+- `.agents/skills/oat-repo-review-analyze/SKILL.md` - scaffolded initial skill document.
+- `.agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh` - scaffolded resolver script entrypoint.
+- `.agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md` - scaffolded template placeholder.
+- `.agents/skills/oat-repo-review-analyze/references/repo-review-rubric.md` - scaffolded rubric placeholder.
+- `.agents/skills/oat-repo-review-analyze/references/dx-checklist.md` - scaffolded checklist placeholder.
+
+**Verification:**
+- Run: `test -f .agents/skills/oat-repo-review-analyze/SKILL.md && test -f .agents/skills/oat-repo-review-analyze/scripts/resolve-analysis-output.sh && test -f .agents/skills/oat-repo-review-analyze/references/repo-review-artifact-template.md`
+- Result: pass
+
+**Notes / Decisions:**
+- Kept scaffolding intentionally minimal so each subsequent task can add one contract surface at a time.
 
 ---
 
-### Task p01-t02: Implement Output Mode Resolver for Analysis Artifacts
+### Task p01-t02: Encode Frontmatter and Invocation Contract
 
 **Status:** pending
 **Commit:** -
 
-**Notes:**
-- Add `resolve-analysis-output.sh` with `auto|local|tracked|inline` behavior.
+---
+
+### Task p01-t03: Add Clarification and Progress Interaction Flow
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p01-t04: Implement Output Resolver Behavior and Path Rules
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p01-t05: Author Artifact Template and Rubric Contracts
+
+**Status:** pending
+**Commit:** -
 
 ---
 
@@ -69,6 +104,20 @@ oat_generated: false
 
 ---
 
+### Task p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p02-t04: Finalize Summary Output and Verification Runbook
+
+**Status:** pending
+**Commit:** -
+
+---
+
 ## Orchestration Runs
 
 <!-- orchestration-runs-start -->
@@ -82,10 +131,33 @@ oat_generated: false
 
 **Session Start:** {time}
 
-- [ ] p01-t01: Scaffold `oat-repo-review-analyze` Skill Package
-- [ ] p01-t02: Implement Output Mode Resolver for Analysis Artifacts
+- [x] p01-t01: Scaffold Skill Package Files
+- [ ] p01-t02: Encode Frontmatter and Invocation Contract
+- [ ] p01-t03: Add Clarification and Progress Interaction Flow
+- [ ] p01-t04: Implement Output Resolver Behavior and Path Rules
+- [ ] p01-t05: Author Artifact Template and Rubric Contracts
 - [ ] p02-t01: Author End-to-End Analysis Workflow in `SKILL.md`
 - [ ] p02-t02: Finalize Artifact Schema and Example Output Guidance
+- [ ] p02-t03: Add Optional Fan-Out Path with Baseline Parity Guardrails
+- [ ] p02-t04: Finalize Summary Output and Verification Runbook
+
+### Artifact Review Receive: design
+
+**Date:** 2026-02-27  
+**Review artifact:** `reviews/artifact-design-review-2026-02-27.md`
+
+**Actions taken:**
+- Applied direct artifact fixes in `design.md` for all findings (`C1`, `C2`, `I1`, `I2`, `I3`, `I4`, `I5`, `m1`, `m2`, `m3`, `m4`).
+- No plan tasks were created (artifact review flow).
+- Updated review row status in `plan.md` to `fixes_completed` pending re-review.
+
+**Disposition map:**
+- `resolved_in_artifact`: `C1`, `C2`, `I1`, `I2`, `I3`, `I4`, `I5`, `m1`, `m2`, `m3`, `m4`
+- `rejected_with_rationale`: none
+- `needs_user_direction`: none
+
+**Routing decision:**
+- User selected "Continue phase flow" (2026-02-27) instead of immediate artifact re-review.
 
 **Session End:** {time}
 
