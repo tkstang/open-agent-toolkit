@@ -92,6 +92,20 @@ Every run must cover all required dimensions:
   - `Low` when evidence is directional and requires validation.
 - If no issue is found for a dimension, provide a concise "no critical issues observed" note with supporting context.
 
+### Synthesis and Dedupe Rules
+
+- Dedupe overlap key:
+  - same `category`
+  - same normalized path token (file path, package, or module)
+  - semantically equivalent finding title
+- Concern precedence during merge:
+  - `Critical > High > Medium > Low`
+  - merged finding keeps the strongest Concern
+- Material disagreement threshold:
+  - Concern differs by 2+ levels, or
+  - Value differs by 2+ levels
+- When material disagreement is detected, add a `merge note` evidence bullet explaining the reconciliation decision.
+
 ### Required-Argument Clarification
 
 - Required arguments must be resolved before analysis starts.

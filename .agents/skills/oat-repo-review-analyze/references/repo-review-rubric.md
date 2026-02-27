@@ -45,3 +45,18 @@
 - Recommended actions should be specific and executable.
 - Success criteria should be testable or observable.
 - Suggested owners should map to realistic team boundaries.
+
+## Merge and Dedupe Policy
+
+Use this policy whenever findings from multiple dimensions overlap:
+
+- Overlap detection key:
+  - same `category`
+  - same normalized path token (file, package, or module)
+  - equivalent title intent
+- Concern precedence:
+  - `Critical > High > Medium > Low`
+- Material disagreement threshold:
+  - Concern differs by 2+ levels, or
+  - Value differs by 2+ levels
+- If material disagreement exists, preserve strongest Concern and add a required `merge note` under evidence explaining the normalization decision.
