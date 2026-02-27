@@ -12,6 +12,7 @@ oat_analysis_type: repo-review
 oat_analysis_scope: repo|directory
 oat_analysis_target: <path>
 oat_analysis_mode: full
+oat_output_mode: auto|tracked|local|inline
 oat_analysis_commit: <sha>
 ---
 ```
