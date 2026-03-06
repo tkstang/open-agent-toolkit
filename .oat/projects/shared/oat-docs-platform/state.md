@@ -57,4 +57,4 @@ None
 
 ## Next Milestone
 
-Generate the final PR handoff
+Run `oat-project-complete`.
