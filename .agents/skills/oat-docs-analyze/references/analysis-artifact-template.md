@@ -25,6 +25,7 @@ oat_analysis_commit: {commitHash}
 - **Evidence-backed recommendations:** {N}
 - **Open questions / ask-user items:** {N}
 - **Contradicted claims:** {N}
+- **Coverage gaps / content opportunities:** {N}
 
 ## Docs Inventory
 
@@ -121,6 +122,20 @@ runtime-only behavior here.
 
 {Or: "No repo-checkable substantive claims required accuracy verification."}
 
+## Content Opportunities
+
+Surface only repo-checkable coverage gaps based on routers, services, models, schemas,
+config, and application entrypoints. Do not speculate about roadmap items or external
+integrations that are not represented in the repository.
+
+| # | Capability Area | Coverage State | Codebase Evidence | Suggested Docs Location | Severity | Subtopics To Cover |
+|---|------------------|----------------|-------------------|-------------------------|----------|--------------------|
+| 1 | `{feature or capability area}` | {no coverage \| thin coverage} | `{router/service/model refs and key signatures}` | `{new page / existing page / section}` | {High \| Medium \| Low} | `{specific subtopics implied by the code}` |
+| 2 | `{feature or capability area}` | {no coverage \| thin coverage} | `{router/service/model refs and key signatures}` | `{new page / existing page / section}` | {High \| Medium \| Low} | `{specific subtopics implied by the code}` |
+| ... | | | | | | |
+
+{Or: "No significant repo-backed content opportunities identified."}
+
 ## Navigation and Drift
 
 | # | Surface | Issue | Evidence | Disclosure | Link Target | Severity | Notes |
@@ -165,6 +180,7 @@ canonical docs/config/examples.
 
 - `oat-docs-apply` may only implement recommendations backed by evidence in this artifact.
 - Findings based on contradicted claims must be resolved against cited repo sources before `oat-docs-apply` acts on them.
+- Content opportunity recommendations require `oat-docs-apply` to read the cited router/service/model files before generating prose; it must not synthesize feature coverage from memory.
 - Recommendations marked `omit` must stay out of generated docs changes.
 - Recommendations marked `ask_user` require explicit user confirmation before generation.
 - Recommendations marked `link_only` must include a canonical link target.

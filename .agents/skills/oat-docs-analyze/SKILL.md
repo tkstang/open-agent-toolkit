@@ -1,6 +1,6 @@
 ---
 name: oat-docs-analyze
-version: 1.1.0
+version: 1.2.0
 description: Run when you need to evaluate documentation structure, navigation, and coverage against the OAT docs app contract. Produces a severity-rated analysis artifact for oat-docs-apply.
 disable-model-invocation: true
 user-invocable: true
@@ -62,14 +62,15 @@ When executing this skill, provide lightweight progress feedback so the user can
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 - Use step indicators:
-  - `[1/8] Resolving docs target + mode…`
-  - `[2/8] Inventorying docs files…`
-  - `[3/8] Evaluating index contract…`
-  - `[4/8] Assessing quality + coverage…`
-  - `[5/8] Verifying substantive claims…`
-  - `[6/8] Checking nav and drift…`
-  - `[7/8] Writing analysis artifact…`
-  - `[8/8] Updating tracking + summary…`
+  - `[1/9] Resolving docs target + mode…`
+  - `[2/9] Inventorying docs files…`
+  - `[3/9] Evaluating index contract…`
+  - `[4/9] Assessing quality + coverage…`
+  - `[5/9] Verifying substantive claims…`
+  - `[6/9] Finding content opportunities…`
+  - `[7/9] Checking nav and drift…`
+  - `[8/9] Writing analysis artifact…`
+  - `[9/9] Updating tracking + summary…`
 
 ## Process
 
@@ -209,7 +210,50 @@ Evidence standard for this step:
 - If multiple repo files are needed to verify a claim, cite all relevant sources.
 - If the canonical source is ambiguous, mark the claim `unverified` rather than guessing.
 
-### Step 5: Check Navigation and Drift
+### Step 5: Analyze Content Coverage Opportunities
+
+Add a coverage-gap pass after accuracy verification.
+
+Build a lightweight inventory of the repo's documentable capability surface using in-repo
+sources only. Prefer:
+
+- `app/routers/`, `src/routers/`, or equivalent route/controller modules
+- `app/services/`, `src/services/`, or equivalent business-logic modules
+- the main application entrypoint and route registration files
+- key models, schemas, and config surfaces that define user-facing behavior
+
+Do not speculate about future roadmap items or undocumented external integrations.
+
+For each significant feature or API capability found in the codebase:
+
+1. Capture the capability area and the evidence that proves it exists.
+2. Compare that capability against the docs surface.
+3. Classify the docs state as:
+   - adequately covered
+   - no coverage
+   - thin coverage / stub coverage
+4. For each missing or thinly covered area, produce a scoped content opportunity that includes:
+   - capability area name
+   - codebase evidence, including router/service/model refs and key route or method signatures
+   - suggested docs location:
+     - new page
+     - expansion of an existing page
+     - new section within an existing page
+   - severity:
+     - `High` if the missing docs would block a typical integrator
+     - `Medium` if it is useful but not core to first success
+     - `Low` if it is edge-case, admin-only, or internal-only
+
+For stub pages that already exist in the docs tree or nav:
+
+1. Identify the backing router/service/model evidence.
+2. List the concrete subtopics that should be covered in that page.
+3. Attach those subtopics to the content opportunity so `oat-docs-apply` has a concrete scope to work from.
+
+The goal is not just to say "this page is thin," but to say what capability surface is missing,
+where the docs should live, and what specific subtopics the codebase shows should be documented.
+
+### Step 6: Check Navigation and Drift
 
 If `mkdocs.yml` exists:
 
@@ -221,7 +265,7 @@ If `mkdocs.yml` exists:
 
 If no `mkdocs.yml` exists, record whether the repo should be migrated to an OAT docs app.
 
-### Step 6: Severity-Rate Findings
+### Step 7: Severity-Rate Findings
 
 Use these defaults:
 
@@ -230,7 +274,7 @@ Use these defaults:
 - `Medium`: incomplete `## Contents`, `overview.md` still in use, plugin/contributor guidance gaps, moderate duplication
 - `Low`: polish, wording, or organization improvements
 
-### Step 7: Write Analysis Artifact
+### Step 8: Write Analysis Artifact
 
 Use `references/analysis-artifact-template.md`.
 
@@ -246,6 +290,7 @@ Populate the artifact with:
 - Severity-rated findings
 - Directory coverage and contract gaps
 - Accuracy verification verdicts for repo-checkable claims
+- Content opportunities for missing or thin docs coverage
 - Navigation/drift findings
 - Ordered recommendations
 - Exact evidence references for each finding and recommendation
@@ -253,7 +298,7 @@ Populate the artifact with:
 - Progressive disclosure decisions (`inline`, `link_only`, `omit`, `ask_user`)
 - Canonical link targets when deeper detail should stay out of always-on docs pages
 
-### Step 8: Update Tracking and Output Summary
+### Step 9: Update Tracking and Output Summary
 
 Update docs tracking using the shared helper:
 
