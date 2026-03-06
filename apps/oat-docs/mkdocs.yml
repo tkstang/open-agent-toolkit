@@ -43,6 +43,7 @@ nav:
       - cli/index.md
       - Design Principles: cli/design-principles.md
       - Bootstrap: cli/bootstrap.md
+      - Docs App Commands: cli/docs-apps.md
       - Tool Packs and Assets: cli/tool-packs-and-assets.md
       - Diagnostics: cli/diagnostics.md
       - Provider Interop:
@@ -66,6 +67,7 @@ nav:
   - Skills:
       - skills/index.md
       - Execution Contracts: skills/execution-contracts.md
+      - Docs Workflows: skills/docs-workflows.md
   - Ideas:
       - ideas/index.md
       - Lifecycle: ideas/lifecycle.md

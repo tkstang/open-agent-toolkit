@@ -35,7 +35,7 @@ flowchart TD
 | Mode | Best for | Primary entry points |
 |---|---|---|
 | Interop-only | Canonical skill/agent sync + drift diagnostics + tool-pack lifecycle | `oat init`, `oat init tools`, `oat status`, `oat sync`, `oat instructions ...`, `oat providers ...`, `oat remove ...`, `oat cleanup ...`, `oat doctor` |
-| Provider-agnostic tooling | Reusing skills/utilities without spec-driven lifecycle overhead | `apps/oat-docs/docs/skills/index.md`, selected `oat-*` skills |
+| Provider-agnostic tooling | Reusing skills/utilities without spec-driven lifecycle overhead | `apps/oat-docs/docs/skills/index.md`, `apps/oat-docs/docs/skills/docs-workflows.md`, `apps/oat-docs/docs/cli/docs-apps.md`, selected `oat-*` skills |
 | Workflow | Structured execution with durable artifacts and review gates | `oat-project-new`/`oat-project-open`, then lane-specific skills |
 
 ### A) Interop-only mode (CLI only)
@@ -80,6 +80,8 @@ Use reusable skills and tooling without adopting the spec-driven project lifecyc
 
 Start points:
 - [Skills overview](apps/oat-docs/docs/skills/index.md)
+- [Docs workflows](apps/oat-docs/docs/skills/docs-workflows.md)
+- [Docs app commands](apps/oat-docs/docs/cli/docs-apps.md)
 - [Reference](apps/oat-docs/docs/reference/index.md)
 
 ### C) Workflow mode (skills + project artifacts)
@@ -165,6 +167,18 @@ Notes:
 - Installs OAT skills/agents/templates/scripts by pack (`ideas`, `workflows`, `utility`).
 - When installed skills are older than bundled versions, interactive runs prompt you to update selected skills.
 - Non-interactive runs report outdated skills without updating them (use pack subcommands with `--force` to overwrite).
+
+### 3.6) Bootstrap or maintain a docs app (optional)
+
+```bash
+pnpm run cli -- docs init --app-name my-docs
+pnpm run cli -- docs nav sync --target-dir apps/my-docs
+```
+
+Notes:
+- `docs init` scaffolds an MkDocs Material docs app with OAT defaults.
+- `docs nav sync` regenerates `mkdocs.yml` navigation from directory `index.md` `## Contents` sections.
+- `docs analyze` and `docs apply` expose the docs workflow entrypoints and pair with the `oat-docs-analyze` / `oat-docs-apply` skills.
 
 ### 4) Validate instruction pointers (recommended)
 

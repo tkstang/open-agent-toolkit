@@ -5,6 +5,7 @@ Project skills are stored in `.agents/skills`.
 ## Contents
 
 - [Execution Contracts](execution-contracts.md) - Runtime expectations and conventions for OAT skills.
+- [Docs Workflows](docs-workflows.md) - How the docs CLI helpers and docs skills work together.
 
 ## Lifecycle skills
 
@@ -44,6 +45,8 @@ Project skills are stored in `.agents/skills`.
 
 ## Utility and maintenance skills
 
+- `oat-docs-analyze` — Analyze docs structure, coverage, drift, and `index.md` contract conformance
+- `oat-docs-apply` — Apply approved, evidence-backed docs recommendations from a docs analysis artifact
 - `oat-worktree-bootstrap`
 - `oat-worktree-bootstrap-auto`
 - `oat-repo-knowledge-index`

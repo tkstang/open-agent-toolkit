@@ -77,6 +77,10 @@ Notes:
 # Mode-aware project scaffold
 pnpm run cli -- project new my-project --mode quick
 
+# Bootstrap or maintain a docs app
+pnpm run cli -- docs init --app-name my-docs
+pnpm run cli -- docs nav sync --target-dir apps/my-docs
+
 # Internal oat-* skill validation (primary path)
 pnpm oat:validate-skills
 ```
@@ -111,6 +115,8 @@ This is also the right path for plan-first ideation that can later be synced/imp
 Start here:
 
 - [`skills/index.md`](skills/index.md)
+- [`skills/docs-workflows.md`](skills/docs-workflows.md)
+- [`cli/docs-apps.md`](cli/docs-apps.md)
 - [`reference/index.md`](reference/index.md)
 
 ## Path C: Workflow layer (optional)

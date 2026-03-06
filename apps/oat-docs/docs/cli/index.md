@@ -8,6 +8,7 @@ The CLI is a standalone value path: you can use it without adopting OAT workflow
 
 - [Design Principles](design-principles.md) — Cross-cutting CLI design and implementation conventions.
 - [Bootstrap](bootstrap.md) — Foundational CLI setup (`oat init`).
+- [Docs App Commands](docs-apps.md) — Docs app bootstrap, nav sync, and docs workflow entrypoints.
 - [Tool Packs and Assets](tool-packs-and-assets.md) — OAT tool-pack install, update, and remove lifecycle.
 - [Diagnostics](diagnostics.md) — Cross-cutting diagnostics (`oat doctor`).
 - [Provider Interop](provider-interop/index.md) — Provider-interop command surface and behavior.
@@ -21,6 +22,17 @@ The CLI is a standalone value path: you can use it without adopting OAT workflow
 | `oat init` | Initialize canonical directories, sync config/manifest, and optional setup hooks. Sets up the base OAT structure for a scope. |
 
 See [`bootstrap.md`](bootstrap.md) for details.
+
+### Docs App Commands
+
+| Command             | Purpose                                                                                   |
+| ------------------- | ----------------------------------------------------------------------------------------- |
+| `oat docs init`     | Scaffold a new MkDocs Material docs app with OAT defaults and repo-shape-aware placement. |
+| `oat docs nav sync` | Regenerate `mkdocs.yml` navigation from `index.md` `## Contents` sections.                |
+| `oat docs analyze`  | Guidance entrypoint for the docs analysis skill workflow.                                 |
+| `oat docs apply`    | Guidance entrypoint for the docs apply skill workflow.                                    |
+
+See [`docs-apps.md`](docs-apps.md) for details.
 
 ### Tool Packs and Installed Assets
 
