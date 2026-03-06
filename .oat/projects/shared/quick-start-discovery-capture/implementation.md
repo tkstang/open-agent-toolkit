@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-06
-oat_current_task_id: p02-t01
+oat_current_task_id: p02-t02
 oat_generated: false
 ---
 
@@ -24,9 +24,9 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 2 | 2/2 |
-| Phase 2 | in_progress | 2 | 0/2 |
+| Phase 2 | in_progress | 2 | 1/2 |
 
-**Total:** 2/4 tasks completed
+**Total:** 3/4 tasks completed
 
 ---
 
@@ -122,8 +122,26 @@ oat_generated: false
 
 ### Task p02-t01: Add regression coverage for quick-start discovery-ready projects
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 1ae8ed4
+
+**Outcome (required):**
+- The OAT skill validator now enforces quick-start-specific discovery semantics instead of relying only on repo-file assertions.
+- The validator now reports missing session-context synthesis, discovery backfill, and blocker-only follow-up guidance for `oat-project-quick-start`.
+- A dedicated fixture test now proves those validator findings appear when the quick-start-specific guidance is missing.
+
+**Files changed:**
+- `packages/cli/src/validation/skills.ts` - added quick-start-specific semantic validation
+- `packages/cli/src/validation/skills.test.ts` - added a fixture-driven regression test for missing quick-start guidance
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- src/validation/skills.test.ts src/commands/project/new/scaffold.test.ts`
+- Result: pass
+- Run: `pnpm run cli -- internal validate-oat-skills`
+- Result: fail due to the same pre-existing unrelated finding in `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+
+**Notes / Decisions:**
+- I kept the validator rule scoped to `oat-project-quick-start` so the new guard is durable without imposing generic content requirements on unrelated skills.
 
 ---
 
@@ -149,27 +167,30 @@ oat_generated: false
 
 - [x] p01-t01: Update the quick-start skill to require session-context synthesis and discovery backfill - 5f31acc
 - [x] p01-t02: Define the optional-design threshold and align quick scaffolding - e688182
-- [ ] p02-t01: Add regression coverage for quick-start discovery-ready projects
+- [x] p02-t01: Add regression coverage for quick-start discovery-ready projects - 1ae8ed4
+- [ ] p02-t02: Refresh OAT-facing references after the workflow change
 
 **What changed (high level):**
 - Quick-start skill now describes session-context synthesis and discovery backfill
 - Shared discovery scaffolding now routes quick mode directly to planning and makes separate design creation optional
 - Regression coverage now checks both the quick-start skill semantics and the shared discovery template wording
+- The OAT skill validator now enforces the quick-start semantics directly
 
 **Decisions:**
 - Keep this as a quick workflow project
 - Treat the quick-start skill contract and discovery/design templates as the primary change surface
 - Accept a package-local Vitest invocation as the correct verification path for this repo
 - Treat the design threshold as a discovery-template concern unless a later task proves the design template itself needs quick-specific guidance
+- Prefer validator-level enforcement for quick-start semantics so the repo can detect drift without relying only on repo-file assertions
 
 **Follow-ups / TODO:**
-- Execute `p02-t01`
-- Decide whether regression coverage belongs only in tests or also in repo skill validation
+- Execute `p02-t02`
+- Decide whether any repo reference docs still overstate spec-driven next steps for quick mode
 
 **Blockers:**
 - Repo-wide OAT skill validation currently reports an unrelated pre-existing finding in `oat-repo-maintainability-review`
 
-**Session End:** Phase 1 complete
+**Session End:** p02-t01 complete
 
 ---
 

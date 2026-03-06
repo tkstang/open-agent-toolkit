@@ -1,6 +1,6 @@
 ---
-oat_current_task: p02-t01
-oat_last_commit: e688182
+oat_current_task: p02-t02
+oat_last_commit: 1ae8ed4
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation in progress. Executing `p02-t01`.
+Implementation in progress. Executing `p02-t02`.
 
 ## Artifacts
 
@@ -39,7 +39,8 @@ Implementation in progress. Executing `p02-t01`.
 - ✓ Active project pointer set to `.oat/projects/shared/quick-start-discovery-capture`
 - ✓ `p01-t01` complete - quick-start now requires session-context synthesis and discovery backfill
 - ✓ `p01-t02` complete - quick-mode discovery scaffolding now routes directly to planning and marks design optional
-- ⧗ Implementing `p02-t01`
+- ✓ `p02-t01` complete - validator-backed regression guards now enforce the quick-start semantics
+- ⧗ Implementing `p02-t02`
 
 ## Blockers
 
@@ -47,4 +48,4 @@ None
 
 ## Next Milestone
 
-Complete `p02-t01` and continue implementation.
+Complete `p02-t02` and finish implementation tasks.
