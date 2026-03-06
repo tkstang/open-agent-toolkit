@@ -33,7 +33,7 @@ Analyze repository maintainability and developer experience using a deterministi
 - Structured scoring and synthesis.
 - Artifact generation in tracked/local/inline modes.
 
-## Progress Indicators
+## Progress Indicators (User-Facing)
 
 - Print a phase banner once at start:
   - `━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━`
