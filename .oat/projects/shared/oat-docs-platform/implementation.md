@@ -1,16 +1,16 @@
 ---
-oat_status: in_progress
-oat_ready_for: oat-project-implement
+oat_status: complete
+oat_ready_for: oat-project-review-provide
 oat_blockers: []
-oat_last_updated: 2026-03-05
-oat_current_task_id: p03-t01
+oat_last_updated: 2026-03-06
+oat_current_task_id: null
 oat_generated: false
 ---
 
 # Implementation: oat-docs-platform
 
 **Started:** 2026-03-05
-**Last Updated:** 2026-03-05
+**Last Updated:** 2026-03-06
 
 > This document is used to resume interrupted implementation sessions.
 >
@@ -27,9 +27,9 @@ oat_generated: false
 |-------|--------|-------|-----------|
 | Phase 1 | completed | 4 | 4/4 |
 | Phase 2 | completed | 4 | 4/4 |
-| Phase 3 | pending | 4 | 0/4 |
+| Phase 3 | completed | 4 | 4/4 |
 
-**Total:** 8/12 tasks completed
+**Total:** 12/12 tasks completed
 
 ---
 
@@ -327,34 +327,152 @@ oat_generated: false
 
 ## Phase 3: Add Docs Analyze/Apply and Dogfood Them
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-05
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+- Added the shared docs analyze/apply workflow scaffolding, including reserved CLI entrypoints for `oat docs analyze` and `oat docs apply`
+- Added `oat-docs-analyze` and `oat-docs-apply` skills modeled on the agent-instructions workflow
+- Dogfooded the new workflow against the OAT docs app, recorded tracking artifacts, and resolved the drift uncovered by the analysis run
+
+**Key files touched:**
+- `packages/cli/src/commands/docs/**` - reserved CLI entrypoints and help coverage for docs analyze/apply
+- `.agents/skills/oat-docs-{analyze,apply}/**` - new docs workflow skills and reference templates
+- `.oat/repo/analysis/**`, `.oat/tracking.json`, `apps/oat-docs/docs/reference/docs-index-contract.md` - dogfood artifacts and follow-up fixes
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/index.test.ts packages/cli/src/commands/help-snapshots.test.ts packages/cli/src/commands/docs/nav/sync.test.ts packages/cli/src/commands/init/tools/utility/index.test.ts`
+- Result: pass - CLI command registration, help snapshots, nav sync, and utility skill installation coverage passed
+- Run: `pnpm --filter @oat/cli build`
+- Result: pass - CLI build succeeded with the new docs workflow assets
+- Run: `pnpm oat:validate-skills`
+- Result: pass - OAT skill validation passed after resolving the pre-existing maintainability skill heading issue
+- Run: `pnpm --dir apps/oat-docs docs:build && pnpm --dir apps/oat-docs docs:lint && pnpm --dir apps/oat-docs docs:format:check`
+- Result: pass - dogfooded docs app builds, lints, and formats cleanly
+
+**Notes / Decisions:**
+- Kept CLI `docs analyze` / `docs apply` as stable entrypoints that delegate users to the skill-driven workflow rather than duplicating the skill logic in Commander handlers
+- Updated the docs index contract so `overview.md` migration guidance matches the actual migrated OAT docs tree
 
 ### Task p03-t01: Add shared docs analysis/apply helpers and artifacts
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 40eba6c
+
+**Outcome (required):**
+- Added shared docs workflow scaffolding and reserved the `oat docs analyze` / `oat docs apply` CLI entrypoints
+- Wired the new commands into root registration and help coverage
+- Extended utility-skill bundling so docs workflow skills can ship with the CLI assets
+
+**Files changed:**
+- `packages/cli/src/commands/docs/analyze.ts` - added reserved docs analyze command entrypoint
+- `packages/cli/src/commands/docs/apply.ts` - added reserved docs apply command entrypoint
+- `packages/cli/src/commands/docs/index.ts` - registered analyze/apply under the docs namespace
+- `packages/cli/src/commands/index.test.ts` - added registration coverage for the expanded docs command surface
+- `packages/cli/src/commands/help-snapshots.test.ts` - added help snapshots for docs analyze/apply
+- `packages/cli/scripts/bundle-assets.sh` - added docs workflow skills to the bundled asset list
+- `packages/cli/src/commands/init/tools/utility/install-utility.ts` - included docs workflow skills in utility installs
+- `packages/cli/src/commands/init/tools/utility/index.test.ts` - added utility installation coverage for the new skills
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/index.test.ts packages/cli/src/commands/help-snapshots.test.ts packages/cli/src/commands/init/tools/utility/index.test.ts`
+- Result: pass - CLI registration, help output, and utility install coverage passed
+- Run: `pnpm --filter @oat/cli build`
+- Result: pass - CLI build succeeded with the new command surface
+
+**Notes / Decisions:**
+- Reserved the CLI namespace now so future docs workflow execution can remain backward compatible
+- Kept the actual workflow logic in skills to stay aligned with the agent-instructions split between deterministic helpers and editorial execution
 
 ---
 
 ### Task p03-t02: Implement `oat-docs-analyze`
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 6ea861e
+
+**Outcome (required):**
+- Added the `oat-docs-analyze` skill to evaluate docs coverage, structure, and drift using the new index contract
+- Added reusable artifact templates and review criteria for consistent docs analysis output
+- Registered the skill in agent-facing docs and utility install flows
+
+**Files changed:**
+- `.agents/skills/oat-docs-analyze/SKILL.md` - added the docs analysis workflow
+- `.agents/skills/oat-docs-analyze/references/analysis-artifact-template.md` - added the analysis artifact template
+- `.agents/skills/oat-docs-analyze/references/directory-assessment-criteria.md` - added docs tree assessment guidance
+- `.agents/skills/oat-docs-analyze/references/quality-checklist.md` - added docs quality review criteria
+- `AGENTS.md` - registered the new docs analyze skill in the skill inventory
+
+**Verification:**
+- Run: `pnpm oat:validate-skills`
+- Result: pass - skill metadata and structure validate cleanly
+
+**Notes / Decisions:**
+- Reused the existing tracking helper from the agent-instructions workflow rather than creating a separate docs-only tracking script
+- Scoped the skill around artifact generation and severity-rated findings so `oat-docs-apply` can consume it directly
 
 ---
 
 ### Task p03-t03: Implement `oat-docs-apply`
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 021c452
+
+**Outcome (required):**
+- Added the `oat-docs-apply` skill to consume docs analysis artifacts and drive controlled docs updates
+- Added a reusable apply-plan template for approvals, execution notes, and follow-up tracking
+- Completed the docs workflow bundle/install path so analyze and apply ship together
+
+**Files changed:**
+- `.agents/skills/oat-docs-apply/SKILL.md` - added the docs apply workflow
+- `.agents/skills/oat-docs-apply/references/apply-plan-template.md` - added the apply-plan template
+- `packages/cli/scripts/bundle-assets.sh` - bundled the apply skill alongside analyze
+- `packages/cli/src/commands/init/tools/utility/install-utility.ts` - shipped docs analyze/apply together in utility installs
+- `packages/cli/src/commands/init/tools/utility/index.test.ts` - validated the combined utility-skill install output
+
+**Verification:**
+- Run: `pnpm oat:validate-skills`
+- Result: pass - docs apply skill validates cleanly
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/init/tools/utility/index.test.ts`
+- Result: pass - utility install flow includes docs analyze/apply
+
+**Notes / Decisions:**
+- Kept the apply skill branch/approval-oriented to mirror the agent-instructions apply model
+- Used a shared utility install surface so docs workflow skills are available anywhere utility skills are provisioned
 
 ---
 
 ### Task p03-t04: Dogfood docs analyze/apply against the OAT docs app
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** c8ff84d
+
+**Outcome (required):**
+- Ran the docs analyze/apply workflow against the OAT docs app and recorded the resulting analysis artifact and tracking metadata
+- Resolved the medium-severity docs contract drift found during dogfooding
+- Fixed the pre-existing `oat-repo-maintainability-review` heading issue that blocked skill validation
+
+**Files changed:**
+- `.oat/repo/analysis/docs-2026-03-06-0147.md` - added the dogfood analysis artifact
+- `.oat/tracking.json` - recorded docs analyze/apply tracking metadata
+- `apps/oat-docs/docs/reference/docs-index-contract.md` - aligned the index contract with the migrated docs tree
+- `.agents/skills/oat-repo-maintainability-review/SKILL.md` - fixed the user-facing progress indicator heading for skill validation
+
+**Verification:**
+- Run: `pnpm oat:validate-skills`
+- Result: pass - full OAT skill validation passed after the heading fix
+- Run: `pnpm --dir apps/oat-docs docs:build`
+- Result: pass - docs app builds after the contract update
+- Run: `pnpm --dir apps/oat-docs docs:lint`
+- Result: pass - docs lint clean
+- Run: `pnpm --dir apps/oat-docs docs:format:check`
+- Result: pass - docs formatting check clean
+
+**Notes / Decisions:**
+- Kept the dogfood artifact in `.oat/repo/analysis` so the new workflow follows the same artifact conventions as other OAT review/analyze flows
+- Documented the `overview.md` migration nuance directly in the index contract instead of forcing a lossy rename rule
 
 ---
 
@@ -385,7 +503,10 @@ Chronological log of implementation progress.
 - [x] p02-t02: Migrate OAT docs content into the new app and normalize to `index.md` - d29bfff
 - [x] p02-t03: Regenerate nav and update repo links to the new docs app - 9486c36
 - [x] p02-t04: Verify the scaffold and migration with live docs tooling - verification only
-- [ ] p03-t01: Add shared docs analysis/apply helpers and artifacts - next
+- [x] p03-t01: Add shared docs analysis/apply helpers and artifacts - 40eba6c
+- [x] p03-t02: Implement `oat-docs-analyze` - 6ea861e
+- [x] p03-t03: Implement `oat-docs-apply` - 021c452
+- [x] p03-t04: Dogfood docs analyze/apply against the OAT docs app - c8ff84d
 
 **What changed (high level):**
 - Imported external docs platform plan into canonical OAT project structure
@@ -399,16 +520,18 @@ Chronological log of implementation progress.
 - Added MkDocs docs-app templates plus `docs init` scaffold generation and scaffold coverage for monorepo and single-package repos
 - Added `oat docs nav sync` plus the shared `index.md` `## Contents` parser and reference documentation for the docs index contract
 - Dogfooded the new docs app in-repo, migrated the tracked docs surface into `apps/oat-docs`, and updated live repo references to the new docs paths
+- Added the docs analyze/apply workflow surface, including CLI reservation, new skills, and utility-skill bundling
+- Dogfooded docs analyze/apply against `apps/oat-docs`, recorded the analysis artifact, and fixed the drift found during that run
 
 **Decisions:**
 - Use a three-phase rollout: CLI foundation, OAT dogfood migration, docs analyze/apply
 - Run straight through all implementation phases before pausing for a phase checkpoint
 
 **Follow-ups / TODO:**
-- Build the docs analyze/apply skill family on top of the now-dogfooded docs app and index contract
+- Run final code review before project closeout or PR generation
 
 **Blockers:**
-- None - ready for implementation
+- None - implementation complete
 
 **Session End:** {time}
 
@@ -469,25 +592,39 @@ Track test execution during implementation.
 |-------|-----------|--------|--------|----------|
 | 1 | - | - | - | - |
 | 2 | - | - | - | - |
-| 3 | - | - | - | - |
+| 3 | CLI tests, CLI build, `pnpm oat:validate-skills`, `pnpm --dir apps/oat-docs docs:build`, `pnpm --dir apps/oat-docs docs:lint`, `pnpm --dir apps/oat-docs docs:format:check` | yes | 0 | targeted command and dogfood verification |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
-- {capability 1}
-- {capability 2}
+- `oat docs` CLI support for scaffold, nav sync, and reserved analyze/apply entrypoints
+- A reusable MkDocs Material docs app scaffold with agent-oriented contributing guidance and `index.md`-driven navigation
+- An in-repo `apps/oat-docs` site that now holds the migrated OAT docs corpus
+- New `oat-docs-analyze` and `oat-docs-apply` skills, plus a dogfooded analysis artifact and tracking flow
 
 **Behavioral changes (user-facing):**
-- {bullet}
+- Repositories can now bootstrap a docs app with `oat docs init` and regenerate navigation from `index.md` `## Contents`
+- OAT’s canonical docs now live under `apps/oat-docs/docs/**` instead of `docs/oat/**`
+- Agents now have documented docs-analysis and docs-apply workflows that mirror the existing agent-instructions pattern
 
 **Key files / modules:**
-- `{path}` - {purpose}
+- `packages/cli/src/commands/docs/**` - CLI docs command surface, init scaffold flow, and nav sync implementation
+- `.oat/templates/docs-app/**` - bundled MkDocs docs app scaffold templates
+- `apps/oat-docs/**` - dogfooded OAT docs application and migrated content
+- `.agents/skills/oat-docs-analyze/**` - docs analysis workflow and artifact templates
+- `.agents/skills/oat-docs-apply/**` - docs apply workflow and execution template
+- `.oat/repo/analysis/docs-2026-03-06-0147.md` - dogfood analysis output for the OAT docs app
 
 **Verification performed:**
-- {tests/lint/typecheck/build/manual steps}
+- `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/index.test.ts packages/cli/src/commands/help-snapshots.test.ts packages/cli/src/commands/docs/nav/sync.test.ts packages/cli/src/commands/init/tools/utility/index.test.ts`
+- `pnpm --filter @oat/cli build`
+- `pnpm oat:validate-skills`
+- `pnpm --dir apps/oat-docs docs:build`
+- `pnpm --dir apps/oat-docs docs:lint`
+- `pnpm --dir apps/oat-docs docs:format:check`
 
 **Design deltas (if any):**
-- {what changed vs design.md and why}
+- `overview.md` deprecation guidance was refined during dogfooding to allow conversion into a descriptive leaf page when a directory already has an `index.md`
 
 ## References
 

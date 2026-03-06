@@ -1,12 +1,12 @@
 ---
-oat_current_task: p03-t01
-oat_last_commit: 9486c36
+oat_current_task: null
+oat_last_commit: c8ff84d
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
 oat_parallel_execution: false
 oat_phase: implement
-oat_phase_status: in_progress
+oat_phase_status: complete
 oat_execution_mode: single-thread
 oat_workflow_mode: import
 oat_workflow_origin: imported
@@ -15,13 +15,13 @@ oat_generated: false
 
 # Project State: oat-docs-platform
 
-**Status:** Implementation in progress
+**Status:** Implementation complete
 **Started:** 2026-03-05
-**Last Updated:** 2026-03-05
+**Last Updated:** 2026-03-06
 
 ## Current Phase
 
-Implementation - Phase 3 in progress at `p03-t01`.
+Implementation complete through `p03-t04`.
 
 ## Artifacts
 
@@ -29,7 +29,7 @@ Implementation - Phase 3 in progress at `p03-t01`.
 - **Spec:** Skipped (import mode)
 - **Design:** Skipped (import mode)
 - **Plan:** `plan.md` (complete - imported)
-- **Implementation:** `implementation.md` (in_progress - current task `p03-t01`)
+- **Implementation:** `implementation.md` (complete)
 
 ## Progress
 
@@ -44,7 +44,10 @@ Implementation - Phase 3 in progress at `p03-t01`.
 - ✓ `p02-t02` complete - tracked docs migrated into `apps/oat-docs`
 - ✓ `p02-t03` complete - nav and repo links updated to the docs app
 - ✓ `p02-t04` complete - live docs tooling passes for the dogfooded app
-- ⧗ Current task: `p03-t01`
+- ✓ `p03-t01` complete - shared docs workflow scaffolding and CLI entrypoints added
+- ✓ `p03-t02` complete - `oat-docs-analyze` skill added
+- ✓ `p03-t03` complete - `oat-docs-apply` skill added
+- ✓ `p03-t04` complete - docs analyze/apply dogfooded against `apps/oat-docs`
 
 ## Blockers
 
@@ -52,4 +55,4 @@ None
 
 ## Next Milestone
 
-Add the shared docs analyze/apply workflow artifacts and skill support
+Run final code review, then generate the project PR/final handoff
