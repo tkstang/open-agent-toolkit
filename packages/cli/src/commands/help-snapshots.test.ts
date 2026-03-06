@@ -351,10 +351,8 @@ describe('help output snapshots', () => {
       Options:
         --app-name <name>    Docs app name
         --target-dir <path>  Target directory for the docs app
-        --lint <mode>        Markdown lint mode (choices: "markdownlint", "none",
-                             default: "markdownlint")
-        --format <mode>      Markdown format mode (choices: "prettier", "none",
-                             default: "prettier")
+        --lint <mode>        Markdown lint mode (choices: "markdownlint", "none")
+        --format <mode>      Markdown format mode (choices: "prettier", "none")
         --yes                Accept defaults without prompting
         -h, --help           display help for command
       "
