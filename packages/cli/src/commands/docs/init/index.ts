@@ -10,6 +10,7 @@ import {
   selectWithAbort,
 } from '@commands/shared/shared.prompts';
 import { readGlobalOptions } from '@commands/shared/shared.utils';
+import { resolveAssetsRoot } from '@fs/assets';
 import { Command, Option } from 'commander';
 import {
   DEFAULT_DOCS_REPO_SHAPE_DEPENDENCIES,
@@ -19,6 +20,7 @@ import {
   detectDocsRepoShape,
   resolveDocsInitOptions,
 } from './resolve-options';
+import { scaffoldDocsApp } from './scaffold';
 
 interface DocsInitCommandOptions {
   appName?: string;
@@ -30,6 +32,7 @@ interface DocsInitCommandOptions {
 
 interface DocsInitDependencies {
   buildCommandContext: (options: GlobalOptions) => CommandContext;
+  resolveAssetsRoot: () => Promise<string>;
   detectRepoShape: (repoRoot: string) => Promise<'monorepo' | 'single-package'>;
   inputWithDefault: (
     message: string,
@@ -44,27 +47,36 @@ interface DocsInitDependencies {
   runDocsInit: (
     context: CommandContext,
     options: DocsInitResolvedOptions,
+    assetsRoot: string,
   ) => Promise<void>;
 }
 
 const DEFAULT_DEPENDENCIES: DocsInitDependencies = {
   buildCommandContext,
+  resolveAssetsRoot,
   detectRepoShape: (repoRoot: string) =>
     detectDocsRepoShape(repoRoot, DEFAULT_DOCS_REPO_SHAPE_DEPENDENCIES),
   inputWithDefault,
   selectWithAbort,
-  runDocsInit: async (context, options) => {
+  runDocsInit: async (context, options, assetsRoot) => {
+    const result = await scaffoldDocsApp({
+      assetsRoot,
+      ...options,
+    });
+
     if (context.json) {
       context.logger.json({
         status: 'ok',
         ...options,
+        createdFiles: result.createdFiles,
+        appRoot: result.appRoot,
       });
       return;
     }
 
-    context.logger.info(`Resolved docs init options for ${options.repoShape}:`);
+    context.logger.info(`Scaffolded docs app at ${options.targetDir}`);
+    context.logger.info(`  Repo shape: ${options.repoShape}`);
     context.logger.info(`  App name: ${options.appName}`);
-    context.logger.info(`  Target dir: ${options.targetDir}`);
     context.logger.info(`  Lint: ${options.lint}`);
     context.logger.info(`  Format: ${options.format}`);
   },
@@ -98,7 +110,8 @@ async function runDocsInitCommand(
       return;
     }
 
-    await dependencies.runDocsInit(context, resolved);
+    const assetsRoot = await dependencies.resolveAssetsRoot();
+    await dependencies.runDocsInit(context, resolved, assetsRoot);
     process.exitCode = 0;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
