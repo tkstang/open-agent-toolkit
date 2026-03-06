@@ -78,8 +78,7 @@ async function resolveEntryTarget(
     );
   }
 
-  const explicitFilePath = resolve(directoryPath, href);
-  let targetPath = explicitFilePath;
+  let targetPath = resolve(directoryPath, href);
 
   if (!href.endsWith('.md')) {
     const directoryTarget = resolve(directoryPath, href);

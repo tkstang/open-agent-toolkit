@@ -8,7 +8,7 @@ import {
 import { readGlobalOptions } from '@commands/shared/shared.utils';
 import { Command, Option } from 'commander';
 import YAML from 'yaml';
-import { buildDocsNavTree } from './contents';
+import { buildDocsNavTree, type DocsNavTree } from './contents';
 
 interface DocsNavSyncCommandOptions {
   targetDir?: string;
@@ -22,7 +22,7 @@ interface SyncDocsNavigationResult {
   appRoot: string;
   docsRoot: string;
   mkdocsPath: string;
-  nav: ReturnType<typeof buildDocsNavTree> extends Promise<infer T> ? T : never;
+  nav: DocsNavTree;
 }
 
 interface DocsNavSyncDependencies {

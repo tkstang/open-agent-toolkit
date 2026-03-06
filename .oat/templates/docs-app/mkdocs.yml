@@ -1,7 +1,7 @@
 site_name: {{SITE_NAME}}
 docs_dir: "./docs"
 
-site_description: Documentation for {{SITE_NAME}}
+site_description: {{SITE_NAME}}
 
 plugins:
   - git-revision-date

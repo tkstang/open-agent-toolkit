@@ -1,6 +1,6 @@
 site_name: Oat Docs Documentation
 docs_dir: ./docs
-site_description: Documentation for Oat Docs Documentation
+site_description: Oat Docs Documentation
 plugins:
   - git-revision-date
   - macros
