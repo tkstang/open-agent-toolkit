@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-06
-oat_current_task_id: p02-t02
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,9 +24,9 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 2 | 2/2 |
-| Phase 2 | in_progress | 2 | 1/2 |
+| Phase 2 | complete | 2 | 2/2 |
 
-**Total:** 3/4 tasks completed
+**Total:** 4/4 tasks completed
 
 ---
 
@@ -117,8 +117,27 @@ oat_generated: false
 
 ## Phase 2: Add Durable Workflow Guards
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-06
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+- Quick-start semantics are now enforced both in the skill text and in validator-backed regression coverage.
+- Repo-facing quick-mode references now describe discovery-first planning and optional design, matching the updated workflow behavior.
+
+**Key files touched:**
+- `packages/cli/src/validation/skills.ts` - quick-start-specific validator guard
+- `packages/cli/src/validation/skills.test.ts` - fixture and repo-content regression coverage
+- `.oat/repo/reference/current-state.md` - current-state quick-mode summary
+- `.oat/repo/reference/decision-record.md` - ADR wording for quick-mode discovery/design behavior
+
+**Verification:**
+- Run: `pnpm test && pnpm lint && pnpm type-check && pnpm build`
+- Result: pass
+
+**Notes / Decisions:**
+- Repo-level `internal validate-oat-skills` still reports an unrelated pre-existing gap in `oat-repo-maintainability-review`; implementation work here did not introduce that failure.
 
 ### Task p02-t01: Add regression coverage for quick-start discovery-ready projects
 
@@ -147,8 +166,25 @@ oat_generated: false
 
 ### Task p02-t02: Refresh OAT-facing references after the workflow change
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 26a3519
+
+**Outcome (required):**
+- Repo-facing quick-mode references now describe the updated discovery-first behavior instead of leaving quick mode as an underspecified shorthand.
+- The quick/import ADR now records that quick mode should synthesize/backfill discovery from session context and treat separate design creation as optional.
+
+**Files changed:**
+- `.oat/repo/reference/current-state.md` - updated the quick-lane summary
+- `.oat/repo/reference/decision-record.md` - captured the discovery-first and optional-design quick-mode contract
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- src/validation/skills.test.ts src/commands/project/new/scaffold.test.ts`
+- Result: pass
+- Run: `pnpm run cli -- internal validate-oat-skills`
+- Result: fail due to the same pre-existing unrelated finding in `.agents/skills/oat-repo-maintainability-review/SKILL.md`
+
+**Notes / Decisions:**
+- I updated only the references that materially understated the new quick-mode behavior instead of broad repo-wide wording churn.
 
 ---
 
@@ -168,13 +204,14 @@ oat_generated: false
 - [x] p01-t01: Update the quick-start skill to require session-context synthesis and discovery backfill - 5f31acc
 - [x] p01-t02: Define the optional-design threshold and align quick scaffolding - e688182
 - [x] p02-t01: Add regression coverage for quick-start discovery-ready projects - 1ae8ed4
-- [ ] p02-t02: Refresh OAT-facing references after the workflow change
+- [x] p02-t02: Refresh OAT-facing references after the workflow change - 26a3519
 
 **What changed (high level):**
 - Quick-start skill now describes session-context synthesis and discovery backfill
 - Shared discovery scaffolding now routes quick mode directly to planning and makes separate design creation optional
 - Regression coverage now checks both the quick-start skill semantics and the shared discovery template wording
 - The OAT skill validator now enforces the quick-start semantics directly
+- Repo-facing quick-mode references now match the discovery-first, optional-design workflow
 
 **Decisions:**
 - Keep this as a quick workflow project
@@ -184,13 +221,13 @@ oat_generated: false
 - Prefer validator-level enforcement for quick-start semantics so the repo can detect drift without relying only on repo-file assertions
 
 **Follow-ups / TODO:**
-- Execute `p02-t02`
-- Decide whether any repo reference docs still overstate spec-driven next steps for quick mode
+- Request final review
+- Decide whether to fix the unrelated pre-existing `oat-repo-maintainability-review` validator issue in a follow-up
 
 **Blockers:**
 - Repo-wide OAT skill validation currently reports an unrelated pre-existing finding in `oat-repo-maintainability-review`
 
-**Session End:** p02-t01 complete
+**Session End:** implementation tasks complete
 
 ---
 
@@ -210,21 +247,31 @@ oat_generated: false
 ## Final Summary (for PR/docs)
 
 **What shipped:**
-- Pending implementation
+- `oat-project-quick-start` now requires session-context synthesis and discovery backfill before planning
+- The shared discovery template now keeps quick projects in the discovery -> plan path unless a separate design artifact is truly warranted
+- The OAT skill validator now enforces the new quick-start semantics, and repo references describe the updated behavior
 
 **Behavioral changes (user-facing):**
-- Pending implementation
+- Quick-start can confidently synthesize `discovery.md` from the active conversation instead of leaving placeholder scaffolding when enough detail already exists
+- If quick-start needs startup Q&A, it now treats that discussion as artifact input and backfills discovery before writing the plan
+- Quick-mode guidance now makes separate design creation explicitly optional and threshold-based
 
 **Key files / modules:**
 - `.agents/skills/oat-project-quick-start/SKILL.md` - primary behavior contract
 - `.oat/templates/discovery.md` - shared discovery scaffold wording
 
 **Verification performed:**
-- Project scaffold created
-- Discovery and plan artifacts authored
+- `pnpm --filter @oat/cli test -- src/validation/skills.test.ts`
+- `pnpm --filter @oat/cli test -- src/commands/project/new/scaffold.test.ts`
+- `pnpm --filter @oat/cli test -- src/validation/skills.test.ts src/commands/project/new/scaffold.test.ts`
+- `pnpm test`
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm build`
+- `pnpm run cli -- internal validate-oat-skills` (still fails on a pre-existing unrelated finding in `oat-repo-maintainability-review`)
 
 **Design deltas (if any):**
-- Quick mode intentionally skips design authoring
+- Quick mode no longer implies “no design ever”; it now treats `design.md` as an optional artifact only when the available technical detail justifies it
 
 ## References
 

@@ -1,6 +1,6 @@
 ---
-oat_current_task: p02-t02
-oat_last_commit: 1ae8ed4
+oat_current_task: null
+oat_last_commit: 26a3519
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation in progress. Executing `p02-t02`.
+Implementation - Tasks complete; awaiting final review.
 
 ## Artifacts
 
@@ -40,7 +40,9 @@ Implementation in progress. Executing `p02-t02`.
 - ✓ `p01-t01` complete - quick-start now requires session-context synthesis and discovery backfill
 - ✓ `p01-t02` complete - quick-mode discovery scaffolding now routes directly to planning and marks design optional
 - ✓ `p02-t01` complete - validator-backed regression guards now enforce the quick-start semantics
-- ⧗ Implementing `p02-t02`
+- ✓ `p02-t02` complete - repo-facing quick-mode references now match the discovery-first behavior
+- ✓ Implementation tasks complete
+- ⧗ Awaiting final review
 
 ## Blockers
 
@@ -48,4 +50,4 @@ None
 
 ## Next Milestone
 
-Complete `p02-t02` and finish implementation tasks.
+Run final review and, if it passes, proceed to PR creation.
