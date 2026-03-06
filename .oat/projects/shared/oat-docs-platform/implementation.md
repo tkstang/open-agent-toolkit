@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: oat-project-implement
 oat_blockers: []
 oat_last_updated: 2026-03-05
-oat_current_task_id: p02-t01
+oat_current_task_id: p03-t01
 oat_generated: false
 ---
 
@@ -26,10 +26,10 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | completed | 4 | 4/4 |
-| Phase 2 | in_progress | 4 | 0/4 |
+| Phase 2 | completed | 4 | 4/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 4/12 tasks completed
+**Total:** 8/12 tasks completed
 
 ---
 
@@ -182,41 +182,153 @@ oat_generated: false
 
 ## Phase 2: Dogfood the Docs App in the OAT Repo
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-05
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+- Dogfooded the new scaffold by creating `apps/oat-docs` inside this repo
+- Migrated the tracked OAT docs corpus from `docs/oat/**` into the docs app and flattened the redundant `oat/` path layer
+- Normalized the docs tree to the `index.md` contract, generated nav from `## Contents`, and updated live repo links to the new docs app paths
+
+**Key files touched:**
+- `apps/oat-docs/**` - dogfooded MkDocs app plus migrated docs content
+- `packages/cli/src/commands/docs/{init,nav}/**` - dogfood-driven scaffold and nav hardening
+- `README.md`, `.agents/README.md`, `.agents/skills/docs-completed-projects-gap-review/SKILL.md` - updated live docs references
+
+**Verification:**
+- Run: `pnpm install`
+- Result: pass - workspace dependencies updated for the new docs app
+- Run: `pnpm --dir apps/oat-docs docs:setup`
+- Result: pass - MkDocs Python dependencies resolved
+- Run: `pnpm --dir apps/oat-docs docs:build`
+- Result: pass - migrated docs site builds successfully
+- Run: `pnpm --dir apps/oat-docs docs:lint`
+- Result: pass - markdownlint clean after dogfood-driven fixes
+- Run: `pnpm --dir apps/oat-docs docs:format:check`
+- Result: pass - Prettier check clean
+
+**Notes / Decisions:**
+- Kept `quickstart.md` as the OAT onboarding page instead of renaming it to `getting-started.md` to avoid unnecessary churn in the existing docs surface
+- Renamed the only remaining `overview.md` page to `scope-and-surface.md` because the directory already had its own `index.md`
 
 ### Task p02-t01: Scaffold the OAT docs app in this repository
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** d19802c
+
+**Outcome (required):**
+- Scaffolded `apps/oat-docs` in the real OAT monorepo using the new `oat docs init` command
+- Hardened scaffold generation during dogfood so generated package scripts are valid JSON and lint configuration can be included in the app contract
+- Updated the workspace lockfile to include the new docs app dependencies
+
+**Files changed:**
+- `apps/oat-docs/package.json` - scaffolded docs app package manifest
+- `apps/oat-docs/requirements.txt` - scaffolded MkDocs Python dependency list
+- `apps/oat-docs/setup-docs.sh` - scaffolded docs dependency bootstrap script
+- `apps/oat-docs/docs/contributing.md` - scaffolded contributor guide and plugin inventory
+- `packages/cli/src/commands/docs/init/scaffold.ts` - dogfood-driven scaffold fixes
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - scaffold coverage tightened to validate generated JSON
+- `.oat/templates/docs-app/.markdownlint-cli2.jsonc` - added default markdownlint config for scaffolded docs apps
+
+**Verification:**
+- Run: `pnpm run cli -- docs init --app-name oat-docs --target-dir apps/oat-docs --yes`
+- Result: pass - docs app scaffolded cleanly in the OAT monorepo
+- Run: `pnpm --dir packages/cli test src/commands/docs/init/scaffold.test.ts src/commands/docs/init/resolve-options.test.ts`
+- Result: pass - scaffold behavior and option resolution remain green
+
+**Notes / Decisions:**
+- Added a default markdownlint config to the scaffold after dogfooding showed the migrated docs corpus needed a more pragmatic line-length rule
 
 ---
 
 ### Task p02-t02: Migrate OAT docs content into the new app and normalize to `index.md`
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** d29bfff
+
+**Outcome (required):**
+- Moved the existing tracked docs corpus from `docs/oat/**` into `apps/oat-docs/docs/**`
+- Flattened the old `docs/oat` path layer so the docs app root is the site root
+- Added or normalized `index.md` files and `## Contents` links across the migrated directories
+
+**Files changed:**
+- `apps/oat-docs/docs/index.md` - migrated and normalized site root index
+- `apps/oat-docs/docs/{cli,ideas,projects,reference,skills,workflow}/**` - migrated docs sections
+- `apps/oat-docs/docs/cli/provider-interop/scope-and-surface.md` - renamed former `overview.md`
+- `docs/oat/**` - removed old tracked docs paths after migration
+
+**Verification:**
+- Run: `find apps/oat-docs/docs -name 'overview.md'`
+- Result: pass - no `overview.md` files remain in the migrated docs app
+- Run: `find apps/oat-docs/docs -type f -name 'index.md' | sort`
+- Result: pass - each docs directory in the migrated tree exposes an `index.md`
+
+**Notes / Decisions:**
+- Preserved existing OAT content where possible and focused migration edits on path flattening, index normalization, and stale-link cleanup
 
 ---
 
 ### Task p02-t03: Regenerate nav and update repo links to the new docs app
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 9486c36
+
+**Outcome (required):**
+- Regenerated `apps/oat-docs/mkdocs.yml` navigation from the migrated `index.md` files
+- Hardened nav sync so it replaces only the `nav:` block and preserves the MkDocs Python-name fence tag
+- Updated live README and agent-facing docs references to point at `apps/oat-docs/docs/**`
+
+**Files changed:**
+- `apps/oat-docs/mkdocs.yml` - regenerated nav for the migrated docs tree
+- `packages/cli/src/commands/docs/nav/sync.ts` - dogfood-driven nav rewrite fix
+- `packages/cli/src/commands/docs/nav/sync.test.ts` - added preservation coverage for the MkDocs fence tag
+- `README.md` - updated top-level docs entrypoints
+- `.agents/README.md` - updated agent-facing docs links
+- `.agents/skills/docs-completed-projects-gap-review/SKILL.md` - updated the docs surface inventory
+- `.oat/repo/reference/current-state.md` - updated active canonical docs references
+
+**Verification:**
+- Run: `pnpm run cli -- docs nav sync --target-dir apps/oat-docs`
+- Result: pass - nav regenerated from migrated `index.md` files
+- Run: `rg -n "docs/oat/" README.md .agents/README.md .agents/skills/docs-completed-projects-gap-review/SKILL.md .oat/repo/reference/current-state.md apps/oat-docs/docs`
+- Result: pass - no live docs references remain on the old `docs/oat` paths
 
 ---
 
 ### Task p02-t04: Verify the scaffold and migration with live docs tooling
 
-**Status:** pending
+**Status:** completed
 **Commit:** -
+
+**Outcome (required):**
+- Verified the dogfooded docs app with the real workspace, Python, MkDocs, markdownlint, and Prettier flows
+- Cleaned the remaining markdown issues found during verification so the app passes its own maintenance commands
+
+**Files changed:**
+- `apps/oat-docs/docs/contributing.md` - fixed fenced-block rendering for lint compliance
+- `apps/oat-docs/docs/ideas/lifecycle.md` - fixed code-fence structure and language markers
+- `apps/oat-docs/docs/workflow/lifecycle.md` - resolved duplicate heading names
+
+**Verification:**
+- Run: `pnpm install`
+- Result: pass - workspace install completed with the new app
+- Run: `pnpm --dir apps/oat-docs docs:setup`
+- Result: pass - Python docs dependencies installed
+- Run: `pnpm --dir apps/oat-docs docs:build`
+- Result: pass - site built successfully
+- Run: `pnpm --dir apps/oat-docs docs:lint`
+- Result: pass - 0 markdownlint errors
+- Run: `pnpm --dir apps/oat-docs docs:format:check`
+- Result: pass - all docs match Prettier formatting
 
 ---
 
 ## Phase 3: Add Docs Analyze/Apply and Dogfood Them
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-05
 
 ### Task p03-t01: Add shared docs analysis/apply helpers and artifacts
 
@@ -269,7 +381,11 @@ Chronological log of implementation progress.
 - [x] p01-t02: Implement repo-shape detection and `oat docs init` option resolution - 7c6f2e0
 - [x] p01-t03: Scaffold the MkDocs docs app and docs standards assets - d061a26
 - [x] p01-t04: Implement `oat docs nav sync` from `index.md` `## Contents` - 43479ab
-- [ ] p02-t01: Scaffold the OAT docs app in this repository - next
+- [x] p02-t01: Scaffold the OAT docs app in this repository - d19802c
+- [x] p02-t02: Migrate OAT docs content into the new app and normalize to `index.md` - d29bfff
+- [x] p02-t03: Regenerate nav and update repo links to the new docs app - 9486c36
+- [x] p02-t04: Verify the scaffold and migration with live docs tooling - verification only
+- [ ] p03-t01: Add shared docs analysis/apply helpers and artifacts - next
 
 **What changed (high level):**
 - Imported external docs platform plan into canonical OAT project structure
@@ -282,13 +398,14 @@ Chronological log of implementation progress.
 - Added `inputWithDefault` prompting so interactive docs setup can accept sensible defaults
 - Added MkDocs docs-app templates plus `docs init` scaffold generation and scaffold coverage for monorepo and single-package repos
 - Added `oat docs nav sync` plus the shared `index.md` `## Contents` parser and reference documentation for the docs index contract
+- Dogfooded the new docs app in-repo, migrated the tracked docs surface into `apps/oat-docs`, and updated live repo references to the new docs paths
 
 **Decisions:**
 - Use a three-phase rollout: CLI foundation, OAT dogfood migration, docs analyze/apply
 - Run straight through all implementation phases before pausing for a phase checkpoint
 
 **Follow-ups / TODO:**
-- Dogfood the new scaffold in this repo and confirm the final docs app path before migrating the current docs tree
+- Build the docs analyze/apply skill family on top of the now-dogfooded docs app and index contract
 
 **Blockers:**
 - None - ready for implementation

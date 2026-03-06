@@ -1,6 +1,6 @@
 ---
-oat_current_task: p02-t01
-oat_last_commit: 43479ab
+oat_current_task: p03-t01
+oat_last_commit: 9486c36
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Phase 2 in progress at `p02-t01`.
+Implementation - Phase 3 in progress at `p03-t01`.
 
 ## Artifacts
 
@@ -29,7 +29,7 @@ Implementation - Phase 2 in progress at `p02-t01`.
 - **Spec:** Skipped (import mode)
 - **Design:** Skipped (import mode)
 - **Plan:** `plan.md` (complete - imported)
-- **Implementation:** `implementation.md` (in_progress - current task `p02-t01`)
+- **Implementation:** `implementation.md` (in_progress - current task `p03-t01`)
 
 ## Progress
 
@@ -40,7 +40,11 @@ Implementation - Phase 2 in progress at `p02-t01`.
 - ✓ `p01-t02` complete - repo-shape detection and init option resolution added
 - ✓ `p01-t03` complete - docs app scaffold templates and generation added
 - ✓ `p01-t04` complete - index-driven nav sync and docs index contract added
-- ⧗ Current task: `p02-t01`
+- ✓ `p02-t01` complete - dogfooded docs app scaffolded in this repo
+- ✓ `p02-t02` complete - tracked docs migrated into `apps/oat-docs`
+- ✓ `p02-t03` complete - nav and repo links updated to the docs app
+- ✓ `p02-t04` complete - live docs tooling passes for the dogfooded app
+- ⧗ Current task: `p03-t01`
 
 ## Blockers
 
@@ -48,4 +52,4 @@ None
 
 ## Next Milestone
 
-Scaffold and dogfood the new OAT docs app in this repository
+Add the shared docs analyze/apply workflow artifacts and skill support
