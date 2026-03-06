@@ -209,13 +209,71 @@ git commit -m "docs(p02-t02): sync quick-start discovery references"
 
 ---
 
+### Task p02-t03: (review) Reduce validator regex brittleness for quick-start semantics
+
+**Files:**
+- Modify: `packages/cli/src/validation/skills.ts`
+- Modify: `packages/cli/src/validation/skills.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: The quick-start semantic validator relies on wording-sensitive regexes and can raise false failures if the skill wording is rephrased without changing meaning.
+Location: `packages/cli/src/validation/skills.ts:56-80`
+
+**Step 2: Implement fix**
+
+Make the quick-start semantic checks more tolerant of small wording changes, or add a succinct inline comment that makes the coupling explicit if a narrower regex remains justified. Keep the guard intent-focused so it still catches real drift without overfitting to one exact phrase.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/validation/skills.test.ts`
+Expected: The validator tests pass and still enforce the intended quick-start semantics
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/validation/skills.ts packages/cli/src/validation/skills.test.ts
+git commit -m "fix(p02-t03): reduce quick-start validator brittleness"
+```
+
+---
+
+### Task p02-t04: (review) Bump quick-start skill version for the contract change
+
+**Files:**
+- Modify: `.agents/skills/oat-project-quick-start/SKILL.md`
+- Modify: `packages/cli/src/validation/skills.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `oat-project-quick-start` changed behavior materially, but its frontmatter version was left at `1.0.0`.
+Location: `.agents/skills/oat-project-quick-start/SKILL.md:3`
+
+**Step 2: Implement fix**
+
+Update the skill frontmatter version to reflect the new behavioral contract and adjust any tests or fixtures that assert repo skill metadata so the versioned contract remains intentional.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/validation/skills.test.ts`
+Expected: Skill validation tests pass with the updated quick-start version metadata
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-quick-start/SKILL.md packages/cli/src/validation/skills.test.ts
+git commit -m "fix(p02-t04): version quick-start contract change"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | received | 2026-03-06 | reviews/final-review-2026-03-06.md |
+| final | code | fixes_added | 2026-03-06 | reviews/final-review-2026-03-06.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
@@ -233,9 +291,9 @@ git commit -m "docs(p02-t02): sync quick-start discovery references"
 
 **Summary:**
 - Phase 1: 2 tasks - tighten the quick-start contract and align quick discovery/design scaffolding
-- Phase 2: 2 tasks - add durable regression guards and sync any conflicting quick-mode references
+- Phase 2: 4 tasks - add durable regression guards, sync any conflicting quick-mode references, and address final review findings
 
-**Total: 4 tasks**
+**Total: 6 tasks**
 
 Ready for code review and merge.
 

@@ -1,6 +1,6 @@
 ---
-oat_current_task: null
-oat_last_commit: 26a3519
+oat_current_task: p02-t04
+oat_last_commit: 10276bf
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Tasks complete; awaiting final review.
+Implementation - review fixes queued from final review.
 
 ## Artifacts
 
@@ -41,8 +41,9 @@ Implementation - Tasks complete; awaiting final review.
 - ✓ `p01-t02` complete - quick-mode discovery scaffolding now routes directly to planning and marks design optional
 - ✓ `p02-t01` complete - validator-backed regression guards now enforce the quick-start semantics
 - ✓ `p02-t02` complete - repo-facing quick-mode references now match the discovery-first behavior
-- ✓ Implementation tasks complete
-- ⧗ Awaiting final review
+- ✓ Final review received
+- ✓ `p02-t03` complete - validator semantics now tolerate equivalent quick-start wording
+- ⧗ `p02-t04` queued - bump quick-start skill version for the contract change
 
 ## Blockers
 
@@ -50,4 +51,4 @@ None
 
 ## Next Milestone
 
-Run final review and, if it passes, proceed to PR creation.
+Execute `p02-t04`, then request re-review for the final scope.

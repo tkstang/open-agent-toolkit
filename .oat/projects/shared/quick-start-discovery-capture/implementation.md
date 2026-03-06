@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-06
-oat_current_task_id: null
+oat_current_task_id: p02-t04
 oat_generated: false
 ---
 
@@ -24,9 +24,9 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 2 | 2/2 |
-| Phase 2 | complete | 2 | 2/2 |
+| Phase 2 | in_progress | 4 | 3/4 |
 
-**Total:** 4/4 tasks completed
+**Total:** 5/6 tasks completed
 
 ---
 
@@ -117,7 +117,7 @@ oat_generated: false
 
 ## Phase 2: Add Durable Workflow Guards
 
-**Status:** complete
+**Status:** in_progress
 **Started:** 2026-03-06
 
 ### Phase Summary (fill when phase is complete)
@@ -138,6 +138,29 @@ oat_generated: false
 
 **Notes / Decisions:**
 - Repo-level `internal validate-oat-skills` still reports an unrelated pre-existing gap in `oat-repo-maintainability-review`; implementation work here did not introduce that failure.
+
+### Review Received: final
+
+**Date:** 2026-03-06
+**Review artifact:** `reviews/final-review-2026-03-06.md`
+
+**Findings:**
+- Critical: 0
+- Important: 0
+- Medium: 0
+- Minor: 2
+
+**New tasks added:** `p02-t03`, `p02-t04`
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+**Disposition Notes:**
+- `m1` will be fixed now via `p02-t03`
+- `m2` will be fixed now via `p02-t04`
+
+After the fix tasks are complete:
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ### Task p02-t01: Add regression coverage for quick-start discovery-ready projects
 
@@ -188,6 +211,30 @@ oat_generated: false
 
 ---
 
+### Task p02-t03: (review) Reduce validator regex brittleness for quick-start semantics
+
+**Status:** completed
+**Commit:** 10276bf
+
+**Outcome (required):**
+- The quick-start validator now checks for intent-level discovery semantics instead of one exact sentence shape.
+- Equivalent wording such as "populate discovery.md from the current session context" and "only ask the minimum follow-up questions required to unblock planning" is now accepted.
+- The guard still enforces the same three requirements: session-context synthesis, discovery backfill before planning, and blocker-only follow-up questions.
+
+**Files changed:**
+- `packages/cli/src/validation/skills.ts` - broadened the quick-start semantic checks into intent-based pattern groups
+- `packages/cli/src/validation/skills.test.ts` - added a regression covering equivalent quick-start phrasing
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- src/validation/skills.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+- I kept the guard as three separate semantic checks so failure messages stay specific.
+- The change intentionally broadens accepted phrasing without weakening the requirement that discovery, session context, and blocker-only questioning all be present.
+
+---
+
 ## Orchestration Runs
 
 <!-- orchestration-runs-start -->
@@ -205,6 +252,7 @@ oat_generated: false
 - [x] p01-t02: Define the optional-design threshold and align quick scaffolding - e688182
 - [x] p02-t01: Add regression coverage for quick-start discovery-ready projects - 1ae8ed4
 - [x] p02-t02: Refresh OAT-facing references after the workflow change - 26a3519
+- [x] p02-t03: (review) Reduce validator regex brittleness for quick-start semantics - 10276bf
 
 **What changed (high level):**
 - Quick-start skill now describes session-context synthesis and discovery backfill
@@ -221,8 +269,8 @@ oat_generated: false
 - Prefer validator-level enforcement for quick-start semantics so the repo can detect drift without relying only on repo-file assertions
 
 **Follow-ups / TODO:**
-- Request final review
-- Decide whether to fix the unrelated pre-existing `oat-repo-maintainability-review` validator issue in a follow-up
+- Execute review follow-up task `p02-t04`
+- Re-run final review after the review-generated fixes land
 
 **Blockers:**
 - Repo-wide OAT skill validation currently reports an unrelated pre-existing finding in `oat-repo-maintainability-review`
