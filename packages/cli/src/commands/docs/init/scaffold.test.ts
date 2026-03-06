@@ -5,6 +5,7 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { scaffoldDocsApp } from './scaffold';
 
 const TEMPLATE_FILES = {
+  '.markdownlint-cli2.jsonc': '{ "config": { "MD013": false } }\n',
   'mkdocs.yml': 'site_name: {{SITE_NAME}}\n',
   'package.json.template': `{
   "name": "{{PACKAGE_NAME}}",
@@ -77,6 +78,12 @@ describe('scaffoldDocsApp', () => {
     await expect(
       readFile(join(result.appRoot, 'package.json'), 'utf8'),
     ).resolves.toContain('markdownlint-cli2');
+    const packageJson = JSON.parse(
+      await readFile(join(result.appRoot, 'package.json'), 'utf8'),
+    ) as { scripts: Record<string, string> };
+    expect(packageJson.scripts['docs:lint']).toBe(
+      "markdownlint-cli2 'docs/**/*.md'",
+    );
   });
 
   it('scaffolds a docs app in a single-package target without creating a workspace file', async () => {
@@ -103,6 +110,11 @@ describe('scaffoldDocsApp', () => {
     await expect(
       readFile(join(result.appRoot, 'package.json'), 'utf8'),
     ).resolves.toContain('docs lint disabled');
+    await expect(
+      readFile(join(result.appRoot, 'package.json'), 'utf8').then((content) =>
+        JSON.parse(content),
+      ),
+    ).resolves.toBeTruthy();
     await expect(
       readFile(join(root, 'pnpm-workspace.yaml'), 'utf8'),
     ).rejects.toThrow();

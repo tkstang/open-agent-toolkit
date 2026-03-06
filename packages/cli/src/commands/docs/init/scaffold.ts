@@ -8,6 +8,10 @@ import type {
 } from './resolve-options';
 
 const TEMPLATE_FILES = [
+  {
+    source: '.markdownlint-cli2.jsonc',
+    destination: '.markdownlint-cli2.jsonc',
+  },
   { source: 'mkdocs.yml', destination: 'mkdocs.yml' },
   { source: 'package.json.template', destination: 'package.json' },
   { source: 'requirements.txt', destination: 'requirements.txt' },
@@ -69,16 +73,16 @@ function renderTemplate(
     '{{SITE_NAME}}': siteName,
     '{{DOCS_LINT_SCRIPT}}':
       options.lint === 'markdownlint'
-        ? 'markdownlint-cli2 "docs/**/*.md"'
-        : 'echo "docs lint disabled"',
+        ? "markdownlint-cli2 'docs/**/*.md'"
+        : "echo 'docs lint disabled'",
     '{{DOCS_FORMAT_SCRIPT}}':
       options.format === 'prettier'
-        ? 'prettier --write "docs/**/*.md"'
-        : 'echo "docs formatting disabled"',
+        ? "prettier --write 'docs/**/*.md'"
+        : "echo 'docs formatting disabled'",
     '{{DOCS_FORMAT_CHECK_SCRIPT}}':
       options.format === 'prettier'
-        ? 'prettier --check "docs/**/*.md"'
-        : 'echo "docs format check disabled"',
+        ? "prettier --check 'docs/**/*.md'"
+        : "echo 'docs format check disabled'",
     '{{DEV_DEPENDENCIES}}': buildDevDependencies(options.lint, options.format),
     '{{REPO_NAME}}': repoName,
   };
