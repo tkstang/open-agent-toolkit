@@ -75,7 +75,7 @@ Directories assessed as needing instruction files but currently uncovered.
 | # | Directory | Reason | Evidence | Disclosure | Link Target | Severity |
 |---|-----------|--------|----------|------------|-------------|----------|
 | 1 | `{path/}` | {Has own package.json / distinct domain / ...} | {exact refs} | {inline/link_only/omit/ask_user} | {path/URL or N/A} | {High/Medium} |
-| ... | | | |
+| ... | | | | | | |
 
 {Or: "No directory coverage gaps identified."}
 
@@ -86,7 +86,7 @@ File-type patterns with recurring conventions that would benefit from targeted r
 | # | Pattern | Count | Convention Summary | Evidence | Disclosure | Severity |
 |---|---------|-------|--------------------|----------|------------|----------|
 | 1 | `{glob}` | {N} | {brief description of conventions agents should follow} | {exact refs} | {inline/link_only/omit/ask_user} | {Medium/Low} |
-| ... | | | | |
+| ... | | | | | | |
 
 {Or: "No glob-scoped rule opportunities identified."}
 

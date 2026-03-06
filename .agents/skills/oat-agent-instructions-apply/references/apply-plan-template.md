@@ -56,10 +56,12 @@ If a recommendation lacks that detail, it should be blocked pending a fresh anal
 
 ## Summary of Actions
 
-| # | Action | Target | Provider | Disclosure |
-|---|--------|--------|----------|------------|
+| # | Action | Target | Provider | Final Disclosure |
+|---|--------|--------|----------|------------------|
 | {N} | {create/update} | `{path}` | {provider} | {inline/link_only} |
 | ... | | | |
+
+Only approved recommendations with a resolved disclosure mode should appear here. `omit` items are excluded, and `ask_user` items must be resolved before summary.
 
 **Total:** {N} files to create, {N} files to update, {N} skipped
 

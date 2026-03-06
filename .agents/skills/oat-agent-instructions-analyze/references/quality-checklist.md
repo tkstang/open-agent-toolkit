@@ -88,7 +88,8 @@ Per-file evaluation criteria for agent instruction files. Use this checklist to 
 
 ## Scoring
 
-For each file, count passing criteria out of the applicable set (some criteria only apply to certain file types):
+For each file, count passing criteria out of the applicable set (some criteria only apply to certain file types).
+A "miss" means one numbered criterion does not pass for that file after ignoring non-applicable checks within the criterion:
 
 - **All applicable passing** → Quality: pass
 - **1-2 misses** → Quality: minor issues

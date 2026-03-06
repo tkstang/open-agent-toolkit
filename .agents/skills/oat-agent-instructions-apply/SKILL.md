@@ -156,13 +156,16 @@ Present the full recommendation plan to the user first, then ask which review mo
 - **apply all** — approve the full set as presented
 - **apply interactively** — switch to recommendation-by-recommendation review
 - **discuss** — pause for questions, adjustments, or scope changes before approval
+- **cancel** — stop without applying anything
 
 For the review-mode choice:
 - Claude Code: use `AskUserQuestion`
 - Codex: use structured user-input tooling when available in the current host/runtime
 - Fallback: ask in plain text
 
-The prompt should ask for exactly one of: `apply all`, `apply interactively`, `discuss`.
+The prompt should ask for exactly one of: `apply all`, `apply interactively`, `discuss`, `cancel`.
+
+If the user chooses **cancel**, output "No actions approved. Exiting." and stop.
 
 If the user chooses **apply all**:
 - confirm that the full plan is approved
@@ -179,7 +182,7 @@ If the user chooses **apply interactively**:
 
 If the user chooses **discuss**:
 - answer questions and revise the plan if needed
-- re-present the updated plan and ask again: `apply all`, `apply interactively`, or `discuss`
+- re-present the updated plan and ask again: `apply all`, `apply interactively`, `discuss`, or `cancel`
 
 If all recommendations are skipped, output "No actions approved. Exiting." and stop.
 
