@@ -47,6 +47,46 @@ function hasBannerSnippet(content: string): boolean {
   );
 }
 
+function validateQuickStartSemantics(
+  skillPath: string,
+  content: string,
+  findings: ValidationFinding[],
+): void {
+  if (
+    !/synthesi(?:ze|s)\s+`?discovery\.md`?\s+from .*session context/i.test(
+      content,
+    )
+  ) {
+    findings.push({
+      file: skillPath,
+      message:
+        'Quick-start must describe synthesizing discovery.md from session context when enough detail is already available',
+    });
+  }
+
+  if (
+    !/backfill(?:s|ing)? .*discovery.*(discussion|q&a|decisions)/i.test(content)
+  ) {
+    findings.push({
+      file: skillPath,
+      message:
+        'Quick-start must describe backfilling discovery.md after startup Q&A before planning',
+    });
+  }
+
+  if (
+    !/ask only (?:the )?minimum additional questions needed to remove blockers/i.test(
+      content,
+    )
+  ) {
+    findings.push({
+      file: skillPath,
+      message:
+        'Quick-start must limit follow-up questions to the minimum needed to remove blockers',
+    });
+  }
+}
+
 export async function validateOatSkills(
   repoRoot: string,
 ): Promise<ValidateOatSkillsResult> {
@@ -151,6 +191,10 @@ export async function validateOatSkills(
         message:
           'Progress Indicators section missing banner snippet (separator lines + "OAT ▸ ...")',
       });
+    }
+
+    if (dir === 'oat-project-quick-start') {
+      validateQuickStartSemantics(skillPath, content, findings);
     }
   }
 

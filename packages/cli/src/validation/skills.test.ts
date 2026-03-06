@@ -593,4 +593,51 @@ describe('validateOatSkills', () => {
       /ask only (?:the )?minimum additional questions needed to remove blockers/i,
     );
   });
+
+  it('reports missing quick-start-specific discovery guidance', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'oat-validate-'));
+    tempDirs.push(root);
+    const skillPath = await createSkillFile(
+      root,
+      'oat-project-quick-start',
+      [
+        '---',
+        'name: oat-project-quick-start',
+        'description: Use when validating quick-start specific guardrails.',
+        'disable-model-invocation: true',
+        'user-invocable: true',
+        'allowed-tools: Read, Write',
+        '---',
+        '',
+        '# Quick Start',
+        '',
+        '## Progress Indicators (User-Facing)',
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        ' OAT ▸ QUICK START',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '',
+        'Minimal body without the required quick-start discovery semantics.',
+      ].join('\n'),
+    );
+
+    const result = await validateOatSkills(root);
+    expect(result.findings).toEqual([
+      expect.objectContaining({
+        file: skillPath,
+        message:
+          'Quick-start must describe synthesizing discovery.md from session context when enough detail is already available',
+      }),
+      expect.objectContaining({
+        file: skillPath,
+        message:
+          'Quick-start must describe backfilling discovery.md after startup Q&A before planning',
+      }),
+      expect.objectContaining({
+        file: skillPath,
+        message:
+          'Quick-start must limit follow-up questions to the minimum needed to remove blockers',
+      }),
+    ]);
+  });
 });
