@@ -71,4 +71,3 @@ Projects live in `.oat/projects/<scope>/<project>/` with:
 ### Utility Skill Additions
 
 - `oat-docs-analyze` - Analyze a docs surface for `index.md` contract coverage, nav drift, and docs app readiness.
-- `oat-docs-apply` - Apply approved docs-analysis recommendations with branch, nav-sync, and PR workflow support.

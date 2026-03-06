@@ -138,7 +138,6 @@ describe('createInitToolsUtilityCommand', () => {
           'oat-agent-instructions-analyze',
           'oat-agent-instructions-apply',
           'oat-docs-analyze',
-          'oat-docs-apply',
           'oat-repo-maintainability-review',
           'oat-review-provide',
           'oat-review-receive',
