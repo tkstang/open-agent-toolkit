@@ -571,4 +571,26 @@ describe('validateOatSkills', () => {
 
     expect(invalidVersions).toEqual([]);
   });
+
+  it('requires quick-start to describe session-context synthesis and discovery backfill', async () => {
+    const repoRoot = join(process.cwd(), '..', '..');
+    const skillPath = join(
+      repoRoot,
+      '.agents',
+      'skills',
+      'oat-project-quick-start',
+      'SKILL.md',
+    );
+    const content = await readFile(skillPath, 'utf8');
+
+    expect(content).toMatch(
+      /synthesi(?:ze|s)\s+`?discovery\.md`?\s+from .*session context/i,
+    );
+    expect(content).toMatch(
+      /backfill(?:s|ing)? .*discovery.*(discussion|q&a|decisions)/i,
+    );
+    expect(content).toMatch(
+      /ask only (?:the )?minimum additional questions needed to remove blockers/i,
+    );
+  });
 });
