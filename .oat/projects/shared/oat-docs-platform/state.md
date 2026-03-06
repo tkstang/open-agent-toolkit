@@ -1,6 +1,6 @@
 ---
-oat_current_task: p01-t02
-oat_last_commit: da0b534
+oat_current_task: p01-t03
+oat_last_commit: 7c6f2e0
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Phase 1 in progress at `p01-t02`.
+Implementation - Phase 1 in progress at `p01-t03`.
 
 ## Artifacts
 
@@ -29,7 +29,7 @@ Implementation - Phase 1 in progress at `p01-t02`.
 - **Spec:** Skipped (import mode)
 - **Design:** Skipped (import mode)
 - **Plan:** `plan.md` (complete - imported)
-- **Implementation:** `implementation.md` (in_progress - current task `p01-t02`)
+- **Implementation:** `implementation.md` (in_progress - current task `p01-t03`)
 
 ## Progress
 
@@ -37,7 +37,8 @@ Implementation - Phase 1 in progress at `p01-t02`.
 - ✓ Plan normalized to 3 phases, 12 tasks
 - ✓ Active project pointer set to `.oat/projects/shared/oat-docs-platform`
 - ✓ `p01-t01` complete - docs command namespace registered
-- ⧗ Current task: `p01-t02`
+- ✓ `p01-t02` complete - repo-shape detection and init option resolution added
+- ⧗ Current task: `p01-t03`
 
 ## Blockers
 

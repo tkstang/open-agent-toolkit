@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: oat-project-implement
 oat_blockers: []
 oat_last_updated: 2026-03-05
-oat_current_task_id: p01-t02
+oat_current_task_id: p01-t03
 oat_generated: false
 ---
 
@@ -25,11 +25,11 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 4 | 1/4 |
+| Phase 1 | in_progress | 4 | 2/4 |
 | Phase 2 | pending | 4 | 0/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 1/12 tasks completed
+**Total:** 2/12 tasks completed
 
 ---
 
@@ -90,11 +90,29 @@ oat_generated: false
 
 ### Task p01-t02: Implement repo-shape detection and `oat docs init` option resolution
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 7c6f2e0
 
-**Notes:**
-- Default to `apps/<app-name>` in monorepos and `<app-name>/` in single-package repos without requiring workspace conversion
+**Outcome (required):**
+- Added repo-shape detection that distinguishes monorepos from single-package repos using workspace config and directory signals
+- Added docs-init option resolution with defaults for app name, target directory, lint mode, and format mode
+- Added a reusable `inputWithDefault` prompt helper so interactive docs setup can accept or override detected defaults
+
+**Files changed:**
+- `packages/cli/src/commands/docs/init/resolve-options.ts` - added repo-shape detection and init option resolution helpers
+- `packages/cli/src/commands/docs/init/index.ts` - wired the docs init command to the resolver flow
+- `packages/cli/src/commands/docs/init/resolve-options.test.ts` - added unit coverage for monorepo and single-package defaults
+- `packages/cli/src/commands/shared/shared.prompts.ts` - added `inputWithDefault`
+- `packages/cli/src/commands/shared/shared.prompts.test.ts` - added coverage for the new prompt helper
+- `packages/cli/src/commands/help-snapshots.test.ts` - updated docs init help snapshots for the resolved option surface
+
+**Verification:**
+- Run: `pnpm --dir packages/cli test src/commands/shared/shared.prompts.test.ts src/commands/docs/init/resolve-options.test.ts src/commands/index.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass - 65 tests passed
+
+**Notes / Decisions:**
+- Chose `pnpm-workspace.yaml`, package.json workspaces, and `apps/` + `packages/` directory presence as the monorepo signals
+- Kept the command action non-mutating for now so p01-t03 can attach actual scaffold generation without reworking the resolver path
 
 ---
 
@@ -204,8 +222,8 @@ Chronological log of implementation progress.
 **Session Start:** {time}
 
 - [x] p01-t01: Add the `oat docs` command family and help coverage - da0b534
-- [ ] p01-t02: Implement repo-shape detection and `oat docs init` option resolution - next
-- [ ] p01-t03: Scaffold the MkDocs docs app and docs standards assets - pending
+- [x] p01-t02: Implement repo-shape detection and `oat docs init` option resolution - 7c6f2e0
+- [ ] p01-t03: Scaffold the MkDocs docs app and docs standards assets - next
 - [ ] p01-t04: Implement `oat docs nav sync` from `index.md` `## Contents` - pending
 
 **What changed (high level):**
@@ -215,6 +233,8 @@ Chronological log of implementation progress.
 - Configured plan checkpoints to stop only after `p03`
 - Added the initial `oat docs` command namespace with `init` and `nav sync` subcommands
 - Added command registration and help-snapshot coverage for the docs namespace
+- Added repo-shape detection and docs init option resolution for monorepo and single-package defaults
+- Added `inputWithDefault` prompting so interactive docs setup can accept sensible defaults
 
 **Decisions:**
 - Use a three-phase rollout: CLI foundation, OAT dogfood migration, docs analyze/apply
