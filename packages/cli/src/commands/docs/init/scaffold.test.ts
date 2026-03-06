@@ -6,7 +6,7 @@ import { scaffoldDocsApp } from './scaffold';
 
 const TEMPLATE_FILES = {
   'mkdocs.yml': 'site_name: {{SITE_NAME}}\n',
-  'package.json': `{
+  'package.json.template': `{
   "name": "{{PACKAGE_NAME}}",
   "scripts": {
     "docs:lint": "{{DOCS_LINT_SCRIPT}}",
@@ -20,7 +20,8 @@ const TEMPLATE_FILES = {
 `,
   'requirements.txt': 'mkdocs==1.4.2\nmkdocs-material==9.0.14\n',
   'setup-docs.sh': '#!/bin/sh\necho "{{APP_NAME}}"\n',
-  'docs/index.md': '# {{SITE_NAME}}\n\n## Contents\n\n- [Getting Started](getting-started.md)\n',
+  'docs/index.md':
+    '# {{SITE_NAME}}\n\n## Contents\n\n- [Getting Started](getting-started.md)\n',
   'docs/getting-started.md': '# Getting Started\n',
   'docs/contributing.md':
     '# Contributing\n\n## Installed plugins\n\n### `search`\n\n### `git-revision-date`\n',

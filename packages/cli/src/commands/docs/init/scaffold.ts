@@ -1,20 +1,26 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
+import { dirExists, ensureDir, fileExists } from '@fs/io';
 import type {
   DocsFormatMode,
   DocsInitResolvedOptions,
   DocsLintMode,
 } from './resolve-options';
-import { dirExists, ensureDir, fileExists } from '@fs/io';
 
 const TEMPLATE_FILES = [
-  'mkdocs.yml',
-  'package.json',
-  'requirements.txt',
-  'setup-docs.sh',
-  join('docs', 'index.md'),
-  join('docs', 'getting-started.md'),
-  join('docs', 'contributing.md'),
+  { source: 'mkdocs.yml', destination: 'mkdocs.yml' },
+  { source: 'package.json.template', destination: 'package.json' },
+  { source: 'requirements.txt', destination: 'requirements.txt' },
+  { source: 'setup-docs.sh', destination: 'setup-docs.sh' },
+  { source: join('docs', 'index.md'), destination: join('docs', 'index.md') },
+  {
+    source: join('docs', 'getting-started.md'),
+    destination: join('docs', 'getting-started.md'),
+  },
+  {
+    source: join('docs', 'contributing.md'),
+    destination: join('docs', 'contributing.md'),
+  },
 ] as const;
 
 export interface ScaffoldDocsAppOptions extends DocsInitResolvedOptions {
@@ -109,13 +115,13 @@ export async function scaffoldDocsApp(
   await ensureDir(appRoot);
 
   for (const templateFile of TEMPLATE_FILES) {
-    const source = join(templateRoot, templateFile);
-    const destination = join(appRoot, templateFile);
+    const source = join(templateRoot, templateFile.source);
+    const destination = join(appRoot, templateFile.destination);
     const template = await readFile(source, 'utf8');
     const rendered = renderTemplate(template, options);
     await ensureDir(dirname(destination));
     await writeFile(destination, rendered, 'utf8');
-    createdFiles.push(templateFile);
+    createdFiles.push(templateFile.destination);
   }
 
   return {
