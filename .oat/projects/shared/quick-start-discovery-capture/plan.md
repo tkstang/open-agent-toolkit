@@ -215,7 +215,7 @@ git commit -m "docs(p02-t02): sync quick-start discovery references"
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | pending | - | - |
+| final | code | received | 2026-03-06 | reviews/final-review-2026-03-06.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
