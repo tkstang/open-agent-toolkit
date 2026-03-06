@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: oat-project-implement
 oat_blockers: []
 oat_last_updated: 2026-03-05
-oat_current_task_id: p01-t03
+oat_current_task_id: p01-t04
 oat_generated: false
 ---
 
@@ -25,11 +25,11 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 4 | 2/4 |
+| Phase 1 | in_progress | 4 | 3/4 |
 | Phase 2 | pending | 4 | 0/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 2/12 tasks completed
+**Total:** 3/12 tasks completed
 
 ---
 
@@ -118,11 +118,32 @@ oat_generated: false
 
 ### Task p01-t03: Scaffold the MkDocs docs app and docs standards assets
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** d061a26
 
-**Notes:**
-- Honeycomb docs app is the reference shape for the generated app and plugin inventory
+**Outcome (required):**
+- Added a reusable docs-app scaffold template set under `.oat/templates/docs-app` for MkDocs Material bootstrap
+- Implemented scaffold generation in `oat docs init` so the command now writes the docs app into the resolved target directory
+- Added scaffold coverage for monorepo and single-package repos, including the no-workspace-file constraint for single-package repos
+
+**Files changed:**
+- `.oat/templates/docs-app/**` - added the bundled docs app templates and contributor guidance
+- `packages/cli/scripts/bundle-assets.sh` - added docs-app templates to the bundled CLI assets
+- `packages/cli/src/commands/docs/init/scaffold.ts` - added scaffold generation and template rendering
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - added scaffold unit/integration coverage
+- `packages/cli/src/commands/docs/init/index.ts` - wired `docs init` to run the scaffold flow
+
+**Verification:**
+- Run: `pnpm --dir packages/cli test src/commands/docs/init/scaffold.test.ts src/commands/docs/init/resolve-options.test.ts src/commands/shared/shared.prompts.test.ts src/commands/index.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass - 67 tests passed
+- Run: `pnpm --dir packages/cli build`
+- Result: pass - bundled assets and TypeScript build succeeded
+- Run: `pnpm run cli -- docs init --help`
+- Result: pass - help output reflects the supported scaffold flags
+
+**Notes / Decisions:**
+- Used `.oat/templates/docs-app/package.json.template` instead of a raw templated JSON file so repo format hooks do not fail on placeholder tokens
+- Honeycomb docs app remains the reference shape for the generated app and plugin inventory
 
 ---
 
@@ -223,7 +244,7 @@ Chronological log of implementation progress.
 
 - [x] p01-t01: Add the `oat docs` command family and help coverage - da0b534
 - [x] p01-t02: Implement repo-shape detection and `oat docs init` option resolution - 7c6f2e0
-- [ ] p01-t03: Scaffold the MkDocs docs app and docs standards assets - next
+- [x] p01-t03: Scaffold the MkDocs docs app and docs standards assets - d061a26
 - [ ] p01-t04: Implement `oat docs nav sync` from `index.md` `## Contents` - pending
 
 **What changed (high level):**
@@ -235,6 +256,7 @@ Chronological log of implementation progress.
 - Added command registration and help-snapshot coverage for the docs namespace
 - Added repo-shape detection and docs init option resolution for monorepo and single-package defaults
 - Added `inputWithDefault` prompting so interactive docs setup can accept sensible defaults
+- Added MkDocs docs-app templates plus `docs init` scaffold generation and scaffold coverage for monorepo and single-package repos
 
 **Decisions:**
 - Use a three-phase rollout: CLI foundation, OAT dogfood migration, docs analyze/apply
