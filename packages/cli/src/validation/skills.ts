@@ -52,9 +52,26 @@ function validateQuickStartSemantics(
   content: string,
   findings: ValidationFinding[],
 ): void {
-  if (
-    !/synthesi(?:ze|s)\s+`?discovery\.md`?\s+from .*session context/i.test(
+  // Keep these checks intent-based rather than tied to one exact sentence so
+  // small wording edits in the skill do not create false validation failures.
+  const mentionsDiscovery = /`?discovery\.md`?/i.test(content);
+  const mentionsSessionContext =
+    /(session context|current conversation|current session|existing context)/i.test(
       content,
+    );
+  const mentionsDiscoverySynthesis =
+    /(synthesi(?:ze|s)|populate|draft|create)/i.test(content);
+  const mentionsEnoughExistingDetail =
+    /(enough detail|sufficient detail|detail already exists|already available)/i.test(
+      content,
+    );
+
+  if (
+    !(
+      mentionsDiscovery &&
+      mentionsSessionContext &&
+      mentionsDiscoverySynthesis &&
+      mentionsEnoughExistingDetail
     )
   ) {
     findings.push({
@@ -65,7 +82,16 @@ function validateQuickStartSemantics(
   }
 
   if (
-    !/backfill(?:s|ing)? .*discovery.*(discussion|q&a|decisions)/i.test(content)
+    !(
+      mentionsDiscovery &&
+      /(backfill(?:s|ing)?|record|capture|reflect)/i.test(content) &&
+      /(discussion|q&a|questions|answers|decisions|options considered)/i.test(
+        content,
+      ) &&
+      /(before planning|before finalizing .*plan\.md|before writing .*plan\.md)/i.test(
+        content,
+      )
+    )
   ) {
     findings.push({
       file: skillPath,
@@ -75,8 +101,11 @@ function validateQuickStartSemantics(
   }
 
   if (
-    !/ask only (?:the )?minimum additional questions needed to remove blockers/i.test(
-      content,
+    !(
+      /(?:ask|only ask)/i.test(content) &&
+      /(minimum|minimum additional|minimum follow-up)/i.test(content) &&
+      /questions?/i.test(content) &&
+      /(remove blockers|resolve blockers|unblock planning)/i.test(content)
     )
   ) {
     findings.push({

@@ -640,4 +640,38 @@ describe('validateOatSkills', () => {
       }),
     ]);
   });
+
+  it('accepts equivalent quick-start wording for discovery synthesis guidance', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'oat-validate-'));
+    tempDirs.push(root);
+    await createSkillFile(
+      root,
+      'oat-project-quick-start',
+      [
+        '---',
+        'name: oat-project-quick-start',
+        'version: 1.0.0',
+        'description: Use when validating quick-start specific guardrails.',
+        'disable-model-invocation: true',
+        'user-invocable: true',
+        'allowed-tools: Read, Write',
+        '---',
+        '',
+        '# Quick Start',
+        '',
+        '## Progress Indicators (User-Facing)',
+        '',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        ' OAT ▸ QUICK START',
+        '━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━',
+        '',
+        'Populate `discovery.md` from the current session context when enough detail already exists.',
+        'Only ask the minimum follow-up questions required to unblock planning.',
+        'If startup Q&A is needed, record that discussion and the resulting decisions back into discovery.md before finalizing plan.md.',
+      ].join('\n'),
+    );
+
+    const result = await validateOatSkills(root);
+    expect(result.findings).toEqual([]);
+  });
 });
