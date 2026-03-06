@@ -47,6 +47,7 @@ describe('help output snapshots', () => {
         remove           Remove installed skills and managed provider views
         doctor           Run environment and setup diagnostics
         cleanup          Cleanup OAT project and artifact hygiene issues
+        docs             OAT documentation bootstrap and maintenance commands
         instructions     Manage AGENTS.md and CLAUDE.md instruction file integrity
         index            OAT index generation commands
         project          Manage OAT project workflows
@@ -316,6 +317,65 @@ describe('help output snapshots', () => {
         validate        Validate AGENTS.md to CLAUDE.md pointer integrity
         sync [options]  Repair AGENTS.md to CLAUDE.md pointer drift
         help [command]  display help for command
+      "
+    `);
+  });
+
+  it('docs --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, ['docs']).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat docs [options] [command]
+
+      OAT documentation bootstrap and maintenance commands
+
+      Options:
+        -h, --help      display help for command
+
+      Commands:
+        init [options]  Scaffold an OAT docs app
+        nav             Docs navigation commands
+        help [command]  display help for command
+      "
+    `);
+  });
+
+  it('docs init --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, ['docs', 'init']).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat docs init [options]
+
+      Scaffold an OAT docs app
+
+      Options:
+        --app-name <name>    Docs app name
+        --target-dir <path>  Target directory for the docs app
+        --lint <mode>        Markdown lint mode (choices: "markdownlint", "none",
+                             default: "markdownlint")
+        --format <mode>      Markdown format mode (choices: "prettier", "none",
+                             default: "prettier")
+        --yes                Accept defaults without prompting
+        -h, --help           display help for command
+      "
+    `);
+  });
+
+  it('docs nav sync --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, [
+      'docs',
+      'nav',
+      'sync',
+    ]).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat docs nav sync [options]
+
+      Regenerate docs navigation from index.md contents
+
+      Options:
+        --target-dir <path>  Docs app directory containing mkdocs.yml
+        -h, --help           display help for command
       "
     `);
   });
