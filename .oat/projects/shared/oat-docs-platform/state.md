@@ -6,7 +6,7 @@ oat_hill_checkpoints: []
 oat_hill_completed: []
 oat_parallel_execution: false
 oat_phase: implement
-oat_phase_status: complete
+oat_phase_status: in_progress
 oat_execution_mode: single-thread
 oat_workflow_mode: import
 oat_workflow_origin: imported
@@ -15,13 +15,13 @@ oat_generated: false
 
 # Project State: oat-docs-platform
 
-**Status:** Implementation complete
+**Status:** Implementation tasks complete; awaiting final review
 **Started:** 2026-03-05
 **Last Updated:** 2026-03-06
 
 ## Current Phase
 
-Implementation complete through `p03-t04`.
+Implementation tasks complete through `p03-t04`; final review pending.
 
 ## Artifacts
 
@@ -49,6 +49,7 @@ Implementation complete through `p03-t04`.
 - ✓ `p03-t03` complete - `oat-docs-apply` skill added
 - ✓ `p03-t04` complete - docs analyze/apply dogfooded against `apps/oat-docs`
 - ✓ Post-phase hardening complete - docs analyze/apply contract ported to the evidence-driven apply model
+- ⧗ Awaiting final code review
 
 ## Blockers
 
@@ -56,4 +57,4 @@ None
 
 ## Next Milestone
 
-Run final code review, then generate the project PR/final handoff
+Run final code review and, if it passes, proceed to final PR handoff
