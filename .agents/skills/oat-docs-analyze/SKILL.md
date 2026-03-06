@@ -62,13 +62,14 @@ When executing this skill, provide lightweight progress feedback so the user can
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 - Use step indicators:
-  - `[1/7] Resolving docs target + mode…`
-  - `[2/7] Inventorying docs files…`
-  - `[3/7] Evaluating index contract…`
-  - `[4/7] Assessing quality + coverage…`
-  - `[5/7] Checking nav and drift…`
-  - `[6/7] Writing analysis artifact…`
-  - `[7/7] Updating tracking + summary…`
+  - `[1/8] Resolving docs target + mode…`
+  - `[2/8] Inventorying docs files…`
+  - `[3/8] Evaluating index contract…`
+  - `[4/8] Assessing quality + coverage…`
+  - `[5/8] Verifying substantive claims…`
+  - `[6/8] Checking nav and drift…`
+  - `[7/8] Writing analysis artifact…`
+  - `[8/8] Updating tracking + summary…`
 
 ## Process
 
@@ -168,7 +169,47 @@ For each evaluated page or directory:
 In `delta` mode, always evaluate changed docs files plus the nearest parent `index.md` pages.
 In `full` mode, evaluate the whole docs surface.
 
-### Step 4: Check Navigation and Drift
+### Step 4: Verify Substantive Claims Against Repo Sources
+
+Add a dedicated accuracy verification pass between page-quality assessment and nav/drift checks.
+
+Only verify claims that are checkable from within the repository. This includes:
+
+- code paths
+- CLI commands and flags
+- API routes
+- config keys and values
+- schema fields / payload fields
+- file names, script names, and setup entrypoints
+
+Do **not** attempt to verify:
+
+- external URLs
+- behavior that requires running a service
+- claims whose canonical source lives outside the repository
+
+For any docs page that references code paths, commands, routes, config keys, field names, or
+other repo-checkable implementation details:
+
+1. Identify the claim text and the canonical source that should back it.
+2. Read the backing source files needed to confirm the claim.
+3. Rate the claim as:
+   - `verified`
+   - `unverified` when the source cannot be found or is too ambiguous
+   - `contradicted` when the repo source disagrees with the docs claim
+4. Promote contradicted claims to findings with severity based on likely user harm.
+   - Wrong destructive/auth/security guidance -> usually `High` or `Critical`
+   - Wrong commands, routes, or required fields that break normal usage -> usually `High`
+   - Wrong examples or less harmful operational details -> usually `Medium`
+5. Record unverified claims as `Low` findings with a note that the source could not be confirmed.
+
+Evidence standard for this step:
+
+- Each checked claim must cite the docs location plus the canonical repo source used to verify it.
+- If multiple repo files are needed to verify a claim, cite all relevant sources.
+- If the canonical source is ambiguous, mark the claim `unverified` rather than guessing.
+
+### Step 5: Check Navigation and Drift
 
 If `mkdocs.yml` exists:
 
@@ -180,7 +221,7 @@ If `mkdocs.yml` exists:
 
 If no `mkdocs.yml` exists, record whether the repo should be migrated to an OAT docs app.
 
-### Step 5: Severity-Rate Findings
+### Step 6: Severity-Rate Findings
 
 Use these defaults:
 
@@ -189,7 +230,7 @@ Use these defaults:
 - `Medium`: incomplete `## Contents`, `overview.md` still in use, plugin/contributor guidance gaps, moderate duplication
 - `Low`: polish, wording, or organization improvements
 
-### Step 6: Write Analysis Artifact
+### Step 7: Write Analysis Artifact
 
 Use `references/analysis-artifact-template.md`.
 
@@ -204,6 +245,7 @@ Populate the artifact with:
 - Inventory summary
 - Severity-rated findings
 - Directory coverage and contract gaps
+- Accuracy verification verdicts for repo-checkable claims
 - Navigation/drift findings
 - Ordered recommendations
 - Exact evidence references for each finding and recommendation
@@ -211,7 +253,7 @@ Populate the artifact with:
 - Progressive disclosure decisions (`inline`, `link_only`, `omit`, `ask_user`)
 - Canonical link targets when deeper detail should stay out of always-on docs pages
 
-### Step 7: Update Tracking and Output Summary
+### Step 8: Update Tracking and Output Summary
 
 Update docs tracking using the shared helper:
 

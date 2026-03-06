@@ -24,6 +24,7 @@ oat_analysis_commit: {commitHash}
 - **Delta scope:** {N/A or "N files changed since {base-commit}"}
 - **Evidence-backed recommendations:** {N}
 - **Open questions / ask-user items:** {N}
+- **Contradicted claims:** {N}
 
 ## Docs Inventory
 
@@ -106,6 +107,20 @@ None | {numbered list}
 
 {Or: "No directory contract gaps identified."}
 
+## Accuracy Verification
+
+Check only claims that are verifiable from repo sources such as code, config, schemas,
+scripts, route definitions, and checked-in setup files. Do not include external URLs or
+runtime-only behavior here.
+
+| # | Docs Claim | Docs Ref | Canonical Source Ref | Verdict | Severity | Notes |
+|---|------------|----------|----------------------|---------|----------|-------|
+| 1 | `{claim text}` | `{docs/path.md:line}` | `{src/path.ts:line}` | {verified \| unverified \| contradicted} | {Critical \| High \| Medium \| Low \| N/A} | {why it was judged this way} |
+| 2 | `{claim text}` | `{docs/path.md:line}` | `{config/file:line}` | {verified \| unverified \| contradicted} | {Critical \| High \| Medium \| Low \| N/A} | {source missing, ambiguous, or contradicts docs} |
+| ... | | | | | | |
+
+{Or: "No repo-checkable substantive claims required accuracy verification."}
+
 ## Navigation and Drift
 
 | # | Surface | Issue | Evidence | Disclosure | Link Target | Severity | Notes |
@@ -149,6 +164,7 @@ canonical docs/config/examples.
 ## Apply Contract
 
 - `oat-docs-apply` may only implement recommendations backed by evidence in this artifact.
+- Findings based on contradicted claims must be resolved against cited repo sources before `oat-docs-apply` acts on them.
 - Recommendations marked `omit` must stay out of generated docs changes.
 - Recommendations marked `ask_user` require explicit user confirmation before generation.
 - Recommendations marked `link_only` must include a canonical link target.
