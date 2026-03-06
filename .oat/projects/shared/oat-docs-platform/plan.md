@@ -5,7 +5,7 @@ oat_blockers: []
 oat_last_updated: 2026-03-05
 oat_phase: plan
 oat_phase_status: complete
-oat_plan_hill_phases: []
+oat_plan_hill_phases: ["p03"]
 oat_plan_source: imported
 oat_import_reference: references/imported-plan.md
 oat_import_source_path: .oat/repo/reference/external-plans/2026-03-05-oat-docs-platform.md
@@ -27,8 +27,8 @@ oat_generated: false
 
 ## Planning Checklist
 
-- [x] Confirmed HiLL checkpoints with user
-- [x] Set `oat_plan_hill_phases` in frontmatter
+- [x] Confirmed implementation should run straight through until the final plan phase
+- [x] Set `oat_plan_hill_phases: ["p03"]` in frontmatter
 
 ---
 
@@ -123,6 +123,7 @@ git commit -m "feat(p01-t02): add docs init option resolution"
 - Create: bundled docs app templates/assets under the CLI assets tree
 - Modify: CLI docs/bootstrap docs as needed
 - Create/Modify tests covering scaffold output
+- Create/Modify integration fixtures for monorepo and single-package scaffold scenarios
 
 **Step 1: Write test (RED)**
 
@@ -134,6 +135,11 @@ Add failing scaffold tests for generated output:
 - `docs/index.md`
 - `docs/getting-started.md`
 - `docs/contributing.md`
+
+Add failing integration coverage for:
+- scaffolding into a monorepo fixture under `apps/<app-name>`
+- scaffolding into a single-package fixture at `<app-name>/`
+- verifying the single-package fixture does not gain a workspace file or workspace-only wiring
 
 Verify the generated contributing guide includes installed plugin/extension inventory and usage references.
 
@@ -148,7 +154,7 @@ Move reusable content into templates/assets instead of inlining long markdown st
 **Step 4: Verify**
 
 Run: `pnpm test -- --runInBand packages/cli/src/commands/docs && pnpm run cli -- docs init --help`
-Expected: Scaffold tests pass and help text matches the supported flags/options
+Expected: Scaffold unit/integration tests pass for both monorepo and single-package fixtures, and help text matches the supported flags/options
 
 **Step 5: Commit**
 
@@ -205,12 +211,15 @@ git commit -m "feat(p01-t04): add docs nav sync from index contents"
 - Create: `apps/oat-docs/**` (or the final chosen docs app path from `oat docs init`)
 - Modify: workspace/root scripts or references needed to run the docs app in-repo
 
-**Step 1: Write test (RED)**
+**Step 1: Prepare dogfood verification**
 
-Confirm the repo does not yet contain the OAT docs app scaffold or runnable docs scripts in the target location.
+Capture the expected dogfood output before scaffolding:
+- target docs app path
+- required generated files
+- expected root/workspace wiring
+- expected commands for local docs development
 
-Run: `test -d apps/oat-docs && exit 1 || exit 0`
-Expected: Command succeeds because the app does not exist yet
+Record these expectations in the docs command test suite or a repo-specific verification note so the dogfood run has a concrete pass/fail target.
 
 **Step 2: Implement (GREEN)**
 
@@ -223,7 +232,7 @@ Adjust the scaffold templates if the OAT repo reveals gaps in the generated app 
 **Step 4: Verify**
 
 Run: `pnpm run cli -- docs init --app-name oat-docs --target-dir apps/oat-docs --yes`
-Expected: Docs app scaffolds cleanly without manual file creation
+Expected: Docs app scaffolds cleanly, the expected file tree exists, and root/workspace wiring matches the recorded dogfood expectations without manual file creation
 
 **Step 5: Commit**
 
@@ -240,12 +249,14 @@ git commit -m "feat(p02-t01): scaffold oat docs app"
 - Modify/Create: docs content under the new OAT docs app
 - Modify: current `docs/oat/**` sources as they are moved or replaced
 
-**Step 1: Write test (RED)**
+**Step 1: Write migration assertion (RED)**
 
 Inventory the current docs tree and identify directories still using `overview.md` or missing `index.md`/`## Contents`.
 
-Run: `find docs -name 'overview.md' -o -type d`
-Expected: Existing docs layout still requires normalization
+Add a failing migration assertion that checks the target docs app contains no `overview.md` files after migration and that required directories expose `index.md` entrypoints.
+
+Run: `pnpm test -- --runInBand packages/cli/src/commands/docs`
+Expected: Migration assertion fails before the docs tree is normalized
 
 **Step 2: Implement (GREEN)**
 
@@ -257,8 +268,8 @@ Use the migration to tighten the content model so every directory entrypoint is 
 
 **Step 4: Verify**
 
-Run: `find apps/oat-docs/docs -name 'overview.md'`
-Expected: No remaining `overview.md` files in the migrated docs tree
+Run: `pnpm test -- --runInBand packages/cli/src/commands/docs`
+Expected: Migration assertion passes and no `overview.md` files remain in the migrated docs tree
 
 **Step 5: Commit**
 
@@ -279,7 +290,7 @@ git commit -m "docs(p02-t02): migrate oat docs into docs app"
 
 Capture outdated references that still point at the pre-migration docs layout or rely on manually maintained nav assumptions.
 
-Run: `rg -n "docs/oat/" README.md AGENTS.md docs .agents`
+Run: `grep -R -n "docs/oat/" README.md AGENTS.md docs .agents`
 Expected: Existing references still point to the old docs surface
 
 **Step 2: Implement (GREEN)**
@@ -292,7 +303,7 @@ Eliminate duplicated path guidance that can now rely on the generated docs app s
 
 **Step 4: Verify**
 
-Run: `pnpm run cli -- docs nav sync --target-dir apps/oat-docs && rg -n "docs/oat/" README.md AGENTS.md docs .agents`
+Run: `pnpm run cli -- docs nav sync --target-dir apps/oat-docs && grep -R -n "docs/oat/" README.md AGENTS.md docs .agents`
 Expected: Nav regenerates cleanly and stale path references are reduced to intentional compatibility mentions only
 
 **Step 5: Commit**
@@ -309,12 +320,12 @@ git commit -m "docs(p02-t03): sync nav and update oat docs references"
 **Files:**
 - Modify: scaffold templates or migrated docs files if verification uncovers issues
 
-**Step 1: Write test (RED)**
+**Step 1: Run hardening verification**
 
-Run the generated docs checks and capture any failures from build, lint, or formatting assumptions.
+Run the generated docs checks and capture any failures from build, lint, formatting, or environment assumptions.
 
 Run: `pnpm --dir apps/oat-docs docs:build && pnpm --dir apps/oat-docs docs:lint && pnpm --dir apps/oat-docs docs:format:check`
-Expected: At least one issue surfaces during first dogfood pass if the scaffold or migration missed a detail
+Expected: Any concrete issues are identified and logged as hardening gaps to fix in this task; do not assume failure is required
 
 **Step 2: Implement (GREEN)**
 
@@ -340,12 +351,19 @@ git commit -m "fix(p02-t04): harden docs scaffold through dogfood verification"
 
 ## Phase 3: Add Docs Analyze/Apply and Dogfood Them
 
-### Task p03-t01: Add shared docs analysis/apply helpers and artifacts
+### Task p03-t01: Add shared docs analysis/apply helpers and reserve CLI entrypoints
 
 **Files:**
-- Create/Modify: `.agents/skills/oat-docs-analyze/**`
-- Create/Modify: `.agents/skills/oat-docs-apply/**`
-- Create/Modify: shared scripts/templates/tracking helpers as needed
+- Create/Modify: `.agents/skills/oat-docs-analyze/SKILL.md`
+- Create/Modify: `.agents/skills/oat-docs-analyze/references/**`
+- Create/Modify: `.agents/skills/oat-docs-analyze/scripts/**`
+- Create/Modify: `.agents/skills/oat-docs-apply/SKILL.md`
+- Create/Modify: `.agents/skills/oat-docs-apply/references/**`
+- Create/Modify: `.agents/skills/oat-docs-apply/scripts/**`
+- Modify: `packages/cli/src/commands/docs/**`
+- Modify: `packages/cli/src/commands/index.test.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+- Create/Modify: shared tracking/templates/helpers as needed
 
 **Step 1: Write test (RED)**
 
@@ -354,10 +372,11 @@ Map the existing `oat-agent-instructions-analyze` and `oat-agent-instructions-ap
 - tracking state
 - artifact generation
 - delta/full mode boundaries
+- CLI registration/help coverage for `oat docs analyze` and `oat docs apply`
 
 **Step 2: Implement (GREEN)**
 
-Extract or replicate the shared deterministic pieces needed for docs analysis/apply so the docs family mirrors the agent-instructions family where appropriate.
+Extract or replicate the shared deterministic pieces needed for docs analysis/apply so the docs family mirrors the agent-instructions family where appropriate, and register placeholder/real CLI entrypoints for `oat docs analyze` and `oat docs apply`.
 
 **Step 3: Refactor**
 
@@ -365,8 +384,8 @@ Keep shared conventions aligned across the two workflow families without forcing
 
 **Step 4: Verify**
 
-Run: `pnpm run cli -- internal validate-oat-skills`
-Expected: New `oat-*` skills and supporting artifacts validate cleanly
+Run: `pnpm test -- --runInBand packages/cli/src/commands/docs packages/cli/src/commands/index.test.ts packages/cli/src/commands/help-snapshots.test.ts && pnpm run cli -- internal validate-oat-skills`
+Expected: Docs CLI entrypoint coverage passes and new `oat-*` skills/supporting artifacts validate cleanly
 
 **Step 5: Commit**
 
@@ -380,7 +399,11 @@ git commit -m "feat(p03-t01): add shared docs workflow scaffolding"
 ### Task p03-t02: Implement `oat-docs-analyze`
 
 **Files:**
-- Create/Modify: `.agents/skills/oat-docs-analyze/**`
+- Create/Modify: `.agents/skills/oat-docs-analyze/SKILL.md`
+- Create/Modify: `.agents/skills/oat-docs-analyze/references/analysis-artifact-template.md`
+- Create/Modify: `.agents/skills/oat-docs-analyze/references/quality-checklist.md`
+- Create/Modify: `.agents/skills/oat-docs-analyze/references/directory-assessment-criteria.md`
+- Create/Modify: `.agents/skills/oat-docs-analyze/scripts/**`
 - Modify: docs reference material or templates required by the skill
 
 **Step 1: Write test (RED)**
@@ -401,8 +424,8 @@ Keep analyze output templates and severity semantics parallel to the agent-instr
 
 **Step 4: Verify**
 
-Run: `pnpm run cli -- internal validate-oat-skills`
-Expected: Skill metadata and references are valid
+Run: `pnpm run cli -- docs analyze --target-dir test/fixtures/docs-site && pnpm run cli -- internal validate-oat-skills`
+Expected: Analyze produces the expected artifact structure against the fixture docs tree and skill metadata/references are valid
 
 **Step 5: Commit**
 
@@ -416,7 +439,10 @@ git commit -m "feat(p03-t02): add oat-docs-analyze skill"
 ### Task p03-t03: Implement `oat-docs-apply`
 
 **Files:**
-- Create/Modify: `.agents/skills/oat-docs-apply/**`
+- Create/Modify: `.agents/skills/oat-docs-apply/SKILL.md`
+- Create/Modify: `.agents/skills/oat-docs-apply/references/apply-plan-template.md`
+- Create/Modify: `.agents/skills/oat-docs-apply/references/**`
+- Create/Modify: `.agents/skills/oat-docs-apply/scripts/**`
 - Modify: any shared references/templates needed for approval plans, branch flow, and PR summaries
 
 **Step 1: Write test (RED)**
@@ -437,8 +463,8 @@ Ensure apply preserves user-authored docs content outside the targeted changes w
 
 **Step 4: Verify**
 
-Run: `pnpm run cli -- internal validate-oat-skills`
-Expected: Apply skill validates and references the docs analysis flow cleanly
+Run: `pnpm run cli -- docs apply --analysis .oat/repo/analysis/test-docs-analysis.md && pnpm run cli -- internal validate-oat-skills`
+Expected: Apply flow produces the expected recommendation/approval output against a fixture analysis artifact and the skill validates cleanly
 
 **Step 5: Commit**
 
@@ -459,7 +485,7 @@ git commit -m "feat(p03-t03): add oat-docs-apply skill"
 
 Run the new docs analysis against the migrated OAT docs app and capture concrete findings before applying anything.
 
-Run: `oat-docs-analyze`
+Run: `pnpm run cli -- docs analyze --target-dir apps/oat-docs`
 Expected: A real analysis artifact is produced with actionable findings against the dogfooded docs app
 
 **Step 2: Implement (GREEN)**
@@ -496,7 +522,7 @@ git commit -m "chore(p03-t04): dogfood docs analyze apply workflow"
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | final | code | pending | - | - |
-| plan | artifact | received | 2026-03-05 | reviews/artifact-plan-review-2026-03-05.md |
+| plan | artifact | passed | 2026-03-05 | reviews/artifact-plan-review-2026-03-05.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 
@@ -507,6 +533,8 @@ git commit -m "chore(p03-t04): dogfood docs analyze apply workflow"
 - `fixes_added`: fix tasks were added to the plan (work queued)
 - `fixes_completed`: fix tasks implemented, awaiting re-review
 - `passed`: re-review run and recorded as passing (no Critical/Important)
+
+Import-mode note: `spec` and `design` rows are retained for plan contract compatibility. They are not expected to be used for this project unless the workflow mode changes.
 
 ---
 
