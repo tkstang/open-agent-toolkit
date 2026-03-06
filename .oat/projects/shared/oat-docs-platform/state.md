@@ -1,6 +1,6 @@
 ---
-oat_current_task: p01-t04
-oat_last_commit: d061a26
+oat_current_task: p02-t01
+oat_last_commit: 43479ab
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Phase 1 in progress at `p01-t04`.
+Implementation - Phase 2 in progress at `p02-t01`.
 
 ## Artifacts
 
@@ -29,7 +29,7 @@ Implementation - Phase 1 in progress at `p01-t04`.
 - **Spec:** Skipped (import mode)
 - **Design:** Skipped (import mode)
 - **Plan:** `plan.md` (complete - imported)
-- **Implementation:** `implementation.md` (in_progress - current task `p01-t04`)
+- **Implementation:** `implementation.md` (in_progress - current task `p02-t01`)
 
 ## Progress
 
@@ -39,7 +39,8 @@ Implementation - Phase 1 in progress at `p01-t04`.
 - ✓ `p01-t01` complete - docs command namespace registered
 - ✓ `p01-t02` complete - repo-shape detection and init option resolution added
 - ✓ `p01-t03` complete - docs app scaffold templates and generation added
-- ⧗ Current task: `p01-t04`
+- ✓ `p01-t04` complete - index-driven nav sync and docs index contract added
+- ⧗ Current task: `p02-t01`
 
 ## Blockers
 
@@ -47,4 +48,4 @@ None
 
 ## Next Milestone
 
-Complete Phase 1 implementation tasks and continue through `p03` without intermediate phase stops
+Scaffold and dogfood the new OAT docs app in this repository

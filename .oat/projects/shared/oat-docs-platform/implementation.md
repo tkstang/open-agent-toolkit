@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: oat-project-implement
 oat_blockers: []
 oat_last_updated: 2026-03-05
-oat_current_task_id: p01-t04
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -25,17 +25,17 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 4 | 3/4 |
-| Phase 2 | pending | 4 | 0/4 |
+| Phase 1 | completed | 4 | 4/4 |
+| Phase 2 | in_progress | 4 | 0/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 3/12 tasks completed
+**Total:** 4/12 tasks completed
 
 ---
 
 ## Phase 1: Build the `oat docs` CLI Foundation
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-05
 
 ### Phase Summary (fill when phase is complete)
@@ -51,8 +51,10 @@ oat_generated: false
 - `docs/oat/**` - docs standards and command references for the new docs flow
 
 **Verification:**
-- Run: `pnpm test -- --runInBand packages/cli/src/commands/docs packages/cli/src/commands/index.test.ts packages/cli/src/commands/help-snapshots.test.ts`
-- Result: pending
+- Run: `pnpm --dir packages/cli test src/commands/docs/init/scaffold.test.ts src/commands/docs/init/resolve-options.test.ts src/commands/docs/nav/sync.test.ts src/commands/index.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass - docs command tests and help snapshots passed
+- Run: `pnpm --dir packages/cli type-check`
+- Result: pass - CLI TypeScript checks passed
 
 **Notes / Decisions:**
 - Keep scaffold behavior deterministic in the CLI and reserve editorial judgment for skills
@@ -149,18 +151,39 @@ oat_generated: false
 
 ### Task p01-t04: Implement `oat docs nav sync` from `index.md` `## Contents`
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 43479ab
 
-**Notes:**
+**Outcome (required):**
+- Added `oat docs nav sync` implementation that reads `index.md` `## Contents` sections and regenerates `mkdocs.yml` navigation deterministically
+- Added reusable parser/build helpers so docs analyze/apply can share the same `index.md` contract later
+- Added reference documentation for the `index.md` and `## Contents` convention
+
+**Files changed:**
+- `packages/cli/src/commands/docs/nav/contents.ts` - added `## Contents` parsing and nav-tree building helpers
+- `packages/cli/src/commands/docs/nav/sync.ts` - added mkdocs nav sync command implementation
+- `packages/cli/src/commands/docs/nav/sync.test.ts` - added parser and nav-sync coverage
+- `docs/oat/reference/docs-index-contract.md` - documented the docs index contract
+- `docs/oat/reference/index.md` - linked the new contract reference
+
+**Verification:**
+- Run: `pnpm --dir packages/cli test src/commands/docs/init/scaffold.test.ts src/commands/docs/init/resolve-options.test.ts src/commands/docs/nav/sync.test.ts src/commands/index.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass - nav parsing, nested generation, and help coverage passed
+- Run: `pnpm --dir packages/cli type-check`
+- Result: pass - CLI TypeScript checks passed
+- Run: `pnpm run cli -- docs nav sync --help`
+- Result: pass - command help reflects the supported nav-sync surface
+
+**Notes / Decisions:**
 - Treat the reserved `## Contents` section as the only machine-readable source for generated nav
+- Preserve prose outside `## Contents` by keeping nav generation read-only with respect to Markdown source files
 
 ---
 
 ## Phase 2: Dogfood the Docs App in the OAT Repo
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-05
 
 ### Task p02-t01: Scaffold the OAT docs app in this repository
 
@@ -245,7 +268,8 @@ Chronological log of implementation progress.
 - [x] p01-t01: Add the `oat docs` command family and help coverage - da0b534
 - [x] p01-t02: Implement repo-shape detection and `oat docs init` option resolution - 7c6f2e0
 - [x] p01-t03: Scaffold the MkDocs docs app and docs standards assets - d061a26
-- [ ] p01-t04: Implement `oat docs nav sync` from `index.md` `## Contents` - pending
+- [x] p01-t04: Implement `oat docs nav sync` from `index.md` `## Contents` - 43479ab
+- [ ] p02-t01: Scaffold the OAT docs app in this repository - next
 
 **What changed (high level):**
 - Imported external docs platform plan into canonical OAT project structure
@@ -257,13 +281,14 @@ Chronological log of implementation progress.
 - Added repo-shape detection and docs init option resolution for monorepo and single-package defaults
 - Added `inputWithDefault` prompting so interactive docs setup can accept sensible defaults
 - Added MkDocs docs-app templates plus `docs init` scaffold generation and scaffold coverage for monorepo and single-package repos
+- Added `oat docs nav sync` plus the shared `index.md` `## Contents` parser and reference documentation for the docs index contract
 
 **Decisions:**
 - Use a three-phase rollout: CLI foundation, OAT dogfood migration, docs analyze/apply
 - Run straight through all implementation phases before pausing for a phase checkpoint
 
 **Follow-ups / TODO:**
-- Confirm final docs app target path during implementation if scaffold output suggests a better monorepo location than `apps/oat-docs`
+- Dogfood the new scaffold in this repo and confirm the final docs app path before migrating the current docs tree
 
 **Blockers:**
 - None - ready for implementation
