@@ -1,6 +1,6 @@
 ---
 oat_status: complete
-oat_ready_for: oat-project-review-provide
+oat_ready_for: oat-project-pr-final
 oat_blockers: []
 oat_last_updated: 2026-03-06
 oat_current_task_id: null
@@ -540,6 +540,7 @@ Chronological log of implementation progress.
 
 - [x] follow-up hardening: port evidence-driven analyze/apply contract into docs skills - 67638ee
 - [x] follow-up cleanup: addressed inline final-review findings - 3db1188
+- [x] final review accepted via inline user approval
 
 **What changed (high level):**
 - Updated `oat-docs-analyze` and `oat-docs-apply` to mirror the newer evidence-backed analyze/apply boundary from the agent-instructions workflow
@@ -554,6 +555,9 @@ Chronological log of implementation progress.
 - Result: pass - full workspace verification succeeded before final review
 - Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/docs/nav/sync.test.ts packages/cli/src/commands/docs/init/scaffold.test.ts packages/cli/src/commands/index.test.ts packages/cli/src/commands/help-snapshots.test.ts`, `pnpm --filter @oat/cli build`, `pnpm --dir apps/oat-docs docs:build`, `pnpm --dir apps/oat-docs docs:lint`, `pnpm --dir apps/oat-docs docs:format:check`
 - Result: pass - targeted cleanup verification succeeded after the review follow-up commit
+
+**Review outcome:**
+- Final inline review accepted by user after the cleanup follow-up; project is now ready for final PR generation
 
 ---
 

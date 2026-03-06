@@ -521,7 +521,7 @@ git commit -m "chore(p03-t04): dogfood docs analyze apply workflow"
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
-| final | code | fixes_completed | 2026-03-06 | inline-only |
+| final | code | passed | 2026-03-06 | inline-only |
 | plan | artifact | passed | 2026-03-05 | reviews/artifact-plan-review-2026-03-05.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
@@ -547,7 +547,7 @@ Import-mode note: `spec` and `design` rows are retained for plan contract compat
 
 **Total: 12 tasks**
 
-Ready for code review and merge.
+Ready for merge / final PR handoff.
 
 ---
 
