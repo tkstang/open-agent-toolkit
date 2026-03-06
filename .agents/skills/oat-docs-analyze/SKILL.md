@@ -1,6 +1,6 @@
 ---
 name: oat-docs-analyze
-version: 1.0.0
+version: 1.1.0
 description: Run when you need to evaluate documentation structure, navigation, and coverage against the OAT docs app contract. Produces a severity-rated analysis artifact for oat-docs-apply.
 disable-model-invocation: true
 user-invocable: true
@@ -31,6 +31,16 @@ Scan a repository's documentation surface, evaluate it against the OAT docs cont
 - Reading docs trees, MkDocs config, and related repository metadata.
 - Writing a docs analysis artifact to `.oat/repo/analysis/`.
 - Updating docs analysis tracking metadata.
+
+## Analyze vs Apply Boundary
+
+`oat-docs-analyze` owns discovery, evaluation, evidence gathering, and recommendation shaping.
+The analysis artifact must be detailed enough that `oat-docs-apply` can execute approved
+recommendations without rediscovering docs conventions from scratch.
+
+`oat-docs-apply` may verify that cited files still exist and may read those same cited
+sources while generating output, but it must not invent unsupported docs conventions,
+create new recommendations, or fill in missing evidence gaps on its own.
 
 **Self-Correction Protocol:**
 If you catch yourself:
@@ -99,6 +109,17 @@ Record the docs surface type:
 - `docs-tree`
 - `root-markdown`
 
+Capture the evidence sources that will justify later findings and recommendations. Prefer:
+
+- `mkdocs.yml` and generated nav structure
+- `docs/contributing.md`, contributor guides, and setup docs
+- `package.json` scripts, `requirements.txt`, and docs bootstrap scripts
+- existing `index.md` trees and repeated directory patterns
+- exact missing or stale paths, commands, and page references
+
+Do **not** infer docs structure conventions from a tiny sample of pages when the broader
+tree or config disagrees.
+
 ### Step 2: Evaluate the `index.md` Contract
 
 Use `references/quality-checklist.md` and `references/directory-assessment-criteria.md`.
@@ -122,7 +143,30 @@ Evaluate each docs page for:
 - Excessive duplication
 - Missing contributor guidance for enabled plugins/extensions when an MkDocs app exists
 
-In `delta` mode, always evaluate changed docs files plus the nearest parent `index.md` pages. In `full` mode, evaluate the whole docs surface.
+Evidence standard:
+
+- Every non-obvious docs convention, drift claim, or recommended fix must be backed by
+  concrete repo evidence captured in the artifact.
+- Preferred evidence sources are MkDocs config, checked-in docs/app config, package scripts,
+  contributor docs, and repeated docs-tree patterns with exact file references.
+- Do **not** infer command accuracy, plugin availability, or navigation policy from defaults.
+- If a command or plugin behavior is already defined in config or setup scripts, prefer
+  citing those sources and linking to them rather than restating verbose operational detail
+  as always-on docs guidance.
+
+For each evaluated page or directory:
+
+1. Read the docs file plus the local evidence needed to validate its claims.
+2. Record findings with severity, exact source refs, and confidence.
+3. Decide a disclosure mode for each recommendation:
+   - `inline`
+   - `link_only`
+   - `omit`
+   - `ask_user`
+4. Record canonical link targets whenever a `link_only` recommendation is used.
+
+In `delta` mode, always evaluate changed docs files plus the nearest parent `index.md` pages.
+In `full` mode, evaluate the whole docs surface.
 
 ### Step 4: Check Navigation and Drift
 
@@ -132,6 +176,7 @@ If `mkdocs.yml` exists:
 2. Flag pages present in docs but absent from nav.
 3. Flag nav entries that point at missing pages.
 4. Flag directories whose `index.md` `## Contents` section appears inconsistent with nav structure.
+5. Flag docs guidance that claims structure, plugin support, or workflow rules not backed by current repo evidence.
 
 If no `mkdocs.yml` exists, record whether the repo should be migrated to an OAT docs app.
 
@@ -161,6 +206,10 @@ Populate the artifact with:
 - Directory coverage and contract gaps
 - Navigation/drift findings
 - Ordered recommendations
+- Exact evidence references for each finding and recommendation
+- Confidence for each recommendation
+- Progressive disclosure decisions (`inline`, `link_only`, `omit`, `ask_user`)
+- Canonical link targets when deeper detail should stay out of always-on docs pages
 
 ### Step 7: Update Tracking and Output Summary
 

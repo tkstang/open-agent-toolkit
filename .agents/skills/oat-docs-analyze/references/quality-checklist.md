@@ -27,9 +27,22 @@ Use this checklist when evaluating a docs surface.
 - Navigation is consistent with the docs tree.
 - `docs/contributing.md` documents enabled plugins/extensions when an MkDocs app exists.
 
+## Claims Are Evidence-Backed
+
+- Non-obvious docs conventions are backed by concrete repo sources.
+- Command, plugin, and nav claims cite config, setup docs, or repeated tree patterns.
+- When canonical setup/config docs already exist, indexes and contributor docs prefer concise links over duplicating every detail inline.
+
+## Progressive Disclosure
+
+- Always-on docs pages keep only the minimal essential guidance inline.
+- Deeper detail links to canonical docs, config, or examples instead of being copied into every index.
+- `link_only`, `omit`, and `ask_user` decisions are used when that keeps the docs surface more accurate and maintainable.
+
 ## Drift Signals
 
 - Nav points to missing files.
 - Files exist but are not represented in indexes/nav.
 - Index descriptions no longer match the content they point to.
 - Commands mention removed or renamed tooling.
+- Docs claim plugin support or structure rules that are not backed by current repo evidence.

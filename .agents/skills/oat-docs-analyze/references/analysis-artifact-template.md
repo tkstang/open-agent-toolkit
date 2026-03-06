@@ -22,6 +22,8 @@ oat_analysis_commit: {commitHash}
 - **Index coverage:** {N}% of docs directories contain `index.md`
 - **Findings:** {N} Critical, {N} High, {N} Medium, {N} Low
 - **Delta scope:** {N/A or "N files changed since {base-commit}"}
+- **Evidence-backed recommendations:** {N}
+- **Open questions / ask-user items:** {N}
 
 ## Docs Inventory
 
@@ -38,11 +40,29 @@ oat_analysis_commit: {commitHash}
 
 {Findings that could mislead agents into unsafe or destructive behavior.}
 
+1. **{Title}**
+   - File: `{path}:{line}`
+   - Issue: {description}
+   - Evidence: {exact file refs, config/docs, or representative docs-tree examples}
+   - Confidence: {high | medium | low}
+   - Disclosure: {inline | link_only | omit | ask_user}
+   - Link Target: {path or URL when disclosure is link_only; otherwise "N/A"}
+   - Fix: {specific guidance}
+
 None | {numbered list}
 
 ### High
 
 {Broken or missing docs structure that blocks reliable discovery or usage.}
+
+1. **{Title}**
+   - File: `{path}:{line}`
+   - Issue: {description}
+   - Evidence: {exact file refs, config/docs, or representative docs-tree examples}
+   - Confidence: {high | medium | low}
+   - Disclosure: {inline | link_only | omit | ask_user}
+   - Link Target: {path or URL when disclosure is link_only; otherwise "N/A"}
+   - Fix: {specific guidance}
 
 None | {numbered list}
 
@@ -50,39 +70,90 @@ None | {numbered list}
 
 {Contract, navigation, or contributor-guidance issues that materially reduce quality.}
 
+1. **{Title}**
+   - File: `{path}:{line}`
+   - Issue: {description}
+   - Evidence: {exact file refs, config/docs, or representative docs-tree examples}
+   - Confidence: {high | medium | low}
+   - Disclosure: {inline | link_only | omit | ask_user}
+   - Link Target: {path or URL when disclosure is link_only; otherwise "N/A"}
+   - Fix: {specific guidance}
+
 None | {numbered list}
 
 ### Low
 
 {Polish, wording, and smaller organizational issues.}
 
+1. **{Title}**
+   - File: `{path}:{line}`
+   - Issue: {description}
+   - Evidence: {exact file refs, config/docs, or representative docs-tree examples}
+   - Confidence: {high | medium | low}
+   - Disclosure: {inline | link_only | omit | ask_user}
+   - Link Target: {path or URL when disclosure is link_only; otherwise "N/A"}
+   - Fix: {specific guidance}
+
 None | {numbered list}
 
 ## Directory Contract Gaps
 
-| # | Directory | Gap | Severity | Recommended Fix |
-|---|-----------|-----|----------|-----------------|
-| 1 | `docs/api/` | Missing `index.md` | High | Add `index.md` with `## Contents` |
-| 2 | `docs/cli/` | `overview.md` still present | Medium | Convert to `index.md` or linked topic page |
-| ... | | | | |
+| # | Directory | Gap | Evidence | Disclosure | Link Target | Severity | Recommended Fix |
+|---|-----------|-----|----------|------------|-------------|----------|-----------------|
+| 1 | `docs/api/` | Missing `index.md` | {exact refs} | {inline/link_only/omit/ask_user} | {path or URL / N/A} | High | Add `index.md` with `## Contents` |
+| 2 | `docs/cli/` | `overview.md` still present | {exact refs} | {inline/link_only/omit/ask_user} | {path or URL / N/A} | Medium | Convert to `index.md` or linked topic page |
+| ... | | | | | | | |
 
 {Or: "No directory contract gaps identified."}
 
 ## Navigation and Drift
 
-| # | Surface | Issue | Severity | Notes |
-|---|---------|-------|----------|-------|
-| 1 | `mkdocs.yml` | Nav points to missing page | High | `reference/troubleshooting.md` removed |
-| 2 | `docs/index.md` | `## Contents` missing subtree mapping | Medium | Child directory not described |
-| ... | | | | |
+| # | Surface | Issue | Evidence | Disclosure | Link Target | Severity | Notes |
+|---|---------|-------|----------|------------|-------------|----------|-------|
+| 1 | `mkdocs.yml` | Nav points to missing page | {exact refs} | {inline/link_only/omit/ask_user} | {path or URL / N/A} | High | `reference/troubleshooting.md` removed |
+| 2 | `docs/index.md` | `## Contents` missing subtree mapping | {exact refs} | {inline/link_only/omit/ask_user} | {path or URL / N/A} | Medium | Child directory not described |
+| ... | | | | | | | |
 
 {Or: "No navigation or drift issues identified."}
+
+## Progressive Disclosure Decisions
+
+Capture which details should stay inline in docs indexes/contributor pages versus link to
+canonical docs/config/examples.
+
+| Topic | Decision | Keep Inline In | Link Target | Evidence |
+|-------|----------|----------------|-------------|----------|
+| `{topic}` | {inline/link_only/omit/ask_user} | `{index.md / contributing.md / page}` | `{path or URL}` | {exact refs} |
+| ... | | | | |
+
+{Or: "No additional progressive disclosure decisions beyond the findings/recommendations below."}
 
 ## Recommendations
 
 1. **{Action}** — {rationale}
+   - Target: `{path}`
+   - Action Type: {create / update / move / scaffold / sync-nav}
+   - Evidence: {exact refs}
+   - Confidence: {high | medium | low}
+   - Disclosure: {inline | link_only | omit | ask_user}
+   - Link Targets: {path or URL / N/A}
 2. **{Action}** — {rationale}
+   - Target: `{path}`
+   - Action Type: {create / update / move / scaffold / sync-nav}
+   - Evidence: {exact refs}
+   - Confidence: {high | medium | low}
+   - Disclosure: {inline | link_only | omit | ask_user}
+   - Link Targets: {path or URL / N/A}
 3. ...
+
+## Apply Contract
+
+- `oat-docs-apply` may only implement recommendations backed by evidence in this artifact.
+- Recommendations marked `omit` must stay out of generated docs changes.
+- Recommendations marked `ask_user` require explicit user confirmation before generation.
+- Recommendations marked `link_only` must include a canonical link target.
+- If cited config/docs/files are missing at apply time, stop and re-run analyze or ask the user rather than inventing a replacement convention.
+- When docs guidance already lives in canonical setup/config docs, generated changes should prefer concise links over duplicating the full detail inline.
 
 ## Next Step
 

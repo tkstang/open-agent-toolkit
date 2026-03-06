@@ -1,6 +1,6 @@
 ---
 name: oat-docs-apply
-version: 1.0.0
+version: 1.1.0
 description: Run when you have a docs analysis artifact and want to generate or update documentation structure and content. Creates a branch, applies approved changes, and optionally opens a PR.
 disable-model-invocation: true
 user-invocable: true
@@ -34,6 +34,23 @@ Generate or update documentation files from a docs analysis artifact, with expli
 - Creating or updating docs files and `mkdocs.yml` when approved.
 - Running `oat docs nav sync` after approved structural changes.
 - Creating branches, commits, and optional PRs.
+
+## Analyze vs Apply Boundary
+
+Treat the docs analysis artifact as the source of truth for what should be changed and why.
+
+Apply may:
+
+- read the exact evidence sources cited by the artifact
+- verify that cited files still exist
+- translate approved recommendations into concrete docs changes
+
+Apply must **not**:
+
+- invent unsupported docs conventions
+- infer structure or migration rules from defaults or a tiny sample
+- create new recommendations that are not present in the artifact
+- silently fill in missing evidence gaps
 
 **Self-Correction Protocol:**
 If you catch yourself:
@@ -75,9 +92,19 @@ ls -t .oat/repo/analysis/docs-*.md 2>/dev/null | head -1
 
 If none exists, stop and instruct the user to run `oat-docs-analyze`.
 
+Validate that each recommendation in the artifact includes:
+
+- evidence
+- confidence
+- disclosure
+- link targets when disclosure is `link_only`
+
+If the artifact is missing that detail, stop and tell the user to re-run `oat-docs-analyze`.
+
 ### Step 1: Build the Recommendation Plan
 
-Read the analysis artifact and turn each finding into a recommendation.
+Read the analysis artifact and build the plan from its recommendations.
+Do not rediscover conventions from scratch during this step.
 
 Common docs actions:
 
@@ -88,17 +115,60 @@ Common docs actions:
 - Scaffold an OAT docs app when no docs app exists
 - Run `oat docs nav sync` after approved structural changes
 
+Carry forward the artifact's evidence refs, confidence, disclosure mode, and link targets into the apply plan.
+
+Coverage-gap recommendations may also be:
+
+- `omit`
+- `ask_user`
+
+If evidence is missing, stale, or contradicts the current docs tree, stop and ask for a fresh analysis instead of guessing.
+
 Use `references/apply-plan-template.md` and preserve the exact presented markdown as `APPLY_PLAN_MARKDOWN` for commit/PR summary use.
 
 ### Step 2: Review the Plan with the User
 
-For each recommendation, ask for:
+Present the full recommendation plan first, then ask which review mode they want:
+
+- `apply all`
+- `apply interactively`
+- `discuss`
+
+For review-mode and follow-up decisions, use host-aware prompting:
+
+- Claude Code: `AskUserQuestion`
+- Codex: structured user-input tooling when available in the current host/runtime
+- Fallback: plain-text questions
+
+If the user chooses `apply all`:
+
+- confirm the full plan
+- capture any global notes that apply across the whole plan
+- treat all non-blocked recommendations as approved unless the user names exceptions
+
+If the user chooses `apply interactively`, ask for each recommendation:
 
 - `approve`
 - `modify`
 - `skip`
 
+If the user chooses `discuss`, answer questions, revise the plan if needed, and then ask again:
+
+- `apply all`
+- `apply interactively`
+- `discuss`
+
 If all recommendations are skipped, stop without changing files.
+
+Build an `APPLIED_PLAN_DETAILS` block from approved or modified recommendations with:
+
+- recommendation id
+- action
+- target path
+- disclosure
+- evidence refs
+- decision (`approved_via_apply_all` / `approved` / `modified`)
+- user notes
 
 ### Step 3: Create Branch
 
@@ -116,14 +186,26 @@ If branch creation fails because of unrelated local changes, ask the user to res
 
 For each approved recommendation:
 
-1. Read the affected docs files.
+1. Read only the affected docs files and the evidence sources cited by the artifact.
 2. Make targeted edits that satisfy the approved fix.
-3. Prefer preserving existing prose and only changing the necessary sections.
+3. Preserve existing prose and only change the necessary sections.
+4. Honor the disclosure mode from the artifact:
+   - `inline` -> keep the essential guidance in the target page
+   - `link_only` -> add a concise pointer to the canonical doc/config/example
+   - `omit` -> do not encode the item in the docs change
+   - `ask_user` -> require explicit user confirmation before writing
 
 When approved actions involve docs app creation or nav updates:
 
 - Use `oat docs init` for scaffolding when appropriate.
 - Use `oat docs nav sync` instead of manually editing nav when the CLI helper can generate it.
+
+Negative rules:
+
+- Do not invent docs structure rules, migration rules, or plugin guidance not backed by the artifact's cited evidence.
+- Do not inline large setup/config details when the artifact says `link_only`.
+- Do not create replacement link targets if the artifact omitted them; stop and ask for a fresh analysis or user guidance.
+- If a cited source no longer exists, stop that recommendation and ask for a fresh analysis or user guidance.
 
 ### Step 5: Verify and Sync Navigation
 
@@ -154,6 +236,12 @@ If the user wants a PR:
    - `APPLY_PLAN_MARKDOWN`
    - applied action summary
    - verification performed
+
+For the PR-choice prompt, use the same host-aware prompting guidance:
+
+- Claude Code: `AskUserQuestion`
+- Codex: structured user-input tooling when available in the current host/runtime
+- Fallback: plain-text questions
 
 ### Step 7: Update Tracking and Output Summary
 
