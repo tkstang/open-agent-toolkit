@@ -548,6 +548,8 @@ Chronological log of implementation progress.
 **Verification:**
 - Run: `pnpm oat:validate-skills`
 - Result: pass - OAT skill validation remains clean after the docs skill contract changes
+- Run: `pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build`
+- Result: pass - full workspace verification succeeded before final review
 
 ---
 
@@ -606,7 +608,7 @@ Track test execution during implementation.
 |-------|-----------|--------|--------|----------|
 | 1 | - | - | - | - |
 | 2 | - | - | - | - |
-| 3 | CLI tests, CLI build, `pnpm oat:validate-skills`, `pnpm --dir apps/oat-docs docs:build`, `pnpm --dir apps/oat-docs docs:lint`, `pnpm --dir apps/oat-docs docs:format:check` | yes | 0 | targeted command and dogfood verification |
+| 3 | CLI tests, CLI build, `pnpm oat:validate-skills`, `pnpm --dir apps/oat-docs docs:build`, `pnpm --dir apps/oat-docs docs:lint`, `pnpm --dir apps/oat-docs docs:format:check`, `pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build` | yes | 0 | targeted command, dogfood verification, and final workspace verification |
 
 ## Final Summary (for PR/docs)
 
@@ -636,6 +638,10 @@ Track test execution during implementation.
 - `pnpm --dir apps/oat-docs docs:build`
 - `pnpm --dir apps/oat-docs docs:lint`
 - `pnpm --dir apps/oat-docs docs:format:check`
+- `pnpm test`
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm build`
 
 **Design deltas (if any):**
 - `overview.md` deprecation guidance was refined during dogfooding to allow conversion into a descriptive leaf page when a directory already has an `index.md`
