@@ -35,7 +35,7 @@ flowchart TD
 | Mode | Best for | Primary entry points |
 |---|---|---|
 | Interop-only | Canonical skill/agent sync + drift diagnostics + tool-pack lifecycle | `oat init`, `oat init tools`, `oat status`, `oat sync`, `oat instructions ...`, `oat providers ...`, `oat remove ...`, `oat cleanup ...`, `oat doctor` |
-| Provider-agnostic tooling | Reusing skills/utilities without spec-driven lifecycle overhead | `docs/oat/skills/index.md`, selected `oat-*` skills |
+| Provider-agnostic tooling | Reusing skills/utilities without spec-driven lifecycle overhead | `apps/oat-docs/docs/skills/index.md`, selected `oat-*` skills |
 | Workflow | Structured execution with durable artifacts and review gates | `oat-project-new`/`oat-project-open`, then lane-specific skills |
 
 ### A) Interop-only mode (CLI only)
@@ -79,8 +79,8 @@ Use reusable skills and tooling without adopting the spec-driven project lifecyc
 - Adopt only the pieces you need for your team’s workflow
 
 Start points:
-- [Skills overview](docs/oat/skills/index.md)
-- [Reference](docs/oat/reference/index.md)
+- [Skills overview](apps/oat-docs/docs/skills/index.md)
+- [Reference](apps/oat-docs/docs/reference/index.md)
 
 ### C) Workflow mode (skills + project artifacts)
 
@@ -331,17 +331,17 @@ flowchart LR
 
 Start here:
 
-- [OAT overview](docs/oat/index.md)
-- [Quickstart](docs/oat/quickstart.md)
+- [OAT overview](apps/oat-docs/docs/index.md)
+- [Quickstart](apps/oat-docs/docs/quickstart.md)
 
 Section indexes:
 
-- [Workflow](docs/oat/workflow/index.md)
-- [Skills](docs/oat/skills/index.md)
-- [Projects](docs/oat/projects/index.md)
-- [CLI](docs/oat/cli/index.md)
-- [Provider interop](docs/oat/cli/provider-interop/index.md)
-- [Reference](docs/oat/reference/index.md)
+- [Workflow](apps/oat-docs/docs/workflow/index.md)
+- [Skills](apps/oat-docs/docs/skills/index.md)
+- [Projects](apps/oat-docs/docs/projects/index.md)
+- [CLI](apps/oat-docs/docs/cli/index.md)
+- [Provider interop](apps/oat-docs/docs/cli/provider-interop/index.md)
+- [Reference](apps/oat-docs/docs/reference/index.md)
 
 ## Development Commands
 

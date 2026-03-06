@@ -81,7 +81,18 @@ Keep this section untouched.
 
     await writeFile(
       join(appRoot, 'mkdocs.yml'),
-      ['site_name: OAT Docs', 'nav:', '  - Legacy: legacy.md', ''].join('\n'),
+      [
+        'site_name: OAT Docs',
+        'markdown_extensions:',
+        '  - pymdownx.superfences:',
+        '      custom_fences:',
+        '        - name: mermaid',
+        '          class: mermaid',
+        '          format: !!python/name:pymdownx.superfences.fence_code_format',
+        'nav:',
+        '  - Legacy: legacy.md',
+        '',
+      ].join('\n'),
       'utf8',
     );
     await writeFile(join(docsRoot, 'index.md'), indexSource, 'utf8');
@@ -117,6 +128,11 @@ Keep this section untouched.
       await readFile(join(appRoot, 'mkdocs.yml'), 'utf8'),
     ) as { nav: unknown };
     expect(mkdocsConfig.nav).toEqual(result.nav);
+    await expect(
+      readFile(join(appRoot, 'mkdocs.yml'), 'utf8'),
+    ).resolves.toContain(
+      'format: !!python/name:pymdownx.superfences.fence_code_format',
+    );
 
     await expect(readFile(join(docsRoot, 'index.md'), 'utf8')).resolves.toBe(
       indexSource,

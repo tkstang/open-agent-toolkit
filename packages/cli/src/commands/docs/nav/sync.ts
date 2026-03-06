@@ -37,6 +37,34 @@ const DEFAULT_DEPENDENCIES: DocsNavSyncDependencies = {
   syncDocsNavigation,
 };
 
+function replaceTopLevelYamlSection(
+  source: string,
+  key: string,
+  replacement: string,
+): string {
+  const lines = source.split(/\r?\n/);
+  const startIndex = lines.findIndex((line) => line.startsWith(`${key}:`));
+
+  if (startIndex < 0) {
+    return `${source.trimEnd()}\n\n${replacement.trimEnd()}\n`;
+  }
+
+  let endIndex = startIndex + 1;
+  while (endIndex < lines.length) {
+    const line = lines[endIndex] ?? '';
+    if (line.length > 0 && /^\S/.test(line)) {
+      break;
+    }
+    endIndex += 1;
+  }
+
+  return [
+    ...lines.slice(0, startIndex),
+    ...replacement.trimEnd().split('\n'),
+    ...lines.slice(endIndex),
+  ].join('\n');
+}
+
 export async function syncDocsNavigation(
   options: SyncDocsNavigationOptions,
 ): Promise<SyncDocsNavigationResult> {
@@ -44,10 +72,13 @@ export async function syncDocsNavigation(
   const docsRoot = join(options.appRoot, 'docs');
   const nav = await buildDocsNavTree({ docsRoot });
   const mkdocsSource = await readFile(mkdocsPath, 'utf8');
-  const mkdocsDocument = YAML.parseDocument(mkdocsSource);
-
-  mkdocsDocument.set('nav', nav);
-  await writeFile(mkdocsPath, mkdocsDocument.toString(), 'utf8');
+  const navSection = YAML.stringify({ nav }).trimEnd();
+  const updatedMkdocsSource = replaceTopLevelYamlSection(
+    mkdocsSource,
+    'nav',
+    navSection,
+  );
+  await writeFile(mkdocsPath, `${updatedMkdocsSource.trimEnd()}\n`, 'utf8');
 
   return {
     appRoot: options.appRoot,
