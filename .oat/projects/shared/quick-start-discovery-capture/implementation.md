@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-06
-oat_current_task_id: p01-t02
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -23,33 +23,34 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 2 | 1/2 |
-| Phase 2 | pending | 2 | 0/2 |
+| Phase 1 | complete | 2 | 2/2 |
+| Phase 2 | in_progress | 2 | 0/2 |
 
-**Total:** 1/4 tasks completed
+**Total:** 2/4 tasks completed
 
 ---
 
 ## Phase 1: Tighten Quick-Start Discovery and Design Semantics
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-06
 
 ### Phase Summary (fill when phase is complete)
 
 **Outcome (what changed):**
-- In progress
+- Quick-start now has explicit guidance for synthesizing and backfilling discovery from session context before planning.
+- Quick-mode discovery scaffolding now points directly to plan authoring and marks separate design creation as optional and threshold-based.
 
 **Key files touched:**
 - `.agents/skills/oat-project-quick-start/SKILL.md` - quick-start behavior contract
 - `packages/cli/src/validation/skills.test.ts` - regression coverage for skill wording
 
 **Verification:**
-- Run: `pnpm --filter @oat/cli test -- src/validation/skills.test.ts`
+- Run: `pnpm --filter @oat/cli test -- src/validation/skills.test.ts src/commands/project/new/scaffold.test.ts`
 - Result: pass
 
 **Notes / Decisions:**
-- Phase is still in progress; summary will be finalized after `p01-t02`.
+- Kept the change surface narrow by updating the quick-start skill plus the shared discovery template, without adding workflow-specific template branching.
 
 ### Task p01-t01: Update the quick-start skill to require session-context synthesis and discovery backfill
 
@@ -85,18 +86,39 @@ oat_generated: false
 
 ### Task p01-t02: Define the optional-design threshold and align quick scaffolding
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** e688182
 
 **Notes:**
 - Keep template wording compatible with quick mode and make separate design creation clearly optional, not default.
+
+**Outcome (required):**
+- The shared discovery template no longer routes quick projects straight into `oat-project-spec`.
+- Quick-mode next-step guidance now points directly to `plan.md`.
+- The discovery template now states that a separate `design.md` is optional and only justified when the available technical detail materially benefits from a distinct artifact.
+
+**Files changed:**
+- `.oat/templates/discovery.md` - replaced spec-driven-only next steps with workflow-safe quick/spec guidance
+- `packages/cli/src/commands/project/new/scaffold.test.ts` - added a repo-template regression asserting quick-safe discovery wording
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- src/commands/project/new/scaffold.test.ts`
+- Result: pass
+- Run: `pnpm --filter @oat/cli test -- src/commands/project/new/scaffold.test.ts src/validation/skills.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+- I treated the quick-mode design threshold as a wording concern in the shared discovery template rather than modifying the design template itself.
+
+**Issues Encountered:**
+- The first scaffold assertion failed because the template did not explicitly call separate design optional; resolved by tightening the quick-mode next-step wording.
 
 ---
 
 ## Phase 2: Add Durable Workflow Guards
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-06
 
 ### Task p02-t01: Add regression coverage for quick-start discovery-ready projects
 
@@ -126,25 +148,28 @@ oat_generated: false
 **Session Start:** planning
 
 - [x] p01-t01: Update the quick-start skill to require session-context synthesis and discovery backfill - 5f31acc
-- [ ] p01-t02: Define the optional-design threshold and align quick scaffolding
+- [x] p01-t02: Define the optional-design threshold and align quick scaffolding - e688182
+- [ ] p02-t01: Add regression coverage for quick-start discovery-ready projects
 
 **What changed (high level):**
 - Quick-start skill now describes session-context synthesis and discovery backfill
-- Regression coverage now checks the quick-start skill for those semantics
+- Shared discovery scaffolding now routes quick mode directly to planning and makes separate design creation optional
+- Regression coverage now checks both the quick-start skill semantics and the shared discovery template wording
 
 **Decisions:**
 - Keep this as a quick workflow project
 - Treat the quick-start skill contract and discovery/design templates as the primary change surface
 - Accept a package-local Vitest invocation as the correct verification path for this repo
+- Treat the design threshold as a discovery-template concern unless a later task proves the design template itself needs quick-specific guidance
 
 **Follow-ups / TODO:**
-- Execute `p01-t02`
-- Decide whether discovery/design template wording needs a shared or workflow-specific adjustment
+- Execute `p02-t01`
+- Decide whether regression coverage belongs only in tests or also in repo skill validation
 
 **Blockers:**
 - Repo-wide OAT skill validation currently reports an unrelated pre-existing finding in `oat-repo-maintainability-review`
 
-**Session End:** p01-t01 complete
+**Session End:** Phase 1 complete
 
 ---
 
