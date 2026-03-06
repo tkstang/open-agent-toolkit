@@ -13,6 +13,6 @@ if ! command -v "$PYTHON_BIN" >/dev/null 2>&1; then
   fi
 fi
 
-echo "Installing Python dependencies for oat-docs..."
+echo "Installing Python dependencies for OAT Docs..."
 "$PYTHON_BIN" -m pip install -r requirements.txt
 echo "Installation successful. You can now run 'mkdocs serve'."

@@ -1,4 +1,4 @@
-# Contributing to Oat Docs Documentation
+# Contributing to OAT Docs
 
 Documentation should ship with the code it explains. This docs app is scaffolded to give contributors and agents a shared contract for navigation, Markdown features, and local tooling.
 
@@ -7,7 +7,7 @@ Documentation should ship with the code it explains. This docs app is scaffolded
 - Every documentation directory must contain an `index.md`.
 - Each `index.md` must include a `## Contents` section.
 - The `## Contents` section is the machine-readable local map for sibling pages and child directories.
-- `overview.md` is deprecated in favor of `index.md`.
+- `overview.md` is deprecated. Replace it with `index.md` or a descriptive leaf page when the directory already has an `index.md`.
 
 ## Local workflow
 

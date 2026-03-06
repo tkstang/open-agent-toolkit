@@ -333,9 +333,42 @@ describe('help output snapshots', () => {
         -h, --help      display help for command
 
       Commands:
+        analyze         Run the docs analysis workflow
+        apply           Run the docs apply workflow
         init [options]  Scaffold an OAT docs app
         nav             Docs navigation commands
         help [command]  display help for command
+      "
+    `);
+  });
+
+  it('docs analyze --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, [
+      'docs',
+      'analyze',
+    ]).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat docs analyze [options]
+
+      Run the docs analysis workflow
+
+      Options:
+        -h, --help  display help for command
+      "
+    `);
+  });
+
+  it('docs apply --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, ['docs', 'apply']).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat docs apply [options]
+
+      Run the docs apply workflow
+
+      Options:
+        -h, --help  display help for command
       "
     `);
   });

@@ -11,6 +11,8 @@ mkdir -p "${ASSETS}/skills" "${ASSETS}/agents" "${ASSETS}/templates" "${ASSETS}/
 SKILLS=(
   oat-agent-instructions-analyze
   oat-agent-instructions-apply
+  oat-docs-analyze
+  oat-docs-apply
   oat-repo-maintainability-review
   oat-idea-ideate
   oat-idea-new

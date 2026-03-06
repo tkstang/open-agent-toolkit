@@ -80,14 +80,16 @@ describe('command registration', () => {
     expect(subcommands).toEqual(expect.arrayContaining(['validate', 'sync']));
   });
 
-  it('program has docs command with init and nav', () => {
+  it('program has docs command with analyze, apply, init, and nav', () => {
     const program = createProgram();
     registerCommands(program);
     const docs = program.commands.find((command) => command.name() === 'docs');
 
     expect(docs).toBeDefined();
     const subcommands = docs?.commands.map((command) => command.name()) ?? [];
-    expect(subcommands).toEqual(expect.arrayContaining(['init', 'nav']));
+    expect(subcommands).toEqual(
+      expect.arrayContaining(['analyze', 'apply', 'init', 'nav']),
+    );
   });
 
   it('program has project command with new, open, pause, and set-mode', () => {
