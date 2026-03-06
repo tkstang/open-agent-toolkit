@@ -522,6 +522,7 @@ Chronological log of implementation progress.
 - Dogfooded the new docs app in-repo, migrated the tracked docs surface into `apps/oat-docs`, and updated live repo references to the new docs paths
 - Added the docs analyze/apply workflow surface, including CLI reservation, new skills, and utility-skill bundling
 - Dogfooded docs analyze/apply against `apps/oat-docs`, recorded the analysis artifact, and fixed the drift found during that run
+- Ported the docs analyze/apply skills to the newer evidence-backed contract, including disclosure modes, link targets, and host-aware review guidance
 
 **Decisions:**
 - Use a three-phase rollout: CLI foundation, OAT dogfood migration, docs analyze/apply
@@ -534,6 +535,19 @@ Chronological log of implementation progress.
 - None - implementation complete
 
 **Session End:** {time}
+
+### 2026-03-06
+
+- [x] follow-up hardening: port evidence-driven analyze/apply contract into docs skills - 67638ee
+
+**What changed (high level):**
+- Updated `oat-docs-analyze` and `oat-docs-apply` to mirror the newer evidence-backed analyze/apply boundary from the agent-instructions workflow
+- Expanded docs analysis/apply templates to carry evidence, confidence, disclosure mode, and link targets
+- Updated authoring guidance and repo maintainability review wording to use host-aware structured input guidance instead of hard-coded Codex tool names
+
+**Verification:**
+- Run: `pnpm oat:validate-skills`
+- Result: pass - OAT skill validation remains clean after the docs skill contract changes
 
 ---
 

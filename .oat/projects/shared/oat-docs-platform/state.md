@@ -1,6 +1,6 @@
 ---
 oat_current_task: null
-oat_last_commit: c8ff84d
+oat_last_commit: 67638ee
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -48,6 +48,7 @@ Implementation complete through `p03-t04`.
 - ✓ `p03-t02` complete - `oat-docs-analyze` skill added
 - ✓ `p03-t03` complete - `oat-docs-apply` skill added
 - ✓ `p03-t04` complete - docs analyze/apply dogfooded against `apps/oat-docs`
+- ✓ Post-phase hardening complete - docs analyze/apply contract ported to the evidence-driven apply model
 
 ## Blockers
 
