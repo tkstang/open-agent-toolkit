@@ -1,6 +1,6 @@
 ---
 oat_current_task: null
-oat_last_commit: 131149e
+oat_last_commit: 3db1188
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation tasks complete through `p03-t04`; final review pending.
+Implementation tasks complete through `p03-t04`; inline review findings addressed and re-review pending.
 
 ## Artifacts
 
@@ -49,7 +49,7 @@ Implementation tasks complete through `p03-t04`; final review pending.
 - ✓ `p03-t03` complete - `oat-docs-apply` skill added
 - ✓ `p03-t04` complete - docs analyze/apply dogfooded against `apps/oat-docs`
 - ✓ Post-phase hardening complete - docs analyze/apply contract ported to the evidence-driven apply model
-- ⧗ Awaiting final code review
+- ⧗ Awaiting final re-review
 
 ## Blockers
 
@@ -57,4 +57,4 @@ None
 
 ## Next Milestone
 
-Run final code review and, if it passes, proceed to final PR handoff
+Run final re-review and, if it passes, proceed to final PR handoff

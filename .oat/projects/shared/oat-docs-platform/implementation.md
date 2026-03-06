@@ -539,17 +539,21 @@ Chronological log of implementation progress.
 ### 2026-03-06
 
 - [x] follow-up hardening: port evidence-driven analyze/apply contract into docs skills - 67638ee
+- [x] follow-up cleanup: addressed inline final-review findings - 3db1188
 
 **What changed (high level):**
 - Updated `oat-docs-analyze` and `oat-docs-apply` to mirror the newer evidence-backed analyze/apply boundary from the agent-instructions workflow
 - Expanded docs analysis/apply templates to carry evidence, confidence, disclosure mode, and link targets
 - Updated authoring guidance and repo maintainability review wording to use host-aware structured input guidance instead of hard-coded Codex tool names
+- Removed the dead variable in docs nav target resolution, simplified the nav result type, and corrected the redundant docs app `site_description`
 
 **Verification:**
 - Run: `pnpm oat:validate-skills`
 - Result: pass - OAT skill validation remains clean after the docs skill contract changes
 - Run: `pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build`
 - Result: pass - full workspace verification succeeded before final review
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/commands/docs/nav/sync.test.ts packages/cli/src/commands/docs/init/scaffold.test.ts packages/cli/src/commands/index.test.ts packages/cli/src/commands/help-snapshots.test.ts`, `pnpm --filter @oat/cli build`, `pnpm --dir apps/oat-docs docs:build`, `pnpm --dir apps/oat-docs docs:lint`, `pnpm --dir apps/oat-docs docs:format:check`
+- Result: pass - targeted cleanup verification succeeded after the review follow-up commit
 
 ---
 
