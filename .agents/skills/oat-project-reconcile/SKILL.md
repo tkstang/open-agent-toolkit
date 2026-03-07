@@ -594,7 +594,9 @@ In `state.md`:
 oat_current_task: {same as oat_current_task_id above}
 oat_last_commit: {most recent reconciled commit SHA}
 oat_phase: implement
-oat_phase_status: {complete if all tasks done, else in_progress}
+oat_phase_status: in_progress
+# Always in_progress after reconciliation — only oat-project-review-receive
+# may advance to complete after the final review passes.
 ```
 
 **5f. Append to Implementation Log:**
