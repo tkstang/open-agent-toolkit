@@ -847,7 +847,7 @@ git commit -m "fix(p05-t04): preserve error handling and auto-sync in JSON mode 
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
 | p05 | code | pending | - | - |
-| final | code | fixes_completed | 2026-03-07 | reviews/final-review-2026-03-07.md |
+| final | code | received | 2026-03-07 | reviews/final-review-2026-03-07.md |
 | plan | artifact | passed | 2026-03-07 | reviews/plan-review-2026-03-07.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
