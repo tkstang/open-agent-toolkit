@@ -40,7 +40,7 @@ Implementation complete — final review passed.
 - ✓ Plan complete
 - ✓ Implementation tasks complete (21/21)
 - ✓ Review fixes complete (4 cycles, 11 fix tasks)
-- ⧗ Ready for PR
+- ✓ PR description written
 
 ## Blockers
 
@@ -48,4 +48,4 @@ None
 
 ## Next Milestone
 
-Create PR via oat-project-pr-final
+Run `oat-project-complete`.
