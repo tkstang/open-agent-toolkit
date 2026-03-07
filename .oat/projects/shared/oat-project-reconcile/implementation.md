@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t01
+oat_current_task_id: null
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 3 | 0/3 |
+| Phase 2 | complete | 3 | 3/3 |
 
-**Total:** 7/10 tasks completed
+**Total:** 10/10 tasks completed
 
 ---
 
@@ -194,37 +194,79 @@ oat_template_name: implementation
 
 ## Phase 2: Integration and Polish
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-07
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
-- {pending}
+- Skill registered in provider sync (Claude + Cursor symlinks created)
+- `oat-project-progress` routing updated to suggest reconciliation when drift detected
+- Backlog updated: reconcile item moved to In Progress, skill versioning marked as already implemented
 
 **Key files touched:**
-- {pending}
+- `.oat/sync/manifest.json` - updated with new skill entry
+- `.claude/skills/oat-project-reconcile` - symlink created
+- `.cursor/skills/oat-project-reconcile` - symlink created
+- `.agents/skills/oat-project-progress/SKILL.md` - routing update
+- `.oat/repo/reference/backlog.md` - status updates
 
 **Verification:**
-- {pending}
+- Run: `pnpm run cli -- internal validate-oat-skills`
+- Result: pass (36 oat-* skills validated)
 
 **Notes / Decisions:**
-- {pending}
+- None
 
 ### Task p02-t01: Add skill to provider sync and AGENTS.md registration
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 740fce1
+
+**Outcome:**
+- Ran `oat sync --scope all --apply` which created symlinks for Claude and Cursor providers
+- Validated all 36 oat-* skills pass validation
+
+**Files changed:**
+- `.oat/sync/manifest.json` - new skill entry added
+- `.claude/skills/oat-project-reconcile` - symlink to canonical skill
+- `.cursor/skills/oat-project-reconcile` - symlink to canonical skill
+
+**Verification:**
+- Run: `pnpm run cli -- internal validate-oat-skills`
+- Result: pass (OK: validated 36 oat-* skills)
 
 ### Task p02-t02: Update oat-project-progress to recognize reconciliation state
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 7fffcab
+
+**Outcome:**
+- Added reconciliation suggestion to implement-phase routing (when artifacts appear out of sync)
+- Added `oat-project-reconcile` to the available skills list in progress output
+
+**Files changed:**
+- `.agents/skills/oat-project-progress/SKILL.md` - routing update and skill list addition
+
+**Verification:**
+- Run: `pnpm lint`
+- Result: pass
 
 ### Task p02-t03: Update backlog to mark item as in-progress
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 9d6a0ee
+
+**Outcome:**
+- Moved reconcile item from Inbox to In Progress with project link
+- Marked skill versioning item as already implemented (needs move to completed archive)
+
+**Files changed:**
+- `.oat/repo/reference/backlog.md` - status updates
+
+**Verification:**
+- Run: `pnpm lint`
+- Result: pass
 
 ---
 
@@ -241,10 +283,14 @@ oat_template_name: implementation
 - [x] p01-t05: Implement human-in-the-loop confirmation (Step 4) - bd5ee55
 - [x] p01-t06: Implement artifact updates (Step 5) - bb15b7a
 - [x] p01-t07: Implement bookkeeping commit and summary (Step 6) - cad722c
-- [ ] p02-t01: Add skill to provider sync - starting
+- [x] p02-t01: Add skill to provider sync - 740fce1
+- [x] p02-t02: Update oat-project-progress routing - 7fffcab
+- [x] p02-t03: Update backlog - 9d6a0ee
 
 **What changed (high level):**
 - Complete oat-project-reconcile skill with all 6 workflow steps
+- Provider sync integration (Claude + Cursor)
+- Progress routing updated to suggest reconciliation
 
 **Decisions:**
 - Single SKILL.md approach (no helper scripts needed)
@@ -263,21 +309,31 @@ oat_template_name: implementation
 | Phase | Tests Run | Passed | Failed | Coverage |
 |-------|-----------|--------|--------|----------|
 | 1 | lint-staged x7 | 7/7 | 0 | n/a (skill file only) |
-| 2 | - | - | - | - |
+| 2 | lint-staged x3 + skill validation | all pass | 0 | n/a |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
-- {pending}
+- New `oat-project-reconcile` skill for mapping human commits back to planned tasks
+- 6-step workflow: checkpoint detection → commit analysis → task mapping → HiTL confirmation → artifact updates → bookkeeping commit
+- 4 mapping signals: task ID in message, file overlap scoring, keyword matching, unmapped classification
+- Provider sync integration (Claude + Cursor symlinks)
+- Progress routing update to suggest reconciliation when drift is detected
 
 **Behavioral changes (user-facing):**
-- {pending}
+- Users can run `oat-project-reconcile` after implementing tasks manually to sync OAT artifacts
+- `oat-project-progress` now suggests reconciliation when implementation artifacts appear stale
+- Backlog updated to reflect implementation status
 
 **Key files / modules:**
-- {pending}
+- `.agents/skills/oat-project-reconcile/SKILL.md` - complete skill definition (~470 lines)
+- `.agents/skills/oat-project-progress/SKILL.md` - routing update
+- `.oat/repo/reference/backlog.md` - status updates
 
 **Verification performed:**
-- {pending}
+- lint-staged on all 10 commits (pass)
+- `oat internal validate-oat-skills` (36 skills validated)
+- `oat sync --scope all --apply` (symlinks created successfully)
 
 ## References
 
