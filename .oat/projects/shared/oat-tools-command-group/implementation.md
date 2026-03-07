@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p05-t05
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -29,9 +29,9 @@ oat_generated: false
 | Phase 2: Update Engine + Auto-Sync | complete | 3 | 3/3 |
 | Phase 3: Install + Remove Wrappers | complete | 2 | 2/2 |
 | Phase 4: Agent Versioning | complete | 2 | 2/2 |
-| Phase 5: Final Integration | in_progress | 6 | 4/6 |
+| Phase 5: Final Integration | complete | 6 | 6/6 |
 
-**Total:** 16/18 tasks completed
+**Total:** 18/18 tasks completed
 
 ---
 
@@ -452,7 +452,9 @@ oat_generated: false
 
 **New tasks added:** p05-t05, p05-t06
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
+**Fix tasks completed:** p05-t05 (83b6d41), p05-t06 (eef5493)
+
+**Next:** Request re-review (cycle 3) via `oat-project-review-provide code final`.
 
 ---
 
@@ -476,6 +478,17 @@ oat_generated: false
 - [x] p04-t01: Add version frontmatter to bundled agents - f1aea7b
 - [x] p04-t02: Generalize version reading for agents - 280309a
 - [x] p05-t01: Integration verification (no changes needed)
+
+### 2026-03-07 (Session 3 — review fixes cycle 1)
+
+- [x] p05-t02: Fix project scope resolution - 3a45123
+- [x] p05-t03: Fix JSON early-return in update - 5640a7a
+- [x] p05-t04: Fix JSON early-return in remove - 0b8394c
+
+### 2026-03-07 (Session 4 — review fixes cycle 2)
+
+- [x] p05-t05: Add auto-sync to oat tools install - 83b6d41
+- [x] p05-t06: Route agent scanning through DI - eef5493
 
 ---
 
@@ -506,13 +519,13 @@ oat_generated: false
 - `oat tools install` — install tool packs (ideas/workflows/utility)
 - `oat tools remove [name] --pack --all --dry-run --no-sync` — remove installed tools
 - Shared scan engine for tool discovery and version comparison
-- Auto-sync after mutations (update/remove)
+- Auto-sync after mutations (install/update/remove)
 - Agent versioning via frontmatter
 
 **Behavioral changes (user-facing):**
 - New `oat tools` command group available in CLI
 - Tools can be managed (list, inspect, update, install, remove) from a single command group
-- Auto-sync runs automatically after update/remove operations
+- Auto-sync runs automatically after install/update/remove operations
 
 **Key files / modules:**
 - `packages/cli/src/commands/tools/` - All tools subcommands
