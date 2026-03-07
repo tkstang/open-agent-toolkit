@@ -748,13 +748,69 @@ git commit -m "fix(p02-t11): refresh stale Phase 2 and Final Summary in implemen
 
 ---
 
+### Task p02-t12: (review) Replace hardcoded progress table in reconcile Step 5d
+
+**Files:**
+- Modify: `.agents/skills/oat-project-reconcile/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Step 5d shows a literal two-row progress table with fixed task totals (7 and 3). On projects with different phase counts, this instruction writes wrong data.
+Location: `.agents/skills/oat-project-reconcile/SKILL.md:569`
+
+**Step 2: Implement fix**
+
+Replace the literal table with dynamic enumeration instructions: read all `## Phase N:` sections from `implementation.md`, count tasks per phase from plan.md `### Task pNN-tNN:` headers, count completed entries, and regenerate the table from actual data.
+
+**Step 3: Verify**
+
+Run: `grep -A5 '5d\. Update progress' .agents/skills/oat-project-reconcile/SKILL.md`
+Expected: No hardcoded phase counts or task totals
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-reconcile/SKILL.md
+git commit -m "fix(p02-t12): replace hardcoded progress table with dynamic enumeration"
+```
+
+---
+
+### Task p02-t13: (review) Add explicit plan-vs-implementation count comparison for drift detection
+
+**Files:**
+- Modify: `.agents/skills/oat-project-progress/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: `PLAN_TASKS` and `IMPL_COMPLETED` are collected but never compared in the drift indicators. The conditions fall back to commit heuristics only.
+Location: `.agents/skills/oat-project-progress/SKILL.md:187`
+
+**Step 2: Implement fix**
+
+Add `PLAN_TASKS > IMPL_COMPLETED` as the first drift indicator condition (most direct signal). Keep the existing commit-based heuristics as secondary indicators.
+
+**Step 3: Verify**
+
+Run: `grep -A10 'Drift indicators' .agents/skills/oat-project-progress/SKILL.md`
+Expected: First condition uses PLAN_TASKS vs IMPL_COMPLETED comparison
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-progress/SKILL.md
+git commit -m "fix(p02-t13): add plan-vs-implementation count comparison for drift detection"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | received | 2026-03-07 | reviews/final-review-2026-03-07-v3.md |
+| final | code | fixes_added | 2026-03-07 | reviews/final-review-2026-03-07-v3.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -764,9 +820,9 @@ git commit -m "fix(p02-t11): refresh stale Phase 2 and Final Summary in implemen
 
 **Summary:**
 - Phase 1: 7 tasks — Core skill implementation (checkpoint detection, commit analysis, task mapping, confirmation flow, artifact updates, bookkeeping)
-- Phase 2: 11 tasks — Integration (3 original + 8 review fix tasks)
+- Phase 2: 13 tasks — Integration (3 original + 10 review fix tasks)
 
-**Total: 18 tasks**
+**Total: 20 tasks**
 
 Ready for code review and merge.
 
