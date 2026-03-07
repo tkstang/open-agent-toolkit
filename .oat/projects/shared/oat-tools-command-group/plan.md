@@ -746,6 +746,96 @@ git add -A
 git commit -m "feat(p05-t01): finalize oat tools integration and snapshots"
 ```
 
+### Task p05-t02: (review) Fix project scope resolution in all tools subcommands
+
+**Files:**
+- Modify: `packages/cli/src/commands/tools/shared/scan-tools.ts` (ScanToolsOptions)
+- Modify: `packages/cli/src/commands/tools/update/update-tools.ts` (UpdateToolsDependencies)
+- Modify: `packages/cli/src/commands/tools/remove/remove-tools.ts` (RemoveToolsDependencies)
+- Modify: `packages/cli/src/commands/tools/list/index.ts` (default deps)
+- Modify: `packages/cli/src/commands/tools/outdated/index.ts` (default deps)
+- Modify: `packages/cli/src/commands/tools/info/index.ts` (default deps)
+- Modify: `packages/cli/src/commands/tools/update/index.ts` (default deps)
+- Modify: `packages/cli/src/commands/tools/remove/index.ts` (default deps)
+
+**Step 1: Understand the issue**
+
+Review finding: `resolveScopeRoot('project', cwd, home)` returns `resolve(cwd)` which is wrong when invoked from a subdirectory. Existing commands use `resolveProjectRoot(context.cwd)` which walks up to the `.git` root. All tools subcommands have this bug.
+
+**Step 2: Write test (RED)**
+
+Add test to scan-tools or a shared test that verifies scope root resolution uses project root, not cwd.
+
+**Step 3: Implement fix (GREEN)**
+
+Make the `resolveScopeRoot` dependency async and update the default implementation in each command's index.ts to call `resolveProjectRoot(cwd)` for project scope. Update engine call sites to `await`.
+
+**Step 4: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run && pnpm type-check`
+Expected: All pass
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/
+git commit -m "fix(p05-t02): resolve project scope from repo root in tools commands"
+```
+
+---
+
+### Task p05-t03: (review) Fix JSON early-return in update command
+
+**Files:**
+- Modify: `packages/cli/src/commands/tools/update/index.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: The `--json` branch at line 96 returns immediately, skipping the `notInstalled` error check (exit code 1) and the `autoSync()` call.
+
+**Step 2: Implement fix**
+
+Move JSON output to after error handling and auto-sync. Only the output format should differ, not the behavioral semantics.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run && pnpm type-check`
+Expected: All pass
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/update/index.ts
+git commit -m "fix(p05-t03): preserve error handling and auto-sync in JSON mode for update"
+```
+
+---
+
+### Task p05-t04: (review) Fix JSON early-return in remove command
+
+**Files:**
+- Modify: `packages/cli/src/commands/tools/remove/index.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Same pattern as update — JSON branch returns before error handling and auto-sync.
+
+**Step 2: Implement fix**
+
+Move JSON output to after error handling and auto-sync. Mirror the fix from p05-t03.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run && pnpm type-check`
+Expected: All pass
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/remove/index.ts
+git commit -m "fix(p05-t04): preserve error handling and auto-sync in JSON mode for remove"
+```
+
 ---
 
 ## Reviews
@@ -757,7 +847,7 @@ git commit -m "feat(p05-t01): finalize oat tools integration and snapshots"
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
 | p05 | code | pending | - | - |
-| final | code | pending | - | - |
+| final | code | fixes_added | 2026-03-07 | reviews/final-review-2026-03-07.md |
 | plan | artifact | passed | 2026-03-07 | reviews/plan-review-2026-03-07.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
@@ -779,9 +869,9 @@ git commit -m "feat(p05-t01): finalize oat tools integration and snapshots"
 - Phase 2: 3 tasks - Auto-sync helper, update engine, update command
 - Phase 3: 2 tasks - Install and remove wrappers
 - Phase 4: 2 tasks - Agent versioning
-- Phase 5: 1 task - Final integration verification
+- Phase 5: 4 tasks - Final integration verification + 3 review fix tasks
 
-**Total: 13 tasks**
+**Total: 16 tasks**
 
 Ready for code review and merge.
 

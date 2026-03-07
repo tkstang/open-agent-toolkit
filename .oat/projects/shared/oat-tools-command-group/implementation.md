@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: null
+oat_current_task_id: p05-t02
 oat_generated: false
 ---
 
@@ -29,9 +29,9 @@ oat_generated: false
 | Phase 2: Update Engine + Auto-Sync | complete | 3 | 3/3 |
 | Phase 3: Install + Remove Wrappers | complete | 2 | 2/2 |
 | Phase 4: Agent Versioning | complete | 2 | 2/2 |
-| Phase 5: Final Integration | complete | 1 | 1/1 |
+| Phase 5: Final Integration | in_progress | 4 | 1/4 |
 
-**Total:** 13/13 tasks completed
+**Total:** 13/16 tasks completed
 
 ---
 
@@ -406,6 +406,32 @@ oat_generated: false
 - `M1` (p04-t01 targets generated assets): `resolved_in_artifact` — rewrote p04-t01 to target `.agents/agents/*` source files with asset rebuild as verification step
 
 **No plan tasks created** (artifact review — edits applied directly to plan.md).
+
+---
+
+### Review Received: final (code)
+
+**Date:** 2026-03-07
+**Review artifact:** reviews/final-review-2026-03-07.md
+
+**Findings:**
+- Critical: 0
+- Important: 3
+- Medium: 0
+- Minor: 0
+
+**Finding Dispositions:**
+- `I1` (project scope mis-resolution): `convert_to_task` → p05-t02
+- `I2` (update --json early return): `convert_to_task` → p05-t03
+- `I3` (remove --json early return): `convert_to_task` → p05-t04
+
+**New tasks added:** p05-t02, p05-t03, p05-t04
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ---
 
