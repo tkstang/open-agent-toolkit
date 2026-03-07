@@ -563,6 +563,7 @@ describe('help output snapshots', () => {
         outdated                 Show tools with available updates
         info <name>              Show details for an installed tool
         update [options] [name]  Update installed tools to bundled versions
+        install                  Install OAT tool packs (ideas, workflows, utility)
         help [command]           display help for command
       "
     `);
@@ -595,6 +596,30 @@ describe('help output snapshots', () => {
 
       Options:
         -h, --help  display help for command
+      "
+    `);
+  });
+
+  it('tools install --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, [
+      'tools',
+      'install',
+    ]).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat tools install [options] [command]
+
+      Install OAT tool packs (ideas, workflows, utility)
+
+      Options:
+        -h, --help           display help for command
+
+      Commands:
+        ideas [options]      Install OAT ideas skills, templates, and idea workflow
+                             files
+        workflows [options]  Install OAT workflows skills, agents, templates, and
+                             scripts
+        utility [options]    Install OAT utility skills
       "
     `);
   });
