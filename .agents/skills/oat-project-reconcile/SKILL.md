@@ -585,3 +585,73 @@ Add a reconciliation session entry to the `## Implementation Log` section:
 
 **Session End:** reconciliation complete
 ```
+
+### Step 6: Commit and Report
+
+Create a single bookkeeping commit for all artifact updates and present a final summary.
+
+**6a. Stage only tracking files:**
+
+```bash
+git add "$PROJECT_PATH/implementation.md" "$PROJECT_PATH/state.md"
+# Only add plan.md if it was modified
+git diff --name-only "$PROJECT_PATH/plan.md" 2>/dev/null | grep -q . && git add "$PROJECT_PATH/plan.md"
+```
+
+**Important:** Do NOT use `git add -A` or glob patterns. Only stage the specific OAT tracking files listed above.
+
+**6b. Commit with reconciliation message:**
+
+```bash
+git diff --cached --quiet || git commit -m "chore(oat): reconcile manual implementation ({first_task_id}..{last_task_id})"
+```
+
+Example: `chore(oat): reconcile manual implementation (p01-t03..p02-t01)`
+
+If only unplanned work was logged (no task mappings): `chore(oat): reconcile unplanned manual implementation`
+
+**6c. Refresh dashboard (optional):**
+
+```bash
+oat state refresh 2>/dev/null || pnpm run cli -- state refresh 2>/dev/null || true
+```
+
+Dashboard refresh is best-effort; do not fail the reconciliation if it's unavailable.
+
+**6d. Print final summary:**
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ OAT ▸ RECONCILE — Complete
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Reconciled: {N} tasks from {M} commits
+  High confidence: {high_count}
+  Medium confidence: {medium_count}
+  Low confidence: {low_count}
+
+Unplanned work logged: {K} entries
+Commits skipped: {skip_count}
+Tasks still pending: {pending_count}
+
+Next task: {next_task_id} "{next_task_name}" (or "all tasks complete")
+
+Tracking commit: {bookkeeping_sha}
+
+Recommended next steps:
+  - oat-project-implement    → continue with remaining tasks
+  - oat-project-review-provide → review all changes (including reconciled)
+  - oat-project-progress     → check overall project status
+```
+
+## Success Criteria
+
+- Checkpoint correctly identified from implementation.md, git log, or merge-base
+- All post-checkpoint commits collected and filtered (merges, bookkeeping, already-tracked excluded)
+- Commit→task mapping uses all four signal types in priority order
+- Every uncertain mapping (medium/low/unmapped) confirmed by user before any writes
+- Generated implementation.md entries match the template format exactly
+- Existing implementation.md entries are preserved (append-only)
+- Frontmatter pointers (`oat_current_task_id`, `oat_current_task`) are consistent across artifacts
+- Single bookkeeping commit with only tracking files staged
+- Downstream skills (`oat-project-progress`, `oat-project-review-provide`) produce correct results after reconciliation
