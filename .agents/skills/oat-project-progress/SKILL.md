@@ -199,6 +199,7 @@ fi
 ```
 
 **Drift indicators (any one is sufficient):**
+- `PLAN_TASKS` > `IMPL_COMPLETED` and `UNTRACKED_COMMITS` > 0 (plan has more tasks than completed entries, and there are untracked commits — most direct signal)
 - `IMPL_COMPLETED` < number of task-convention commits on branch (tasks implemented but not logged)
 - `UNTRACKED_COMMITS` > 3 and `oat_current_task_id` is null or stale
 - Commits exist that match `feat(pNN-tNN):` pattern but lack corresponding completed entries in `implementation.md`
