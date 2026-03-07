@@ -319,7 +319,26 @@ If matching_tokens ≥ 2 with a single task → confidence=medium
 If matching_tokens ≥ 2 with multiple tasks → confidence=low (ambiguous)
 ```
 
-**Signal D — No match (→ Unmapped):**
+**Signal D — Temporal ordering (→ Low confidence):**
+
+For each still-unmatched commit, use its position in the commit sequence as a tiebreaker:
+
+```
+Sort remaining unmatched commits by commit date (oldest first).
+Sort remaining pending tasks by plan order (p01-t01, p01-t02, ...).
+
+For each unmatched commit (in date order):
+  candidate_task = first pending task (in plan order) that has no commits mapped yet
+  If candidate_task exists:
+    map commit → candidate_task with confidence=low
+    Remove candidate_task from pending list
+  Else:
+    classify as unmapped
+```
+
+This signal is intentionally conservative (low confidence) — it only applies when no stronger signal matched. It is most useful for ambiguous manual ranges where commit order is the only remaining signal that correlates with plan task order.
+
+**Signal E — No match (→ Unmapped):**
 
 Any commits still unmatched after all signals: classify as `unmapped`.
 
@@ -666,7 +685,7 @@ Recommended next steps:
 
 - Checkpoint correctly identified from implementation.md, git log, or merge-base
 - All post-checkpoint commits collected and filtered (merges, bookkeeping, already-tracked excluded)
-- Commit→task mapping uses all four signal types in priority order
+- Commit→task mapping uses all five signal types in priority order (task ID, file overlap, keywords, temporal, unmapped)
 - Every uncertain mapping (medium/low/unmapped) confirmed by user before any writes
 - Generated implementation.md entries match the template format exactly
 - Existing implementation.md entries are preserved (append-only)
