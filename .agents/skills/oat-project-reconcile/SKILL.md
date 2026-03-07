@@ -188,3 +188,84 @@ git cat-file -t "$USER_SHA" 2>/dev/null | grep -q commit
 ```
 
 Store the confirmed checkpoint as `$CHECKPOINT` for use in subsequent steps.
+
+### Step 2: Collect and Analyze Commits
+
+Gather all commits between the checkpoint and HEAD, filter out noise, and extract metadata for mapping.
+
+**Collect commits in range:**
+
+```bash
+git log --format='%H|%s|%an|%ai' "$CHECKPOINT"..HEAD --reverse
+```
+
+This gives oldest-first ordering (matches plan execution order). Parse each line into: `SHA`, `message`, `author`, `date`.
+
+**Gather per-commit details:**
+
+For each commit SHA, collect:
+
+1. Changed files:
+   ```bash
+   git diff-tree --no-commit-id -r --name-only "$SHA"
+   ```
+
+2. Diff stats (insertions/deletions):
+   ```bash
+   git diff --stat "$SHA"~1.."$SHA" 2>/dev/null || git diff --stat "$(git hash-object -t tree /dev/null)".."$SHA"
+   ```
+   (The fallback handles the case where `$SHA` is the first commit on the branch.)
+
+**Filter out non-implementation commits:**
+
+Remove from the analysis set:
+
+1. **Merge commits:**
+   ```bash
+   git rev-list --merges "$CHECKPOINT"..HEAD
+   ```
+   Any SHA in this list is excluded.
+
+2. **Bookkeeping-only commits** — commits where ALL changed files match OAT tracking patterns:
+   - Files ending in `implementation.md`, `state.md`, or `plan.md` within any `.oat/` path
+   - Files ending in `state.md` within any `.oat/` path
+   - Commit message starts with `chore(oat):`
+
+   Rule: if every file in the commit matches `*.oat/*/implementation.md`, `*.oat/*/state.md`, `*.oat/*/plan.md`, or `*.oat/*/discovery.md` — then it's bookkeeping and should be excluded.
+
+3. **Already-tracked commits** — commits whose SHA already appears in `implementation.md` task entries (from Step 0.5 check).
+
+**Present commit summary to user:**
+
+```
+OAT ▸ RECONCILE — Step 2: Commit Analysis
+
+Range: {CHECKPOINT_SHORT}..HEAD ({total_count} commits, {filtered_count} after filtering)
+Filtered out: {merge_count} merges, {bookkeeping_count} bookkeeping, {tracked_count} already tracked
+
+| #  | SHA (short) | Message (first 60 chars)          | Files | Insertions | Deletions |
+|----|-------------|-----------------------------------|-------|------------|-----------|
+| 1  | abc1234     | add auth endpoint                 | 3     | +120       | -5        |
+| 2  | def5678     | fix validation logic              | 1     | +15        | -8        |
+| .. | ...         | ...                               | ...   | ...        | ...       |
+```
+
+**Extract plan tasks for mapping:**
+
+Read `plan.md` and extract all tasks:
+
+1. Parse `### Task pNN-tNN: {Name}` headers to get task IDs and names
+2. Parse `**Files:**` blocks under each task to get expected file lists (both `Create:` and `Modify:` entries)
+3. Parse task descriptions/steps for keyword extraction (used in Step 3 for message matching)
+4. Note which tasks already have `completed` status in `implementation.md` (skip these during mapping)
+
+Store as a structured list:
+```
+TASKS = [
+  { id: "p01-t01", name: "...", files: ["path/a.ts", "path/b.ts"], keywords: ["auth", "endpoint"] },
+  { id: "p01-t02", name: "...", files: [...], keywords: [...] },
+  ...
+]
+```
+
+Only include tasks that are **not yet completed** in `implementation.md`.
