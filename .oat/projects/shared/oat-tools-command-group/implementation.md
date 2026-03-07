@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p01-t04
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -25,34 +25,42 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1: Scan Engine + Read-Only Commands | in_progress | 5 | 3/5 |
+| Phase 1: Scan Engine + Read-Only Commands | complete | 5 | 5/5 |
 | Phase 2: Update Engine + Auto-Sync | pending | 3 | 0/3 |
 | Phase 3: Install + Remove Wrappers | pending | 2 | 0/2 |
 | Phase 4: Agent Versioning | pending | 2 | 0/2 |
 | Phase 5: Final Integration | pending | 1 | 0/1 |
 
-**Total:** 3/13 tasks completed
+**Total:** 5/13 tasks completed
 
 ---
 
 ## Phase 1: Scan Engine + Read-Only Commands
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-07
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
-- {fill when phase is complete}
+- `oat tools` command group registered with list, outdated, and info subcommands
+- Scan engine discovers installed tools across scopes with version comparison and pack membership
+- `oat tools list` displays all tools in table/JSON format with scope filtering
+- `oat tools outdated` shows only tools needing updates with installed→available versions
+- `oat tools info <name>` shows full details including description, invocability, and update availability
 
 **Key files touched:**
-- {fill when phase is complete}
+- `packages/cli/src/commands/tools/` - New command group with shared/, list/, outdated/, info/ subdirs
+- `packages/cli/src/commands/index.ts` - Registered tools command
+- `packages/cli/src/commands/help-snapshots.test.ts` - Updated with all tools snapshots
 
 **Verification:**
-- {fill when phase is complete}
+- Run: `pnpm --filter @oat/cli test`
+- Result: 764 tests passing, lint and type-check clean
 
 **Notes / Decisions:**
-- {fill when phase is complete}
+- Agent scanning uses raw readdir with try/catch (not DI) — simpler since agents are project-scope only
+- Reused existing `compareVersions`, `getSkillVersion`, pack constants from init/tools modules
 
 ### Task p01-t01: Create tools command group skeleton and register it
 
@@ -132,15 +140,50 @@ oat_generated: false
 
 ### Task p01-t04: Implement `oat tools outdated` command
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 3bb27d4
+
+**Outcome:**
+- `oat tools outdated` filters scan results to show only outdated tools
+- Table shows installed vs available versions with pack and scope columns
+- JSON output and scope filtering supported
+- Shows "All tools are up to date" when none outdated
+
+**Files changed:**
+- `packages/cli/src/commands/tools/outdated/outdated-tools.ts` - Outdated logic with table formatting
+- `packages/cli/src/commands/tools/outdated/outdated-tools.test.ts` - 4 tests
+- `packages/cli/src/commands/tools/outdated/index.ts` - Command registration
+- `packages/cli/src/commands/tools/index.ts` - Wired outdated subcommand
+- `packages/cli/src/commands/help-snapshots.test.ts` - Updated snapshots
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/outdated/outdated-tools.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass (757 tests)
 
 ---
 
 ### Task p01-t05: Implement `oat tools info <name>` command
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 149649c
+
+**Outcome:**
+- `oat tools info <name>` displays full details for any installed tool
+- Shows version, pack, scope, status, description, invocability, args, tools
+- Warns when update available
+- Exits with code 1 if tool not found
+- JSON output supported
+
+**Files changed:**
+- `packages/cli/src/commands/tools/info/info-tool.ts` - Info logic with ToolDetail type
+- `packages/cli/src/commands/tools/info/info-tool.test.ts` - 6 tests
+- `packages/cli/src/commands/tools/info/index.ts` - Command registration with default getToolDetail
+- `packages/cli/src/commands/tools/index.ts` - Wired info subcommand
+- `packages/cli/src/commands/help-snapshots.test.ts` - Updated snapshots
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/info/info-tool.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass (764 tests)
 
 ---
 
@@ -260,11 +303,13 @@ oat_generated: false
 - [x] p01-t01: Create tools command group skeleton - 7b14b61
 - [x] p01-t02: Implement scan engine - a26c570
 - [x] p01-t03: Implement oat tools list command - 16d8b2c
+- [x] p01-t04: Implement oat tools outdated command - 3bb27d4
+- [x] p01-t05: Implement oat tools info command - 149649c
 
 **What changed (high level):**
-- `oat tools` command group registered with `list` subcommand
+- `oat tools` command group with list, outdated, and info subcommands
 - Scan engine discovers installed tools across scopes with version comparison
-- `oat tools list` displays tools in table/JSON format
+- All read-only tool management commands operational
 
 **Decisions:**
 - Agent scan uses raw readdir with try/catch rather than DI (simpler, agents are project-scope only)

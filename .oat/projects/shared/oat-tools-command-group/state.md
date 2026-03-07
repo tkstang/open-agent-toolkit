@@ -1,6 +1,6 @@
 ---
-oat_current_task: p01-t04
-oat_last_commit: 16d8b2c
+oat_current_task: p02-t01
+oat_last_commit: 149649c
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: ["discovery", "spec", "design"]
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation — 3/13 tasks complete, executing Phase 1
+Implementation — 5/13 tasks complete, Phase 1 done, starting Phase 2
 
 ## Artifacts
 
@@ -29,7 +29,7 @@ Implementation — 3/13 tasks complete, executing Phase 1
 - **Spec:** `spec.md` (complete)
 - **Design:** `design.md` (complete)
 - **Plan:** `plan.md` (complete)
-- **Implementation:** `implementation.md` (in progress — 3/13 tasks)
+- **Implementation:** `implementation.md` (in progress — 5/13 tasks)
 
 ## Progress
 
@@ -37,7 +37,8 @@ Implementation — 3/13 tasks complete, executing Phase 1
 - ✓ Specification completed
 - ✓ Design completed
 - ✓ Plan completed (13 tasks across 5 phases)
-- ⧗ Implementation in progress (Phase 1: 3/5 tasks done)
+- ✓ Phase 1: Scan Engine + Read-Only Commands (5/5 tasks)
+- ⧗ Phase 2: Update Engine + Auto-Sync (starting)
 
 ## Blockers
 
@@ -45,4 +46,4 @@ None
 
 ## Next Milestone
 
-Complete Phase 1 remaining tasks (p01-t04, p01-t05), then continue through Phase 2-5
+Complete Phase 2 (auto-sync, update engine, update command), then Phases 3-5
