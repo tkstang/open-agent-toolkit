@@ -1,6 +1,6 @@
 ---
-oat_current_task: p02-t01
-oat_last_commit: 149649c
+oat_current_task: null
+oat_last_commit: 280309a
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: ["discovery", "spec", "design"]
@@ -15,13 +15,13 @@ oat_generated: false
 
 # Project State: oat-tools-command-group
 
-**Status:** Implementation In Progress
+**Status:** Implementation Tasks Complete — Awaiting Final Review
 **Started:** 2026-03-07
 **Last Updated:** 2026-03-07
 
 ## Current Phase
 
-Implementation — 5/13 tasks complete, Phase 1 done, starting Phase 2
+Implementation — Tasks complete; awaiting final review.
 
 ## Artifacts
 
@@ -29,7 +29,7 @@ Implementation — 5/13 tasks complete, Phase 1 done, starting Phase 2
 - **Spec:** `spec.md` (complete)
 - **Design:** `design.md` (complete)
 - **Plan:** `plan.md` (complete)
-- **Implementation:** `implementation.md` (in progress — 5/13 tasks)
+- **Implementation:** `implementation.md` (complete — 13/13 tasks)
 
 ## Progress
 
@@ -38,7 +38,11 @@ Implementation — 5/13 tasks complete, Phase 1 done, starting Phase 2
 - ✓ Design completed
 - ✓ Plan completed (13 tasks across 5 phases)
 - ✓ Phase 1: Scan Engine + Read-Only Commands (5/5 tasks)
-- ⧗ Phase 2: Update Engine + Auto-Sync (starting)
+- ✓ Phase 2: Update Engine + Auto-Sync (3/3 tasks)
+- ✓ Phase 3: Install + Remove Wrappers (2/2 tasks)
+- ✓ Phase 4: Agent Versioning (2/2 tasks)
+- ✓ Phase 5: Final Integration (1/1 tasks)
+- ⧗ Awaiting final review
 
 ## Blockers
 
@@ -46,4 +50,4 @@ None
 
 ## Next Milestone
 
-Complete Phase 2 (auto-sync, update engine, update command), then Phases 3-5
+Final code review, then PR creation

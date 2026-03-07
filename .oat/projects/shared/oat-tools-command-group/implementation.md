@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t01
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -26,12 +26,12 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1: Scan Engine + Read-Only Commands | complete | 5 | 5/5 |
-| Phase 2: Update Engine + Auto-Sync | pending | 3 | 0/3 |
-| Phase 3: Install + Remove Wrappers | pending | 2 | 0/2 |
-| Phase 4: Agent Versioning | pending | 2 | 0/2 |
-| Phase 5: Final Integration | pending | 1 | 0/1 |
+| Phase 2: Update Engine + Auto-Sync | complete | 3 | 3/3 |
+| Phase 3: Install + Remove Wrappers | complete | 2 | 2/2 |
+| Phase 4: Agent Versioning | complete | 2 | 2/2 |
+| Phase 5: Final Integration | complete | 1 | 1/1 |
 
-**Total:** 5/13 tasks completed
+**Total:** 13/13 tasks completed
 
 ---
 
@@ -133,9 +133,6 @@ oat_generated: false
 - Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/list/list-tools.test.ts src/commands/help-snapshots.test.ts`
 - Result: pass (752 tests total)
 
-**Notes / Decisions:**
-- None
-
 ---
 
 ### Task p01-t04: Implement `oat tools outdated` command
@@ -189,77 +186,193 @@ oat_generated: false
 
 ## Phase 2: Update Engine + Auto-Sync
 
-**Status:** pending
-**Started:** -
+**Status:** complete
+**Started:** 2026-03-07
+
+### Phase Summary
+
+**Outcome:**
+- Auto-sync helper runs `oat sync --apply --scope <scope>` after mutations
+- Update engine compares versions and copies bundled assets to overwrite installed tools
+- `oat tools update` command with name/pack/all targeting, dry-run, and no-sync options
+
+**Key files touched:**
+- `packages/cli/src/commands/tools/shared/auto-sync.ts` - Auto-sync helper
+- `packages/cli/src/commands/tools/update/` - Update engine and command
+
+**Verification:**
+- Tests: 780 passing
+- Lint and type-check clean
 
 ### Task p02-t01: Implement auto-sync helper
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 983c6a2
+
+**Outcome:**
+- `autoSync()` function calls `oat sync --apply` for each affected scope after mutations
+- Non-fatal: catches sync failures and logs warnings
+- DI via `AutoSyncDependencies` with `runSync` function
+
+**Files changed:**
+- `packages/cli/src/commands/tools/shared/auto-sync.ts` - Created
+- `packages/cli/src/commands/tools/shared/auto-sync.test.ts` - 4 tests
 
 ---
 
 ### Task p02-t02: Implement update engine
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 2ca1945
+
+**Outcome:**
+- `updateTools()` scans installed tools, classifies as updated/current/newer/notInstalled/notBundled
+- Skills updated via `copyDirWithStatus(force=true)`, agents via `copyFileWithStatus(force=true)`
+- Supports name, pack, and all targeting
+
+**Files changed:**
+- `packages/cli/src/commands/tools/update/update-tools.ts` - Created
+- `packages/cli/src/commands/tools/update/update-tools.test.ts` - 11 tests
 
 ---
 
 ### Task p02-t03: Implement `oat tools update` command
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 819ef9b
+
+**Outcome:**
+- `oat tools update [name] --pack --all --dry-run --no-sync` command
+- Validates mutual exclusion of target specifiers
+- Auto-sync via subprocess after successful updates
+
+**Files changed:**
+- `packages/cli/src/commands/tools/update/index.ts` - Command registration with DI
+- `packages/cli/src/commands/tools/index.ts` - Wired update subcommand
+- `packages/cli/src/commands/help-snapshots.test.ts` - Updated snapshots
 
 ---
 
 ## Phase 3: Install + Remove Wrappers
 
-**Status:** pending
-**Started:** -
+**Status:** complete
+**Started:** 2026-03-07
+
+### Phase Summary
+
+**Outcome:**
+- `oat tools install` reuses existing init tools flow (ideas/workflows/utility subcommands)
+- `oat tools remove` provides name/pack/all removal with dry-run and auto-sync
+
+**Key files touched:**
+- `packages/cli/src/commands/tools/install/index.ts` - Thin wrapper
+- `packages/cli/src/commands/tools/remove/` - Remove engine and command
 
 ### Task p03-t01: Implement `oat tools install` command
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 96465d4
+
+**Outcome:**
+- Reuses `createInitToolsCommand()` renamed to 'install'
+- Preserves all pack subcommands (ideas, workflows, utility) and interactive flow
+
+**Files changed:**
+- `packages/cli/src/commands/tools/install/index.ts` - Created
+- `packages/cli/src/commands/tools/index.ts` - Wired install subcommand
+- `packages/cli/src/commands/help-snapshots.test.ts` - Updated snapshots
 
 ---
 
 ### Task p03-t02: Implement `oat tools remove` command
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** e07db22
+
+**Outcome:**
+- `oat tools remove [name] --pack --all --dry-run --no-sync` command
+- Skills removed via directory deletion, agents via file deletion
+- Auto-sync runs after successful removals
+
+**Files changed:**
+- `packages/cli/src/commands/tools/remove/remove-tools.ts` - Remove engine
+- `packages/cli/src/commands/tools/remove/remove-tools.test.ts` - 8 tests
+- `packages/cli/src/commands/tools/remove/index.ts` - Command registration
+- `packages/cli/src/commands/tools/index.ts` - Wired remove subcommand
+- `packages/cli/src/commands/help-snapshots.test.ts` - Updated snapshots
 
 ---
 
 ## Phase 4: Agent Versioning
 
-**Status:** pending
-**Started:** -
+**Status:** complete
+**Started:** 2026-03-07
+
+### Phase Summary
+
+**Outcome:**
+- Bundled agents now have `version: 1.0.0` frontmatter for version comparison
+- `getAgentVersion` exported from frontmatter module, used by scan engine
+
+**Key files touched:**
+- `.agents/agents/oat-codebase-mapper.md` - Added version
+- `.agents/agents/oat-reviewer.md` - Added version
+- `packages/cli/src/commands/shared/frontmatter.ts` - Exported getAgentVersion
 
 ### Task p04-t01: Add version frontmatter to bundled agents
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** f1aea7b
+
+**Outcome:**
+- Added `version: 1.0.0` to oat-codebase-mapper and oat-reviewer source files
+- Verified propagation to bundled assets via bundle-assets script
+
+**Files changed:**
+- `.agents/agents/oat-codebase-mapper.md` - Added version frontmatter
+- `.agents/agents/oat-reviewer.md` - Added version frontmatter
+- `packages/cli/assets/agents/oat-codebase-mapper.md` - Regenerated
+- `packages/cli/assets/agents/oat-reviewer.md` - Regenerated
 
 ---
 
 ### Task p04-t02: Generalize version reading for agents
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 280309a
+
+**Outcome:**
+- Exported `getAgentVersion()` from frontmatter module for parity with `getSkillVersion()`
+- Updated scan engine to use the exported function instead of inline implementation
+- Added 3 tests for getAgentVersion
+
+**Files changed:**
+- `packages/cli/src/commands/shared/frontmatter.ts` - Added getAgentVersion export
+- `packages/cli/src/commands/shared/frontmatter.test.ts` - Added 3 agent version tests
+- `packages/cli/src/commands/tools/shared/scan-tools.ts` - Import getAgentVersion
 
 ---
 
 ## Phase 5: Final Integration
 
-**Status:** pending
-**Started:** -
+**Status:** complete
+**Started:** 2026-03-07
+
+### Phase Summary
+
+**Outcome:**
+- Full verification: 793 tests passing, lint clean, type-check clean, build success
+- No snapshot fixes needed — all help snapshots correct
 
 ### Task p05-t01: Integration verification and snapshot updates
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** (no changes needed — verification only)
+
+**Outcome:**
+- All 793 tests pass
+- Lint, type-check, and build all clean
+- No convention violations (no console.*, no ../ imports)
 
 ---
 
@@ -306,14 +419,16 @@ oat_generated: false
 - [x] p01-t04: Implement oat tools outdated command - 3bb27d4
 - [x] p01-t05: Implement oat tools info command - 149649c
 
-**What changed (high level):**
-- `oat tools` command group with list, outdated, and info subcommands
-- Scan engine discovers installed tools across scopes with version comparison
-- All read-only tool management commands operational
+### 2026-03-07 (Session 2)
 
-**Decisions:**
-- Agent scan uses raw readdir with try/catch rather than DI (simpler, agents are project-scope only)
-- Reused existing `compareVersions` and `getSkillVersion` from init/tools shared modules
+- [x] p02-t01: Implement auto-sync helper - 983c6a2
+- [x] p02-t02: Implement update engine - 2ca1945
+- [x] p02-t03: Implement oat tools update command - 819ef9b
+- [x] p03-t01: Implement oat tools install command - 96465d4
+- [x] p03-t02: Implement oat tools remove command - e07db22
+- [x] p04-t01: Add version frontmatter to bundled agents - f1aea7b
+- [x] p04-t02: Generalize version reading for agents - 280309a
+- [x] p05-t01: Integration verification (no changes needed)
 
 ---
 
@@ -321,32 +436,51 @@ oat_generated: false
 
 | Task | Planned | Actual | Reason |
 |------|---------|--------|--------|
-| - | - | - | - |
+| p03-t02 | Use runRemoveSkill | Simple directory/file deletion | runRemoveSkill's heavy DI (manifests, provider views) not needed; auto-sync handles provider cleanup |
+| p04-t02 | May need new function | getAgentVersion already partially implemented in scan engine | Extracted to shared module for proper export |
 
 ## Test Results
 
 | Phase | Tests Run | Passed | Failed | Coverage |
 |-------|-----------|--------|--------|----------|
-| 1 | 752 | 752 | 0 | - |
-| 2 | - | - | - | - |
+| 1 | 764 | 764 | 0 | - |
+| 2 | 780 | 780 | 0 | - |
+| 3 | 790 | 790 | 0 | - |
+| 4 | 793 | 793 | 0 | - |
+| 5 | 793 | 793 | 0 | - |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
-- {capability 1}
-- {capability 2}
+- `oat tools list` — list installed tools with version, pack, scope, and status
+- `oat tools outdated` — show only tools with available updates
+- `oat tools info <name>` — detailed view of a single tool
+- `oat tools update [name] --pack --all --dry-run --no-sync` — update tools to bundled versions
+- `oat tools install` — install tool packs (ideas/workflows/utility)
+- `oat tools remove [name] --pack --all --dry-run --no-sync` — remove installed tools
+- Shared scan engine for tool discovery and version comparison
+- Auto-sync after mutations (update/remove)
+- Agent versioning via frontmatter
 
 **Behavioral changes (user-facing):**
-- {bullet}
+- New `oat tools` command group available in CLI
+- Tools can be managed (list, inspect, update, install, remove) from a single command group
+- Auto-sync runs automatically after update/remove operations
 
 **Key files / modules:**
-- `{path}` - {purpose}
+- `packages/cli/src/commands/tools/` - All tools subcommands
+- `packages/cli/src/commands/tools/shared/scan-tools.ts` - Scan engine
+- `packages/cli/src/commands/tools/shared/auto-sync.ts` - Auto-sync helper
+- `packages/cli/src/commands/shared/frontmatter.ts` - Added getAgentVersion
 
 **Verification performed:**
-- {tests/lint/typecheck/build/manual steps}
+- 793 unit tests passing
+- Lint clean (biome)
+- Type-check clean (tsc --noEmit)
+- Build success
 
 **Design deltas (if any):**
-- {what changed vs design.md and why}
+- Remove command uses simple file/directory deletion + auto-sync instead of delegating to runRemoveSkill (simpler, equivalent result)
 
 ## References
 
