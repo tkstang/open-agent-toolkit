@@ -571,12 +571,15 @@ git commit -m "feat(p03-t01): implement oat tools install command"
 
 ```typescript
 describe('runRemoveTools', () => {
-  it('removes a single tool by name via runRemoveSkill', async () => { /* ... */ });
-  it('removes all tools in a pack', async () => { /* ... */ });
-  it('removes all tools with --all', async () => { /* ... */ });
+  it('removes a single skill by name via runRemoveSkill', async () => { /* ... */ });
+  it('removes a single agent by name by deleting its .md file', async () => { /* ... */ });
+  it('removes all tools in a pack (skills via runRemoveSkill, agents via file deletion)', async () => { /* ... */ });
+  it('removes all tools with --all (both skills and agents)', async () => { /* ... */ });
   it('dry-run previews removal without deleting', async () => { /* ... */ });
   it('triggers auto-sync after removal', async () => { /* ... */ });
   it('skips auto-sync when --no-sync', async () => { /* ... */ });
+  it('cleans up agent provider views after agent removal', async () => { /* ... */ });
+  it('errors when tool name not found in any scope', async () => { /* ... */ });
 });
 ```
 
@@ -586,11 +589,14 @@ Expected: Tests fail
 **Step 2: Implement (GREEN)**
 
 - Command: `oat tools remove [name]` with `--pack`, `--all`, `--dry-run`, `--no-sync`
-- Single tool: delegates to `runRemoveSkill` with `apply = !dryRun`
-- Pack: iterates pack members through `runRemoveSkill`
-- All: iterates all packs
+- Use `scanTools` to resolve the target tool and determine its type (skill vs agent)
+- **Skill removal:** delegates to `runRemoveSkill` with `apply = !dryRun`
+- **Agent removal:** deletes the agent `.md` file from `.agents/agents/` in the scope root, then removes any synced provider-view files for that agent
+- Pack: iterates pack members — skills through `runRemoveSkill`, agents through agent file deletion
+- All: iterates all packs (both skill and agent members)
 - After successful removals and not dry-run and not --no-sync: calls `autoSync`
 - Validates mutual exclusion: exactly one of name, --pack, --all
+- DI: `RemoveToolsDependencies` interface with scan engine, `runRemoveSkill`, file-system delete, and provider-view cleanup
 
 Wire into `createToolsCommand()`.
 
@@ -601,7 +607,7 @@ Expected: Tests pass
 
 **Step 3: Refactor**
 
-None needed.
+Extract agent removal helper if logic is reusable across single/pack/all paths.
 
 **Step 4: Verify**
 
@@ -622,10 +628,8 @@ git commit -m "feat(p03-t02): implement oat tools remove command"
 ### Task p04-t01: Add version frontmatter to bundled agents
 
 **Files:**
-- Modify: `packages/cli/assets/agents/oat-codebase-mapper.md`
-- Modify: `packages/cli/assets/agents/oat-reviewer.md`
-- Modify: `.agents/agents/oat-codebase-mapper.md`
-- Modify: `.agents/agents/oat-reviewer.md`
+- Modify: `.agents/agents/oat-codebase-mapper.md` (source of truth)
+- Modify: `.agents/agents/oat-reviewer.md` (source of truth)
 
 **Step 1: Write test (RED)**
 
@@ -633,11 +637,17 @@ No test needed — this is a content change. Verify by reading version after cha
 
 **Step 2: Implement (GREEN)**
 
-Add `version: 1.0.0` to frontmatter of both agent files (both bundled assets and installed copies).
+Add `version: 1.0.0` to frontmatter of both source agent files in `.agents/agents/`.
 
-**Step 3: Refactor**
+These are the source-of-truth files; `packages/cli/assets/agents/` is generated from them by `packages/cli/scripts/bundle-assets.sh`.
 
-None needed.
+**Step 3: Verify asset regeneration**
+
+Rebuild bundled assets and confirm the version frontmatter propagates:
+```bash
+pnpm --filter @oat/cli run bundle-assets
+```
+Check that `packages/cli/assets/agents/oat-codebase-mapper.md` and `packages/cli/assets/agents/oat-reviewer.md` now contain `version: 1.0.0` in their frontmatter.
 
 **Step 4: Verify**
 
@@ -647,7 +657,7 @@ Expected: No errors
 **Step 5: Commit**
 
 ```bash
-git add packages/cli/assets/agents/ .agents/agents/
+git add .agents/agents/ packages/cli/assets/agents/
 git commit -m "feat(p04-t01): add version frontmatter to bundled agents"
 ```
 
@@ -748,6 +758,7 @@ git commit -m "feat(p05-t01): finalize oat tools integration and snapshots"
 | p04 | code | pending | - | - |
 | p05 | code | pending | - | - |
 | final | code | pending | - | - |
+| plan | artifact | passed | 2026-03-07 | reviews/plan-review-2026-03-07.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 

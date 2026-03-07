@@ -108,6 +108,28 @@ oat_generated: false
 
 ---
 
+## Artifact Reviews
+
+### Review Received: plan (artifact)
+
+**Date:** 2026-03-07
+**Review artifact:** reviews/plan-review-2026-03-07.md
+
+**Findings:**
+- Critical: 0
+- Important: 2
+- Medium: 1
+- Minor: 0
+
+**Finding Dispositions:**
+- `I1` (agent removal uncovered in p03-t02): `resolved_in_artifact` — expanded p03-t02 to include agent-aware removal logic with file deletion, provider-view cleanup, and additional tests
+- `I2` (oat tools info out of scope): `rejected_with_rationale` — user confirmed the additional scope was approved; finding not applicable
+- `M1` (p04-t01 targets generated assets): `resolved_in_artifact` — rewrote p04-t01 to target `.agents/agents/*` source files with asset rebuild as verification step
+
+**No plan tasks created** (artifact review — edits applied directly to plan.md).
+
+---
+
 ## Implementation Log
 
 Chronological log of implementation progress.
