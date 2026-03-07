@@ -191,7 +191,7 @@ Routing matrix by mode:
 | design | complete | `oat-project-plan` |
 | plan | in_progress | Continue `oat-project-plan` |
 | plan | complete | `oat-project-subagent-implement` when `oat_execution_mode: subagent-driven`, otherwise `oat-project-implement` |
-| implement | in_progress | Continue `oat-project-subagent-implement` when `oat_execution_mode: subagent-driven`, otherwise `oat-project-implement` |
+| implement | in_progress | Continue `oat-project-subagent-implement` when `oat_execution_mode: subagent-driven`, otherwise `oat-project-implement`. If artifacts appear out of sync with recent commits (e.g., `implementation.md` has fewer completed tasks than commits suggest), also mention `oat-project-reconcile` as an option. |
 | implement | complete | Ready for final review / PR |
 
 **Quick mode (`oat_workflow_mode: quick`):**
@@ -243,6 +243,7 @@ Workflow:
   oat-project-plan              - Create implementation plan from design (spec-driven mode)
   oat-project-implement         - Execute implementation plan
   oat-project-subagent-implement - Execute implementation plan with subagent orchestration
+  oat-project-reconcile         - Reconcile manual/human commits with plan tasks
 
 Status:
   oat-project-progress          - Check project progress (this skill)
