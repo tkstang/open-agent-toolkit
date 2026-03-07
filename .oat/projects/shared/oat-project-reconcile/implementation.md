@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t07
+oat_current_task_id: p02-t08
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 8 | 6/8 |
+| Phase 2 | in_progress | 8 | 7/8 |
 
-**Total:** 13/15 tasks completed
+**Total:** 14/15 tasks completed
 
 ---
 
@@ -287,6 +287,29 @@ oat_template_name: implementation
 
 **Notes / Decisions:**
 - Frontmatter was partially fixed during receive-review; this task completed the prose body updates
+
+---
+
+### Task p02-t07: (review) Complete progress-router drift detection for all workflow modes
+
+**Status:** completed
+**Commit:** 4b61b69
+
+**Outcome:**
+- Added concrete drift detection step with bash commands (plan task count vs completed, untracked commits, convention mismatches)
+- Added reconcile suggestion to quick-mode `implement | in_progress` row
+- Added reconcile suggestion to import-mode `implement | in_progress` row
+- Spec-driven row already had advisory text; now all three modes are consistent
+
+**Files changed:**
+- `.agents/skills/oat-project-progress/SKILL.md` - drift detection step + routing table updates
+
+**Verification:**
+- Run: `grep -n 'reconcile\|drift' SKILL.md`
+- Result: pass — drift detection and reconcile mentions in all three mode tables
+
+**Notes / Decisions:**
+- Detection is best-effort (bash heuristics); false positives are acceptable since reconcile is non-destructive
 
 ---
 
