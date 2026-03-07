@@ -810,7 +810,7 @@ git commit -m "fix(p02-t13): add plan-vs-implementation count comparison for dri
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | fixes_added | 2026-03-07 | reviews/final-review-2026-03-07-v3.md |
+| final | code | fixes_completed | 2026-03-07 | reviews/final-review-2026-03-07-v3.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 

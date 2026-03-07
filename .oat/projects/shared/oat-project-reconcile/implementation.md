@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t13
+oat_current_task_id: null
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 13 | 12/13 |
+| Phase 2 | complete | 13 | 13/13 |
 
-**Total:** 19/20 tasks completed
+**Total:** 20/20 tasks completed
 
 ---
 
@@ -295,6 +295,24 @@ oat_template_name: implementation
 
 ---
 
+### Task p02-t13: (review) Add explicit plan-vs-implementation count comparison for drift detection
+
+**Status:** completed
+**Commit:** f002687
+
+**Outcome:**
+- Added `PLAN_TASKS > IMPL_COMPLETED` as the first drift indicator (most direct signal)
+- Kept existing commit-based heuristics as secondary indicators
+
+**Files changed:**
+- `.agents/skills/oat-project-progress/SKILL.md` - added count comparison to drift indicators
+
+**Verification:**
+- Run: `grep -A10 'Drift indicators' SKILL.md`
+- Result: pass — first condition uses PLAN_TASKS vs IMPL_COMPLETED
+
+---
+
 ### Task p02-t12: (review) Replace hardcoded progress table in reconcile Step 5d
 
 **Status:** completed
@@ -523,10 +541,7 @@ oat_template_name: implementation
 - `I1` Hardcoded progress table in reconcile Step 5d → converted (p02-t12)
 - `I2` Missing plan-vs-implementation count comparison in drift detection → converted (p02-t13)
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
-
-After the fix tasks are complete:
-- Mark review as `fixes_completed` and proceed to PR (cycle limit reached — no further automated re-review)
+**Next:** All fix tasks complete. Review cycle limit reached — proceed to PR via `oat-project-pr-final`.
 
 ---
 
@@ -595,12 +610,13 @@ After the fix tasks are complete:
 - `.oat/repo/reference/backlog.md` - status updates
 
 **Verification performed:**
-- lint-staged on all 18 task commits (pass)
+- lint-staged on all 20 task commits (pass)
 - `pnpm test` — 737/737 tests passing
 - `pnpm lint` — clean
 - `pnpm type-check` — clean
 - `oat internal validate-oat-skills` (36 skills validated)
 - `oat sync --scope all --apply` (symlinks created successfully)
+- 3 review cycles with 10 total fix tasks addressing all Important/Medium/Minor findings
 
 ## References
 
