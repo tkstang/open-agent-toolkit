@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p01-t01
+oat_current_task_id: p01-t04
 oat_generated: false
 ---
 
@@ -25,14 +25,17 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | N | 0/N |
-| Phase 2 | pending | N | 0/N |
+| Phase 1: Scan Engine + Read-Only Commands | in_progress | 5 | 3/5 |
+| Phase 2: Update Engine + Auto-Sync | pending | 3 | 0/3 |
+| Phase 3: Install + Remove Wrappers | pending | 2 | 0/2 |
+| Phase 4: Agent Versioning | pending | 2 | 0/2 |
+| Phase 5: Final Integration | pending | 1 | 0/1 |
 
-**Total:** 0/{N} tasks completed
+**Total:** 3/13 tasks completed
 
 ---
 
-## Phase 1: {Phase Name}
+## Phase 1: Scan Engine + Read-Only Commands
 
 **Status:** in_progress
 **Started:** 2026-03-07
@@ -40,57 +43,177 @@ oat_generated: false
 ### Phase Summary (fill when phase is complete)
 
 **Outcome (what changed):**
-- {2-5 bullets describing user-visible / behavior-level changes delivered in this phase}
+- {fill when phase is complete}
 
 **Key files touched:**
-- `{path}` - {why}
+- {fill when phase is complete}
 
 **Verification:**
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- {fill when phase is complete}
 
 **Notes / Decisions:**
-- {trade-offs or deviations discovered during implementation}
+- {fill when phase is complete}
 
-### Task p01-t01: {Task Name}
+### Task p01-t01: Create tools command group skeleton and register it
 
-**Status:** completed / in_progress / pending / blocked
-**Commit:** {sha} (if completed)
+**Status:** completed
+**Commit:** 7b14b61
 
-**Outcome (required when completed):**
-- {what materially changed (not “did task”, but “system now does X”)}
+**Outcome:**
+- `oat tools` command group now exists and is registered in the CLI
+- Help output includes the tools command in the command list
 
 **Files changed:**
-- `{path}` - {why}
+- `packages/cli/src/commands/tools/index.ts` - Created with `createToolsCommand()` factory
+- `packages/cli/src/commands/index.ts` - Registered tools command
+- `packages/cli/src/commands/help-snapshots.test.ts` - Added tools help snapshot
 
 **Verification:**
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `pnpm --filter @oat/cli test -- --run src/commands/help-snapshots.test.ts`
+- Result: pass (738 tests)
 
 **Notes / Decisions:**
-- {gotchas, trade-offs, design deltas, important context for future sessions}
-
-**Issues Encountered:**
-- {Issue and resolution}
+- Initial help snapshot had `[command]` in usage line but Commander omits it when no subcommands exist; fixed to match actual output
 
 ---
 
-### Task p01-t02: {Task Name}
+### Task p01-t02: Implement scan engine
+
+**Status:** completed
+**Commit:** a26c570
+
+**Outcome:**
+- `scanTools()` function scans installed skills and agents, resolves pack membership, compares versions
+- DI pattern via `ScanToolsDependencies` for testability
+- Pack membership detection for ideas, workflows, utility, and custom tools
+- Version comparison using existing `compareVersions` from init/tools/shared
+
+**Files changed:**
+- `packages/cli/src/commands/tools/shared/types.ts` - Created ToolInfo, PackName types
+- `packages/cli/src/commands/tools/shared/scan-tools.ts` - Created scan engine with DI
+- `packages/cli/src/commands/tools/shared/scan-tools.test.ts` - 8 tests covering all scan scenarios
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/shared/scan-tools.test.ts`
+- Result: pass (8 tests)
+
+**Notes / Decisions:**
+- Agent scanning uses raw `readdir` from node:fs/promises (not via DI) for directory listing — caught by try/catch for nonexistent paths
+- Agents only scanned in project scope per `SCOPE_CONTENT_TYPES`
+
+---
+
+### Task p01-t03: Implement `oat tools list` command
+
+**Status:** completed
+**Commit:** 16d8b2c
+
+**Outcome:**
+- `oat tools list` shows installed tools in a formatted table with name, type, version, pack, scope, status columns
+- JSON output via `--json` flag
+- Scope filtering via inherited `--scope` option
+- Empty state message when no tools installed
+
+**Files changed:**
+- `packages/cli/src/commands/tools/list/index.ts` - Command registration with DI
+- `packages/cli/src/commands/tools/list/list-tools.ts` - List logic with table formatting
+- `packages/cli/src/commands/tools/list/list-tools.test.ts` - 5 tests
+- `packages/cli/src/commands/tools/index.ts` - Wired list subcommand
+- `packages/cli/src/commands/help-snapshots.test.ts` - Updated tools and tools list snapshots
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/list/list-tools.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass (752 tests total)
+
+**Notes / Decisions:**
+- None
+
+---
+
+### Task p01-t04: Implement `oat tools outdated` command
 
 **Status:** pending
 **Commit:** -
 
-**Notes:**
-- {Notes will be added during implementation}
+---
+
+### Task p01-t05: Implement `oat tools info <name>` command
+
+**Status:** pending
+**Commit:** -
 
 ---
 
-## Phase 2: {Phase Name}
+## Phase 2: Update Engine + Auto-Sync
 
 **Status:** pending
 **Started:** -
 
-### Task p02-t01: {Task Name}
+### Task p02-t01: Implement auto-sync helper
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p02-t02: Implement update engine
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p02-t03: Implement `oat tools update` command
+
+**Status:** pending
+**Commit:** -
+
+---
+
+## Phase 3: Install + Remove Wrappers
+
+**Status:** pending
+**Started:** -
+
+### Task p03-t01: Implement `oat tools install` command
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p03-t02: Implement `oat tools remove` command
+
+**Status:** pending
+**Commit:** -
+
+---
+
+## Phase 4: Agent Versioning
+
+**Status:** pending
+**Started:** -
+
+### Task p04-t01: Add version frontmatter to bundled agents
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p04-t02: Generalize version reading for agents
+
+**Status:** pending
+**Commit:** -
+
+---
+
+## Phase 5: Final Integration
+
+**Status:** pending
+**Started:** -
+
+### Task p05-t01: Integration verification and snapshot updates
 
 **Status:** pending
 **Commit:** -
@@ -132,42 +255,24 @@ oat_generated: false
 
 ## Implementation Log
 
-Chronological log of implementation progress.
+### 2026-03-07 (Session 1)
 
-### 2026-03-07
-
-**Session Start:** {time}
-
-- [x] p01-t01: {Task name} - {commit sha}
-- [ ] p01-t02: {Task name} - in progress
+- [x] p01-t01: Create tools command group skeleton - 7b14b61
+- [x] p01-t02: Implement scan engine - a26c570
+- [x] p01-t03: Implement oat tools list command - 16d8b2c
 
 **What changed (high level):**
-- {short bullets suitable for PR/docs}
+- `oat tools` command group registered with `list` subcommand
+- Scan engine discovers installed tools across scopes with version comparison
+- `oat tools list` displays tools in table/JSON format
 
 **Decisions:**
-- {Decision made and rationale}
-
-**Follow-ups / TODO:**
-- {anything discovered during implementation that should be captured for later}
-
-**Blockers:**
-- {Blocker description} - {status: resolved/pending}
-
-**Session End:** {time}
-
----
-
-### 2026-03-07
-
-**Session Start:** {time}
-
-{Continue log...}
+- Agent scan uses raw readdir with try/catch rather than DI (simpler, agents are project-scope only)
+- Reused existing `compareVersions` and `getSkillVersion` from init/tools shared modules
 
 ---
 
 ## Deviations from Plan
-
-Document any deviations from the original plan.
 
 | Task | Planned | Actual | Reason |
 |------|---------|--------|--------|
@@ -175,11 +280,9 @@ Document any deviations from the original plan.
 
 ## Test Results
 
-Track test execution during implementation.
-
 | Phase | Tests Run | Passed | Failed | Coverage |
 |-------|-----------|--------|--------|----------|
-| 1 | - | - | - | - |
+| 1 | 752 | 752 | 0 | - |
 | 2 | - | - | - | - |
 
 ## Final Summary (for PR/docs)
