@@ -13,7 +13,7 @@ import {
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { scanCanonical } from './scanner';
 
-const { chmod, mkdir, mkdtemp, rm, writeFile } = fsp;
+const { mkdir, mkdtemp, rm, writeFile } = fsp;
 
 vi.mock('node:fs/promises', async (importOriginal) => {
   const actual = await importOriginal<typeof fsp>();
