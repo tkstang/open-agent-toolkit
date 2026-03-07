@@ -269,3 +269,95 @@ TASKS = [
 ```
 
 Only include tasks that are **not yet completed** in `implementation.md`.
+
+### Step 3: Map Commits to Tasks
+
+For each filtered commit from Step 2, attempt to map it to a planned task using signals in priority order. Once a commit is mapped via a higher-priority signal, skip lower-priority signals for that commit.
+
+**Signal A — Task ID in commit message (→ High confidence):**
+
+Check if the commit message contains a task ID pattern:
+
+```bash
+# Match patterns like: feat(p01-t03): ..., fix(p02-t01): ..., (p01-t02)
+TASK_ID=$(echo "$COMMIT_MSG" | grep -oP 'p[0-9]+-t[0-9]+' | head -1)
+```
+
+If `$TASK_ID` matches a pending task in the plan: map with `confidence=high`.
+
+**Signal B — File overlap (→ High/Medium/Low confidence):**
+
+For each unmatched commit, compare its changed files against each pending task's file list:
+
+```
+For each pending task T:
+  task_files = set of files listed in plan for T
+  commit_files = set of files changed in this commit
+  intersection = commit_files ∩ task_files
+  overlap_ratio = |intersection| / |task_files|    (if task_files is non-empty)
+
+  Classification:
+    overlap_ratio ≥ 0.8 AND only one task matches at this level → confidence=high
+    overlap_ratio ≥ 0.4 → confidence=medium
+    overlap_ratio > 0   → confidence=low
+```
+
+Pick the best match (highest `overlap_ratio`). Break ties by plan order (earlier task wins).
+
+If a commit's files don't appear in any task's file list, proceed to Signal C.
+
+**Signal C — Message keyword match (→ Medium confidence):**
+
+For each still-unmatched commit:
+
+1. Tokenize the commit message: split on spaces/punctuation, lowercase, remove stop words (a, the, and, or, to, in, for, of, with, is, this, that)
+2. Tokenize each pending task's name and description similarly
+3. Count matching significant tokens (≥3 chars)
+
+```
+If matching_tokens ≥ 2 with a single task → confidence=medium
+If matching_tokens ≥ 2 with multiple tasks → confidence=low (ambiguous)
+```
+
+**Signal D — No match (→ Unmapped):**
+
+Any commits still unmatched after all signals: classify as `unmapped`.
+
+**Multi-commit grouping:**
+
+After individual mapping, group commits that map to the same task:
+
+```
+For each task with multiple mapped commits:
+  - representative_sha = latest commit SHA (most recent)
+  - combined_files = union of all commit file lists
+  - combined_message = concatenation of commit messages (for outcome generation)
+  - confidence = lowest confidence among grouped commits (conservative)
+```
+
+**Present mapping report:**
+
+```
+OAT ▸ RECONCILE — Step 3: Mapping Report
+
+Mapped to tasks:
+| Task      | Task Name                | Commits          | Confidence | Files |
+|-----------|--------------------------|------------------|------------|-------|
+| p01-t03   | Add validation logic     | abc1234, def5678 | high       | 4     |
+| p02-t01   | Implement API endpoint   | ghi9012          | medium     | 2     |
+
+Unmapped commits:
+| SHA (short) | Message                    | Files |
+|-------------|----------------------------|-------|
+| jkl3456     | update readme              | 1     |
+| mno7890     | fix typo in config         | 1     |
+
+Tasks still pending (no commits matched):
+| Task      | Task Name                |
+|-----------|--------------------------|
+| p02-t02   | Add integration tests    |
+
+Summary: {mapped_task_count}/{total_pending_tasks} tasks addressed,
+         {mapped_commit_count}/{total_commits} commits mapped,
+         {unmapped_count} unmapped
+```
