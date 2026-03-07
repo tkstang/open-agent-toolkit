@@ -1,15 +1,15 @@
 ---
-oat_status: in_progress
-oat_ready_for: null
+oat_status: complete
+oat_ready_for: oat-project-implement
 oat_blockers: []
 oat_last_updated: 2026-03-07
 oat_phase: plan
-oat_phase_status: in_progress
+oat_phase_status: complete
 oat_plan_hill_phases: []
-oat_plan_source: spec-driven  # spec-driven | quick | imported
-oat_import_reference: null  # e.g., references/imported-plan.md
-oat_import_source_path: null  # original source path provided by user
-oat_import_provider: null  # codex | cursor | claude | null
+oat_plan_source: spec-driven
+oat_import_reference: null
+oat_import_source_path: null
+oat_import_provider: null
 oat_generated: false
 ---
 
@@ -17,56 +17,61 @@ oat_generated: false
 
 > Execute this plan using `oat-project-implement` (sequential) or `oat-project-subagent-implement` (parallel), with phase checkpoints and review gates.
 
-**Goal:** {Brief goal statement from spec}
+**Goal:** Introduce a unified `oat tools` command group with install, update, remove, list, outdated, and info subcommands, plus auto-sync after mutations.
 
-**Architecture:** {1-2 sentence architecture summary from design}
+**Architecture:** New `commands/tools/` module with scan engine + update engine as core logic, thin wrappers for install/remove delegating to existing code, and auto-sync integration via existing sync pipeline.
 
-**Tech Stack:** {Key technologies from design}
+**Tech Stack:** TypeScript ESM, Commander.js, Vitest, pnpm workspace tooling.
 
-**Commit Convention:** `{type}({scope}): {description}` - e.g., `feat(p01-t01): add user auth endpoint`
+**Commit Convention:** `feat(p{NN}-t{NN}): {description}`
 
 ## Planning Checklist
 
-- [ ] Confirmed HiLL checkpoints with user
-- [ ] Set `oat_plan_hill_phases` in frontmatter
+- [x] Confirmed HiLL checkpoints with user
+- [x] Set `oat_plan_hill_phases` in frontmatter
 
 ---
 
-## Phase 1: {Phase Name}
+## Phase 1: Scan Engine + Read-Only Commands
 
-### Task p01-t01: {Task Name}
+### Task p01-t01: Create tools command group skeleton and register it
 
 **Files:**
-- Create: `{path/to/file.ts}`
-- Modify: `{path/to/existing.ts}`
+- Create: `packages/cli/src/commands/tools/index.ts`
+- Modify: `packages/cli/src/commands/index.ts`
 
 **Step 1: Write test (RED)**
 
-```typescript
-// {path/to/file.test.ts}
-describe('{feature}', () => {
-  it('{test case}', () => {
-    // Test implementation
-  });
-});
-```
+Add help snapshot test for `oat tools --help` in `packages/cli/src/commands/help-snapshots.test.ts`.
 
-Run: `pnpm test {path/to/file.test.ts}`
-Expected: Test fails (RED)
+Run: `pnpm --filter @oat/cli test -- --run src/commands/help-snapshots.test.ts`
+Expected: Test fails (new snapshot doesn't exist yet)
 
 **Step 2: Implement (GREEN)**
 
 ```typescript
-// {path/to/file.ts}
-// Implementation code or interface signatures
+// packages/cli/src/commands/tools/index.ts
+import { Command } from 'commander';
+
+export function createToolsCommand(): Command {
+  return new Command('tools')
+    .description('Manage OAT tool packs (install, update, remove, list)');
+}
 ```
 
-Run: `pnpm test {path/to/file.test.ts}`
-Expected: Test passes (GREEN)
+Register in `packages/cli/src/commands/index.ts`:
+```typescript
+import { createToolsCommand } from './tools';
+// ... in registerCommands():
+program.addCommand(createToolsCommand());
+```
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/help-snapshots.test.ts`
+Expected: Update snapshot, test passes
 
 **Step 3: Refactor**
 
-{Any cleanup or improvements while tests stay green}
+None needed.
 
 **Step 4: Verify**
 
@@ -76,61 +81,672 @@ Expected: No errors
 **Step 5: Commit**
 
 ```bash
-git add {files}
-git commit -m "feat(p01-t01): {description}"
+git add packages/cli/src/commands/tools/index.ts packages/cli/src/commands/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "feat(p01-t01): create tools command group skeleton"
 ```
 
 ---
 
-### Task p01-t02: {Task Name}
+### Task p01-t02: Implement scan engine
 
 **Files:**
-- {File list}
+- Create: `packages/cli/src/commands/tools/shared/scan-tools.ts`
+- Create: `packages/cli/src/commands/tools/shared/scan-tools.test.ts`
+- Create: `packages/cli/src/commands/tools/shared/types.ts`
 
 **Step 1: Write test (RED)**
 
-{Test code}
+```typescript
+// packages/cli/src/commands/tools/shared/scan-tools.test.ts
+describe('scanTools', () => {
+  it('finds installed skills with version and pack membership', async () => { /* ... */ });
+  it('finds installed agents in project scope', async () => { /* ... */ });
+  it('marks custom skills as pack=custom', async () => { /* ... */ });
+  it('compares versions and sets correct status', async () => { /* ... */ });
+  it('skips agents in user scope', async () => { /* ... */ });
+  it('handles missing bundled asset gracefully (not-bundled)', async () => { /* ... */ });
+});
+```
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/shared/scan-tools.test.ts`
+Expected: Tests fail
 
 **Step 2: Implement (GREEN)**
 
-{Implementation code or signatures}
+Define types in `types.ts`:
+```typescript
+import type { ConcreteScope } from '@shared/types';
+
+export type PackName = 'ideas' | 'workflows' | 'utility';
+
+export interface ToolInfo {
+  name: string;
+  type: 'skill' | 'agent';
+  scope: ConcreteScope;
+  version: string | null;
+  bundledVersion: string | null;
+  pack: PackName | 'custom';
+  status: 'current' | 'outdated' | 'newer' | 'not-bundled';
+}
+```
+
+Implement `scanTools` in `scan-tools.ts`:
+- Read directories under `.agents/skills/` in scope root
+- For project scope, also read `.agents/agents/` for agent `.md` files
+- For each tool, read version via `getSkillVersion` (skills) or `parseFrontmatterField` (agents)
+- Determine pack membership by checking against `IDEA_SKILLS`, `WORKFLOW_SKILLS`, `UTILITY_SKILLS`, `WORKFLOW_AGENTS`
+- Compare with bundled version from assets root
+- Return `ToolInfo[]`
+
+DI pattern: `ScanToolsDependencies` interface with defaults for filesystem and version operations.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/shared/scan-tools.test.ts`
+Expected: Tests pass
 
 **Step 3: Refactor**
 
-{Optional cleanup}
+Extract pack-membership lookup into a helper function for reuse.
 
 **Step 4: Verify**
 
-Run: `{verification command}`
-Expected: {output}
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
 
 **Step 5: Commit**
 
 ```bash
-git add {files}
-git commit -m "feat(p01-t02): {description}"
+git add packages/cli/src/commands/tools/shared/
+git commit -m "feat(p01-t02): implement scan engine for installed tools"
 ```
 
 ---
 
-## Phase 2: {Phase Name}
+### Task p01-t03: Implement `oat tools list` command
 
-### Task p02-t01: {Task Name}
+**Files:**
+- Create: `packages/cli/src/commands/tools/list/index.ts`
+- Create: `packages/cli/src/commands/tools/list/list-tools.ts`
+- Create: `packages/cli/src/commands/tools/list/list-tools.test.ts`
+- Modify: `packages/cli/src/commands/tools/index.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
 
-{Continue TDD pattern...}
+**Step 1: Write test (RED)**
+
+```typescript
+// packages/cli/src/commands/tools/list/list-tools.test.ts
+describe('runListTools', () => {
+  it('lists all tools across scopes with version and status', async () => { /* ... */ });
+  it('filters by scope when --scope is specified', async () => { /* ... */ });
+  it('outputs JSON when --json is set', async () => { /* ... */ });
+  it('shows custom tools with pack=custom', async () => { /* ... */ });
+  it('shows empty message when no tools installed', async () => { /* ... */ });
+});
+```
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/list/list-tools.test.ts`
+Expected: Tests fail
+
+**Step 2: Implement (GREEN)**
+
+- Command factory: `createToolsListCommand()` → `Command('list')`
+- Options: `--scope <scope>`, `--json`
+- Handler calls `scanTools` for each concrete scope, collects results
+- Text output: formatted table with columns: `name | type | version | pack | scope | status`
+- JSON output: `{ tools: ToolInfo[] }`
+
+Wire into `createToolsCommand()` via `.addCommand(createToolsListCommand())`.
+
+Add help snapshot test for `oat tools list --help`.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/list/list-tools.test.ts src/commands/help-snapshots.test.ts`
+Expected: Tests pass
+
+**Step 3: Refactor**
+
+Extract table formatting into a shared formatter if needed.
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/list/ packages/cli/src/commands/tools/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "feat(p01-t03): implement oat tools list command"
+```
+
+---
+
+### Task p01-t04: Implement `oat tools outdated` command
+
+**Files:**
+- Create: `packages/cli/src/commands/tools/outdated/index.ts`
+- Create: `packages/cli/src/commands/tools/outdated/outdated-tools.test.ts`
+- Modify: `packages/cli/src/commands/tools/index.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 1: Write test (RED)**
+
+```typescript
+describe('runOutdatedTools', () => {
+  it('shows only outdated tools', async () => { /* ... */ });
+  it('shows empty message when all tools are current', async () => { /* ... */ });
+  it('outputs JSON when --json is set', async () => { /* ... */ });
+  it('respects --scope filter', async () => { /* ... */ });
+});
+```
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/outdated/outdated-tools.test.ts`
+Expected: Tests fail
+
+**Step 2: Implement (GREEN)**
+
+- Thin wrapper: uses `scanTools` then filters to `status === 'outdated'`
+- Same table format as `list` but only outdated rows
+- Shows installed version → bundled version
+- Exit code 0 always (informational)
+
+Wire into `createToolsCommand()`.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/outdated/outdated-tools.test.ts src/commands/help-snapshots.test.ts`
+Expected: Tests pass
+
+**Step 3: Refactor**
+
+None needed — filter + display.
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/outdated/ packages/cli/src/commands/tools/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "feat(p01-t04): implement oat tools outdated command"
+```
+
+---
+
+### Task p01-t05: Implement `oat tools info <name>` command
+
+**Files:**
+- Create: `packages/cli/src/commands/tools/info/index.ts`
+- Create: `packages/cli/src/commands/tools/info/info-tool.ts`
+- Create: `packages/cli/src/commands/tools/info/info-tool.test.ts`
+- Modify: `packages/cli/src/commands/tools/index.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 1: Write test (RED)**
+
+```typescript
+describe('runInfoTool', () => {
+  it('displays full details for an installed skill', async () => { /* ... */ });
+  it('displays full details for an installed agent', async () => { /* ... */ });
+  it('shows update available when outdated', async () => { /* ... */ });
+  it('reports error when tool not found', async () => { /* ... */ });
+  it('outputs JSON when --json is set', async () => { /* ... */ });
+  it('searches across scopes when --scope is all', async () => { /* ... */ });
+});
+```
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/info/info-tool.test.ts`
+Expected: Tests fail
+
+**Step 2: Implement (GREEN)**
+
+- Command: `oat tools info <name>` with required positional argument
+- Options: `--scope <scope>`, `--json`
+- Reads full frontmatter from SKILL.md (skills) or agent .md file
+- Displays: name, type, version, pack, scope, status, description, argument-hint, allowed-tools, user-invocable
+- For agents: name, version, description, tools, color
+- Shows "Update available: X.Y.Z → A.B.C" when outdated
+- Exit code 1 if tool not found
+
+```typescript
+interface ToolDetail extends ToolInfo {
+  description: string | null;
+  argumentHint: string | null;
+  allowedTools: string | null;
+  userInvocable: boolean;
+}
+```
+
+Wire into `createToolsCommand()`.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/info/info-tool.test.ts src/commands/help-snapshots.test.ts`
+Expected: Tests pass
+
+**Step 3: Refactor**
+
+None needed.
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/info/ packages/cli/src/commands/tools/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "feat(p01-t05): implement oat tools info command"
+```
+
+---
+
+## Phase 2: Update Engine + Auto-Sync
+
+### Task p02-t01: Implement auto-sync helper
+
+**Files:**
+- Create: `packages/cli/src/commands/tools/shared/auto-sync.ts`
+- Create: `packages/cli/src/commands/tools/shared/auto-sync.test.ts`
+
+**Step 1: Write test (RED)**
+
+```typescript
+describe('autoSync', () => {
+  it('triggers sync apply for affected scopes', async () => { /* ... */ });
+  it('catches sync failures and logs warning', async () => { /* ... */ });
+  it('skips sync when no scopes provided', async () => { /* ... */ });
+  it('includes sync result in return value', async () => { /* ... */ });
+});
+```
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/shared/auto-sync.test.ts`
+Expected: Tests fail
+
+**Step 2: Implement (GREEN)**
+
+- Construct a `CommandContext` with `apply: true`, `interactive: false`, matching scope
+- Call existing sync pipeline: reuse `computePlans` + `runSyncApply` from sync module
+- Wrap in try/catch — sync failures logged as warnings, not thrown
+- Return sync result for JSON output inclusion
+- DI: `AutoSyncDependencies` interface with sync pipeline functions
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/shared/auto-sync.test.ts`
+Expected: Tests pass
+
+**Step 3: Refactor**
+
+None needed.
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/shared/auto-sync.ts packages/cli/src/commands/tools/shared/auto-sync.test.ts
+git commit -m "feat(p02-t01): implement auto-sync helper for tool mutations"
+```
+
+---
+
+### Task p02-t02: Implement update engine
+
+**Files:**
+- Create: `packages/cli/src/commands/tools/update/update-tools.ts`
+- Create: `packages/cli/src/commands/tools/update/update-tools.test.ts`
+
+**Step 1: Write test (RED)**
+
+```typescript
+describe('updateTools', () => {
+  it('updates a single outdated skill by name', async () => { /* ... */ });
+  it('updates a single outdated agent by name', async () => { /* ... */ });
+  it('reports current tool without copying', async () => { /* ... */ });
+  it('reports newer tool without copying', async () => { /* ... */ });
+  it('errors when tool name not found', async () => { /* ... */ });
+  it('updates all outdated tools in a pack', async () => { /* ... */ });
+  it('updates all outdated tools when --all', async () => { /* ... */ });
+  it('dry-run reports without copying', async () => { /* ... */ });
+  it('respects scope constraints (workflows project-only)', async () => { /* ... */ });
+  it('copies skill directories with force=true', async () => { /* ... */ });
+  it('copies agent files with force=true', async () => { /* ... */ });
+});
+```
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/update/update-tools.test.ts`
+Expected: Tests fail
+
+**Step 2: Implement (GREEN)**
+
+Core logic:
+1. Resolve target set from `UpdateTarget` (name → find in scan results; pack → filter by pack; all → everything)
+2. Run `scanTools` for each concrete scope
+3. Filter to targets that are `outdated`
+4. If not dry-run: for skills, `copyDirWithStatus(source, dest, true)`; for agents, `copyFileWithStatus(source, dest, true)`
+5. Return `UpdateResult` with categorized tools
+
+```typescript
+type UpdateTarget =
+  | { kind: 'name'; name: string }
+  | { kind: 'pack'; pack: PackName }
+  | { kind: 'all' };
+
+interface UpdateResult {
+  updated: ToolInfo[];
+  current: ToolInfo[];
+  newer: ToolInfo[];
+  notInstalled: string[];
+  notBundled: string[];
+}
+```
+
+DI: `UpdateToolsDependencies` interface including scan engine, copy helpers, scope/asset resolution.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/update/update-tools.test.ts`
+Expected: Tests pass
+
+**Step 3: Refactor**
+
+None needed.
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/update/update-tools.ts packages/cli/src/commands/tools/update/update-tools.test.ts
+git commit -m "feat(p02-t02): implement update engine for tools"
+```
+
+---
+
+### Task p02-t03: Implement `oat tools update` command
+
+**Files:**
+- Create: `packages/cli/src/commands/tools/update/index.ts`
+- Modify: `packages/cli/src/commands/tools/index.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 1: Write test (RED)**
+
+Add help snapshot test for `oat tools update --help`.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/help-snapshots.test.ts`
+Expected: Test fails
+
+**Step 2: Implement (GREEN)**
+
+- Command factory: `createToolsUpdateCommand()` → `Command('update')`
+- Argument: `[name]` optional positional
+- Options: `--pack <pack>`, `--all`, `--dry-run`, `--no-sync`, `--scope <scope>`, `--json`
+- Validates mutual exclusion: exactly one of name, --pack, --all
+- Calls `updateTools` engine
+- If mutations occurred and not dry-run and not --no-sync: calls `autoSync`
+- Text output: table of results + summary
+- JSON output: `{ target, results: UpdateResult, sync?: SyncResult }`
+
+Wire into `createToolsCommand()`.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/help-snapshots.test.ts`
+Expected: Tests pass
+
+**Step 3: Refactor**
+
+None needed.
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/update/index.ts packages/cli/src/commands/tools/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "feat(p02-t03): implement oat tools update command"
+```
+
+---
+
+## Phase 3: Install + Remove Wrappers
+
+### Task p03-t01: Implement `oat tools install` command
+
+**Files:**
+- Create: `packages/cli/src/commands/tools/install/index.ts`
+- Modify: `packages/cli/src/commands/tools/index.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 1: Write test (RED)**
+
+Add help snapshot test for `oat tools install --help`.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/help-snapshots.test.ts`
+Expected: Test fails
+
+**Step 2: Implement (GREEN)**
+
+- Delegates to existing `runInitTools` logic from `commands/init/tools/`
+- Same pack selection, scope handling, and install behavior
+- After successful install (not dry-run): calls `autoSync`
+- Option: `--no-sync` to skip auto-sync
+- Reuses `InitToolsDependencies` interface with same defaults
+
+Wire into `createToolsCommand()`.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/help-snapshots.test.ts`
+Expected: Tests pass
+
+**Step 3: Refactor**
+
+Consider extracting `runInitTools` from `commands/init/tools/index.ts` into a shared location if the import path is awkward. Otherwise keep direct import.
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/install/ packages/cli/src/commands/tools/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "feat(p03-t01): implement oat tools install command"
+```
+
+---
+
+### Task p03-t02: Implement `oat tools remove` command
+
+**Files:**
+- Create: `packages/cli/src/commands/tools/remove/index.ts`
+- Create: `packages/cli/src/commands/tools/remove/remove-tools.ts`
+- Create: `packages/cli/src/commands/tools/remove/remove-tools.test.ts`
+- Modify: `packages/cli/src/commands/tools/index.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 1: Write test (RED)**
+
+```typescript
+describe('runRemoveTools', () => {
+  it('removes a single tool by name via runRemoveSkill', async () => { /* ... */ });
+  it('removes all tools in a pack', async () => { /* ... */ });
+  it('removes all tools with --all', async () => { /* ... */ });
+  it('dry-run previews removal without deleting', async () => { /* ... */ });
+  it('triggers auto-sync after removal', async () => { /* ... */ });
+  it('skips auto-sync when --no-sync', async () => { /* ... */ });
+});
+```
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/remove/remove-tools.test.ts`
+Expected: Tests fail
+
+**Step 2: Implement (GREEN)**
+
+- Command: `oat tools remove [name]` with `--pack`, `--all`, `--dry-run`, `--no-sync`
+- Single tool: delegates to `runRemoveSkill` with `apply = !dryRun`
+- Pack: iterates pack members through `runRemoveSkill`
+- All: iterates all packs
+- After successful removals and not dry-run and not --no-sync: calls `autoSync`
+- Validates mutual exclusion: exactly one of name, --pack, --all
+
+Wire into `createToolsCommand()`.
+
+Add help snapshot test.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/remove/remove-tools.test.ts src/commands/help-snapshots.test.ts`
+Expected: Tests pass
+
+**Step 3: Refactor**
+
+None needed.
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/remove/ packages/cli/src/commands/tools/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "feat(p03-t02): implement oat tools remove command"
+```
+
+---
+
+## Phase 4: Agent Versioning
+
+### Task p04-t01: Add version frontmatter to bundled agents
+
+**Files:**
+- Modify: `packages/cli/assets/agents/oat-codebase-mapper.md`
+- Modify: `packages/cli/assets/agents/oat-reviewer.md`
+- Modify: `.agents/agents/oat-codebase-mapper.md`
+- Modify: `.agents/agents/oat-reviewer.md`
+
+**Step 1: Write test (RED)**
+
+No test needed — this is a content change. Verify by reading version after change.
+
+**Step 2: Implement (GREEN)**
+
+Add `version: 1.0.0` to frontmatter of both agent files (both bundled assets and installed copies).
+
+**Step 3: Refactor**
+
+None needed.
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/assets/agents/ .agents/agents/
+git commit -m "feat(p04-t01): add version frontmatter to bundled agents"
+```
+
+---
+
+### Task p04-t02: Generalize version reading for agents
+
+**Files:**
+- Modify: `packages/cli/src/commands/shared/frontmatter.ts`
+- Modify: `packages/cli/src/commands/tools/shared/scan-tools.ts`
+
+**Step 1: Write test (RED)**
+
+Add test case to existing frontmatter tests:
+```typescript
+it('reads version from agent .md file', async () => { /* ... */ });
+```
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/shared/frontmatter.test.ts`
+Expected: Test fails (if new function) or passes (if using existing parseFrontmatterField)
+
+**Step 2: Implement (GREEN)**
+
+Add `getAgentVersion` function:
+- Reads `version` from the agent `.md` file directly via `parseFrontmatterField`
+- Returns `string | null` matching `getSkillVersion` signature
+
+Update scan engine to use version-based comparison for agents instead of always `not-bundled`.
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/shared/frontmatter.test.ts src/commands/tools/shared/scan-tools.test.ts`
+Expected: Tests pass
+
+**Step 3: Refactor**
+
+None needed.
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/shared/frontmatter.ts packages/cli/src/commands/tools/shared/scan-tools.ts
+git commit -m "feat(p04-t02): generalize version reading for agents"
+```
+
+---
+
+## Phase 5: Final Integration
+
+### Task p05-t01: Integration verification and snapshot updates
+
+**Files:**
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts` (update any remaining snapshots)
+
+**Step 1: Write test (RED)**
+
+Run full test suite to identify any failures.
+
+Run: `pnpm --filter @oat/cli test`
+Expected: Note any failures
+
+**Step 2: Implement (GREEN)**
+
+Fix any snapshot mismatches or test issues found in step 1.
+
+**Step 3: Refactor**
+
+Review all new code for consistency with CLI conventions:
+- Import paths use `./` for local, aliases for external
+- No `console.*` calls
+- Logger used throughout
+- Exit codes correct
+
+**Step 4: Verify**
+
+Run: `pnpm lint && pnpm type-check && pnpm --filter @oat/cli test`
+Expected: All pass (note: pre-existing `edge-cases.test.ts` failure is unrelated)
+
+**Step 5: Commit**
+
+```bash
+git add -A
+git commit -m "feat(p05-t01): finalize oat tools integration and snapshots"
+```
 
 ---
 
 ## Reviews
 
-{Track reviews here after running the oat-project-review-provide and oat-project-review-receive skills.}
-
-{Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
-
 | Scope | Type | Status | Date | Artifact |
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
+| p03 | code | pending | - | - |
+| p04 | code | pending | - | - |
+| p05 | code | pending | - | - |
 | final | code | pending | - | - |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
@@ -148,10 +764,13 @@ git commit -m "feat(p01-t02): {description}"
 ## Implementation Complete
 
 **Summary:**
-- Phase 1: {N} tasks - {Description}
-- Phase 2: {N} tasks - {Description}
+- Phase 1: 5 tasks - Scan engine, list, outdated, info commands
+- Phase 2: 3 tasks - Auto-sync helper, update engine, update command
+- Phase 3: 2 tasks - Install and remove wrappers
+- Phase 4: 2 tasks - Agent versioning
+- Phase 5: 1 task - Final integration verification
 
-**Total: {N} tasks**
+**Total: 13 tasks**
 
 Ready for code review and merge.
 
@@ -159,7 +778,6 @@ Ready for code review and merge.
 
 ## References
 
-- Design: `design.md` (required in spec-driven mode; optional in quick/import mode)
-- Spec: `spec.md` (required in spec-driven mode; optional in quick/import mode)
+- Design: `design.md`
+- Spec: `spec.md`
 - Discovery: `discovery.md`
-- Imported Source: `references/imported-plan.md` (when `oat_plan_source: imported`)
