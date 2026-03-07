@@ -551,9 +551,27 @@ describe('help output snapshots', () => {
     const program = createRegisteredProgram();
     const help = getCommandByPath(program, ['tools']).helpInformation();
     expect(help).toMatchInlineSnapshot(`
-      "Usage: oat tools [options]
+      "Usage: oat tools [options] [command]
 
       Manage OAT tool packs (install, update, remove, list)
+
+      Options:
+        -h, --help      display help for command
+
+      Commands:
+        list            List installed tools with version and status
+        help [command]  display help for command
+      "
+    `);
+  });
+
+  it('tools list --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, ['tools', 'list']).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat tools list [options]
+
+      List installed tools with version and status
 
       Options:
         -h, --help  display help for command
