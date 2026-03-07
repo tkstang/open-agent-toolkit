@@ -194,29 +194,34 @@ oat_template_name: implementation
 
 ## Phase 2: Integration and Polish
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-07
 
 ### Phase Summary
 
 **Outcome (what changed):**
 - Skill registered in provider sync (Claude + Cursor symlinks created)
-- `oat-project-progress` routing updated to suggest reconciliation when drift detected
+- `oat-project-progress` routing updated with concrete drift detection and reconcile suggestions for all workflow modes (spec-driven, quick, import)
 - Backlog updated: reconcile item moved to In Progress, skill versioning marked as already implemented
+- Review fixes: aligned phase status across artifacts, changed Step 5 to append-only, added temporal-ordering signal (Signal D), fixed undefined variable in drift detection, mocked permission-denied test for root environments, fixed reconcile phase-status gate bypass
 
 **Key files touched:**
 - `.oat/sync/manifest.json` - updated with new skill entry
 - `.claude/skills/oat-project-reconcile` - symlink created
 - `.cursor/skills/oat-project-reconcile` - symlink created
-- `.agents/skills/oat-project-progress/SKILL.md` - routing update
+- `.agents/skills/oat-project-reconcile/SKILL.md` - append-only fix, temporal signal, phase status fix
+- `.agents/skills/oat-project-progress/SKILL.md` - drift detection + variable fix
 - `.oat/repo/reference/backlog.md` - status updates
+- `packages/cli/src/engine/edge-cases.test.ts` - mocked permission-denied test
 
 **Verification:**
 - Run: `pnpm run cli -- internal validate-oat-skills`
 - Result: pass (36 oat-* skills validated)
+- Run: `pnpm --filter @oat/cli test`
+- Result: pass (737/737 tests)
 
 **Notes / Decisions:**
-- None
+- Two review cycles were needed to close all findings
 
 ### Task p02-t01: Add skill to provider sync and AGENTS.md registration
 
@@ -513,22 +518,29 @@ After the fix tasks are complete:
 **What shipped:**
 - New `oat-project-reconcile` skill for mapping human commits back to planned tasks
 - 6-step workflow: checkpoint detection → commit analysis → task mapping → HiTL confirmation → artifact updates → bookkeeping commit
-- 4 mapping signals: task ID in message, file overlap scoring, keyword matching, unmapped classification
+- 5 mapping signals: task ID in message, file overlap scoring, keyword matching, temporal ordering, unmapped classification
+- Append-only artifact updates (existing implementation.md entries are never overwritten)
+- Phase status stays `in_progress` after reconciliation (review gate is respected)
 - Provider sync integration (Claude + Cursor symlinks)
-- Progress routing update to suggest reconciliation when drift is detected
+- Progress routing with concrete drift detection for all workflow modes (spec-driven, quick, import)
+- Mocked permission-denied test that works in all environments including root/container CI
 
 **Behavioral changes (user-facing):**
 - Users can run `oat-project-reconcile` after implementing tasks manually to sync OAT artifacts
-- `oat-project-progress` now suggests reconciliation when implementation artifacts appear stale
+- `oat-project-progress` now detects artifact drift and suggests reconciliation across all workflow modes
 - Backlog updated to reflect implementation status
 
 **Key files / modules:**
-- `.agents/skills/oat-project-reconcile/SKILL.md` - complete skill definition (~470 lines)
-- `.agents/skills/oat-project-progress/SKILL.md` - routing update
+- `.agents/skills/oat-project-reconcile/SKILL.md` - complete skill definition (~500 lines)
+- `.agents/skills/oat-project-progress/SKILL.md` - drift detection + routing update
+- `packages/cli/src/engine/edge-cases.test.ts` - mocked permission-denied test
 - `.oat/repo/reference/backlog.md` - status updates
 
 **Verification performed:**
-- lint-staged on all 10 commits (pass)
+- lint-staged on all 18 task commits (pass)
+- `pnpm test` — 737/737 tests passing
+- `pnpm lint` — clean
+- `pnpm type-check` — clean
 - `oat internal validate-oat-skills` (36 skills validated)
 - `oat sync --scope all --apply` (symlinks created successfully)
 
