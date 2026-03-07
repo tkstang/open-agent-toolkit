@@ -563,6 +563,7 @@ describe('help output snapshots', () => {
         outdated                 Show tools with available updates
         info <name>              Show details for an installed tool
         update [options] [name]  Update installed tools to bundled versions
+        remove [options] [name]  Remove installed tools
         install                  Install OAT tool packs (ideas, workflows, utility)
         help [command]           display help for command
       "
@@ -620,6 +621,30 @@ describe('help output snapshots', () => {
         workflows [options]  Install OAT workflows skills, agents, templates, and
                              scripts
         utility [options]    Install OAT utility skills
+      "
+    `);
+  });
+
+  it('tools remove --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, [
+      'tools',
+      'remove',
+    ]).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat tools remove [options] [name]
+
+      Remove installed tools
+
+      Arguments:
+        name           Tool name to remove
+
+      Options:
+        --pack <pack>  Remove all tools in a pack (ideas|workflows|utility)
+        --all          Remove all installed tools
+        --dry-run      Preview removals without applying
+        --no-sync      Skip auto-sync after removal
+        -h, --help     display help for command
       "
     `);
   });

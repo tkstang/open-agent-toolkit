@@ -3,6 +3,7 @@ import { createToolsInfoCommand } from './info';
 import { createToolsInstallCommand } from './install';
 import { createToolsListCommand } from './list';
 import { createToolsOutdatedCommand } from './outdated';
+import { createToolsRemoveCommand } from './remove';
 import { createToolsUpdateCommand } from './update';
 
 export function createToolsCommand(): Command {
@@ -14,6 +15,7 @@ export function createToolsCommand(): Command {
   cmd.addCommand(createToolsOutdatedCommand());
   cmd.addCommand(createToolsInfoCommand());
   cmd.addCommand(createToolsUpdateCommand());
+  cmd.addCommand(createToolsRemoveCommand());
   cmd.addCommand(createToolsInstallCommand());
 
   return cmd;
