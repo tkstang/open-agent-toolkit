@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t09
+oat_current_task_id: p02-t10
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 11 | 8/11 |
+| Phase 2 | in_progress | 11 | 9/11 |
 
-**Total:** 15/18 tasks completed
+**Total:** 16/18 tasks completed
 
 ---
 
@@ -287,6 +287,24 @@ oat_template_name: implementation
 
 **Notes / Decisions:**
 - Frontmatter was partially fixed during receive-review; this task completed the prose body updates
+
+---
+
+### Task p02-t09: (review) Fix reconcile skill advancing phase status past review gate
+
+**Status:** completed
+**Commit:** 27128f4
+
+**Outcome:**
+- Changed Step 5e `oat_phase_status` from conditional `{complete if all tasks done}` to unconditional `in_progress`
+- Added comment clarifying only `oat-project-review-receive` may advance to `complete`
+
+**Files changed:**
+- `.agents/skills/oat-project-reconcile/SKILL.md` - Step 5e phase status fix
+
+**Verification:**
+- Run: `grep -n 'oat_phase_status' SKILL.md`
+- Result: pass — only `in_progress` in Step 5e
 
 ---
 
