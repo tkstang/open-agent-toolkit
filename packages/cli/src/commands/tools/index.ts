@@ -1,4 +1,5 @@
 import { Command } from 'commander';
+import { createToolsInfoCommand } from './info';
 import { createToolsListCommand } from './list';
 import { createToolsOutdatedCommand } from './outdated';
 
@@ -9,6 +10,7 @@ export function createToolsCommand(): Command {
 
   cmd.addCommand(createToolsListCommand());
   cmd.addCommand(createToolsOutdatedCommand());
+  cmd.addCommand(createToolsInfoCommand());
 
   return cmd;
 }

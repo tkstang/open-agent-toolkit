@@ -561,6 +561,7 @@ describe('help output snapshots', () => {
       Commands:
         list            List installed tools with version and status
         outdated        Show tools with available updates
+        info <name>     Show details for an installed tool
         help [command]  display help for command
       "
     `);
@@ -590,6 +591,23 @@ describe('help output snapshots', () => {
       "Usage: oat tools outdated [options]
 
       Show tools with available updates
+
+      Options:
+        -h, --help  display help for command
+      "
+    `);
+  });
+
+  it('tools info --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, ['tools', 'info']).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat tools info [options] <name>
+
+      Show details for an installed tool
+
+      Arguments:
+        name        Tool name
 
       Options:
         -h, --help  display help for command
