@@ -836,6 +836,64 @@ git add packages/cli/src/commands/tools/remove/index.ts
 git commit -m "fix(p05-t04): preserve error handling and auto-sync in JSON mode for remove"
 ```
 
+### Task p05-t05: (review) Add auto-sync to oat tools install
+
+**Files:**
+- Modify: `packages/cli/src/commands/tools/install/index.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `oat tools install` reuses `createInitToolsCommand()` verbatim, inheriting the legacy behavior that prints manual sync reminders instead of auto-syncing. FR9 requires auto-sync after install, with a `--no-sync` escape hatch.
+
+**Step 2: Implement fix**
+
+Instead of just renaming the init tools command, wrap it to intercept completion and add auto-sync. The install command should:
+1. Create the init tools command and add a `--no-sync` option
+2. After successful install, determine which scopes were affected (project and/or user)
+3. Call `autoSync()` for those scopes unless `--no-sync` is set
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run && pnpm type-check`
+Expected: All pass
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/install/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "fix(p05-t05): add auto-sync to oat tools install"
+```
+
+---
+
+### Task p05-t06: (review) Route agent scanning through DI and add positive test
+
+**Files:**
+- Modify: `packages/cli/src/commands/tools/shared/scan-tools.ts`
+- Modify: `packages/cli/src/commands/tools/shared/scan-tools.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: The scan engine uses the injected `deps.readdir` for skills but calls `node:fs/promises.readdir` directly for agents. The test asserts `[]` from a non-existent path instead of verifying real agent discovery.
+
+**Step 2: Implement fix**
+
+- Add a `readdirFiles` dependency to `ScanToolsDependencies` for reading agent files
+- Route agent file listing through this dependency instead of calling `readdir` directly
+- Add a positive test that proves agent discovery through the DI interface
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/tools/shared/scan-tools.test.ts && pnpm type-check`
+Expected: All pass
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/shared/scan-tools.ts packages/cli/src/commands/tools/shared/scan-tools.test.ts
+git commit -m "fix(p05-t06): route agent scanning through DI and add positive test"
+```
+
 ---
 
 ## Reviews
@@ -847,7 +905,7 @@ git commit -m "fix(p05-t04): preserve error handling and auto-sync in JSON mode 
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
 | p05 | code | pending | - | - |
-| final | code | received | 2026-03-07 | reviews/final-review-2026-03-07.md |
+| final | code | fixes_added | 2026-03-07 | reviews/final-review-2026-03-07.md |
 | plan | artifact | passed | 2026-03-07 | reviews/plan-review-2026-03-07.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
@@ -869,9 +927,9 @@ git commit -m "fix(p05-t04): preserve error handling and auto-sync in JSON mode 
 - Phase 2: 3 tasks - Auto-sync helper, update engine, update command
 - Phase 3: 2 tasks - Install and remove wrappers
 - Phase 4: 2 tasks - Agent versioning
-- Phase 5: 4 tasks - Final integration verification + 3 review fix tasks
+- Phase 5: 6 tasks - Final integration verification + 5 review fix tasks
 
-**Total: 16 tasks**
+**Total: 18 tasks**
 
 Ready for code review and merge.
 

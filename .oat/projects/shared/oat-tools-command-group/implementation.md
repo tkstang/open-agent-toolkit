@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: null
+oat_current_task_id: p05-t05
 oat_generated: false
 ---
 
@@ -29,9 +29,9 @@ oat_generated: false
 | Phase 2: Update Engine + Auto-Sync | complete | 3 | 3/3 |
 | Phase 3: Install + Remove Wrappers | complete | 2 | 2/2 |
 | Phase 4: Agent Versioning | complete | 2 | 2/2 |
-| Phase 5: Final Integration | complete | 4 | 4/4 |
+| Phase 5: Final Integration | in_progress | 6 | 4/6 |
 
-**Total:** 16/16 tasks completed
+**Total:** 16/18 tasks completed
 
 ---
 
@@ -430,6 +430,29 @@ oat_generated: false
 **Fix tasks completed:** p05-t02 (3a45123), p05-t03 (5640a7a), p05-t04 (0b8394c)
 
 **Next:** Request re-review via `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`.
+
+---
+
+### Review Received: final re-review (code, cycle 2)
+
+**Date:** 2026-03-07
+**Review artifact:** reviews/final-review-2026-03-07.md (updated)
+
+**Findings:**
+- Critical: 2 (1 new, 1 already fixed)
+- Important: 2 (1 new, 1 already fixed)
+- Medium: 0
+- Minor: 0
+
+**Finding Dispositions:**
+- `C1` (install missing auto-sync): `convert_to_task` → p05-t05
+- `C2` (update/remove JSON early return): already fixed in p05-t03/t04
+- `I1` (project scope resolution): already fixed in p05-t02
+- `I2` (agent scanning bypasses DI): `convert_to_task` → p05-t06
+
+**New tasks added:** p05-t05, p05-t06
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
 
 ---
 

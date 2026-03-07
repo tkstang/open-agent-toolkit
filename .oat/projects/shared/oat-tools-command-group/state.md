@@ -1,5 +1,5 @@
 ---
-oat_current_task: null
+oat_current_task: p05-t05
 oat_last_commit: 0b8394c
 oat_blockers: []
 oat_hill_checkpoints: []
@@ -15,13 +15,13 @@ oat_generated: false
 
 # Project State: oat-tools-command-group
 
-**Status:** Implementation Tasks Complete — Awaiting Final Review
+**Status:** Implementation In Progress — Review Fix Tasks
 **Started:** 2026-03-07
 **Last Updated:** 2026-03-07
 
 ## Current Phase
 
-Implementation — Fix tasks complete; awaiting re-review.
+Implementation — Executing cycle 2 review fix tasks (p05-t05, p05-t06).
 
 ## Artifacts
 
@@ -29,7 +29,7 @@ Implementation — Fix tasks complete; awaiting re-review.
 - **Spec:** `spec.md` (complete)
 - **Design:** `design.md` (complete)
 - **Plan:** `plan.md` (complete)
-- **Implementation:** `implementation.md` (complete — 13/13 tasks)
+- **Implementation:** `implementation.md` (in progress — 16/18 tasks)
 
 ## Progress
 
@@ -41,8 +41,9 @@ Implementation — Fix tasks complete; awaiting re-review.
 - ✓ Phase 2: Update Engine + Auto-Sync (3/3 tasks)
 - ✓ Phase 3: Install + Remove Wrappers (2/2 tasks)
 - ✓ Phase 4: Agent Versioning (2/2 tasks)
-- ✓ Phase 5: Final Integration (1/1 tasks)
-- ⧗ Awaiting final review
+- ✓ Phase 5: Final Integration (1/1 tasks + 4 review fix tasks)
+- ✓ Review fix tasks cycle 1 (p05-t02..t04) complete
+- ⧗ Review fix tasks cycle 2 (p05-t05..t06) in progress
 
 ## Blockers
 
@@ -50,4 +51,4 @@ None
 
 ## Next Milestone
 
-Final code review, then PR creation
+Execute fix tasks p05-t05 and p05-t06, then re-review cycle 3
