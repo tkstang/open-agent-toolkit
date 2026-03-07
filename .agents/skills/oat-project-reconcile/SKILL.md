@@ -470,9 +470,14 @@ Read the full file. Identify:
 - Current progress table values
 - Current frontmatter values
 
-**5b. Update task entries in `implementation.md`:**
+**5b. Write task entries in `implementation.md`:**
 
-For each confirmed task mapping, find the corresponding `### Task {task_id}:` section and replace the placeholder content:
+For each confirmed task mapping, check whether a `### Task {task_id}:` section already exists in `implementation.md`:
+
+- **If the section does NOT exist:** Insert a new task entry at the correct position (in plan task order within the appropriate phase section).
+- **If the section ALREADY exists:** Do NOT replace or overwrite it. Instead, append a `**Reconciliation Update:**` block below the existing entry to augment it with the reconciled data.
+
+**New entry template** (when no existing section):
 
 ```markdown
 ### Task {task_id}: {Task Name}
@@ -497,6 +502,19 @@ For each confirmed task mapping, find the corresponding `### Task {task_id}:` se
 - Mapping confidence: {high|medium|low}
 - Mapping signal: {task ID in message | file overlap N% | keyword match}
 ```
+
+**Augmentation template** (when section already exists — append below existing content):
+
+```markdown
+**Reconciliation Update ({today's date}):**
+- Additional commits mapped: {comma-separated SHA list}
+- Mapping confidence: {high|medium|low}
+- Mapping signal: {task ID in message | file overlap N% | keyword match}
+- Additional files: {files not already listed, if any}
+- Status updated: {if status changed, e.g., in_progress → completed}
+```
+
+**Important:** Never delete, replace, or overwrite existing task entry content. Existing notes, decisions, and outcomes represent logged history that must be preserved.
 
 To generate the **Outcome** bullets:
 1. Read each commit's message and diff stats
