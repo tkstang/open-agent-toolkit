@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t05
+oat_current_task_id: p02-t06
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 8 | 4/8 |
+| Phase 2 | in_progress | 8 | 5/8 |
 
-**Total:** 11/15 tasks completed
+**Total:** 12/15 tasks completed
 
 ---
 
@@ -287,6 +287,28 @@ oat_template_name: implementation
 
 **Notes / Decisions:**
 - Frontmatter was partially fixed during receive-review; this task completed the prose body updates
+
+---
+
+### Task p02-t05: (review) Fix append-only violation in reconcile skill Step 5
+
+**Status:** completed
+**Commit:** 0626566
+
+**Outcome:**
+- Replaced "replace the placeholder content" instruction with append-only augmentation pattern
+- Added "Augmentation template" for when a task entry already exists (appends `**Reconciliation Update:**` block)
+- Added explicit guard: "Never delete, replace, or overwrite existing task entry content"
+
+**Files changed:**
+- `.agents/skills/oat-project-reconcile/SKILL.md` - Step 5b rewritten for append-only
+
+**Verification:**
+- Run: `grep -n 'replace' SKILL.md`
+- Result: pass — only "do NOT replace" instances remain
+
+**Notes / Decisions:**
+- Two paths now: new entry (insert) vs existing entry (augment below)
 
 ---
 
