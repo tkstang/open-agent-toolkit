@@ -2,7 +2,7 @@ import { buildCommandContext } from '@app/command-context';
 import { readGlobalOptions } from '@commands/shared/shared.utils';
 import { scanTools } from '@commands/tools/shared/scan-tools';
 import { resolveAssetsRoot } from '@fs/assets';
-import { resolveScopeRoot } from '@fs/paths';
+import { resolveProjectRoot, resolveScopeRoot } from '@fs/paths';
 import { Command } from 'commander';
 import {
   type OutdatedToolsDependencies,
@@ -11,7 +11,10 @@ import {
 
 const defaultDependencies: OutdatedToolsDependencies = {
   scanTools,
-  resolveScopeRoot,
+  resolveScopeRoot: async (scope, cwd, home) => {
+    if (scope === 'project') return resolveProjectRoot(cwd);
+    return resolveScopeRoot(scope, cwd, home);
+  },
   resolveAssetsRoot,
 };
 

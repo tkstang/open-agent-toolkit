@@ -11,7 +11,7 @@ import { scanTools } from '@commands/tools/shared/scan-tools';
 import type { ToolInfo } from '@commands/tools/shared/types';
 import { resolveAssetsRoot } from '@fs/assets';
 import { fileExists } from '@fs/io';
-import { resolveScopeRoot } from '@fs/paths';
+import { resolveProjectRoot, resolveScopeRoot } from '@fs/paths';
 import { Command } from 'commander';
 import {
   type InfoToolDependencies,
@@ -68,7 +68,10 @@ async function getToolDetail(
 
 const defaultDependencies: InfoToolDependencies = {
   scanTools,
-  resolveScopeRoot,
+  resolveScopeRoot: async (scope, cwd, home) => {
+    if (scope === 'project') return resolveProjectRoot(cwd);
+    return resolveScopeRoot(scope, cwd, home);
+  },
   resolveAssetsRoot,
   getToolDetail,
 };

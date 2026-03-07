@@ -9,7 +9,7 @@ export interface OutdatedToolsDependencies {
     scope: 'project' | 'user',
     cwd: string,
     home: string,
-  ) => string;
+  ) => Promise<string>;
   resolveAssetsRoot: () => Promise<string>;
 }
 
@@ -27,7 +27,7 @@ export async function runOutdatedTools(
   const outdated: ToolInfo[] = [];
 
   for (const scope of scopes) {
-    const scopeRoot = dependencies.resolveScopeRoot(
+    const scopeRoot = await dependencies.resolveScopeRoot(
       scope,
       context.cwd,
       context.home,

@@ -15,7 +15,7 @@ import {
 import { scanTools } from '@commands/tools/shared/scan-tools';
 import type { PackName } from '@commands/tools/shared/types';
 import { resolveAssetsRoot } from '@fs/assets';
-import { resolveScopeRoot } from '@fs/paths';
+import { resolveProjectRoot, resolveScopeRoot } from '@fs/paths';
 import { Command } from 'commander';
 import {
   type UpdateTarget,
@@ -25,7 +25,10 @@ import {
 
 const defaultDependencies: UpdateToolsDependencies = {
   scanTools,
-  resolveScopeRoot,
+  resolveScopeRoot: async (scope, cwd, home) => {
+    if (scope === 'project') return resolveProjectRoot(cwd);
+    return resolveScopeRoot(scope, cwd, home);
+  },
   resolveAssetsRoot,
   copyDirWithStatus,
   copyFileWithStatus,

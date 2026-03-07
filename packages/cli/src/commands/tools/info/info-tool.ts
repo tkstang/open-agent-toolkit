@@ -16,7 +16,7 @@ export interface InfoToolDependencies {
     scope: 'project' | 'user',
     cwd: string,
     home: string,
-  ) => string;
+  ) => Promise<string>;
   resolveAssetsRoot: () => Promise<string>;
   getToolDetail: (
     tool: ToolInfo,
@@ -39,7 +39,7 @@ export async function runInfoTool(
   const assetsRoot = await dependencies.resolveAssetsRoot();
 
   for (const scope of scopes) {
-    const scopeRoot = dependencies.resolveScopeRoot(
+    const scopeRoot = await dependencies.resolveScopeRoot(
       scope,
       context.cwd,
       context.home,

@@ -19,7 +19,11 @@ export interface UpdateResult {
 
 export interface UpdateToolsDependencies {
   scanTools: (options: ScanToolsOptions) => Promise<ToolInfo[]>;
-  resolveScopeRoot: (scope: ConcreteScope, cwd: string, home: string) => string;
+  resolveScopeRoot: (
+    scope: ConcreteScope,
+    cwd: string,
+    home: string,
+  ) => Promise<string>;
   resolveAssetsRoot: () => Promise<string>;
   copyDirWithStatus: (
     source: string,
@@ -53,7 +57,7 @@ export async function updateTools(
   const allTools: Array<{ tool: ToolInfo; scopeRoot: string }> = [];
 
   for (const scope of scopes) {
-    const scopeRoot = dependencies.resolveScopeRoot(scope, cwd, home);
+    const scopeRoot = await dependencies.resolveScopeRoot(scope, cwd, home);
     const tools = await dependencies.scanTools({
       scope,
       scopeRoot,

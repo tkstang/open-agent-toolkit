@@ -58,7 +58,7 @@ function createDeps(
 ): InfoToolDependencies {
   return {
     scanTools: async (options) => toolsByScope[options.scope] ?? [],
-    resolveScopeRoot: (scope) =>
+    resolveScopeRoot: async (scope) =>
       scope === 'project' ? '/project' : '/home/user',
     resolveAssetsRoot: async () => '/assets',
     getToolDetail: async () => detail,

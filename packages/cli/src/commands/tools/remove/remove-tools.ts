@@ -10,7 +10,11 @@ export type RemoveTarget =
 
 export interface RemoveToolsDependencies {
   scanTools: (options: ScanToolsOptions) => Promise<ToolInfo[]>;
-  resolveScopeRoot: (scope: ConcreteScope, cwd: string, home: string) => string;
+  resolveScopeRoot: (
+    scope: ConcreteScope,
+    cwd: string,
+    home: string,
+  ) => Promise<string>;
   resolveAssetsRoot: () => Promise<string>;
   removeDirectory: (path: string) => Promise<void>;
   removeFile: (path: string) => Promise<void>;
@@ -67,7 +71,7 @@ export async function removeTools(
   const assetsRoot = await deps.resolveAssetsRoot();
 
   for (const scope of scopes) {
-    const scopeRoot = deps.resolveScopeRoot(scope, cwd, home);
+    const scopeRoot = await deps.resolveScopeRoot(scope, cwd, home);
     const tools = await deps.scanTools({ scope, scopeRoot, assetsRoot });
     const matched = tools.filter((t) => matchesTarget(t, target));
 

@@ -31,7 +31,7 @@ function createDeps(
     removedDirs,
     removedFiles,
     scanTools: async (options) => toolsByScope[options.scope] ?? [],
-    resolveScopeRoot: (scope) =>
+    resolveScopeRoot: async (scope) =>
       scope === 'project' ? '/project' : '/home/user',
     resolveAssetsRoot: async () => '/assets',
     removeDirectory: async (path) => {
