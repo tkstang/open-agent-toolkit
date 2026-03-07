@@ -566,18 +566,25 @@ For each commit the user chose to log as unplanned work, append after the last t
 
 **5d. Update progress table:**
 
-Recalculate the `## Progress Overview` table:
+Recalculate the `## Progress Overview` table dynamically from the project's actual data:
+
+1. Enumerate all phases from `plan.md` by scanning `## Phase N:` headings
+2. For each phase, count tasks by matching `### Task pNN-tNN:` headers where `NN` is the phase number
+3. For each phase, count completed tasks from `implementation.md` entries with `**Status:** completed`
+4. Regenerate the table with actual counts:
 
 ```markdown
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | {in_progress|complete} | 7 | {completed_count}/7 |
-| Phase 2 | {in_progress|pending} | 3 | {completed_count}/3 |
+{for each phase from plan.md:}
+| Phase {N} | {status} | {task_count} | {completed_count}/{task_count} |
 
 **Total:** {total_completed}/{total_tasks} tasks completed
 ```
 
 A phase is `complete` when all its tasks are `completed`. A phase is `in_progress` when at least one task is `completed` or `in_progress`. Otherwise `pending`.
+
+Do not hardcode phase counts or task totals — always derive them from the current project's plan and implementation artifacts.
 
 **5e. Update frontmatter:**
 
