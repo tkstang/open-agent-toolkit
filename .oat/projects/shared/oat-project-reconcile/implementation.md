@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: null
+oat_current_task_id: p02-t04
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | complete | 3 | 3/3 |
+| Phase 2 | in_progress | 8 | 3/8 |
 
-**Total:** 10/10 tasks completed
+**Total:** 10/15 tasks completed
 
 ---
 
@@ -194,7 +194,7 @@ oat_template_name: implementation
 
 ## Phase 2: Integration and Polish
 
-**Status:** complete
+**Status:** in_progress
 **Started:** 2026-03-07
 
 ### Phase Summary
@@ -267,6 +267,34 @@ oat_template_name: implementation
 **Verification:**
 - Run: `pnpm lint`
 - Result: pass
+
+---
+
+### Review Received: final
+
+**Date:** 2026-03-07
+**Review artifact:** reviews/final-review-2026-03-07.md
+
+**Findings:**
+- Critical: 0
+- Important: 2
+- Medium: 2
+- Minor: 1
+
+**New tasks added:** p02-t04, p02-t05, p02-t06, p02-t07, p02-t08
+
+**Finding disposition map:**
+- `I1` Fix conflicting phase state → converted (p02-t04)
+- `I2` Fix append-only violation → converted (p02-t05)
+- `M1` Add temporal-ordering signal → converted (p02-t06)
+- `M2` Complete progress-router drift detection → converted (p02-t07)
+- `m1` Mock permission-denied test → converted (p02-t08)
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ---
 

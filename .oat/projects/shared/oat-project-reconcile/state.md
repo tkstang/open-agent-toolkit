@@ -1,12 +1,12 @@
 ---
-oat_current_task: null
+oat_current_task: p02-t04
 oat_last_commit: 9d6a0ee
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
 oat_parallel_execution: false
 oat_phase: implement
-oat_phase_status: complete
+oat_phase_status: in_progress
 oat_execution_mode: single-thread
 oat_workflow_mode: quick
 oat_workflow_origin: native

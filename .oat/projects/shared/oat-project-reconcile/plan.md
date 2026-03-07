@@ -515,13 +515,162 @@ git commit -m "chore(oat): update backlog for reconcile skill project"
 
 ---
 
+### Task p02-t04: (review) Fix conflicting phase state across artifacts
+
+**Files:**
+- Modify: `.oat/projects/shared/oat-project-reconcile/state.md`
+- Modify: `.oat/projects/shared/oat-project-reconcile/implementation.md`
+
+**Step 1: Understand the issue**
+
+Review finding: `state.md` sets `oat_phase_status: complete` while `implementation.md` is `oat_status: in_progress` with `oat_current_task_id: null`. The canonical flow keeps state as `implement/in_progress` until final review passes.
+Location: `state.md:8`, `implementation.md:2`
+
+**Step 2: Implement fix**
+
+Set `state.md` `oat_phase_status: in_progress` (implementation tasks are done but final review has not passed). Ensure `implementation.md` `oat_status: in_progress` is consistent with this (correct as-is). Update `state.md` prose to reflect "awaiting final review" without claiming phase complete.
+
+**Step 3: Verify**
+
+Run: `grep -n 'oat_phase_status' .oat/projects/shared/oat-project-reconcile/state.md`
+Expected: `oat_phase_status: in_progress`
+
+**Step 4: Commit**
+
+```bash
+git add .oat/projects/shared/oat-project-reconcile/state.md .oat/projects/shared/oat-project-reconcile/implementation.md
+git commit -m "fix(p02-t04): align phase status across state.md and implementation.md"
+```
+
+---
+
+### Task p02-t05: (review) Fix append-only violation in reconcile skill Step 5
+
+**Files:**
+- Modify: `.agents/skills/oat-project-reconcile/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Step 5 says to find the existing `### Task {task_id}` section and "replace the placeholder content", which contradicts the spec's non-destructive requirement to preserve existing task entries.
+Location: `.agents/skills/oat-project-reconcile/SKILL.md:473`
+
+**Step 2: Implement fix**
+
+Change the Step 5 wording to augment/append rather than replace. If an existing task entry exists in `implementation.md`, the reconcile skill should:
+- Preserve all existing content in that entry
+- Append reconciled data below the existing content (clearly marked as reconciled)
+- Never overwrite or remove existing logged history
+
+**Step 3: Verify**
+
+Run: `grep -n 'replace' .agents/skills/oat-project-reconcile/SKILL.md`
+Expected: No instances of "replace the placeholder" or similar overwrite language in Step 5
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-reconcile/SKILL.md
+git commit -m "fix(p02-t05): change Step 5 from replace to append-only reconciliation"
+```
+
+---
+
+### Task p02-t06: (review) Add temporal-ordering mapping signal to reconcile skill
+
+**Files:**
+- Modify: `.agents/skills/oat-project-reconcile/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: The spec requires temporal ordering as the fourth mapping signal and low-confidence tiebreaker (`spec.md:30`). The skill jumps from keyword matching directly to `unmapped` without a temporal-ordering step.
+Location: `.agents/skills/oat-project-reconcile/SKILL.md:273`
+
+**Step 2: Implement fix**
+
+Add Signal D (Temporal ordering) between keyword matching and unmapped:
+- For still-unmatched commits, compare commit timestamp ordering against plan task ordering
+- If a commit falls in a temporal window consistent with a pending task's position in the plan sequence, assign with confidence=low
+- Rename current "Signal D — No match" to "Signal E — No match (→ Unmapped)"
+
+**Step 3: Verify**
+
+Run: `grep -n 'Signal [A-E]' .agents/skills/oat-project-reconcile/SKILL.md`
+Expected: Signals A through E are present, with D being temporal ordering
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-reconcile/SKILL.md
+git commit -m "fix(p02-t06): add temporal-ordering mapping signal per spec requirement"
+```
+
+---
+
+### Task p02-t07: (review) Complete progress-router drift detection for all workflow modes
+
+**Files:**
+- Modify: `.agents/skills/oat-project-progress/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Plan p02-t02 requires a routing case that detects stale/missing `implementation.md` entries relative to `plan.md` and suggests `oat-project-reconcile` when drift is present. The actual change only adds advisory text to the spec-driven `implement/in_progress` row and leaves quick/import rows unchanged.
+Location: `.agents/skills/oat-project-progress/SKILL.md:194`, `:205`, `:214`
+
+**Step 2: Implement fix**
+
+1. Add a concrete drift detection step: compare task count in `plan.md` vs completed entries in `implementation.md`; check for commits since last tracked SHA
+2. Apply the reconciliation suggestion to quick-mode and import-mode routing rows, not just spec-driven
+3. Make the suggestion conditional on actual drift indicators, not just generic advisory text
+
+**Step 3: Verify**
+
+Run: `grep -n 'reconcile\|drift\|stale' .agents/skills/oat-project-progress/SKILL.md`
+Expected: Detection logic and reconcile suggestions present across all workflow mode routing rows
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-progress/SKILL.md
+git commit -m "fix(p02-t07): add drift detection and reconcile routing for all workflow modes"
+```
+
+---
+
+### Task p02-t08: (review) Mock permission-denied test instead of skipping under root
+
+**Files:**
+- Modify: `packages/cli/src/engine/edge-cases.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: The early return skips the permission-denied test when running as UID 0, removing the only direct coverage of the `detectStrays()` permission-error translation path in root/container CI.
+Location: `packages/cli/src/engine/edge-cases.test.ts:38`
+
+**Step 2: Implement fix**
+
+Replace the early-return skip with a mocked `readdir` failure that simulates EACCES regardless of the actual UID. This keeps the behavior covered in all environments.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/engine/edge-cases.test.ts`
+Expected: Test passes (including under root)
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/engine/edge-cases.test.ts
+git commit -m "fix(p02-t08): mock readdir for permission-denied test instead of skipping"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | pending | - | - |
+| final | code | fixes_added | 2026-03-07 | reviews/final-review-2026-03-07.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -531,9 +680,9 @@ git commit -m "chore(oat): update backlog for reconcile skill project"
 
 **Summary:**
 - Phase 1: 7 tasks — Core skill implementation (checkpoint detection, commit analysis, task mapping, confirmation flow, artifact updates, bookkeeping)
-- Phase 2: 3 tasks — Integration (provider sync, progress routing, backlog update)
+- Phase 2: 8 tasks — Integration (provider sync, progress routing, backlog update) + 5 review fix tasks
 
-**Total: 10 tasks**
+**Total: 15 tasks**
 
 Ready for code review and merge.
 
