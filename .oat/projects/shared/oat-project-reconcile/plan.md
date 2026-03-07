@@ -664,13 +664,97 @@ git commit -m "fix(p02-t08): mock readdir for permission-denied test instead of 
 
 ---
 
+### Task p02-t09: (review) Fix reconcile skill advancing phase status past review gate
+
+**Files:**
+- Modify: `.agents/skills/oat-project-reconcile/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Step 5e writes `oat_phase_status: {complete if all tasks done}` to `state.md`, bypassing the final-review gate. A full reconciliation run would recreate the gate drift that p02-t04 fixed.
+Location: `.agents/skills/oat-project-reconcile/SKILL.md:592`
+
+**Step 2: Implement fix**
+
+Change Step 5e to always keep `oat_phase_status: in_progress` after reconciliation, regardless of whether all tasks are reconciled. Add a comment noting that only `oat-project-review-receive` should advance to `complete` after final review passes.
+
+**Step 3: Verify**
+
+Run: `grep -n 'oat_phase_status' .agents/skills/oat-project-reconcile/SKILL.md`
+Expected: No conditional `complete` assignment in Step 5e
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-reconcile/SKILL.md
+git commit -m "fix(p02-t09): keep phase status in_progress after reconciliation"
+```
+
+---
+
+### Task p02-t10: (review) Fix undefined PROJECT_PATH variable in progress drift detection
+
+**Files:**
+- Modify: `.agents/skills/oat-project-progress/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: The skill defines `ACTIVE_PROJECT_PATH` in Step 3 but the drift-detection block uses `$PROJECT_PATH` which is never bound. The detection commands cannot be followed literally.
+Location: `.agents/skills/oat-project-progress/SKILL.md:106`, `:186`
+
+**Step 2: Implement fix**
+
+Replace all `$PROJECT_PATH` references in the drift-detection block with `$ACTIVE_PROJECT_PATH` to match the variable defined in Step 3. Alternatively, add a binding `PROJECT_PATH="$ACTIVE_PROJECT_PATH"` at the start of the drift block.
+
+**Step 3: Verify**
+
+Run: `grep -n 'PROJECT_PATH' .agents/skills/oat-project-progress/SKILL.md`
+Expected: All uses reference a variable that is defined in the skill
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-progress/SKILL.md
+git commit -m "fix(p02-t10): use correct variable name in drift detection block"
+```
+
+---
+
+### Task p02-t11: (review) Refresh stale implementation.md summary data
+
+**Files:**
+- Modify: `.oat/projects/shared/oat-project-reconcile/implementation.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Phase 2 header still says `in_progress` despite 8/8 complete. Final Summary still references 4 mapping signals and 10 commits, which is stale after fix tasks p02-t04 through p02-t08.
+Location: `.oat/projects/shared/oat-project-reconcile/implementation.md:197`, `:449`
+
+**Step 2: Implement fix**
+
+Update Phase 2 status to `complete` and refresh the `## Final Summary (for PR/docs)` section to reflect: 5 mapping signals, 15 total tasks, mocked permission test, drift detection in all modes, append-only reconciliation.
+
+**Step 3: Verify**
+
+Run: `grep -n 'in_progress\|four.*signal\|10.*commit' .oat/projects/shared/oat-project-reconcile/implementation.md`
+Expected: No stale references
+
+**Step 4: Commit**
+
+```bash
+git add .oat/projects/shared/oat-project-reconcile/implementation.md
+git commit -m "fix(p02-t11): refresh stale Phase 2 and Final Summary in implementation.md"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | received | 2026-03-07 | reviews/final-review-2026-03-07-v2.md |
+| final | code | fixes_added | 2026-03-07 | reviews/final-review-2026-03-07-v2.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -680,9 +764,9 @@ git commit -m "fix(p02-t08): mock readdir for permission-denied test instead of 
 
 **Summary:**
 - Phase 1: 7 tasks — Core skill implementation (checkpoint detection, commit analysis, task mapping, confirmation flow, artifact updates, bookkeeping)
-- Phase 2: 8 tasks — Integration (provider sync, progress routing, backlog update) + 5 review fix tasks
+- Phase 2: 11 tasks — Integration (provider sync, progress routing, backlog update) + 8 review fix tasks
 
-**Total: 15 tasks**
+**Total: 18 tasks**
 
 Ready for code review and merge.
 
