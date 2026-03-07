@@ -594,6 +594,20 @@ describe('validateOatSkills', () => {
     );
   });
 
+  it('tracks the quick-start skill contract version explicitly', async () => {
+    const repoRoot = join(process.cwd(), '..', '..');
+    const skillPath = join(
+      repoRoot,
+      '.agents',
+      'skills',
+      'oat-project-quick-start',
+      'SKILL.md',
+    );
+    const content = await readFile(skillPath, 'utf8');
+
+    expect(content.match(/^version:\s*(.+)$/m)?.[1]?.trim()).toBe('1.2.1');
+  });
+
   it('reports missing quick-start-specific discovery guidance', async () => {
     const root = await mkdtemp(join(tmpdir(), 'oat-validate-'));
     tempDirs.push(root);
