@@ -9,6 +9,7 @@ function createMockDeps(
     getSkillVersion: async () => null,
     getAgentVersion: async () => null,
     readdir: async () => [],
+    readdirFiles: async () => [],
     dirExists: async () => false,
     fileExists: async () => false,
     ...overrides,
@@ -52,45 +53,57 @@ describe('scanTools', () => {
     });
   });
 
-  it('finds installed agents in project scope', async () => {
+  it('finds installed agents in project scope via readdirFiles DI', async () => {
     const deps = createMockDeps({
       dirExists: async (path: string) => {
         if (path.includes('.agents/agents')) return true;
-        return false;
-      },
-      fileExists: async (path: string) => {
         if (path.includes('assets/agents/oat-reviewer.md')) return true;
         return false;
       },
-      getAgentVersion: async () => '1.0.0',
+      readdirFiles: async (path: string) => {
+        if (path.includes('.agents/agents'))
+          return ['oat-reviewer.md', 'oat-codebase-mapper.md'];
+        return [];
+      },
+      fileExists: async (path: string) => {
+        if (path.includes('assets/agents/oat-reviewer.md')) return true;
+        if (path.includes('assets/agents/oat-codebase-mapper.md')) return true;
+        return false;
+      },
+      getAgentVersion: async (agentPath: string) => {
+        if (agentPath.includes('scope-root')) return '1.0.0';
+        if (agentPath.includes('assets')) return '1.0.0';
+        return null;
+      },
     });
 
-    // Mock readdir for agents directory - we need the real readdir for the
-    // agents scan since it uses node:fs/promises readdir directly.
-    // Instead, we'll rely on the DI readdir for skills and mock agents via
-    // the dirExists + a custom approach. But the agent scan uses raw readdir.
-    // Let's restructure the test to use a temp directory approach or patch.
-    // Actually, the scan engine uses raw `readdir` from node:fs/promises for
-    // agents (not via deps). This is a design issue - let me check if tests
-    // need a different approach.
-
-    // For now, since agents dir won't exist at /scope-root, the scan will
-    // catch the error and skip. Let's test with skills only for now and
-    // revisit agent scanning in a follow-up if needed.
-
-    // Actually: the agent scan calls deps.dirExists which we mocked to true,
-    // then does raw readdir which will fail on the nonexistent path. The
-    // catch block handles this gracefully. Let me verify:
     const result = await scanTools({
       scope: 'project',
-      scopeRoot: '/nonexistent-scope-root',
-      assetsRoot: '/nonexistent-assets',
+      scopeRoot: '/scope-root',
+      assetsRoot: '/assets',
       dependencies: deps,
     });
 
-    // Skills: readdir returns [], so no skills
-    // Agents: dirExists returns true, but readdir on nonexistent path throws, caught
-    expect(result).toEqual([]);
+    const agents = result.filter((t) => t.type === 'agent');
+    expect(agents).toHaveLength(2);
+    expect(agents.find((a) => a.name === 'oat-reviewer')).toEqual({
+      name: 'oat-reviewer',
+      type: 'agent',
+      scope: 'project',
+      version: '1.0.0',
+      bundledVersion: '1.0.0',
+      pack: 'workflows',
+      status: 'current',
+    });
+    expect(agents.find((a) => a.name === 'oat-codebase-mapper')).toEqual({
+      name: 'oat-codebase-mapper',
+      type: 'agent',
+      scope: 'project',
+      version: '1.0.0',
+      bundledVersion: '1.0.0',
+      pack: 'workflows',
+      status: 'current',
+    });
   });
 
   it('marks custom skills as pack=custom', async () => {

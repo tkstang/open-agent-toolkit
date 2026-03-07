@@ -16,6 +16,7 @@ export interface ScanToolsDependencies {
   getSkillVersion: (skillDir: string) => Promise<string | null>;
   getAgentVersion: (agentPath: string) => Promise<string | null>;
   readdir: (path: string) => Promise<string[]>;
+  readdirFiles: (path: string, extension: string) => Promise<string[]>;
   dirExists: (path: string) => Promise<boolean>;
   fileExists: (path: string) => Promise<boolean>;
 }
@@ -28,6 +29,16 @@ const defaultDependencies: ScanToolsDependencies = {
       const entries = await readdir(path, { withFileTypes: true });
       return entries
         .filter((entry) => entry.isDirectory())
+        .map((entry) => entry.name);
+    } catch {
+      return [];
+    }
+  },
+  readdirFiles: async (path: string, extension: string) => {
+    try {
+      const entries = await readdir(path, { withFileTypes: true });
+      return entries
+        .filter((entry) => entry.isFile() && entry.name.endsWith(extension))
         .map((entry) => entry.name);
     } catch {
       return [];
@@ -105,38 +116,31 @@ export async function scanTools(
     const agentsDirExists = await deps.dirExists(agentsDir);
 
     if (agentsDirExists) {
-      try {
-        const entries = await readdir(agentsDir, { withFileTypes: true });
-        const agentFiles = entries
-          .filter((entry) => entry.isFile() && entry.name.endsWith('.md'))
-          .map((entry) => entry.name);
+      const agentFiles = await deps.readdirFiles(agentsDir, '.md');
 
-        for (const agentFile of agentFiles) {
-          const installedPath = join(agentsDir, agentFile);
-          const bundledPath = join(options.assetsRoot, 'agents', agentFile);
-          const pack = resolveAgentPack(agentFile);
+      for (const agentFile of agentFiles) {
+        const installedPath = join(agentsDir, agentFile);
+        const bundledPath = join(options.assetsRoot, 'agents', agentFile);
+        const pack = resolveAgentPack(agentFile);
 
-          const installedVersion = await deps.getAgentVersion(installedPath);
-          const hasBundled = await deps.fileExists(bundledPath);
-          const bundledVersion = hasBundled
-            ? await deps.getAgentVersion(bundledPath)
-            : null;
+        const installedVersion = await deps.getAgentVersion(installedPath);
+        const hasBundled = await deps.fileExists(bundledPath);
+        const bundledVersion = hasBundled
+          ? await deps.getAgentVersion(bundledPath)
+          : null;
 
-          const name = agentFile.replace(/\.md$/, '');
-          tools.push({
-            name,
-            type: 'agent',
-            scope: options.scope,
-            version: installedVersion,
-            bundledVersion,
-            pack,
-            status: hasBundled
-              ? resolveStatus(installedVersion, bundledVersion)
-              : 'not-bundled',
-          });
-        }
-      } catch {
-        // Directory listing failed, skip agents
+        const name = agentFile.replace(/\.md$/, '');
+        tools.push({
+          name,
+          type: 'agent',
+          scope: options.scope,
+          version: installedVersion,
+          bundledVersion,
+          pack,
+          status: hasBundled
+            ? resolveStatus(installedVersion, bundledVersion)
+            : 'not-bundled',
+        });
       }
     }
   }
