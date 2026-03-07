@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t06
+oat_current_task_id: p02-t07
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 8 | 5/8 |
+| Phase 2 | in_progress | 8 | 6/8 |
 
-**Total:** 12/15 tasks completed
+**Total:** 13/15 tasks completed
 
 ---
 
@@ -287,6 +287,29 @@ oat_template_name: implementation
 
 **Notes / Decisions:**
 - Frontmatter was partially fixed during receive-review; this task completed the prose body updates
+
+---
+
+### Task p02-t06: (review) Add temporal-ordering mapping signal to reconcile skill
+
+**Status:** completed
+**Commit:** 92496c0
+
+**Outcome:**
+- Added Signal D (temporal ordering) between keyword matching and unmapped
+- Renamed old Signal D to Signal E
+- Updated Success Criteria to reference all five signals
+- Temporal ordering uses commit date vs plan order as a low-confidence tiebreaker
+
+**Files changed:**
+- `.agents/skills/oat-project-reconcile/SKILL.md` - added Signal D, renumbered Signal E
+
+**Verification:**
+- Run: `grep -n 'Signal [A-E]' SKILL.md`
+- Result: pass — all five signals A-E present
+
+**Notes / Decisions:**
+- Intentionally low confidence — only applies when no stronger signal matched
 
 ---
 
