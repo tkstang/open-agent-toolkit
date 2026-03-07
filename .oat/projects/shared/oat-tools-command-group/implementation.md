@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p05-t02
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -29,9 +29,9 @@ oat_generated: false
 | Phase 2: Update Engine + Auto-Sync | complete | 3 | 3/3 |
 | Phase 3: Install + Remove Wrappers | complete | 2 | 2/2 |
 | Phase 4: Agent Versioning | complete | 2 | 2/2 |
-| Phase 5: Final Integration | in_progress | 4 | 1/4 |
+| Phase 5: Final Integration | complete | 4 | 4/4 |
 
-**Total:** 13/16 tasks completed
+**Total:** 16/16 tasks completed
 
 ---
 
@@ -427,11 +427,9 @@ oat_generated: false
 
 **New tasks added:** p05-t02, p05-t03, p05-t04
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
+**Fix tasks completed:** p05-t02 (3a45123), p05-t03 (5640a7a), p05-t04 (0b8394c)
 
-After the fix tasks are complete:
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+**Next:** Request re-review via `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`.
 
 ---
 

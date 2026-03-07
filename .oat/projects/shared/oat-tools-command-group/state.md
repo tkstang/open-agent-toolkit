@@ -1,6 +1,6 @@
 ---
-oat_current_task: p05-t02
-oat_last_commit: 280309a
+oat_current_task: null
+oat_last_commit: 0b8394c
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: ["discovery", "spec", "design"]
@@ -21,7 +21,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation — Final review received, 3 fix tasks added (p05-t02 through p05-t04).
+Implementation — Fix tasks complete; awaiting re-review.
 
 ## Artifacts
 
