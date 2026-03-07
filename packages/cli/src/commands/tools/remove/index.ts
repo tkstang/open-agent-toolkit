@@ -97,14 +97,30 @@ export function createToolsRemoveCommand(
         dependencies,
       );
 
-      if (context.json) {
-        logger.json({ target: describeTarget(target), dryRun, result });
+      if (result.notInstalled.length > 0) {
+        if (context.json) {
+          logger.json({ target: describeTarget(target), dryRun, result });
+        } else {
+          logger.error(`Tool '${result.notInstalled[0]}' not found.`);
+        }
+        process.exitCode = 1;
         return;
       }
 
-      if (result.notInstalled.length > 0) {
-        logger.error(`Tool '${result.notInstalled[0]}' not found.`);
-        process.exitCode = 1;
+      // Auto-sync after mutations (before output so sync errors are captured)
+      if (result.removed.length > 0 && !dryRun && opts.sync !== false) {
+        const affectedScopes = [...new Set(result.removed.map((t) => t.scope))];
+        await autoSync(
+          affectedScopes,
+          context.cwd,
+          context.home,
+          logger,
+          syncDependencies,
+        );
+      }
+
+      if (context.json) {
+        logger.json({ target: describeTarget(target), dryRun, result });
         return;
       }
 
@@ -115,18 +131,6 @@ export function createToolsRemoveCommand(
         }
       } else {
         logger.info('No tools to remove.');
-      }
-
-      // Auto-sync after mutations
-      if (result.removed.length > 0 && !dryRun && opts.sync !== false) {
-        const affectedScopes = [...new Set(result.removed.map((t) => t.scope))];
-        await autoSync(
-          affectedScopes,
-          context.cwd,
-          context.home,
-          logger,
-          syncDependencies,
-        );
       }
     });
 }
