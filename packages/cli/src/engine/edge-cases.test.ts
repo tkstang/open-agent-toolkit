@@ -35,7 +35,7 @@ describe('edge cases', () => {
   });
 
   it('handles permission denied on provider dir', async () => {
-    // Skip when running as root — chmod 0o000 has no effect for uid 0
+    // Skip when running as root — chmod 000 does not restrict access for root
     if (process.getuid?.() === 0) return;
 
     const root = await mkdtemp(join(tmpdir(), 'oat-edge-perm-'));
