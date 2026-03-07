@@ -361,3 +361,99 @@ Summary: {mapped_task_count}/{total_pending_tasks} tasks addressed,
          {mapped_commit_count}/{total_commits} commits mapped,
          {unmapped_count} unmapped
 ```
+
+### Step 4: Confirm Mappings (Human-in-the-Loop)
+
+Present mappings to the user for confirmation. No artifact writes happen in this step — only building the confirmed mapping set.
+
+**4a. High-confidence batch approval:**
+
+Present all high-confidence mappings as a batch:
+
+```
+The following high-confidence mappings were detected:
+
+  p01-t03 "Add validation logic"
+    ← abc1234: "add input validation" (file overlap 90%)
+    ← def5678: "fix validation edge case" (file overlap 85%)
+
+  p02-t01 "Implement API endpoint"
+    ← ghi9012: "add /api/users endpoint" (task ID in message)
+
+Accept all high-confidence mappings?
+  1. Yes, accept all
+  2. Review individually
+```
+
+If user chooses "Review individually", fall through to the per-mapping flow below.
+
+**4b. Medium/Low-confidence individual review:**
+
+For each medium or low confidence mapping, present individually:
+
+```
+Commit ghi9012: "fix validation logic" (2 files changed: src/validate.ts, src/utils.ts)
+Best match: p02-t01 "Add input validation" (confidence: medium, file overlap 60%)
+
+What should we do with this commit?
+  1. Accept mapping to p02-t01
+  2. Assign to a different task
+  3. Mark as unplanned work (log in implementation.md)
+  4. Skip (don't log this commit)
+```
+
+If user chooses "Assign to a different task", present the list of unmatched pending tasks and let them pick.
+
+**4c. Unmapped commits:**
+
+For each unmapped commit:
+
+```
+Commit jkl3456: "update readme" (1 file changed: README.md)
+No matching task found.
+
+What should we do with this commit?
+  1. Assign to a task: [list pending tasks]
+  2. Log as unplanned work in implementation.md
+  3. Skip (don't log)
+```
+
+**4d. Task completion status:**
+
+For each task that has confirmed mapped commits, ask about completion:
+
+```
+Task p02-t01 "Add input validation" — 1 commit mapped.
+Mark this task as:
+  1. Completed (all work for this task is done)
+  2. In Progress (partial — more work still needed)
+```
+
+Default to "Completed" for high-confidence mappings; default to "In Progress" for medium/low.
+
+**4e. Final confirmation:**
+
+Present the complete confirmed mapping before proceeding:
+
+```
+OAT ▸ RECONCILE — Step 4: Confirmed Mappings
+
+Tasks to update:
+| Task      | Status      | Commits          | Confidence |
+|-----------|-------------|------------------|------------|
+| p01-t03   | completed   | abc1234, def5678 | high       |
+| p02-t01   | in_progress | ghi9012          | medium     |
+
+Unplanned work to log:
+| SHA       | Summary                  |
+|-----------|--------------------------|
+| jkl3456   | update readme            |
+
+Skipped commits: mno7890
+
+Proceed with artifact updates?
+  1. Yes, update artifacts
+  2. Go back and revise mappings
+```
+
+Only proceed to Step 5 after user confirms "Yes, update artifacts".
