@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t11
+oat_current_task_id: null
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 11 | 10/11 |
+| Phase 2 | complete | 11 | 11/11 |
 
-**Total:** 17/18 tasks completed
+**Total:** 18/18 tasks completed
 
 ---
 
@@ -295,6 +295,25 @@ oat_template_name: implementation
 
 ---
 
+### Task p02-t11: (review) Refresh stale implementation.md summary data
+
+**Status:** completed
+**Commit:** 08257aa
+
+**Outcome:**
+- Updated Phase 2 status from `in_progress` to `complete` with expanded summary
+- Refreshed Final Summary: 5 mapping signals, 18 task commits, mocked test, drift detection, append-only
+- Updated verification section to reflect full test/lint/type-check results
+
+**Files changed:**
+- `.oat/projects/shared/oat-project-reconcile/implementation.md` - Phase 2 summary + Final Summary refresh
+
+**Verification:**
+- Run: `grep -n 'four.*signal\|4 mapping\|10 commit' implementation.md`
+- Result: pass — no stale references in summary sections
+
+---
+
 ### Task p02-t10: (review) Fix undefined PROJECT_PATH variable in progress drift detection
 
 **Status:** completed
@@ -464,11 +483,7 @@ oat_template_name: implementation
 - `I2` Undefined PROJECT_PATH in progress drift detection → converted (p02-t10)
 - `m1` Stale implementation.md summary data → converted (p02-t11)
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
-
-After the fix tasks are complete:
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+**Next:** All fix tasks complete. Request re-review via `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`.
 
 ---
 

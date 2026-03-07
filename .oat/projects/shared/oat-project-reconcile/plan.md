@@ -754,7 +754,7 @@ git commit -m "fix(p02-t11): refresh stale Phase 2 and Final Summary in implemen
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | fixes_added | 2026-03-07 | reviews/final-review-2026-03-07-v2.md |
+| final | code | fixes_completed | 2026-03-07 | reviews/final-review-2026-03-07-v2.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -764,7 +764,7 @@ git commit -m "fix(p02-t11): refresh stale Phase 2 and Final Summary in implemen
 
 **Summary:**
 - Phase 1: 7 tasks — Core skill implementation (checkpoint detection, commit analysis, task mapping, confirmation flow, artifact updates, bookkeeping)
-- Phase 2: 11 tasks — Integration (provider sync, progress routing, backlog update) + 8 review fix tasks
+- Phase 2: 11 tasks — Integration (3 original + 8 review fix tasks)
 
 **Total: 18 tasks**
 
