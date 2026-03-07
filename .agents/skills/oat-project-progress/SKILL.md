@@ -182,14 +182,15 @@ Read `oat_execution_mode` from `state.md` frontmatter:
 When `oat_phase: implement` and `oat_phase_status: in_progress`, check for artifact drift before recommending next skill:
 
 ```bash
+# Use the project path from Step 4's per-project loop (or ACTIVE_PROJECT_PATH for single-project)
 # Count planned tasks
-PLAN_TASKS=$(grep -cE '^### Task p[0-9]+-t[0-9]+:' "$PROJECT_PATH/plan.md" 2>/dev/null || echo 0)
+PLAN_TASKS=$(grep -cE '^### Task p[0-9]+-t[0-9]+:' "$ACTIVE_PROJECT_PATH/plan.md" 2>/dev/null || echo 0)
 
 # Count completed tasks in implementation.md
-IMPL_COMPLETED=$(grep -cE '^\*\*Status:\*\* completed' "$PROJECT_PATH/implementation.md" 2>/dev/null || echo 0)
+IMPL_COMPLETED=$(grep -cE '^\*\*Status:\*\* completed' "$ACTIVE_PROJECT_PATH/implementation.md" 2>/dev/null || echo 0)
 
 # Check for commits since last tracked SHA
-LAST_SHA=$(grep "^oat_last_commit:" "$PROJECT_PATH/state.md" 2>/dev/null | awk '{print $2}')
+LAST_SHA=$(grep "^oat_last_commit:" "$ACTIVE_PROJECT_PATH/state.md" 2>/dev/null | awk '{print $2}')
 if [ -n "$LAST_SHA" ]; then
   UNTRACKED_COMMITS=$(git rev-list --count "$LAST_SHA"..HEAD 2>/dev/null || echo 0)
 else
