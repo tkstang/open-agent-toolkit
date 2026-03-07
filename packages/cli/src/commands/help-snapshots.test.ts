@@ -556,13 +556,14 @@ describe('help output snapshots', () => {
       Manage OAT tool packs (install, update, remove, list)
 
       Options:
-        -h, --help      display help for command
+        -h, --help               display help for command
 
       Commands:
-        list            List installed tools with version and status
-        outdated        Show tools with available updates
-        info <name>     Show details for an installed tool
-        help [command]  display help for command
+        list                     List installed tools with version and status
+        outdated                 Show tools with available updates
+        info <name>              Show details for an installed tool
+        update [options] [name]  Update installed tools to bundled versions
+        help [command]           display help for command
       "
     `);
   });
@@ -594,6 +595,30 @@ describe('help output snapshots', () => {
 
       Options:
         -h, --help  display help for command
+      "
+    `);
+  });
+
+  it('tools update --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, [
+      'tools',
+      'update',
+    ]).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat tools update [options] [name]
+
+      Update installed tools to bundled versions
+
+      Arguments:
+        name           Tool name to update
+
+      Options:
+        --pack <pack>  Update all tools in a pack (ideas|workflows|utility)
+        --all          Update all outdated tools
+        --dry-run      Preview updates without applying
+        --no-sync      Skip auto-sync after update
+        -h, --help     display help for command
       "
     `);
   });

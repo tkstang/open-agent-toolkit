@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { createToolsInfoCommand } from './info';
 import { createToolsListCommand } from './list';
 import { createToolsOutdatedCommand } from './outdated';
+import { createToolsUpdateCommand } from './update';
 
 export function createToolsCommand(): Command {
   const cmd = new Command('tools').description(
@@ -11,6 +12,7 @@ export function createToolsCommand(): Command {
   cmd.addCommand(createToolsListCommand());
   cmd.addCommand(createToolsOutdatedCommand());
   cmd.addCommand(createToolsInfoCommand());
+  cmd.addCommand(createToolsUpdateCommand());
 
   return cmd;
 }
