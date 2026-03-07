@@ -670,7 +670,7 @@ git commit -m "fix(p02-t08): mock readdir for permission-denied test instead of 
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | fixes_completed | 2026-03-07 | reviews/final-review-2026-03-07.md |
+| final | code | received | 2026-03-07 | reviews/final-review-2026-03-07-v2.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
