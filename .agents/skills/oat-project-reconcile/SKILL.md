@@ -231,7 +231,7 @@ Remove from the analysis set:
    - Files ending in `state.md` within any `.oat/` path
    - Commit message starts with `chore(oat):`
 
-   Rule: if every file in the commit matches `*.oat/*/implementation.md`, `*.oat/*/state.md`, `*.oat/*/plan.md`, or `*.oat/*/discovery.md` — then it's bookkeeping and should be excluded.
+   Rule: if every file in the commit is under a `.oat/` subdirectory and matches one of `implementation.md`, `state.md`, `plan.md`, or `discovery.md` — then it's bookkeeping and should be excluded.
 
 3. **Already-tracked commits** — commits whose SHA already appears in `implementation.md` task entries (from Step 0.5 check).
 
