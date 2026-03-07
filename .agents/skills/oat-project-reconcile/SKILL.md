@@ -457,3 +457,131 @@ Proceed with artifact updates?
 ```
 
 Only proceed to Step 5 after user confirms "Yes, update artifacts".
+
+### Step 5: Update Artifacts
+
+Apply the confirmed mappings to OAT tracking artifacts. This is the only step that writes files.
+
+**5a. Read existing `implementation.md`:**
+
+Read the full file. Identify:
+- Existing task entries (preserve all — never overwrite or delete)
+- The insertion point for each task entry (find the `### Task pNN-tNN:` section)
+- Current progress table values
+- Current frontmatter values
+
+**5b. Update task entries in `implementation.md`:**
+
+For each confirmed task mapping, find the corresponding `### Task {task_id}:` section and replace the placeholder content:
+
+```markdown
+### Task {task_id}: {Task Name}
+
+**Status:** {completed | in_progress}
+**Commit:** {representative_sha} (reconciled)
+
+**Outcome (reconciled from manual implementation):**
+- {2-5 bullets derived from commit messages and diff summary}
+- {Use git show --stat and commit messages to infer what changed}
+
+**Files changed:**
+- `{path}` - {inferred purpose from diff context}
+
+**Verification:**
+- Run: `{verification command from plan task, if available}`
+- Result: not verified — reconciled entry
+
+**Notes / Decisions:**
+- Reconciled from manual implementation on {today's date}
+- Original commits: {comma-separated SHA list}
+- Mapping confidence: {high|medium|low}
+- Mapping signal: {task ID in message | file overlap N% | keyword match}
+```
+
+To generate the **Outcome** bullets:
+1. Read each commit's message and diff stats
+2. Summarize what changed at a behavior level (not "edited file X" but "added validation for user input")
+3. Use `git show --stat {sha}` and `git log --format='%s' {sha} -1` as source material
+
+To generate **Files changed**:
+1. Use the combined file list from all grouped commits
+2. For each file, infer purpose from the file path and diff context
+
+**5c. Add unplanned work entries:**
+
+For each commit the user chose to log as unplanned work, append after the last task entry in the relevant phase (or at the end of the last phase):
+
+```markdown
+### Unplanned: {commit message summary (first 60 chars)}
+
+**Status:** completed
+**Commit:** {sha} (unplanned)
+
+**Outcome:**
+- {1-3 bullets derived from commit message and diff}
+
+**Files changed:**
+- `{path}` - {inferred from diff}
+
+**Notes:**
+- Not part of original plan. Logged during reconciliation on {today's date}.
+```
+
+**5d. Update progress table:**
+
+Recalculate the `## Progress Overview` table:
+
+```markdown
+| Phase | Status | Tasks | Completed |
+|-------|--------|-------|-----------|
+| Phase 1 | {in_progress|complete} | 7 | {completed_count}/7 |
+| Phase 2 | {in_progress|pending} | 3 | {completed_count}/3 |
+
+**Total:** {total_completed}/{total_tasks} tasks completed
+```
+
+A phase is `complete` when all its tasks are `completed`. A phase is `in_progress` when at least one task is `completed` or `in_progress`. Otherwise `pending`.
+
+**5e. Update frontmatter:**
+
+In `implementation.md`:
+```yaml
+oat_current_task_id: {next_pending_task_id}  # or null if all complete
+oat_last_updated: {today}
+```
+
+Find the next pending task by scanning plan order: first task with status not `completed`.
+
+In `state.md`:
+```yaml
+oat_current_task: {same as oat_current_task_id above}
+oat_last_commit: {most recent reconciled commit SHA}
+oat_phase: implement
+oat_phase_status: {complete if all tasks done, else in_progress}
+```
+
+**5f. Append to Implementation Log:**
+
+Add a reconciliation session entry to the `## Implementation Log` section:
+
+```markdown
+### {today's date}
+
+**Session Start:** reconciliation
+
+{For each reconciled task:}
+- [x] {task_id}: {task_name} - {sha} (reconciled, confidence: {level})
+
+{For each unplanned entry:}
+- [x] unplanned: {summary} - {sha}
+
+**What changed (high level):**
+- Reconciled {N} manually-implemented tasks from {M} commits
+- Logged {K} unplanned work entries
+
+**Decisions:**
+- Mapping confidence breakdown: {high_count} high, {medium_count} medium, {low_count} low
+- Skipped commits: {skip_count}
+
+**Session End:** reconciliation complete
+```
