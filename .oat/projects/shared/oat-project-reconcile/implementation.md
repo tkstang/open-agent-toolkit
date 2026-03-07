@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t12
+oat_current_task_id: p02-t13
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 13 | 11/13 |
+| Phase 2 | in_progress | 13 | 12/13 |
 
-**Total:** 18/20 tasks completed
+**Total:** 19/20 tasks completed
 
 ---
 
@@ -292,6 +292,25 @@ oat_template_name: implementation
 
 **Notes / Decisions:**
 - Frontmatter was partially fixed during receive-review; this task completed the prose body updates
+
+---
+
+### Task p02-t12: (review) Replace hardcoded progress table in reconcile Step 5d
+
+**Status:** completed
+**Commit:** ab9cd8b
+
+**Outcome:**
+- Replaced literal two-row table with dynamic enumeration instructions
+- Added steps: scan `## Phase N:` headings, count `### Task pNN-tNN:` per phase, derive completed counts
+- Added explicit guard: "Do not hardcode phase counts or task totals"
+
+**Files changed:**
+- `.agents/skills/oat-project-reconcile/SKILL.md` - Step 5d rewritten for dynamic table
+
+**Verification:**
+- Run: `grep -A5 '5d\. Update progress' SKILL.md`
+- Result: pass — no hardcoded counts
 
 ---
 
