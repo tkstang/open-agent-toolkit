@@ -836,7 +836,7 @@ git commit -m "fix(p02-t14): clarify bookkeeping filter glob pattern in reconcil
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | fixes_added | 2026-03-07 | reviews/final-review-2026-03-07-v4.md |
+| final | code | fixes_completed | 2026-03-07 | reviews/final-review-2026-03-07-v4.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 

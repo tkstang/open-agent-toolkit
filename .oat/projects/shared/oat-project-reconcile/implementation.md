@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t14
+oat_current_task_id: null
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 14 | 13/14 |
+| Phase 2 | complete | 14 | 14/14 |
 
-**Total:** 20/21 tasks completed
+**Total:** 21/21 tasks completed
 
 ---
 
@@ -311,6 +311,23 @@ oat_template_name: implementation
 - Run: `grep -A10 'Drift indicators' SKILL.md`
 - Result: pass — first condition uses PLAN_TASKS vs IMPL_COMPLETED
 
+### Task p02-t14: (review) Clarify bookkeeping filter glob pattern in reconcile SKILL.md
+
+**Status:** completed
+**Commit:** 091606c
+
+**Outcome:**
+- Replaced misleading `*.oat/*/implementation.md` glob-style notation with clear prose
+- New wording: "if every file in the commit is under a `.oat/` subdirectory and matches one of..."
+- Avoids confusion about nesting depth (paths are `.oat/projects/shared/{name}/...`)
+
+**Files changed:**
+- `.agents/skills/oat-project-reconcile/SKILL.md` - clarified bookkeeping filter description
+
+**Verification:**
+- Run: `grep -n 'Rule:' .agents/skills/oat-project-reconcile/SKILL.md`
+- Result: pass — uses prose description instead of misleading glob
+
 ---
 
 ### Task p02-t12: (review) Replace hardcoded progress table in reconcile Step 5d
@@ -563,7 +580,7 @@ oat_template_name: implementation
 **Deferred Findings:**
 - `m2` Backlog In Progress checkbox style — current unchecked state is logically correct (in-progress = not done). No action needed.
 
-**Next:** Execute fix task p02-t14 via `oat-project-implement`.
+**Next:** Fix task complete. Proceed to PR via `oat-project-pr-final`.
 
 ---
 
@@ -583,11 +600,14 @@ oat_template_name: implementation
 - [x] p02-t01: Add skill to provider sync - 740fce1
 - [x] p02-t02: Update oat-project-progress routing - 7fffcab
 - [x] p02-t03: Update backlog - 9d6a0ee
+- [x] p02-t04 through p02-t13: Review fix tasks (v1–v3 cycles)
+- [x] p02-t14: Clarify bookkeeping filter glob pattern - 091606c
 
 **What changed (high level):**
 - Complete oat-project-reconcile skill with all 6 workflow steps
 - Provider sync integration (Claude + Cursor)
-- Progress routing updated to suggest reconciliation
+- Progress routing updated with drift detection and reconcile suggestion
+- 4 review cycles: 11 fix tasks addressing append-only violations, temporal signal, phase status, variable naming, dynamic tables, drift logic, glob patterns
 
 **Decisions:**
 - Single SKILL.md approach (no helper scripts needed)
@@ -632,7 +652,7 @@ oat_template_name: implementation
 - `.oat/repo/reference/backlog.md` - status updates
 
 **Verification performed:**
-- lint-staged on all 20 task commits (pass)
+- lint-staged on all 21 task commits (pass)
 - `pnpm test` — 737/737 tests passing
 - `pnpm lint` — clean
 - `pnpm type-check` — clean
