@@ -802,6 +802,32 @@ git add .agents/skills/oat-project-progress/SKILL.md
 git commit -m "fix(p02-t13): add plan-vs-implementation count comparison for drift detection"
 ```
 
+### Task p02-t14: (review) Clarify bookkeeping filter glob pattern in reconcile SKILL.md
+
+**Files:**
+- Modify: `.agents/skills/oat-project-reconcile/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Step 2 filtering uses `*.oat/*/...` glob-style notation which is misleading since project paths are nested deeper (`.oat/projects/shared/{name}/...`).
+Location: `.agents/skills/oat-project-reconcile/SKILL.md:234`
+
+**Step 2: Implement fix**
+
+Update the filtering description to use `**` recursive glob or describe it as "files under any `.oat/` subdirectory" matching the tracking artifact filenames.
+
+**Step 3: Verify**
+
+Run: `grep -n 'oat/' .agents/skills/oat-project-reconcile/SKILL.md | head -20`
+Expected: Updated pattern uses recursive notation or prose description
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-reconcile/SKILL.md
+git commit -m "fix(p02-t14): clarify bookkeeping filter glob pattern in reconcile skill"
+```
+
 ---
 
 ## Reviews
@@ -810,7 +836,7 @@ git commit -m "fix(p02-t13): add plan-vs-implementation count comparison for dri
 |-------|------|--------|------|----------|
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
-| final | code | fixes_completed | 2026-03-07 | reviews/final-review-2026-03-07-v3.md |
+| final | code | fixes_added | 2026-03-07 | reviews/final-review-2026-03-07-v4.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -820,9 +846,9 @@ git commit -m "fix(p02-t13): add plan-vs-implementation count comparison for dri
 
 **Summary:**
 - Phase 1: 7 tasks — Core skill implementation (checkpoint detection, commit analysis, task mapping, confirmation flow, artifact updates, bookkeeping)
-- Phase 2: 13 tasks — Integration (3 original + 10 review fix tasks)
+- Phase 2: 14 tasks — Integration (3 original + 11 review fix tasks)
 
-**Total: 20 tasks**
+**Total: 21 tasks**
 
 Ready for code review and merge.
 
