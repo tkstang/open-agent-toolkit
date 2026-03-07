@@ -52,6 +52,7 @@ describe('help output snapshots', () => {
         index            OAT index generation commands
         project          Manage OAT project workflows
         state            OAT repo state commands
+        tools            Manage OAT tool packs (install, update, remove, list)
         internal         Internal OAT maintenance commands
         help [command]   display help for command
       "
@@ -539,6 +540,20 @@ describe('help output snapshots', () => {
       "Usage: oat state refresh [options]
 
       Regenerate the OAT repo state dashboard (.oat/state.md)
+
+      Options:
+        -h, --help  display help for command
+      "
+    `);
+  });
+
+  it('tools --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, ['tools']).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat tools [options]
+
+      Manage OAT tool packs (install, update, remove, list)
 
       Options:
         -h, --help  display help for command
