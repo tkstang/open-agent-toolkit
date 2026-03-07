@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t10
+oat_current_task_id: p02-t11
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 11 | 9/11 |
+| Phase 2 | in_progress | 11 | 10/11 |
 
-**Total:** 16/18 tasks completed
+**Total:** 17/18 tasks completed
 
 ---
 
@@ -287,6 +287,24 @@ oat_template_name: implementation
 
 **Notes / Decisions:**
 - Frontmatter was partially fixed during receive-review; this task completed the prose body updates
+
+---
+
+### Task p02-t10: (review) Fix undefined PROJECT_PATH variable in progress drift detection
+
+**Status:** completed
+**Commit:** 2527247
+
+**Outcome:**
+- Replaced `$PROJECT_PATH` with `$ACTIVE_PROJECT_PATH` in drift-detection bash block
+- Added comment clarifying variable source (Step 3 / per-project loop)
+
+**Files changed:**
+- `.agents/skills/oat-project-progress/SKILL.md` - variable name fix in drift block
+
+**Verification:**
+- Run: `grep -n 'PROJECT_PATH' SKILL.md`
+- Result: pass — all references use `ACTIVE_PROJECT_PATH` defined in Step 3
 
 ---
 
