@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t08
+oat_current_task_id: null
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 8 | 7/8 |
+| Phase 2 | complete | 8 | 8/8 |
 
-**Total:** 14/15 tasks completed
+**Total:** 15/15 tasks completed
 
 ---
 
@@ -290,6 +290,29 @@ oat_template_name: implementation
 
 ---
 
+### Task p02-t08: (review) Mock permission-denied test instead of skipping under root
+
+**Status:** completed
+**Commit:** 44ed967
+
+**Outcome:**
+- Replaced `chmod 000` + early-return-on-root with `vi.mock('node:fs/promises')` approach
+- Mock injects EACCES error into `readdir` regardless of UID
+- Removed unused `chmod` import
+- Test now covers the `detectStrays()` permission-error translation path in all environments
+
+**Files changed:**
+- `packages/cli/src/engine/edge-cases.test.ts` - mocked readdir, removed chmod skip
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run packages/cli/src/engine/edge-cases.test.ts`
+- Result: pass (737/737 tests, including permission-denied under non-root)
+
+**Notes / Decisions:**
+- Used `vi.mock` with `importOriginal` pattern since ESM prevents `vi.spyOn` on `node:fs/promises`
+
+---
+
 ### Task p02-t07: (review) Complete progress-router drift detection for all workflow modes
 
 **Status:** completed
@@ -378,11 +401,7 @@ oat_template_name: implementation
 - `M2` Complete progress-router drift detection → converted (p02-t07)
 - `m1` Mock permission-denied test → converted (p02-t08)
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
-
-After the fix tasks are complete:
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+**Next:** All fix tasks complete. Request re-review via `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`.
 
 ---
 

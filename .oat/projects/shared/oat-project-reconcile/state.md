@@ -1,6 +1,6 @@
 ---
-oat_current_task: p02-t08
-oat_last_commit: 4b61b69
+oat_current_task: null
+oat_last_commit: 44ed967
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -23,7 +23,7 @@ oat_template_name: state
 
 ## Current Phase
 
-Implementation - Executing review fix tasks (p02-t04..p02-t08)
+Implementation - Review fix tasks complete; awaiting re-review
 
 ## Artifacts
 
@@ -38,7 +38,8 @@ Implementation - Executing review fix tasks (p02-t04..p02-t08)
 - ✓ Discovery complete
 - ✓ Spec complete
 - ✓ Plan complete
-- ⧗ Implementation in progress (10/15 tasks — review fixes pending)
+- ✓ Implementation tasks complete (15/15)
+- ⧗ Awaiting re-review (final)
 
 ## Blockers
 
@@ -46,4 +47,4 @@ None
 
 ## Next Milestone
 
-Complete review fix tasks, then re-review
+Re-review (final scope), then create PR
