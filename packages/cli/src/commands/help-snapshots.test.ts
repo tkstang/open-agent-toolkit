@@ -564,7 +564,7 @@ describe('help output snapshots', () => {
         info <name>              Show details for an installed tool
         update [options] [name]  Update installed tools to bundled versions
         remove [options] [name]  Remove installed tools
-        install                  Install OAT tool packs (ideas, workflows, utility)
+        install [options]        Install OAT tool packs (ideas, workflows, utility)
         help [command]           display help for command
       "
     `);
@@ -613,6 +613,7 @@ describe('help output snapshots', () => {
       Install OAT tool packs (ideas, workflows, utility)
 
       Options:
+        --no-sync            Skip auto-sync after install
         -h, --help           display help for command
 
       Commands:
