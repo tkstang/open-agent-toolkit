@@ -96,14 +96,30 @@ export function createToolsUpdateCommand(
         dependencies,
       );
 
-      if (context.json) {
-        logger.json({ target: describeTarget(target), dryRun, result });
+      if (result.notInstalled.length > 0) {
+        if (context.json) {
+          logger.json({ target: describeTarget(target), dryRun, result });
+        } else {
+          logger.error(`Tool '${result.notInstalled[0]}' not found.`);
+        }
+        process.exitCode = 1;
         return;
       }
 
-      if (result.notInstalled.length > 0) {
-        logger.error(`Tool '${result.notInstalled[0]}' not found.`);
-        process.exitCode = 1;
+      // Auto-sync after mutations (before output so sync errors are captured)
+      if (result.updated.length > 0 && !dryRun && opts.sync !== false) {
+        const affectedScopes = [...new Set(result.updated.map((t) => t.scope))];
+        await autoSync(
+          affectedScopes,
+          context.cwd,
+          context.home,
+          logger,
+          syncDependencies,
+        );
+      }
+
+      if (context.json) {
+        logger.json({ target: describeTarget(target), dryRun, result });
         return;
       }
 
@@ -130,20 +146,8 @@ export function createToolsUpdateCommand(
         logger.info(`Not bundled (custom): ${tool.name}`);
       }
 
-      if (result.updated.length === 0 && result.notInstalled.length === 0) {
+      if (result.updated.length === 0) {
         logger.info('No tools to update.');
-      }
-
-      // Auto-sync after mutations
-      if (result.updated.length > 0 && !dryRun && opts.sync !== false) {
-        const affectedScopes = [...new Set(result.updated.map((t) => t.scope))];
-        await autoSync(
-          affectedScopes,
-          context.cwd,
-          context.home,
-          logger,
-          syncDependencies,
-        );
       }
     });
 }
