@@ -7,7 +7,7 @@ import {
   WORKFLOW_AGENTS,
   WORKFLOW_SKILLS,
 } from '@commands/init/tools/workflows/install-workflows';
-import { getSkillVersion } from '@commands/shared/frontmatter';
+import { getAgentVersion, getSkillVersion } from '@commands/shared/frontmatter';
 import { dirExists, fileExists } from '@fs/io';
 import type { ConcreteScope } from '@shared/types';
 import type { PackName, ToolInfo } from './types';
@@ -22,13 +22,7 @@ export interface ScanToolsDependencies {
 
 const defaultDependencies: ScanToolsDependencies = {
   getSkillVersion,
-  getAgentVersion: async (agentPath: string) => {
-    const { parseFrontmatterField } = await import(
-      '@commands/shared/frontmatter'
-    );
-    const version = await parseFrontmatterField(agentPath, 'version');
-    return version.length > 0 ? version : null;
-  },
+  getAgentVersion,
   readdir: async (path: string) => {
     try {
       const entries = await readdir(path, { withFileTypes: true });
