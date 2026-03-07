@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-07
-oat_current_task_id: p02-t04
+oat_current_task_id: p02-t05
 oat_generated: true
 oat_template: false
 oat_template_name: implementation
@@ -27,9 +27,9 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 7 | 7/7 |
-| Phase 2 | in_progress | 8 | 3/8 |
+| Phase 2 | in_progress | 8 | 4/8 |
 
-**Total:** 10/15 tasks completed
+**Total:** 11/15 tasks completed
 
 ---
 
@@ -267,6 +267,26 @@ oat_template_name: implementation
 **Verification:**
 - Run: `pnpm lint`
 - Result: pass
+
+### Task p02-t04: (review) Fix conflicting phase state across artifacts
+
+**Status:** completed
+**Commit:** 01dd94e
+
+**Outcome:**
+- Fixed `state.md` `oat_phase_status` from `complete` to `in_progress` (receive-review bookkeeping)
+- Updated prose body to reflect 15 total tasks (5 review fixes added)
+- Aligned "Current Phase" and "Progress" sections with actual state
+
+**Files changed:**
+- `.oat/projects/shared/oat-project-reconcile/state.md` - frontmatter + prose alignment
+
+**Verification:**
+- Run: `grep -n 'oat_phase_status' state.md`
+- Result: pass — shows `in_progress`
+
+**Notes / Decisions:**
+- Frontmatter was partially fixed during receive-review; this task completed the prose body updates
 
 ---
 
