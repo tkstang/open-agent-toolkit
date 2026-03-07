@@ -107,3 +107,84 @@ Verify the project is ready for reconciliation:
 3. **Check for untracked commits:**
    - Read `implementation.md` if it exists — find the last recorded commit SHA
    - If all recent commits are already tracked, inform user: "No untracked commits found. Nothing to reconcile."
+
+### Step 1: Find Checkpoint
+
+Identify the last commit that OAT has already tracked. Everything after this commit is "untracked human work" that needs reconciliation.
+
+**Priority 1 — Last tracked commit in `implementation.md`:**
+
+Read `implementation.md` and find the last task entry with a commit SHA (look for `**Commit:** {sha}` patterns where sha is not `-` or empty). This is the most reliable checkpoint because it's exactly what OAT already recorded.
+
+```bash
+LAST_TRACKED_SHA=$(grep -oP '\*\*Commit:\*\*\s+\K[0-9a-f]{7,40}' "$PROJECT_PATH/implementation.md" | tail -1)
+```
+
+**Priority 2 — Last OAT-convention commit in git log:**
+
+If `implementation.md` has no tracked commits, scan git log for the last commit matching OAT patterns:
+
+```bash
+# Task commits: feat(p01-t01): ..., fix(p02-t03): ...
+OAT_TASK_SHA=$(git log --oneline --grep='(p[0-9]*-t[0-9]*)' --extended-regexp -n 1 --format='%H')
+
+# Bookkeeping commits: chore(oat): update tracking artifacts ...
+OAT_BOOK_SHA=$(git log --oneline --grep='chore(oat):' -n 1 --format='%H')
+
+# Use whichever is more recent (closer to HEAD)
+if [ -n "$OAT_TASK_SHA" ] && [ -n "$OAT_BOOK_SHA" ]; then
+  # Compare: is OAT_TASK_SHA an ancestor of OAT_BOOK_SHA?
+  if git merge-base --is-ancestor "$OAT_TASK_SHA" "$OAT_BOOK_SHA" 2>/dev/null; then
+    CHECKPOINT="$OAT_BOOK_SHA"
+  else
+    CHECKPOINT="$OAT_TASK_SHA"
+  fi
+elif [ -n "$OAT_TASK_SHA" ]; then
+  CHECKPOINT="$OAT_TASK_SHA"
+elif [ -n "$OAT_BOOK_SHA" ]; then
+  CHECKPOINT="$OAT_BOOK_SHA"
+fi
+```
+
+**Priority 3 — Merge-base fallback:**
+
+If no OAT commits are found at all, fall back to the merge-base with the default branch:
+
+```bash
+DEFAULT_BRANCH=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+DEFAULT_BRANCH="${DEFAULT_BRANCH:-main}"
+CHECKPOINT=$(git merge-base HEAD "$DEFAULT_BRANCH" 2>/dev/null)
+```
+
+If merge-base also fails (e.g., orphan branch), use the first commit on the branch:
+```bash
+CHECKPOINT=$(git rev-list --max-parents=0 HEAD | tail -1)
+```
+
+**Report checkpoint to user:**
+
+```
+OAT ▸ RECONCILE — Step 1: Checkpoint
+
+Last tracked commit: {CHECKPOINT_SHA} ({date})
+Source: {implementation.md | git log pattern | merge-base}
+Task: {last_tracked_task_id or "pre-project"}
+
+Commits since checkpoint: {count}
+```
+
+Count commits in range:
+```bash
+COMMIT_COUNT=$(git rev-list --count "$CHECKPOINT"..HEAD)
+```
+
+**User confirmation gate:**
+
+Ask user: "Use this as the checkpoint? Or provide a different commit SHA."
+
+If user provides an alternative SHA, validate it:
+```bash
+git cat-file -t "$USER_SHA" 2>/dev/null | grep -q commit
+```
+
+Store the confirmed checkpoint as `$CHECKPOINT` for use in subsequent steps.
