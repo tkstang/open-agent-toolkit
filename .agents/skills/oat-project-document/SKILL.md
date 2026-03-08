@@ -367,8 +367,8 @@ If `$DOCS_CONFIG` exists and new files were created in the docs directory:
 
 **Error handling:**
 
-- If a file write fails, log the error and continue with remaining recommendations
-- At the end, report any failures
+- Track a `$ALL_SUCCEEDED` flag (default: true). If any file write fails, set `$ALL_SUCCEEDED` to false, log the error, and continue with remaining recommendations
+- At the end, report any failures with the specific files that could not be written
 
 ### Step 7: Commit and Update State
 
@@ -383,8 +383,9 @@ Only stage files that were actually changed or created in Step 6. Do not use `gi
 
 **7b. Update project state:**
 
-Update `$PROJECT_PATH/state.md` frontmatter:
-- Set `oat_docs_updated: complete`
+Update `$PROJECT_PATH/state.md` frontmatter based on apply outcome:
+- If `$ALL_SUCCEEDED` is true: set `oat_docs_updated: complete`
+- If `$ALL_SUCCEEDED` is false: do **not** set `oat_docs_updated: complete` — leave the field as `null` so the skill can be re-run. Surface the failures clearly in the summary report (Step 7d) so the user knows which updates failed and why.
 
 ```bash
 git add "$PROJECT_PATH/state.md"
@@ -398,6 +399,8 @@ git diff --cached --quiet || git commit -m "chore({project-name}): mark docs upd
 - If `--auto` mode: apply all, commit, set state — no user interaction.
 
 **7d. Report summary:**
+
+If `$ALL_SUCCEEDED` is true:
 
 ```
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -416,6 +419,27 @@ State:  oat_docs_updated = complete
 Next steps:
   - oat-project-complete → close out the project
   - Review changes before pushing
+```
+
+If `$ALL_SUCCEEDED` is false:
+
+```
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ OAT ▸ PROJECT DOCUMENT — Partial Failure
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Documentation sync partially failed for {project-name}.
+
+  Succeeded: {N} files
+  Failed:    {N} files
+    - {path}: {error reason}
+
+Commit: {sha} (successful changes only)
+State:  oat_docs_updated NOT set (re-run to retry)
+
+Next steps:
+  - Investigate and fix the failed writes
+  - Re-run oat-project-document to complete the sync
 ```
 
 ## Success Criteria
