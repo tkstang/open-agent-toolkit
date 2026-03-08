@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, matchesGlob } from 'node:path';
 import { dirExists, fileExists } from '@fs/io';
 import { expandLocalPaths } from './expand';
 
@@ -7,6 +7,22 @@ export interface LocalPathStatus {
   path: string;
   exists: boolean;
   gitignored: boolean;
+}
+
+function matchesGitignoreLine(localPath: string, line: string): boolean {
+  // Normalize: strip leading `/` (root-relative marker) and trailing `/` (dir marker)
+  const normalizedLine = line.replace(/^\//, '').replace(/\/+$/, '');
+  const normalizedPath = localPath.replace(/\/+$/, '');
+
+  // Exact match
+  if (normalizedPath === normalizedLine) return true;
+
+  // Glob match (for patterns containing *, ?, or [)
+  if (/[*?[]/.test(normalizedLine)) {
+    return matchesGlob(normalizedPath, normalizedLine);
+  }
+
+  return false;
 }
 
 async function isPathGitignored(
@@ -17,19 +33,12 @@ async function isPathGitignored(
 
   try {
     const content = await readFile(gitignorePath, 'utf8');
-    const lines = content.split('\n').map((l) => l.trim());
-    const withTrailingSlash = localPath.endsWith('/')
-      ? localPath
-      : `${localPath}/`;
-    const withoutTrailingSlash = localPath.replace(/\/+$/, '');
+    const lines = content
+      .split('\n')
+      .map((l) => l.trim())
+      .filter((l) => l !== '' && !l.startsWith('#'));
 
-    return lines.some(
-      (line) =>
-        line === withTrailingSlash ||
-        line === withoutTrailingSlash ||
-        line === `/${withTrailingSlash}` ||
-        line === `/${withoutTrailingSlash}`,
-    );
+    return lines.some((line) => matchesGitignoreLine(localPath, line));
   } catch {
     return false;
   }

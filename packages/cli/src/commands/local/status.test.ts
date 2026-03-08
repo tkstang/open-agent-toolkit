@@ -54,6 +54,45 @@ describe('oat local status', () => {
     ]);
   });
 
+  it('should detect gitignored status for glob-expanded paths', async () => {
+    const repoRoot = await createRepoRoot();
+    await mkdir(
+      join(repoRoot, '.oat', 'projects', 'shared', 'alpha', 'reviews'),
+      { recursive: true },
+    );
+    await mkdir(
+      join(repoRoot, '.oat', 'projects', 'shared', 'beta', 'reviews'),
+      { recursive: true },
+    );
+    // .gitignore has the raw glob pattern (as applyGitignore writes it)
+    await writeFile(
+      join(repoRoot, '.gitignore'),
+      '.oat/projects/**/reviews/\n',
+      'utf8',
+    );
+
+    const results = await checkLocalPathsStatus(repoRoot, [
+      '.oat/projects/**/reviews',
+    ]);
+
+    // Should expand glob and report each match as gitignored
+    expect(results).toHaveLength(2);
+    expect(results).toEqual(
+      expect.arrayContaining([
+        {
+          path: '.oat/projects/shared/alpha/reviews',
+          exists: true,
+          gitignored: true,
+        },
+        {
+          path: '.oat/projects/shared/beta/reviews',
+          exists: true,
+          gitignored: true,
+        },
+      ]),
+    );
+  });
+
   it('should return empty array for no localPaths', async () => {
     const repoRoot = await createRepoRoot();
     const results = await checkLocalPathsStatus(repoRoot, []);
