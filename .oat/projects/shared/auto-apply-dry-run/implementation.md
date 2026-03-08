@@ -329,6 +329,7 @@ oat_template: false
 - Phase 2 (2 tasks): Single commit for all test updates (34 files, 793 tests passing)
 - Phase 3 (3 tasks): 3 commits for docs, skills/agent docs, and reference docs
 - 2026-03-07: Final review received — 1 Important, 2 Medium, 1 Minor finding. All fixed in single commit (0a7de78).
+- 2026-03-07: Final re-review (v2) passed clean — 0 findings. Ready for PR.
 
 ### Review Received: final
 
@@ -349,7 +350,20 @@ oat_template: false
 
 **All findings fixed in commit:** 0a7de78
 
-**Next:** Request re-review to reach `passed`.
+**Next:** ~~Request re-review to reach `passed`.~~ Done — re-review passed (v2).
+
+### Re-Review Received: final (v2)
+
+**Date:** 2026-03-07
+**Review artifact:** reviews/final-review-2026-03-07-v2.md
+
+**Findings:** 0 critical, 0 important, 0 medium, 0 minor
+
+**Result:** Re-review passes clean. All previously flagged references fixed.
+**Deferred Medium Resurfacing:** No deferred mediums. Gate satisfied.
+**Minor Findings Disposition:** No deferred minors (all were fixed in v1 cycle). Gate satisfied.
+
+**Final review status:** `passed`
 
 ---
 
@@ -397,7 +411,7 @@ Track test execution during implementation.
 - Type-check: pass
 - Tests: 793 passing
 - Lint: pass
-- Build: pass (pending final verification)
+- Build: pass
 
 **Design deltas (if any):**
 - None — purely mechanical rename/inversion as planned
