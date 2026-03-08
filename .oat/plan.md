@@ -189,13 +189,13 @@ Expose via `oat config list` for visibility, but don't add individual get/set ke
 
 **Config changes (Step 1 covers the schema):**
 - `activeIdea` stored in `.oat/config.local.json` (repo-level) — replaces `.oat/active-idea` pointer file
-- User-level ideas: stored in `~/.oat/config.local.json` — replaces `~/.oat/active-idea` pointer file
-- Need a `readUserLocalConfig()` / `writeUserLocalConfig()` pair for `~/.oat/` (new, mirrors repo-level API)
+- User-level ideas: stored in `~/.oat/config.json` — replaces `~/.oat/active-idea` pointer file (everything at user level is inherently local, no `.local` suffix needed)
+- Need a `readUserConfig()` / `writeUserConfig()` pair for `~/.oat/config.json` (new, mirrors repo-level API)
 
 **Skill updates (all four idea skills):**
 - Replace Step 0 resolution logic:
   - Old: `cat .oat/active-idea 2>/dev/null` / `cat ~/.oat/active-idea 2>/dev/null`
-  - New: read `activeIdea` from `.oat/config.local.json` / `~/.oat/config.local.json`
+  - New: read `activeIdea` from `.oat/config.local.json` (repo) / `~/.oat/config.json` (user)
   - Same precedence rules (project-level → user-level → ask)
 - Replace write logic:
   - Old: `echo "$IDEA_PATH" > .oat/active-idea`
@@ -205,11 +205,10 @@ Expose via `oat config list` for visibility, but don't add individual get/set ke
 - `oat-idea-summarize` Step 1: read + write via config instead of pointer file
 - `oat-idea-scratchpad`: read via config instead of pointer file
 
-**Compatibility window:**
-- Add fallback read: if `activeIdea` is unset in config, check for legacy `.oat/active-idea` file
-- If legacy file found: migrate value to config, delete pointer file, log migration
-- Same for user-level `~/.oat/active-idea`
-- Remove fallback after one release cycle
+**Hard cutover (no legacy fallback):**
+- Delete `.oat/active-idea` and `~/.oat/active-idea` pointer files
+- Remove pointer file references from `.gitignore`
+- No migration shim — skills read/write config only
 
 **Docs updates:**
 - Update file-locations.md to reference config.local.json instead of pointer files
@@ -257,6 +256,6 @@ Expose via `oat config list` for visibility, but don't add individual get/set ke
 
 8. **Active-idea migration bundled here**: The pointer file → config migration is small, touches the same systems (config, worktree bootstrap), and eliminates a special-case file from the bootstrap copy loop. After migration, worktree bootstrap only copies `config.local.json` — everything else is either in that file or governed by `localPaths`.
 
-9. **Dual-level config for ideas**: Repo-level uses `.oat/config.local.json` (existing file). User-level uses `~/.oat/config.local.json` (new file, same schema). Skills resolve with the same precedence they use today (project → user → ask), just reading from config instead of pointer files.
+9. **Dual-level config for ideas**: Repo-level uses `.oat/config.local.json` (existing file). User-level uses `~/.oat/config.json` (no `.local` suffix — everything at user level is inherently local). Skills resolve with the same precedence they use today (project → user → ask), just reading from config instead of pointer files.
 
-10. **Legacy fallback**: One release cycle of backwards-compatible reads from the old pointer files, with auto-migration on first access. Keeps existing worktrees working without manual intervention.
+10. **Hard cutover**: No legacy fallback or migration shim. Delete pointer files, update skills, done. Simpler implementation and no dead code to clean up later.
