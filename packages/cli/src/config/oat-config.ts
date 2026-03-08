@@ -22,6 +22,12 @@ export interface OatLocalConfig {
   version: number;
   activeProject?: string | null;
   lastPausedProject?: string | null;
+  activeIdea?: string | null;
+}
+
+export interface UserConfig {
+  version: number;
+  activeIdea?: string | null;
 }
 
 export interface ActiveProjectResolution {
@@ -32,6 +38,7 @@ export interface ActiveProjectResolution {
 
 const DEFAULT_OAT_CONFIG: OatConfig = { version: 1 };
 const DEFAULT_OAT_LOCAL_CONFIG: OatLocalConfig = { version: 1 };
+const DEFAULT_USER_CONFIG: UserConfig = { version: 1 };
 
 function getConfigPath(repoRoot: string): string {
   return join(repoRoot, '.oat', 'config.json');
@@ -186,6 +193,13 @@ function normalizeOatLocalConfig(
     next.lastPausedProject = normalizeProjectPath(repoRoot, rawValue);
   }
 
+  if ('activeIdea' in parsed) {
+    next.activeIdea =
+      typeof parsed.activeIdea === 'string' && parsed.activeIdea.trim()
+        ? parsed.activeIdea.trim()
+        : null;
+  }
+
   return next;
 }
 
@@ -297,5 +311,83 @@ export async function clearActiveProject(
     ...localConfig,
     activeProject: null,
     lastPausedProject: lastPaused,
+  });
+}
+
+function getUserConfigPath(userConfigDir: string): string {
+  return join(userConfigDir, 'config.json');
+}
+
+function normalizeUserConfig(parsed: unknown): UserConfig {
+  const next: UserConfig = { ...DEFAULT_USER_CONFIG };
+  if (!isRecord(parsed)) {
+    return next;
+  }
+
+  if ('activeIdea' in parsed) {
+    next.activeIdea =
+      typeof parsed.activeIdea === 'string' && parsed.activeIdea.trim()
+        ? parsed.activeIdea.trim()
+        : null;
+  }
+
+  return next;
+}
+
+export async function readUserConfig(
+  userConfigDir: string,
+): Promise<UserConfig> {
+  const configPath = getUserConfigPath(userConfigDir);
+
+  try {
+    const raw = await readFile(configPath, 'utf8');
+    return normalizeUserConfig(JSON.parse(raw));
+  } catch (error) {
+    if (isMissingFileError(error)) {
+      return { ...DEFAULT_USER_CONFIG };
+    }
+
+    throw error;
+  }
+}
+
+export async function writeUserConfig(
+  userConfigDir: string,
+  config: UserConfig,
+): Promise<void> {
+  const configPath = getUserConfigPath(userConfigDir);
+  const normalized = normalizeUserConfig(config);
+  await atomicWriteJson(configPath, normalized);
+}
+
+export async function resolveActiveIdea(
+  repoRoot: string,
+  userConfigDir: string,
+): Promise<string | null> {
+  const localConfig = await readOatLocalConfig(repoRoot);
+  if (localConfig.activeIdea) {
+    return localConfig.activeIdea;
+  }
+
+  const userConfig = await readUserConfig(userConfigDir);
+  return userConfig.activeIdea ?? null;
+}
+
+export async function setActiveIdea(
+  repoRoot: string,
+  ideaPath: string,
+): Promise<void> {
+  const localConfig = await readOatLocalConfig(repoRoot);
+  await writeOatLocalConfig(repoRoot, {
+    ...localConfig,
+    activeIdea: ideaPath.trim(),
+  });
+}
+
+export async function clearActiveIdea(repoRoot: string): Promise<void> {
+  const localConfig = await readOatLocalConfig(repoRoot);
+  await writeOatLocalConfig(repoRoot, {
+    ...localConfig,
+    activeIdea: null,
   });
 }
