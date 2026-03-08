@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p02-t01
+oat_current_task_id: p02-t02
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -28,10 +28,10 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
-| Phase 2 | pending | 4 | 0/4 |
+| Phase 2 | in_progress | 4 | 1/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 4/12 tasks completed
+**Total:** 5/12 tasks completed
 
 ---
 
@@ -157,8 +157,8 @@ oat_template_name: implementation
 
 ## Phase 2: `oat local` Command Group
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-08
 
 ### Phase Summary (fill when phase is complete)
 
@@ -177,8 +177,27 @@ oat_template_name: implementation
 
 ### Task p02-t01: Scaffold `oat local` command group + `status` subcommand
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 642302f
+
+**Outcome (required):**
+- Created `oat local status` subcommand showing localPaths existence and gitignore status
+- `checkLocalPathsStatus()` core logic in `status.ts` with `LocalPathStatus` interface
+- `isPathGitignored()` checks `.gitignore` for path with/without trailing slash and leading `/`
+- Table output with drift detection warnings (⚠ not gitignored)
+- JSON output mode supported
+- Registered `local` command group in CLI command index
+
+**Files changed:**
+- `packages/cli/src/commands/local/index.ts` - command registration + status action handler
+- `packages/cli/src/commands/local/status.ts` - core status check logic
+- `packages/cli/src/commands/local/status.test.ts` - 3 tests (existence/gitignore, drift, empty)
+- `packages/cli/src/commands/index.ts` - registered createLocalCommand
+- `packages/cli/src/commands/help-snapshots.test.ts` - updated root help snapshot
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run`
+- Result: 807 tests pass, lint warning only (unused type import), types clean
 
 ---
 
