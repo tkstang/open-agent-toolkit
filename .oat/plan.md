@@ -25,6 +25,8 @@ Any `.oat/` subdirectory, but the common candidates include:
 
 Currently, worktree bootstrap (Step 2.5) only copies `.oat/config.local.json` and `.oat/active-idea`. There's no configurable policy for anything else.
 
+Additionally, the active-idea pointer is still stored as a standalone file (`.oat/active-idea`, `~/.oat/active-idea`) rather than in `config.local.json` alongside `activeProject`. Since we're already touching config and worktree bootstrap, this is a natural time to consolidate.
+
 ## Design
 
 ### Config Schema Extension (`.oat/config.json`)
@@ -122,6 +124,9 @@ Expose via `oat config list` for visibility, but don't add individual get/set ke
 - Add `localPaths?: string[]` to `OatConfig` interface
 - Add normalization in `normalizeOatConfig()` — filter to valid strings, deduplicate, sort
 - Export a `resolveLocalPaths(config)` helper that returns the resolved array (empty if omitted)
+- Add `activeIdea?: string | null` to `OatLocalConfig` interface
+- Add normalization for `activeIdea` in `normalizeOatLocalConfig()` (same pattern as `activeProject`)
+- Export `resolveActiveIdea(repoRoot)`, `setActiveIdea(repoRoot, ideaPath)`, `clearActiveIdea(repoRoot)` — mirrors the `activeProject` API
 
 ### Step 2: `oat local` command group — scaffolding + status
 **Files (new):**
@@ -171,25 +176,67 @@ Expose via `oat config list` for visibility, but don't add individual get/set ke
 - `remove`: filter out matching paths, write config
 - Both: print updated list, remind about `oat local apply`
 
-### Step 6: Register command + worktree bootstrap update
+### Step 6: Migrate active-idea pointers to config-local
+**Files:**
+- `packages/cli/src/config/oat-config.ts` (already extended in Step 1)
+- `.agents/skills/oat-idea-new/SKILL.md`
+- `.agents/skills/oat-idea-ideate/SKILL.md`
+- `.agents/skills/oat-idea-summarize/SKILL.md`
+- `.agents/skills/oat-idea-scratchpad/SKILL.md`
+- `apps/oat-docs/docs/reference/file-locations.md`
+- `apps/oat-docs/docs/reference/oat-directory-structure.md`
+- `apps/oat-docs/docs/ideas/lifecycle.md`
+
+**Config changes (Step 1 covers the schema):**
+- `activeIdea` stored in `.oat/config.local.json` (repo-level) — replaces `.oat/active-idea` pointer file
+- User-level ideas: stored in `~/.oat/config.local.json` — replaces `~/.oat/active-idea` pointer file
+- Need a `readUserLocalConfig()` / `writeUserLocalConfig()` pair for `~/.oat/` (new, mirrors repo-level API)
+
+**Skill updates (all four idea skills):**
+- Replace Step 0 resolution logic:
+  - Old: `cat .oat/active-idea 2>/dev/null` / `cat ~/.oat/active-idea 2>/dev/null`
+  - New: read `activeIdea` from `.oat/config.local.json` / `~/.oat/config.local.json`
+  - Same precedence rules (project-level → user-level → ask)
+- Replace write logic:
+  - Old: `echo "$IDEA_PATH" > .oat/active-idea`
+  - New: `oat config set activeIdea "$IDEA_PATH"` (or equivalent config write instruction)
+- `oat-idea-new` Step 7: write via config instead of pointer file
+- `oat-idea-ideate` Step 1: read via config instead of pointer file
+- `oat-idea-summarize` Step 1: read + write via config instead of pointer file
+- `oat-idea-scratchpad`: read via config instead of pointer file
+
+**Compatibility window:**
+- Add fallback read: if `activeIdea` is unset in config, check for legacy `.oat/active-idea` file
+- If legacy file found: migrate value to config, delete pointer file, log migration
+- Same for user-level `~/.oat/active-idea`
+- Remove fallback after one release cycle
+
+**Docs updates:**
+- Update file-locations.md to reference config.local.json instead of pointer files
+- Update oat-directory-structure.md
+- Update ideas/lifecycle.md
+
+### Step 7: Register command + worktree bootstrap update
 **Files:**
 - `packages/cli/src/commands/index.ts` (or entry point) — register `createLocalCommand()`
 - `.agents/skills/oat-worktree-bootstrap/SKILL.md` — update Step 2.5
 
 **Bootstrap changes:**
-- After config/idea copy: read `localPaths` from config in worktree
+- After config copy: `activeIdea` is already in `config.local.json` (no separate file copy needed)
+- Remove `.oat/active-idea` from the Step 2.5 copy loop (replaced by config)
+- Read `localPaths` from config in worktree
 - If non-empty: for each path, copy from source repo → worktree (same logic as `sync --to`)
 - Log results, non-blocking
 
-### Step 7: Tests
+### Step 8: Tests
 **Files (new):**
-- `packages/cli/src/config/oat-config.test.ts` — test `localPaths` normalization + `resolveLocalPaths`
+- `packages/cli/src/config/oat-config.test.ts` — test `localPaths` normalization, `resolveLocalPaths`, `activeIdea` read/write/migration
 - `packages/cli/src/commands/local/status.test.ts`
 - `packages/cli/src/commands/local/apply.test.ts`
 - `packages/cli/src/commands/local/sync.test.ts`
 - `packages/cli/src/commands/local/manage.test.ts`
 
-### Step 8: Build, lint, type-check
+### Step 9: Build, lint, type-check
 - `pnpm build && pnpm lint && pnpm type-check && pnpm test`
 
 ## Design Decisions
@@ -207,3 +254,9 @@ Expose via `oat config list` for visibility, but don't add individual get/set ke
 6. **No-overwrite default**: Safe for worktree copy. `--force` is explicit opt-in. No merge/diff — just file copy.
 
 7. **Dependency on dry-run flip**: `apply` uses `--apply` flag for now (current convention). When the CLI-wide flip lands, this becomes the default behavior with `--dry-run` opt-in.
+
+8. **Active-idea migration bundled here**: The pointer file → config migration is small, touches the same systems (config, worktree bootstrap), and eliminates a special-case file from the bootstrap copy loop. After migration, worktree bootstrap only copies `config.local.json` — everything else is either in that file or governed by `localPaths`.
+
+9. **Dual-level config for ideas**: Repo-level uses `.oat/config.local.json` (existing file). User-level uses `~/.oat/config.local.json` (new file, same schema). Skills resolve with the same precedence they use today (project → user → ask), just reading from config instead of pointer files.
+
+10. **Legacy fallback**: One release cycle of backwards-compatible reads from the old pointer files, with auto-migration on first access. Keeps existing worktrees working without manual intervention.
