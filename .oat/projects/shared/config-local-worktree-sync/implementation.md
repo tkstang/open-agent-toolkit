@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p02-t02
+oat_current_task_id: p02-t03
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -28,10 +28,10 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
-| Phase 2 | in_progress | 4 | 1/4 |
+| Phase 2 | in_progress | 4 | 2/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 5/12 tasks completed
+**Total:** 6/12 tasks completed
 
 ---
 
@@ -203,8 +203,25 @@ oat_template_name: implementation
 
 ### Task p02-t02: `oat local apply` -- managed gitignore section
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 1766c2d
+
+**Outcome (required):**
+- `applyGitignore()` reads/writes managed section in `.gitignore` delimited by marker comments
+- Supports create, update, replace, remove (empty localPaths), and no-change detection
+- Paths normalized with trailing slash
+- `oat local apply` subcommand registered with `--dry-run` option
+- JSON output mode supported
+- 6 tests covering all cases
+
+**Files changed:**
+- `packages/cli/src/commands/local/apply.ts` - core gitignore section management
+- `packages/cli/src/commands/local/apply.test.ts` - 6 tests
+- `packages/cli/src/commands/local/index.ts` - registered apply subcommand
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run`
+- Result: 813 tests pass, lint warning only, types clean
 
 ---
 
