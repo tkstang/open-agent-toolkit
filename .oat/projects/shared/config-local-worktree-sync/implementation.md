@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t04
+oat_current_task_id: p02-t01
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -27,33 +27,41 @@ oat_template_name: implementation
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 4 | 3/4 |
+| Phase 1 | complete | 4 | 4/4 |
 | Phase 2 | pending | 4 | 0/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 3/12 tasks completed
+**Total:** 4/12 tasks completed
 
 ---
 
 ## Phase 1: Config Schema + Active Idea Migration
 
-**Status:** pending
-**Started:** -
+**Status:** complete
+**Started:** 2026-03-08
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
-- {TBD}
+- `localPaths` added to `OatConfig` schema with dedup/sort normalization
+- `activeIdea` added to `OatLocalConfig` + new `UserConfig` for `~/.oat/config.json`
+- `oat config set/get activeIdea` works via CLI (ConfigKey extended)
+- All 4 idea skills migrated from pointer files to config-based resolution (hard cutover)
+- Docs updated to reflect config-based active idea
 
 **Key files touched:**
-- {TBD}
+- `packages/cli/src/config/oat-config.ts`
+- `packages/cli/src/commands/config/index.ts`
+- `.agents/skills/oat-idea-{new,ideate,summarize,scratchpad}/SKILL.md`
+- `apps/oat-docs/docs/{reference/file-locations.md,reference/oat-directory-structure.md,ideas/lifecycle.md}`
 
 **Verification:**
-- Run: `{TBD}`
-- Result: {TBD}
+- Run: `pnpm test && pnpm lint && pnpm type-check`
+- Result: 804 tests pass, lint clean, types clean
 
 **Notes / Decisions:**
-- {TBD}
+- Hard cutover: no legacy fallback for pointer files
+- User-level config: `~/.oat/config.json` (not `.local` suffix)
 
 ### Task p01-t01: Add `localPaths` to OatConfig schema
 
@@ -131,8 +139,19 @@ oat_template_name: implementation
 
 ### Task p01-t04: Update docs for active-idea migration
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** d7aaa8e
+
+**Outcome (required):**
+- Updated file-locations.md to reference config instead of pointer files
+- Updated oat-directory-structure.md to remove `.oat/active-idea` from layout/table, add `activeIdea` to config ownership
+- Updated ideas/lifecycle.md with config-based resolution (CLI commands, config keys)
+- Legacy pointer files noted in compatibility sections only
+
+**Files changed:**
+- `apps/oat-docs/docs/reference/file-locations.md` - config references
+- `apps/oat-docs/docs/reference/oat-directory-structure.md` - removed pointer entries
+- `apps/oat-docs/docs/ideas/lifecycle.md` - config-based active idea section
 
 ---
 
