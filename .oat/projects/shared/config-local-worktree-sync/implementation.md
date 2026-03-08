@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p02-t04
+oat_current_task_id: p03-t01
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -28,10 +28,10 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
-| Phase 2 | in_progress | 4 | 3/4 |
+| Phase 2 | complete | 4 | 4/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 7/12 tasks completed
+**Total:** 8/12 tasks completed
 
 ---
 
@@ -157,23 +157,31 @@ oat_template_name: implementation
 
 ## Phase 2: `oat local` Command Group
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-08
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
-- {TBD}
+- Full `oat local` command group: `status`, `apply`, `sync`, `add`, `remove`
+- `oat local status` checks localPaths existence + gitignore membership with drift warnings
+- `oat local apply` manages a delimited section in `.gitignore` (create/update/remove/no-change)
+- `oat local sync` copies localPaths between main repo and worktrees (to/from/force)
+- `oat local add/remove` manages localPaths in config with deduplication
 
 **Key files touched:**
-- {TBD}
+- `packages/cli/src/commands/local/{index,status,apply,sync,manage}.ts`
+- `packages/cli/src/commands/local/{status,apply,sync,manage}.test.ts`
+- `packages/cli/src/commands/index.ts`
 
 **Verification:**
-- Run: `{TBD}`
-- Result: {TBD}
+- Run: `pnpm --filter @oat/cli test -- --run && pnpm --filter @oat/cli lint && pnpm --filter @oat/cli type-check`
+- Result: 824 tests pass, lint clean (1 pre-existing warning), types clean
 
 **Notes / Decisions:**
-- {TBD}
+- Dry-run is an option on `apply` (not the default) — keeps CLI behavior simple
+- Glob expansion from plan was omitted — localPaths are explicit directory paths, not patterns
+- `sync` uses `copyDirectory` from `@fs/io` for consistency with existing codebase
 
 ### Task p02-t01: Scaffold `oat local` command group + `status` subcommand
 
@@ -251,8 +259,24 @@ oat_template_name: implementation
 
 ### Task p02-t04: `oat local add` / `oat local remove` -- path management
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 8b2ec9c
+
+**Outcome (required):**
+- `addLocalPaths()` adds paths with deduplication, normalization, sorted output
+- `removeLocalPaths()` filters paths, removes `localPaths` key when empty
+- `oat local add` / `oat local remove` subcommands registered
+- JSON output mode supported, reminder to run `oat local apply`
+- 5 tests covering add, dedup, remove, not-found, empty removal
+
+**Files changed:**
+- `packages/cli/src/commands/local/manage.ts` - add/remove logic
+- `packages/cli/src/commands/local/manage.test.ts` - 5 tests
+- `packages/cli/src/commands/local/index.ts` - registered add/remove subcommands
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run`
+- Result: 824 tests pass, lint warning only, types clean
 
 ---
 
