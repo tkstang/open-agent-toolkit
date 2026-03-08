@@ -598,7 +598,7 @@ git commit -m "fix(p07-t03): track partial failures in oat_docs_updated state"
 | p04 | code | pending | - | - |
 | p05 | code | pending | - | - |
 | p06 | code | pending | - | - |
-| final | code | fixes_added | 2026-03-08 | reviews/final-review-2026-03-08.md |
+| final | code | fixes_completed | 2026-03-08 | reviews/final-review-2026-03-08.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 

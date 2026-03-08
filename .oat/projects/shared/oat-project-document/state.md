@@ -1,6 +1,6 @@
 ---
-oat_current_task: p07-t01
-oat_last_commit: e804a7a
+oat_current_task: null
+oat_last_commit: 2e298b1
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -21,22 +21,23 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Tasks complete; awaiting final review
+Implementation - Review fixes complete; awaiting re-review
 
 ## Artifacts
 
 - **Discovery:** `discovery.md` (complete)
 - **Design:** `design.md` (complete)
 - **Plan:** `plan.md` (complete — 15 tasks across 6 phases)
-- **Implementation:** `implementation.md` (complete — 15/15 tasks)
+- **Implementation:** `implementation.md` (complete — 18/18 tasks)
 
 ## Progress
 
 - ✓ Discovery complete
 - ✓ Design complete
 - ✓ Plan complete (15 tasks, 6 phases)
-- ✓ All implementation tasks complete (15/15)
-- ⧗ Awaiting final review
+- ✓ All implementation tasks complete (18/18)
+- ✓ Review fix tasks complete (3/3)
+- ⧗ Awaiting re-review
 
 ## Blockers
 
@@ -44,4 +45,4 @@ None
 
 ## Next Milestone
 
-Final review, then PR
+Re-review (final), then PR

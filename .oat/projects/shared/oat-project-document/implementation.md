@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p07-t01
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -31,9 +31,9 @@ oat_generated: false
 | Phase 4: Approval, Apply, and State Updates | complete | 3 | 3/3 |
 | Phase 5: Config Schema and Integration | complete | 4 | 4/4 |
 | Phase 6: Sync and Final Polish | complete | 2 | 2/2 |
-| Phase 7: Review Fixes | pending | 3 | 0/3 |
+| Phase 7: Review Fixes | complete | 3 | 3/3 |
 
-**Total:** 15/18 tasks completed
+**Total:** 18/18 tasks completed
 
 ---
 
@@ -342,26 +342,74 @@ oat_generated: false
 
 **New tasks added:** p07-t01, p07-t02, p07-t03
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
+**Next:** Fix tasks complete. Request re-review via `oat-project-review-provide code final`.
+
+### Phase Summary
+
+**Outcome:**
+- Added oat-project-document to CLI workflow bundle (WORKFLOW_SKILLS + bundled asset)
+- Fixed skip path to set `oat_docs_updated: skipped` instead of leaving as null
+- Added `$ALL_SUCCEEDED` tracking to prevent `complete` on partial failures
+
+**Key files touched:**
+- `packages/cli/src/commands/init/tools/workflows/install-workflows.ts` - WORKFLOW_SKILLS array
+- `packages/cli/src/commands/init/tools/workflows/install-workflows.test.ts` - updated counts
+- `packages/cli/assets/skills/oat-project-document/SKILL.md` - bundled asset
+- `.agents/skills/oat-project-document/SKILL.md` - skip path + partial failure fixes
+
+**Verification:**
+- Run: `pnpm type-check && pnpm --filter @oat/cli test`
+- Result: pass (793 tests)
 
 ### Task p07-t01: (review) Add oat-project-document to workflow bundle
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** eac01b7
+
+**Outcome:**
+- Added `oat-project-document` to `WORKFLOW_SKILLS` array in alphabetical order
+- Created bundled asset at `packages/cli/assets/skills/oat-project-document/SKILL.md`
+- Updated test counts from 21 to 22 in workflow installer tests (skill array + assertions)
+
+**Files changed:**
+- `packages/cli/src/commands/init/tools/workflows/install-workflows.ts` - added to WORKFLOW_SKILLS
+- `packages/cli/src/commands/init/tools/workflows/install-workflows.test.ts` - updated counts
+- `packages/cli/assets/skills/oat-project-document/SKILL.md` - bundled copy
+
+**Verification:**
+- Run: `pnpm type-check && pnpm --filter @oat/cli test`
+- Result: pass (793 tests)
 
 ---
 
 ### Task p07-t02: (review) Fix skip path to set oat_docs_updated: skipped
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 90f7578
+
+**Outcome:**
+- Updated Step 5c skip bullet: now sets `oat_docs_updated: skipped` and commits state before exiting
+- Updated Step 7c edge case: references that skip was already handled in Step 5
+
+**Files changed:**
+- `.agents/skills/oat-project-document/SKILL.md` - skip path fix
+- `packages/cli/assets/skills/oat-project-document/SKILL.md` - synced copy
 
 ---
 
 ### Task p07-t03: (review) Track partial apply failures in oat_docs_updated state
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 2e298b1
+
+**Outcome:**
+- Added `$ALL_SUCCEEDED` flag tracking in Step 6 error handling
+- Step 7b now conditionally sets `oat_docs_updated: complete` only when all writes succeed
+- Added partial failure summary report in Step 7d with failed file paths
+
+**Files changed:**
+- `.agents/skills/oat-project-document/SKILL.md` - partial failure tracking
+- `packages/cli/assets/skills/oat-project-document/SKILL.md` - synced copy
 
 ---
 
@@ -421,6 +469,15 @@ Chronological log of implementation progress.
 - Provider symlinks created for oat-project-document
 - Reference docs updated (current-state, backlog, backlog-completed)
 
+- [x] p07-t01: (review) Add oat-project-document to workflow bundle - eac01b7
+- [x] p07-t02: (review) Fix skip path to set oat_docs_updated: skipped - 90f7578
+- [x] p07-t03: (review) Track partial apply failures in oat_docs_updated state - 2e298b1
+
+**What changed (high level):**
+- Skill added to CLI workflow bundle for distribution via `oat init tools workflows`
+- Skip path now correctly sets `oat_docs_updated: skipped` instead of leaving null
+- Partial apply failures no longer falsely certify `oat_docs_updated: complete`
+
 ---
 
 ## Deviations from Plan
@@ -436,6 +493,7 @@ Chronological log of implementation progress.
 | 1-4 | lint | pass | 0 | - |
 | 5 | type-check + test (793) | pass | 0 | - |
 | 6 | sync + lint | pass | 0 | - |
+| 7 | type-check + test (793) | pass | 0 | - |
 
 ## Final Summary (for PR/docs)
 
@@ -455,9 +513,11 @@ Chronological log of implementation progress.
 
 **Key files / modules:**
 - `.agents/skills/oat-project-document/SKILL.md` - complete skill definition (7 process steps)
+- `packages/cli/assets/skills/oat-project-document/SKILL.md` - bundled asset for workflow installer
 - `packages/cli/src/config/oat-config.ts` - OatDocumentationConfig interface + normalization
 - `packages/cli/src/commands/config/index.ts` - documentation.* config key support
 - `packages/cli/src/commands/state/generate.ts` - docsUpdated field, dashboard display, next-step routing
+- `packages/cli/src/commands/init/tools/workflows/install-workflows.ts` - WORKFLOW_SKILLS entry
 - `.oat/templates/state.md` + `packages/cli/assets/templates/state.md` - oat_docs_updated field
 - `.agents/skills/oat-project-complete/SKILL.md` - Step 3.6 documentation sync check
 
