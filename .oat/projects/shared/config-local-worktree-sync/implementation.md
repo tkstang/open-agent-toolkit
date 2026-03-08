@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p02-t03
+oat_current_task_id: p02-t04
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -28,10 +28,10 @@ oat_template_name: implementation
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
-| Phase 2 | in_progress | 4 | 2/4 |
+| Phase 2 | in_progress | 4 | 3/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 6/12 tasks completed
+**Total:** 7/12 tasks completed
 
 ---
 
@@ -227,8 +227,25 @@ oat_template_name: implementation
 
 ### Task p02-t03: `oat local sync` -- bulk worktree copy
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 1e4a857
+
+**Outcome (required):**
+- `syncLocalPaths()` copies localPaths between source/target roots with direction control
+- Supports `to` (default: main→worktree) and `from` (worktree→main) directions
+- Force overwrite, skip existing, and missing source tracking
+- `oat local sync <worktree-path>` subcommand with `--from` and `--force` options
+- JSON output mode supported
+- 6 tests covering copy-to, copy-from, skip, force, missing, multiple paths
+
+**Files changed:**
+- `packages/cli/src/commands/local/sync.ts` - core sync logic
+- `packages/cli/src/commands/local/sync.test.ts` - 6 tests
+- `packages/cli/src/commands/local/index.ts` - registered sync subcommand
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run`
+- Result: 819 tests pass, lint warning only, types clean
 
 ---
 
