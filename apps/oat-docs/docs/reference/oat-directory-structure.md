@@ -85,6 +85,7 @@ Current schema keys:
 | `version`        | `number` | `1`                      | Schema version                                               |
 | `worktrees.root` | `string` | `".worktrees"`           | Root directory for git worktrees (repo-relative or absolute) |
 | `projects.root`  | `string` | `".oat/projects/shared"` | Default root directory for OAT projects                      |
+| `localPaths`     | `string[]` | -                      | Gitignored directories to sync between main repo and worktrees. Supports glob patterns. Managed via `oat local add/remove`. |
 
 Example:
 
