@@ -714,7 +714,7 @@ git commit -m "fix(p03-t08): remove unused LocalPathStatus import"
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
-| final | code | fixes_added | 2026-03-08 | reviews/final-review-2026-03-08.md |
+| final | code | fixes_completed | 2026-03-07 | reviews/final-review-2026-03-08.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 | plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |

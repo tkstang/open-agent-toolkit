@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t08
+oat_current_task_id: null
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -29,9 +29,9 @@ oat_template_name: implementation
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 8 | 7/8 |
+| Phase 3 | complete | 8 | 8/8 |
 
-**Total:** 15/16 tasks completed
+**Total:** 16/16 tasks completed
 
 ---
 
@@ -451,6 +451,24 @@ oat_template_name: implementation
 
 ---
 
+### Task p03-t08: (review) Remove unused LocalPathStatus import
+
+**Status:** completed
+**Commit:** b290a05
+
+**Outcome (required):**
+- Removed unused `type LocalPathStatus` import from `status.test.ts`
+- Lint now fully clean (no warnings)
+
+**Files changed:**
+- `packages/cli/src/commands/local/status.test.ts` - removed unused type import
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli lint`
+- Result: Checked 271 files, no warnings
+
+---
+
 ## Orchestration Runs
 
 <!-- orchestration-runs-start -->
@@ -498,7 +516,7 @@ oat_template_name: implementation
 
 **New tasks added:** p03-t05, p03-t06, p03-t07, p03-t08
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
+**Next:** All fix tasks complete. Request re-review via `oat-project-review-provide code final`.
 
 After the fix tasks are complete:
 - Update the review row status to `fixes_completed`
