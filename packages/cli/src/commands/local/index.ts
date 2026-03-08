@@ -226,6 +226,11 @@ export function createLocalCommand(): Command {
               if (context.json) {
                 context.logger.json({ status: 'ok', ...result });
               } else {
+                if (result.rejected.length > 0) {
+                  for (const r of result.rejected) {
+                    context.logger.warn(`Rejected: ${r.path} (${r.reason})`);
+                  }
+                }
                 if (result.added.length > 0) {
                   context.logger.info(`Added: ${result.added.join(', ')}`);
                 }
@@ -234,9 +239,11 @@ export function createLocalCommand(): Command {
                     `Already present: ${result.alreadyPresent.join(', ')}`,
                   );
                 }
-                context.logger.info(
-                  '\nRun `oat local apply` to update .gitignore.',
-                );
+                if (result.added.length > 0) {
+                  context.logger.info(
+                    '\nRun `oat local apply` to update .gitignore.',
+                  );
+                }
               }
               process.exitCode = 0;
             } catch (error) {

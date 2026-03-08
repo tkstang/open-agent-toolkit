@@ -90,4 +90,48 @@ describe('oat local add/remove', () => {
     const config = await readOatConfig(repoRoot);
     expect(config.localPaths).toBeUndefined();
   });
+
+  it('should reject absolute paths', async () => {
+    const repoRoot = await createRepoRoot();
+
+    const result = await addLocalPaths(repoRoot, ['/tmp/foo', '.oat/ideas']);
+
+    expect(result.rejected).toEqual([
+      { path: '/tmp/foo', reason: 'absolute path' },
+    ]);
+    expect(result.added).toEqual(['.oat/ideas']);
+  });
+
+  it('should reject parent-relative paths', async () => {
+    const repoRoot = await createRepoRoot();
+
+    const result = await addLocalPaths(repoRoot, [
+      '../other-repo',
+      '.oat/../..',
+      '.oat/ideas',
+    ]);
+
+    expect(result.rejected).toHaveLength(2);
+    expect(result.rejected[0]).toEqual({
+      path: '../other-repo',
+      reason: 'parent-relative path',
+    });
+    expect(result.rejected[1]).toEqual({
+      path: '.oat/../..',
+      reason: 'parent-relative path',
+    });
+    expect(result.added).toEqual(['.oat/ideas']);
+  });
+
+  it('should reject empty paths', async () => {
+    const repoRoot = await createRepoRoot();
+
+    const result = await addLocalPaths(repoRoot, ['', '  ', '.oat/ideas']);
+
+    expect(result.rejected).toEqual([
+      { path: '', reason: 'empty path' },
+      { path: '  ', reason: 'empty path' },
+    ]);
+    expect(result.added).toEqual(['.oat/ideas']);
+  });
 });
