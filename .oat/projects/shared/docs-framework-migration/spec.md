@@ -228,19 +228,19 @@ The CLI gains two new commands: a migration codemod for converting MkDocs syntax
 
 | ID | Description | Priority | Verification | Planned Tasks |
 |----|-------------|----------|--------------|---------------|
-| FR1 | Fumadocs scaffold via `oat docs init` | P0 | integration: scaffold + build | TBD |
-| FR2 | Shared docs config package | P0 | integration: build + render | TBD |
-| FR3 | Shared docs transforms package | P0 | unit: AST transform output | TBD |
-| FR4 | Shared docs theme package | P0 | manual: visual review + dark/light mode | TBD |
-| FR5 | MkDocs migration codemod | P0 | unit + integration: codemod output against test fixtures | TBD |
-| FR6 | Docs index generation | P0 | unit + integration: generated index.md content | TBD |
-| FR7 | Documentation config schema `index` field | P1 | unit: config read/write | TBD |
-| FR8 | MkDocs scaffold preservation | P1 | integration: existing scaffold still works | TBD |
-| NFR1 | Plain markdown authoring | P0 | e2e: author .md, build, verify render | TBD |
-| NFR2 | Package manager agnostic | P0 | manual: test with npm, pnpm, yarn | TBD |
-| NFR3 | Static export compatibility | P0 | integration: build + verify out/ | TBD |
-| NFR4 | Open source ready | P1 | manual: review for hardcoded branding | TBD |
-| NFR5 | Upgrade path | P1 | integration: bump version, rebuild | TBD |
+| FR1 | Fumadocs scaffold via `oat docs init` | P0 | integration: scaffold + build | p02-t01, p02-t03, p02-t04, p02-t07 |
+| FR2 | Shared docs config package | P0 | integration: build + render | p01-t04, p01-t05, p01-t06, p01-t11 |
+| FR3 | Shared docs transforms package | P0 | unit: AST transform output | p01-t01, p01-t02, p01-t03 |
+| FR4 | Shared docs theme package | P0 | manual: visual review + dark/light mode | p01-t07, p01-t08, p01-t09, p01-t10 |
+| FR5 | MkDocs migration codemod | P0 | unit + integration: codemod output against test fixtures | p03-t01, p03-t02, p03-t03, p03-t04, p03-t05, p04-t01 |
+| FR6 | Docs index generation | P0 | unit + integration: generated index.md content | p03-t06, p03-t07, p03-t08, p03-t09 |
+| FR7 | Documentation config schema `index` field | P1 | unit: config read/write | p02-t05, p03-t09 |
+| FR8 | MkDocs scaffold preservation | P1 | integration: existing scaffold still works | p02-t02, p04-t03 |
+| NFR1 | Plain markdown authoring | P0 | e2e: author .md, build, verify render | p04-t02 |
+| NFR2 | Package manager agnostic | P0 | manual: test with npm, pnpm, yarn | p04-t05 |
+| NFR3 | Static export compatibility | P0 | integration: build + verify out/ | p02-t07, p04-t04 |
+| NFR4 | Open source ready | P1 | manual: review for hardcoded branding | p04-t05 |
+| NFR5 | Upgrade path | P1 | integration: bump version, rebuild | p04-t05 |
 
 ## Open Questions
 
