@@ -15,6 +15,7 @@ export interface OatConfig {
   worktrees?: { root: string };
   projects?: { root: string };
   documentation?: OatDocumentationConfig;
+  localPaths?: string[];
 }
 
 export interface OatLocalConfig {
@@ -147,6 +148,15 @@ function normalizeOatConfig(parsed: unknown): OatConfig {
     }
   }
 
+  if (Array.isArray(parsed.localPaths)) {
+    const filtered = parsed.localPaths.filter(
+      (v): v is string => typeof v === 'string' && v.trim() !== '',
+    );
+    if (filtered.length > 0) {
+      next.localPaths = [...new Set(filtered)].sort();
+    }
+  }
+
   return next;
 }
 
@@ -177,6 +187,10 @@ function normalizeOatLocalConfig(
   }
 
   return next;
+}
+
+export function resolveLocalPaths(config: OatConfig): string[] {
+  return config.localPaths ?? [];
 }
 
 export async function readOatConfig(repoRoot: string): Promise<OatConfig> {

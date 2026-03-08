@@ -7,6 +7,7 @@ import {
   readOatConfig,
   readOatLocalConfig,
   resolveActiveProject,
+  resolveLocalPaths,
   setActiveProject,
   writeOatConfig,
   writeOatLocalConfig,
@@ -131,6 +132,64 @@ describe('oat-config', () => {
       name: null,
       path: null,
       status: 'unset',
+    });
+  });
+
+  describe('localPaths normalization', () => {
+    it('should deduplicate and sort localPaths', async () => {
+      const repoRoot = await createRepoRoot();
+
+      await writeOatConfig(repoRoot, {
+        version: 1,
+        localPaths: [
+          '.oat/projects',
+          '.oat/config.local.json',
+          '.oat/projects',
+          '.oat/ideas',
+        ],
+      });
+
+      const config = await readOatConfig(repoRoot);
+      expect(config.localPaths).toEqual([
+        '.oat/config.local.json',
+        '.oat/ideas',
+        '.oat/projects',
+      ]);
+    });
+
+    it('should default to undefined when omitted', async () => {
+      const repoRoot = await createRepoRoot();
+
+      await writeOatConfig(repoRoot, { version: 1 });
+
+      const config = await readOatConfig(repoRoot);
+      expect(config.localPaths).toBeUndefined();
+    });
+
+    it('should filter out non-string values', async () => {
+      const repoRoot = await createRepoRoot();
+      const configPath = join(repoRoot, '.oat', 'config.json');
+      await writeFile(
+        configPath,
+        JSON.stringify({
+          version: 1,
+          localPaths: ['.oat/projects', 42, null, '', '.oat/ideas'],
+        }),
+        'utf8',
+      );
+
+      const config = await readOatConfig(repoRoot);
+      expect(config.localPaths).toEqual(['.oat/ideas', '.oat/projects']);
+    });
+
+    it('resolveLocalPaths returns empty array when localPaths is undefined', () => {
+      expect(resolveLocalPaths({ version: 1 })).toEqual([]);
+    });
+
+    it('resolveLocalPaths returns the localPaths array when defined', () => {
+      expect(
+        resolveLocalPaths({ version: 1, localPaths: ['.oat/projects'] }),
+      ).toEqual(['.oat/projects']);
     });
   });
 
