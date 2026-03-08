@@ -128,6 +128,6 @@ _Include this section only when the request is exploratory or multiple viable ap
 Use this discovery artifact to drive the next workflow step:
 
 - **Quick mode → straight to plan:** proceed directly to `plan.md` when scope is clear and no architecture decisions remain.
-- **Quick mode → lightweight design:** produce a focused `design.md` (architecture, components, data flow, testing) before planning. Choose this when discovery surfaced architecture choices or component boundaries.
+- **Quick mode → optional lightweight design:** produce a focused `design.md` (architecture, components, data flow, testing) before planning. Choose this when discovery surfaced architecture choices or component boundaries.
 - **Quick mode → promote:** escalate to spec-driven if discovery revealed the scope is larger or more complex than expected.
 - **Spec-driven mode:** continue to `oat-project-spec` (after HiLL approval if configured).
