@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t01
+oat_current_task_id: p03-t02
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -31,7 +31,7 @@ oat_template_name: implementation
 | Phase 2 | complete | 4 | 4/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 8/12 tasks completed
+**Total:** 9/12 tasks completed
 
 ---
 
@@ -302,8 +302,21 @@ oat_template_name: implementation
 
 ### Task p03-t01: Update worktree bootstrap to use config + local sync
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 4b0f59c
+
+**Outcome (required):**
+- Removed `.oat/active-idea` from Step 2.5 copy loop
+- `activeIdea` now propagates via `config.local.json` copy (automatic)
+- Added `oat local sync` step after config propagation
+- Sync is non-blocking: continues on failure or missing localPaths
+
+**Files changed:**
+- `.agents/skills/oat-worktree-bootstrap/SKILL.md` - config-based + local sync
+
+**Verification:**
+- Run: `grep -r "active-idea" .agents/skills/oat-worktree-bootstrap/SKILL.md`
+- Result: no matches (clean)
 
 ---
 
