@@ -5,7 +5,7 @@ oat_blockers: []
 oat_last_updated: 2026-03-07
 oat_phase: plan
 oat_phase_status: complete
-oat_plan_hill_phases: []
+oat_plan_hill_phases: ["p03"]
 oat_plan_source: imported
 oat_import_reference: references/imported-plan.md
 oat_import_source_path: /Users/thomas.stang/.claude/plans/cozy-seeking-valley.md
