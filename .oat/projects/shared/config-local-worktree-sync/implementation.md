@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: null
+oat_current_task_id: p03-t09
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -29,9 +29,9 @@ oat_template_name: implementation
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | complete | 8 | 8/8 |
+| Phase 3 | in_progress | 9 | 8/9 |
 
-**Total:** 16/16 tasks completed
+**Total:** 16/17 tasks completed
 
 ---
 
@@ -516,11 +516,29 @@ oat_template_name: implementation
 
 **New tasks added:** p03-t05, p03-t06, p03-t07, p03-t08
 
-**Next:** All fix tasks complete. Request re-review via `oat-project-review-provide code final`.
+**Next:** Fix tasks complete. Re-review v2 received and processed below.
 
-After the fix tasks are complete:
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+### Code Review Received: final (re-review v2)
+
+**Date:** 2026-03-08
+**Review artifact:** reviews/final-review-2026-03-08-v2.md
+**Review cycle:** 2 of 3
+
+**Findings:**
+- Critical: 0
+- Important: 1
+- Medium: 0
+- Minor: 0
+
+**Deferred Medium resurfacing:**
+- `M1` (apply vs dry-run-first) from v1: explicitly accepted as deferred (rejected_with_rationale per user direction). Not re-raised in v2.
+
+**Dispositions:**
+- `I1` (false drift warnings for glob-configured localPaths in status): converted → p03-t09
+
+**New tasks added:** p03-t09
+
+**Next:** Execute fix task via the `oat-project-implement` skill.
 
 ---
 

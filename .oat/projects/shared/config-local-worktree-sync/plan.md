@@ -707,6 +707,61 @@ git commit -m "fix(p03-t08): remove unused LocalPathStatus import"
 
 ---
 
+### Task p03-t09: (review) Fix false drift warnings for glob-configured localPaths in status
+
+**Files:**
+- Modify: `packages/cli/src/commands/local/status.ts`
+- Modify: `packages/cli/src/commands/local/status.test.ts`
+
+**Step 1: Write test (RED)**
+
+Add a test that creates a repo with a glob-based `.gitignore` entry (e.g. `.oat/projects/**/reviews/`) and expanded directories that match the glob. Verify `checkLocalPathsStatus()` reports `gitignored: true` for the expanded paths.
+
+```typescript
+it('should detect gitignored status for glob-expanded paths', async () => {
+  const repoRoot = await createRepoRoot();
+  await mkdir(join(repoRoot, '.oat', 'projects', 'shared', 'alpha', 'reviews'), { recursive: true });
+  // .gitignore has the raw glob pattern
+  await writeFile(join(repoRoot, '.gitignore'), '.oat/projects/**/reviews/\n', 'utf8');
+
+  const results = await checkLocalPathsStatus(repoRoot, ['.oat/projects/**/reviews']);
+
+  // Should expand glob and report each match as gitignored
+  expect(results).toEqual([
+    { path: '.oat/projects/shared/alpha/reviews', exists: true, gitignored: true },
+  ]);
+});
+```
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/local/status.test.ts`
+Expected: Test fails (RED)
+
+**Step 2: Implement fix (GREEN)**
+
+Update `isPathGitignored()` in `status.ts` to handle glob patterns in `.gitignore`. Options:
+- Use `minimatch` or `picomatch` to test expanded paths against gitignore glob entries
+- Or shell out to `git check-ignore -q <path>` for authoritative git matching
+- Or match expanded paths back to their original config glob patterns and check those
+
+Simplest approach: enhance `isPathGitignored()` to use a glob matcher (e.g. `picomatch` which is already a transitive dep, or Node.js `path.matchesGlob()` if available in Node 22) to test each `.gitignore` line against the expanded path.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/local/status.test.ts`
+Expected: All tests pass (GREEN)
+
+Run: `pnpm --filter @oat/cli lint && pnpm --filter @oat/cli type-check`
+Expected: No errors
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/local/status.ts packages/cli/src/commands/local/status.test.ts
+git commit -m "fix(p03-t09): fix false drift warnings for glob-configured localPaths in status"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
@@ -714,7 +769,7 @@ git commit -m "fix(p03-t08): remove unused LocalPathStatus import"
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
-| final | code | received | 2026-03-08 | reviews/final-review-2026-03-08-v2.md |
+| final | code | fixes_added | 2026-03-08 | reviews/final-review-2026-03-08-v2.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 | plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
@@ -728,9 +783,9 @@ git commit -m "fix(p03-t08): remove unused LocalPathStatus import"
 **Summary:**
 - Phase 1: 4 tasks - Config schema + active idea migration + skill/docs updates
 - Phase 2: 4 tasks - `oat local` command group (status, apply, sync, add/remove)
-- Phase 3: 8 tasks - Worktree bootstrap integration (manual + auto) + cleanup + final verification + review fixes
+- Phase 3: 9 tasks - Worktree bootstrap integration (manual + auto) + cleanup + final verification + review fixes
 
-**Total: 16 tasks**
+**Total: 17 tasks**
 
 Ready for code review and merge.
 
