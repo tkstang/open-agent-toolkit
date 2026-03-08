@@ -13,7 +13,7 @@ oat_template: false
 
 This design introduces three new packages to the OAT monorepo (`docs-config`, `docs-transforms`, `docs-theme`) that together provide a Fumadocs-based documentation platform. Consumer repos scaffold a thin Next.js app via `oat docs init` that imports everything from these packages — authors write plain markdown and get a polished, statically-exported docs site.
 
-The CLI gains two new commands: `oat docs migrate` for one-time MkDocs-to-GFM syntax conversion, and `oat docs nav generate` for producing a navigation artifact from the file tree. The existing `oat docs init` command adds a framework choice prompt while preserving MkDocs as an option.
+The CLI gains two new commands: `oat docs migrate` for one-time MkDocs-to-GFM syntax conversion, and `oat docs index generate` for producing an index artifact from the file tree. The existing `oat docs init` command adds a framework choice prompt while preserving MkDocs as an option.
 
 The architecture follows a "thin scaffold, heavy packages" pattern — all framework complexity is encapsulated in shared packages so upgrades are version bumps, not re-scaffolds.
 
@@ -26,7 +26,7 @@ The docs platform sits within OAT's existing monorepo structure alongside the CL
 1. **Scaffold time** — `oat docs init` generates a thin app shell that depends on the shared packages
 2. **Build time** — the shared packages handle all Fumadocs wiring, markdown transforms, and theming
 
-The CLI commands (`migrate`, `nav generate`) operate on the consumer's `docs/` directory and `.oat/config.json` — they are framework-aware but content-agnostic.
+The CLI commands (`migrate`, `index generate`) operate on the consumer's `docs/` directory and `.oat/config.json` — they are framework-aware but content-agnostic.
 
 **Key Components:**
 - **`@oat/docs-config`** — Fumadocs MDX config, Next.js config factory, plugin wiring, FlexSearch setup
@@ -34,7 +34,7 @@ The CLI commands (`migrate`, `nav generate`) operate on the consumer's `docs/` d
 - **`@oat/docs-theme`** — Layout components, page components, Mermaid renderer, configurable branding
 - **CLI: scaffold templates** — Fumadocs app template set (alongside existing MkDocs templates)
 - **CLI: `docs migrate`** — One-time codemod command
-- **CLI: `docs nav generate`** — Navigation artifact generator
+- **CLI: `docs index generate`** — Docs surface index generator
 
 ### Component Diagram
 
@@ -47,7 +47,7 @@ The CLI commands (`migrate`, `nav generate`) operate on the consumer's `docs/` d
 │  │   ├── src/commands/docs/                             │
 │  │   │   ├── init/        (scaffold, framework choice)  │
 │  │   │   ├── migrate/     (codemod command)             │
-│  │   │   └── nav/         (nav generate command)        │
+│  │   │   └── index/       (index generate command)      │
 │  │   └── assets/templates/                              │
 │  │       ├── docs-app-mkdocs/    (renamed from docs-app/) │
 │  │       └── docs-app-fuma/     (new Fumadocs)          │
@@ -69,7 +69,7 @@ The CLI commands (`migrate`, `nav generate`) operate on the consumer's `docs/` d
 │  ├── app/layout.tsx      → imports @oat/docs-theme      │
 │  ├── app/[[...slug]]/    → imports @oat/docs-theme      │
 │  │   └── page.tsx                                       │
-│  ├── nav.md              (generated, not authored)       │
+│  ├── index.md              (generated docs index, not authored) │
 │  ├── package.json                                       │
 │  └── docs/               (plain markdown)               │
 │      ├── index.md                                       │
@@ -106,16 +106,16 @@ docs/*.md (authored markdown)
       └─ out/ (HTML, CSS, JS, search index)
 ```
 
-**Nav generation flow:**
+**Index generation flow:**
 
 ```
 docs/*.md (file tree + frontmatter)
   │
-  ├─ oat docs nav generate
+  ├─ oat docs index generate
   │   ├─ Walk directory tree
   │   ├─ Read frontmatter (title, description)
   │   ├─ Fallback: first # heading → filename title-case
-  │   └─ Write nav.md at docs app root
+  │   └─ Write index.md at docs app root (not inside docs/)
   │
   └─ Update .oat/config.json documentation.index
 ```
@@ -244,10 +244,10 @@ export function Mermaid(props: { chart: string }): React.ReactElement;
 **Purpose:** One-time codemod converting MkDocs-specific syntax to universal equivalents.
 
 **Responsibilities:**
-- Parse `mkdocs.yml` to extract nav titles
+- Parse `mkdocs.yml` to extract page titles
 - Scan `docs/` for `.md` files
 - Convert `!!!` admonitions to `> [!TYPE]` GFM callouts
-- Inject `title` frontmatter from `mkdocs.yml` nav entries (where missing)
+- Inject `title` frontmatter from `mkdocs.yml` entries (where missing)
 - Seed empty `description: ""` frontmatter (where missing)
 - Dry-run by default, `--apply` to write changes
 - Report changes per file
@@ -284,9 +284,9 @@ interface FileChange {
 - Does NOT handle tabs (`=== "Tab"`) — those are handled by build-time transform, not codemod
 - Admonition conversion is regex-based line processing, not AST — simpler for a one-time tool
 
-### CLI: docs nav generate
+### CLI: docs index generate
 
-**Purpose:** Generate a `nav.md` navigation artifact from the docs file tree.
+**Purpose:** Generate an `index.md` docs surface index from the file tree for AI discoverability.
 
 **Responsibilities:**
 - Walk `docs/` directory tree recursively
@@ -294,32 +294,32 @@ interface FileChange {
 - Fallback chain: frontmatter `title` → first `# heading` → filename title-case
 - **Ordering:** Lexical (alphabetical) filesystem order within each directory. `index.md` files always sort first. Deterministic and predictable without additional frontmatter.
 - Produce nested markdown with links and descriptions
-- Write `nav.md` at docs app root (not inside `docs/`)
+- Write `index.md` at docs app root (not inside `docs/`)
 - Update `.oat/config.json` `documentation.index` field
 
 **Interfaces:**
 
 ```typescript
 // CLI command signature
-// oat docs nav generate [docs-dir] [--output <path>]
+// oat docs index generate [docs-dir] [--output <path>]
 
-interface NavEntry {
+interface IndexEntry {
   title: string;
   description?: string;
   path: string;
-  children?: NavEntry[];
+  children?: IndexEntry[];
 }
 
-interface NavGenerateOptions {
+interface IndexGenerateOptions {
   docsDir: string;
-  outputPath?: string; // defaults to <app-root>/nav.md
+  outputPath?: string; // defaults to <app-root>/index.md
 }
 ```
 
 **Output format:**
 
 ```markdown
-# Navigation
+# Docs Index
 
 - [Home](docs/index.md) — Overview of the documentation
 - Getting Started
@@ -331,8 +331,9 @@ interface NavGenerateOptions {
 
 **Design Decisions:**
 - Markdown output (not JSON/YAML) — renders on GitHub, readable by AI, human-friendly
-- Placed at app root, not inside `docs/` — prevents rendering as a page
+- Placed at app root, not inside `docs/` — prevents rendering as a docs page
 - Updates `documentation.index` in config — skills find it automatically
+- This is a flat content index for AI discoverability, not a navigation/layout artifact
 
 ### CLI: docs init (updated)
 
@@ -344,23 +345,23 @@ interface NavGenerateOptions {
 - For Fumadocs: scaffold thin app shell, set `documentation.tooling: "fumadocs"` in config
 - For MkDocs: existing behavior unchanged, set `documentation.tooling: "mkdocs"` in config
 - Set `documentation.index` in config
-- Run `oat docs nav generate` after Fumadocs scaffold
+- Run `oat docs index generate` after Fumadocs scaffold
 
 **Scaffolded `package.json` script contract:**
 
 ```json
 {
   "scripts": {
-    "dev": "oat docs nav generate && next dev",
-    "build": "oat docs nav generate && next build",
-    "docs:nav": "oat docs nav generate",
+    "dev": "oat docs index generate && next dev",
+    "build": "oat docs index generate && next build",
+    "docs:index": "oat docs index generate",
     "docs:lint": "markdownlint-cli2 'docs/**/*.md'",
     "docs:format": "prettier --check 'docs/**/*.md'"
   }
 }
 ```
 
-Nav generation runs before both `dev` and `build` via shell `&&` chaining — this is package-manager-agnostic (works identically with `npm run`, `pnpm`, and `yarn`). The `oat` CLI is invoked directly as a binary (installed via `@oat/cli` dependency or globally), not through a package-manager-specific mechanism.
+Index generation runs before both `dev` and `build` via shell `&&` chaining — this is package-manager-agnostic (works identically with `npm run`, `pnpm`, and `yarn`). The `oat` CLI is invoked directly as a binary (installed via `@oat/cli` dependency or globally), not through a package-manager-specific mechanism.
 
 **MkDocs Preservation (FR8):**
 
@@ -393,7 +394,7 @@ interface OatDocumentationConfig {
 **Validation Rules:**
 - `index` is optional — older repos won't have it
 - When present, must be a valid relative path from repo root
-- `oat docs init` and `oat docs nav generate` set this automatically
+- `oat docs init` and `oat docs index generate` set this automatically
 
 ### Frontmatter Convention
 
@@ -421,7 +422,7 @@ Not applicable — this project adds CLI commands and build-time packages, not r
 ### Input Validation
 
 - **Codemod:** Validates file paths, checks files are within `docs/` directory before modification
-- **Nav generator:** Reads only `.md` files, no execution of file contents
+- **Index generator:** Reads only `.md` files, no execution of file contents
 - **Scaffold:** Token interpolation uses safe string replacement, no template injection
 
 ### Data Protection
@@ -458,7 +459,7 @@ Not applicable — this project adds CLI commands and build-time packages, not r
 ### CLI Commands
 
 - **Codemod errors:** Report per-file errors, continue processing remaining files, exit with non-zero code if any failures
-- **Nav generate errors:** Skip files with unparseable frontmatter, warn, continue
+- **Index generate errors:** Skip files with unparseable frontmatter, warn, continue
 - **Scaffold errors:** Fail fast if target directory already exists (unless `--force`)
 
 ### Build-Time Errors
@@ -468,7 +469,7 @@ Not applicable — this project adds CLI commands and build-time packages, not r
 
 ### Logging
 
-- **Info:** Files processed, changes made (codemod), nav entries generated
+- **Info:** Files processed, changes made (codemod), index entries generated
 - **Warn:** Missing frontmatter title, skipped files, unparseable content
 - **Error:** File I/O failures, invalid config, template rendering failures
 
@@ -483,7 +484,7 @@ Not applicable — this project adds CLI commands and build-time packages, not r
 | FR3 | unit | Tabs transform: single tab group, multiple groups, nested content, empty tabs |
 | FR4 | manual | Theme renders light/dark, branding props applied, code copy button works |
 | FR5 | unit + integration | Admonition codemod: simple, nested, titled, all types; frontmatter injection; dry-run vs apply |
-| FR6 | unit + integration | Nav generation: flat tree, nested tree, missing titles, descriptions present/absent |
+| FR6 | unit + integration | Index generation: flat tree, nested tree, missing titles, descriptions present/absent |
 | FR7 | unit | Config schema reads/writes `documentation.index` |
 | FR8 | integration | MkDocs scaffold still produces working site |
 | NFR1 | e2e | Author .md file with GFM callouts + mermaid + tabs, build, verify rendered output |
@@ -494,14 +495,14 @@ Not applicable — this project adds CLI commands and build-time packages, not r
 
 ### Unit Tests
 
-- **Scope:** `@oat/docs-transforms` (AST transforms), `docs migrate` (codemod logic), `docs nav generate` (tree walking, frontmatter parsing)
+- **Scope:** `@oat/docs-transforms` (AST transforms), `docs migrate` (codemod logic), `docs index generate` (tree walking, frontmatter parsing)
 - **Key Test Cases:**
   - Tabs transform: `=== "Tab 1"` with content → correct `<Tabs>` AST output
   - Admonition codemod: `!!! warning "Title"\n    Content` → `> [!WARNING] Title\n> Content`
   - Admonition codemod: nested admonitions
-  - Frontmatter injection: page without title + nav entry → title added
-  - Nav generation: directory with mix of titled/untitled pages → correct fallback chain
-  - Nav generation: nested directories → correct indentation
+  - Frontmatter injection: page without title + mkdocs entry → title added
+  - Index generation: directory with mix of titled/untitled pages → correct fallback chain
+  - Index generation: nested directories → correct indentation
 
 ### Integration Tests
 
@@ -510,7 +511,7 @@ Not applicable — this project adds CLI commands and build-time packages, not r
   - Scaffold Fumadocs app, install deps, run build, verify `out/` directory exists
   - Scaffold MkDocs app, verify templates unchanged
   - Run codemod on test fixture directory, verify output matches expected
-  - Run nav generate on test fixture directory, verify output
+  - Run index generate on test fixture directory, verify output
 
 ### End-to-End Tests
 
@@ -589,17 +590,17 @@ Consumer repos deploy their own docs sites — OAT doesn't prescribe this:
 
 **Verification:** `oat docs init` (Fumadocs) → `npm run build` succeeds with static output.
 
-### Phase 3: Migration + Nav Commands
+### Phase 3: Migration + Index Commands
 
-**Goal:** Existing MkDocs repos can migrate and generate nav artifacts.
+**Goal:** Existing MkDocs repos can migrate and generate docs index.
 
 **Tasks:**
 - Implement `oat docs migrate` command (admonition codemod, frontmatter injection)
-- Implement `oat docs nav generate` command
+- Implement `oat docs index generate` command
 - Add `documentation.index` to config schema
 - Unit + integration tests for both commands
 
-**Verification:** Migrate command correctly converts test fixtures. Nav generates accurate output.
+**Verification:** Migrate command correctly converts test fixtures. Index generates accurate output.
 
 ### Phase 4: Integration + Polish
 

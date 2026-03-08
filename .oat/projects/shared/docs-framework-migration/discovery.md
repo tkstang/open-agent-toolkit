@@ -58,11 +58,11 @@ Key goals:
 **A:** Separate. Transforms (syntax conversion) are different from config (framework wiring). And plugins (new capabilities) would be yet another concern.
 **Decision:** Three packages: docs-config (framework wiring), docs-transforms (AST syntax conversion), docs-theme (visual components/layout).
 
-### Question 6: Navigation
+### Question 6: Docs Index
 
 **Q:** Should nav be defined in a config file (like mkdocs.yml) or derived from folder structure?
-**A:** Folder structure is the source of truth. A `nav.md` is generated as a discoverability artifact (not authored). Titles come from frontmatter, descriptions from frontmatter too.
-**Decision:** Generated `nav.md` at docs app root (not inside `docs/` to avoid rendering as a page). AI agents use this as their entry point.
+**A:** Folder structure is the source of truth. An `index.md` is generated as a discoverability artifact (not authored). Titles come from frontmatter, descriptions from frontmatter too. This is a flat content index for AI, not a navigation/layout artifact.
+**Decision:** Generated `index.md` at docs app root (not inside `docs/` to avoid rendering as a page). AI agents use this as their entry point.
 
 ### Question 7: Search
 
@@ -85,13 +85,13 @@ Key goals:
 ### Question 10: Documentation Config
 
 **Q:** How do skills/tools know which framework a repo uses?
-**A:** The `.oat/config.json` `documentation` section already has `tooling` field. Add a `documentation.index` field pointing to the nav entry point (`nav.md` for Fumadocs, `mkdocs.yml` for MkDocs).
+**A:** The `.oat/config.json` `documentation` section already has `tooling` field. Add a `documentation.index` field pointing to the docs entry point (`index.md` for Fumadocs, `mkdocs.yml` for MkDocs).
 **Decision:** Add `documentation.index` to config schema. Skills read this to understand the docs surface without needing framework-specific logic.
 
 ### Question 11: Frontmatter Convention
 
 **Q:** Should pages have `description` frontmatter?
-**A:** Yes. AI generates descriptions, they flow into `nav.md`, `index.md` pages, search indexing, and HTML meta tags. Fumadocs already supports `title` and `description` as first-class frontmatter fields.
+**A:** Yes. AI generates descriptions, they flow into `index.md`, landing pages, search indexing, and HTML meta tags. Fumadocs already supports `title` and `description` as first-class frontmatter fields.
 **Decision:** `description` frontmatter is a convention. Migration codemod seeds empty `description: ""` for AI to fill.
 
 ### Question 12: Scaffold Customization
@@ -149,7 +149,7 @@ Key goals:
 2. **Authoring:** Plain markdown only — no MDX/JSX authoring required
 3. **Syntax strategy:** Codemod to universal standards (GFM callouts) where possible; build-time transforms only for syntax with no universal equivalent (tabs)
 4. **Package architecture:** Three packages — docs-config, docs-transforms, docs-theme — in the OAT monorepo
-5. **Navigation:** Generated `nav.md` artifact with titles and descriptions from frontmatter; placed at docs app root (not inside `docs/`)
+5. **Docs index:** Generated `index.md` with titles and descriptions from frontmatter for AI discoverability; placed at docs app root (not inside `docs/`)
 6. **Config integration:** `documentation.index` field in `.oat/config.json` points to the docs surface entry point
 7. **Search:** FlexSearch (client-side, free)
 8. **Deployment:** Static export (`output: 'export'`), deploy to S3 or wherever
@@ -168,7 +168,7 @@ Key goals:
 - `oat docs init` scaffolds a working Fumadocs site with one command
 - Authors write standard markdown and get a polished docs site
 - Existing MkDocs content migrates with `oat docs migrate` (admonitions, frontmatter titles)
-- `nav.md` generation works and provides useful AI entry point with descriptions
+- `index.md` generation works and provides useful AI entry point with descriptions
 - FlexSearch works out of the box with static export
 - MkDocs scaffold still works as an alternative
 

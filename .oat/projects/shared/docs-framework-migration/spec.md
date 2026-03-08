@@ -32,7 +32,7 @@ The solution must be open source as part of OAT, with no org-specific branding h
 - Maintain plain markdown authoring — authors never write JSX or MDX
 - Create shared packages that encapsulate all framework complexity so consumer repos stay thin
 - Provide a migration path from existing MkDocs sites (admonition codemod, frontmatter injection)
-- Generate a navigation artifact (`nav.md`) with page titles and descriptions for AI discoverability
+- Generate a navigation artifact (`index.md`) with page titles and descriptions for AI discoverability
 - Support static export for deployment to S3 or any static hosting
 - Include free, client-side search out of the box
 
@@ -102,13 +102,13 @@ The solution must be open source as part of OAT, with no org-specific branding h
   - Applies changes only with explicit `--apply` flag
 - **Priority:** P0
 
-**FR6: Navigation Artifact Generation**
-- **Description:** A CLI command must generate a `nav.md` file from the docs file tree, including page titles and descriptions from frontmatter.
+**FR6: Docs Index Generation**
+- **Description:** A CLI command must generate an `index.md` docs surface index from the file tree, including page titles and descriptions from frontmatter for AI discoverability.
 - **Acceptance Criteria:**
   - Reads `docs/` directory tree recursively
   - Pulls `title` from frontmatter (falls back to first `# heading`, then filename title-casing)
   - Includes `description` from frontmatter when present
-  - Outputs `nav.md` at the docs app root (not inside `docs/`)
+  - Outputs `index.md` at the docs app root (not inside `docs/`)
   - Generated file includes nested markdown links with descriptions
   - Command is also available as an npm script in scaffolded apps
   - Integrates into `dev` and `build` scripts (runs before Next.js)
@@ -118,8 +118,8 @@ The solution must be open source as part of OAT, with no org-specific branding h
 - **Description:** The `.oat/config.json` `documentation` section must include an `index` field pointing to the docs surface entry point.
 - **Acceptance Criteria:**
   - `documentation.index` field added to the config schema
-  - `oat docs init` sets this field when scaffolding (e.g., `nav.md` for Fumadocs, `mkdocs.yml` for MkDocs)
-  - `oat docs nav generate` updates this field
+  - `oat docs init` sets this field when scaffolding (e.g., `index.md` for Fumadocs, `mkdocs.yml` for MkDocs)
+  - `oat docs index generate` updates this field
   - Skills can read `documentation.index` to find the docs surface entry point
 - **Priority:** P1
 
@@ -146,7 +146,7 @@ The solution must be open source as part of OAT, with no org-specific branding h
 - **Description:** Scaffolded docs apps must work with npm, pnpm, and yarn without modification.
 - **Acceptance Criteria:**
   - Build and dev scripts use standard commands (no pnpm-specific features)
-  - `oat docs nav generate` invocation doesn't assume a package manager
+  - `oat docs index generate` invocation doesn't assume a package manager
   - npm script wrappers work identically across package managers
 - **Priority:** P0
 
@@ -208,7 +208,7 @@ The CLI gains two new commands: a migration codemod for converting MkDocs syntax
 - Shared docs theme package — layout, page components, branding configuration
 - Fumadocs scaffold templates — thin app shell for consumer repos
 - Migration codemod CLI command — one-time MkDocs → GFM syntax conversion
-- Navigation generator CLI command — file tree → `nav.md` with frontmatter metadata
+- Docs index generator CLI command — file tree → `index.md` with frontmatter metadata
 
 **Alternatives Considered:**
 - Fat scaffold (all config inline per repo) — rejected due to upgrade burden and org-wide drift
@@ -220,7 +220,7 @@ The CLI gains two new commands: a migration codemod for converting MkDocs syntax
 
 - Scaffolded Fumadocs site builds and serves successfully on first run
 - Migration codemod correctly converts admonitions and injects frontmatter across test repos (Honeycomb: 124 files, Duet: 60 files)
-- `nav.md` generation produces accurate titles and descriptions from frontmatter
+- `index.md` generation produces accurate titles and descriptions from frontmatter
 - FlexSearch returns relevant results in static export mode
 - Package version bump in consumer repo picks up changes without re-scaffolding
 
@@ -233,7 +233,7 @@ The CLI gains two new commands: a migration codemod for converting MkDocs syntax
 | FR3 | Shared docs transforms package | P0 | unit: AST transform output | TBD |
 | FR4 | Shared docs theme package | P0 | manual: visual review + dark/light mode | TBD |
 | FR5 | MkDocs migration codemod | P0 | unit + integration: codemod output against test fixtures | TBD |
-| FR6 | Navigation artifact generation | P0 | unit + integration: generated nav.md content | TBD |
+| FR6 | Docs index generation | P0 | unit + integration: generated index.md content | TBD |
 | FR7 | Documentation config schema `index` field | P1 | unit: config read/write | TBD |
 | FR8 | MkDocs scaffold preservation | P1 | integration: existing scaffold still works | TBD |
 | NFR1 | Plain markdown authoring | P0 | e2e: author .md, build, verify render | TBD |
@@ -248,7 +248,7 @@ The CLI gains two new commands: a migration codemod for converting MkDocs syntax
 - **Fumadocs static export limitations:** Are there FlexSearch or Fumadocs UI features that don't work with `output: 'export'`? Validate during design.
 - **Theme customization surface:** What exactly does the theme package expose for branding — colors/logo only, or full layout overrides?
 - **Migrate command framework detection:** Should `oat docs migrate` auto-detect the source framework, or require explicit `--from mkdocs` flag?
-- **Nav generation ordering:** How should pages be ordered in `nav.md` — alphabetical, by frontmatter weight/order field, or directory listing order?
+- **Index generation ordering:** How should pages be ordered in `index.md` — alphabetical, by frontmatter weight/order field, or directory listing order?
 
 ## Assumptions
 
