@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t03
+oat_current_task_id: p03-t04
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -31,7 +31,7 @@ oat_template_name: implementation
 | Phase 2 | complete | 4 | 4/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 10/12 tasks completed
+**Total:** 11/12 tasks completed
 
 ---
 
@@ -345,8 +345,20 @@ oat_template_name: implementation
 
 ### Task p03-t03: Delete legacy pointer files + clean up gitignore
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 29e9bc6
+
+**Outcome (required):**
+- Removed `.oat/active-idea` from `.gitignore`
+- Pointer file did not exist (already absent in this repo/worktree)
+- Doc references are compatibility notes only (appropriate)
+
+**Files changed:**
+- `.gitignore` - removed active-idea line
+
+**Verification:**
+- Run: `grep -r "active-idea" .gitignore .agents/skills/`
+- Result: no matches in gitignore or skills (clean)
 
 ---
 
