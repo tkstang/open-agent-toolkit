@@ -454,14 +454,14 @@ Deliver `oat docs init` with Fumadocs framework choice. A scaffolded app builds 
 **Step 1: Implement**
 
 Create thin template files that import from `@oat/docs-config`, `@oat/docs-theme`:
-- `next.config.js`: imports `createDocsConfig`, calls with `{{SITE_NAME}}`
+- `next.config.js`: imports `createDocsConfig`, calls with `{{SITE_NAME}}` and `{{SITE_DESCRIPTION}}`
 - `source.config.ts`: imports `createSourceConfig`
-- `app/layout.tsx`: imports `DocsLayout` from `@oat/docs-theme`, uses `{{SITE_NAME}}`
+- `app/layout.tsx`: imports `DocsLayout` from `@oat/docs-theme`, uses `{{SITE_NAME}}` and `{{SITE_DESCRIPTION}}`
 - `app/[[...slug]]/page.tsx`: imports `DocsPage` from `@oat/docs-theme`
 - `package.json.template`: scripts with `oat docs index generate && next dev/build`
 - Starter markdown: same content as existing MkDocs templates
 
-Token format follows existing pattern: `{{SITE_NAME}}`, `{{APP_NAME}}`, etc.
+Token format follows existing pattern: `{{SITE_NAME}}`, `{{APP_NAME}}`, `{{SITE_DESCRIPTION}}`, etc.
 
 **Step 2: Verify**
 
@@ -517,11 +517,14 @@ Test that `resolveDocsInitOptions()`:
 - When `framework: 'fumadocs'` → returns options with `templateDir: 'docs-app-fuma'`
 - When `framework: 'mkdocs'` → returns options with `templateDir: 'docs-app-mkdocs'`
 - Interactive prompt offers both choices
+- Collects site description (optional, defaults to empty string)
+- Returns `siteDescription` in resolved options
 
 **Step 2: Implement (GREEN)**
 
-Add `framework` option to `DocsInitOptions` interface.
+Add `framework` and `siteDescription` options to `DocsInitOptions` interface.
 Add `@inquirer/prompts` select prompt for framework choice.
+Add optional description input prompt.
 Map framework choice to template directory name.
 
 **Step 3: Verify**
@@ -548,8 +551,10 @@ git commit -m "feat(p02-t03): add framework choice prompt to docs init"
 
 Test `scaffoldDocsApp()` with Fumadocs template:
 - Creates all expected files from `docs-app-fuma/`
-- Applies token replacements (`{{SITE_NAME}}`, `{{APP_NAME}}`)
+- Applies token replacements (`{{SITE_NAME}}`, `{{APP_NAME}}`, `{{SITE_DESCRIPTION}}`)
 - Sets `documentation.tooling: "fumadocs"` in config
+- Scaffolded `next.config.js` contains interpolated description
+- Scaffolded `app/layout.tsx` contains interpolated description
 
 **Step 2: Implement (GREEN)**
 
@@ -580,8 +585,8 @@ git commit -m "feat(p02-t04): implement Fumadocs scaffold path"
 **Step 1: Write test (RED)**
 
 Test that after scaffold:
-- Fumadocs: `documentation.tooling` is `"fumadocs"`, `documentation.index` is set
-- MkDocs: `documentation.tooling` is `"mkdocs"`, `documentation.config` is `"mkdocs.yml"`
+- Fumadocs: `documentation.tooling` is `"fumadocs"`, `documentation.index` is set to index.md path
+- MkDocs: `documentation.tooling` is `"mkdocs"`, `documentation.index` is `"mkdocs.yml"`, `documentation.config` is `"mkdocs.yml"`
 
 **Step 2: Implement (GREEN)**
 
@@ -633,10 +638,11 @@ git commit -m "feat(p02-t06): bundle Fumadocs templates in CLI assets"
 **Step 1: Write test**
 
 Integration test that:
-1. Scaffolds a Fumadocs app to a temp directory
+1. Scaffolds a Fumadocs app to a temp directory (with site name + description)
 2. Runs `npm install` in the scaffolded app
 3. Runs `npm run build`
 4. Verifies `out/` directory exists with HTML files
+5. Verifies interpolated site description appears in generated config/layout
 
 Note: This is a slower integration test. Mark with appropriate Vitest config (e.g., timeout).
 
@@ -1026,11 +1032,14 @@ git commit -m "test(p04-t01): add real-world migration test fixtures"
 **Step 1: Write test**
 
 End-to-end test:
-1. Scaffold Fumadocs app to temp directory
-2. Add `.md` file with GFM callout (`> [!NOTE]`), mermaid fence, tabs syntax
+1. Scaffold Fumadocs app to temp directory with branding config (title, description, primary color)
+2. Add `.md` file with GFM callout (`> [!NOTE]`), mermaid fence, tabs syntax, and a code block
 3. Run `npm install && npm run build`
 4. Verify `out/` contains rendered HTML
 5. Verify callout, mermaid placeholder, and tabs markup present in HTML output
+6. Verify branding props reflected in rendered HTML (title, description in meta tags)
+7. Verify code block HTML contains copy-button markup (inherited from fumadocs-ui)
+8. Verify dark/light mode toggle markup present in rendered layout
 
 **Step 2: Verify**
 
@@ -1058,6 +1067,9 @@ Integration test:
 2. Verify all expected template files present
 3. Verify template content unchanged (compare against known fixtures)
 4. Verify `documentation.tooling: "mkdocs"` set in config
+5. Verify `documentation.index: "mkdocs.yml"` set in config
+6. Run `oat docs analyze` against scaffolded MkDocs site → verify command succeeds
+7. Run `oat docs apply` against scaffolded MkDocs site → verify command succeeds (FR8 downstream compatibility)
 
 **Step 2: Verify**
 
@@ -1109,8 +1121,11 @@ pnpm type-check
 pnpm test
 ```
 
-**Step 2: Review NFR checklist**
+**Step 2: Review FR + NFR checklist**
 
+- [ ] FR4: Theme branding → branding props (title, logo, colors) render in built site
+- [ ] FR4: Dark/light mode → toggle works, Mermaid diagrams re-render on mode switch
+- [ ] FR4: Code-copy button → code blocks show copy button (inherited from fumadocs-ui)
 - [ ] NFR1: Plain markdown authoring → verified by e2e test
 - [ ] NFR2: Package manager agnostic → manual: test `npm run build`, `pnpm build`, `yarn build` on scaffolded app
 - [ ] NFR3: Static export → verified by `out/` directory existence
@@ -1136,7 +1151,7 @@ git commit -m "fix(p04-t05): phase 4 final verification fixes"
 | final | code | pending | - | - |
 | spec | artifact | pending | - | - |
 | design | artifact | received | 2026-03-08 | reviews/artifact-design-review-2026-03-08-v2.md |
-| plan | artifact | received | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
+| plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -1150,7 +1165,7 @@ git commit -m "fix(p04-t05): phase 4 final verification fixes"
 
 ## Implementation Complete
 
-**Summary:**
+**Plan Summary:**
 - Phase 1: 12 tasks — Foundation packages (docs-transforms, docs-config, docs-theme)
 - Phase 2: 8 tasks — Scaffold templates + CLI framework choice
 - Phase 3: 10 tasks — Migration codemod + index generation commands
@@ -1158,7 +1173,7 @@ git commit -m "fix(p04-t05): phase 4 final verification fixes"
 
 **Total: 35 tasks**
 
-Ready for code review and merge.
+**Status:** Plan complete, awaiting implementation execution.
 
 ---
 
