@@ -496,6 +496,98 @@ git commit -m "docs(p06-t02): update repo reference docs for oat-project-documen
 
 ---
 
+## Phase 7: Review Fixes
+
+### Task p07-t01: (review) Add oat-project-document to workflow bundle
+
+**Files:**
+- Modify: `packages/cli/src/commands/init/tools/workflows/install-workflows.ts`
+- Create: `packages/cli/assets/skills/oat-project-document/SKILL.md` (bundled copy)
+
+**Step 1: Understand the issue**
+
+Review finding: The new skill is present under `.agents/skills/oat-project-document`, but `WORKFLOW_SKILLS` in `install-workflows.ts` does not list it and there is no bundled asset directory. Users who install/refresh workflow tools via the CLI bundle will not receive the skill.
+Location: `packages/cli/src/commands/init/tools/workflows/install-workflows.ts:10`
+
+**Step 2: Implement fix**
+
+1. Add `'oat-project-document'` to the `WORKFLOW_SKILLS` array in alphabetical order (after `oat-project-discover`)
+2. Copy `.agents/skills/oat-project-document/SKILL.md` to `packages/cli/assets/skills/oat-project-document/SKILL.md`
+3. Update the workflow installer test counts to reflect 22 skills (was 21)
+
+**Step 3: Verify**
+
+Run: `pnpm type-check && pnpm --filter @oat/cli test`
+Expected: all tests pass, including updated count assertions
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/workflows/install-workflows.ts packages/cli/assets/skills/oat-project-document/
+git commit -m "fix(p07-t01): add oat-project-document to workflow bundle"
+```
+
+---
+
+### Task p07-t02: (review) Fix skip path to set oat_docs_updated: skipped
+
+**Files:**
+- Modify: `.agents/skills/oat-project-document/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: The skill's skip path (Step 5, [S]kip option) leaves `oat_docs_updated` as `null`. This means `oat-project-complete` cannot distinguish "never run" from "user explicitly chose to skip". The design specifies `null | skipped | complete` semantics.
+Location: `.agents/skills/oat-project-document/SKILL.md:335`
+
+**Step 2: Implement fix**
+
+1. In Step 5c, update the Skip bullet to: set `oat_docs_updated: skipped` in state.md before exiting
+2. In Step 7c, update the "user explicitly skipped" edge case to match: set `oat_docs_updated: skipped` (not leave as null)
+
+**Step 3: Verify**
+
+Run: `pnpm lint`
+Expected: pass (SKILL.md is a markdown file, no type-check needed)
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-document/SKILL.md
+git commit -m "fix(p07-t02): set oat_docs_updated to skipped on explicit skip"
+```
+
+---
+
+### Task p07-t03: (review) Track partial apply failures in oat_docs_updated state
+
+**Files:**
+- Modify: `.agents/skills/oat-project-document/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Step 6 allows continuing after write failures, but Step 7 unconditionally sets `oat_docs_updated: complete`. This falsely certifies docs as synchronized when some approved updates failed.
+Location: `.agents/skills/oat-project-document/SKILL.md:370`
+
+**Step 2: Implement fix**
+
+1. In Step 6 error handling section, add instruction to track a `$ALL_SUCCEEDED` flag (true by default, set to false on any write failure)
+2. In Step 7b, add conditional: only set `oat_docs_updated: complete` if `$ALL_SUCCEEDED` is true; otherwise leave state unresolved and surface failures in the summary report
+3. In Step 7d summary, add a failure section when `$ALL_SUCCEEDED` is false listing which files failed
+
+**Step 3: Verify**
+
+Run: `pnpm lint`
+Expected: pass
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-document/SKILL.md
+git commit -m "fix(p07-t03): track partial failures in oat_docs_updated state"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
@@ -506,7 +598,7 @@ git commit -m "docs(p06-t02): update repo reference docs for oat-project-documen
 | p04 | code | pending | - | - |
 | p05 | code | pending | - | - |
 | p06 | code | pending | - | - |
-| final | code | pending | - | - |
+| final | code | fixes_added | 2026-03-08 | reviews/final-review-2026-03-08.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -527,8 +619,9 @@ git commit -m "docs(p06-t02): update repo reference docs for oat-project-documen
 - Phase 4: 3 tasks — Approval, apply, and state updates
 - Phase 5: 4 tasks — Config schema and integration
 - Phase 6: 2 tasks — Sync and final polish
+- Phase 7: 3 tasks — Review fixes (final review)
 
-**Total: 15 tasks**
+**Total: 18 tasks**
 
 Ready for code review and merge.
 

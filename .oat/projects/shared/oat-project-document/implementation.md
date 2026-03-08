@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: null
+oat_current_task_id: p07-t01
 oat_generated: false
 ---
 
@@ -31,8 +31,9 @@ oat_generated: false
 | Phase 4: Approval, Apply, and State Updates | complete | 3 | 3/3 |
 | Phase 5: Config Schema and Integration | complete | 4 | 4/4 |
 | Phase 6: Sync and Final Polish | complete | 2 | 2/2 |
+| Phase 7: Review Fixes | pending | 3 | 0/3 |
 
-**Total:** 15/15 tasks completed
+**Total:** 15/18 tasks completed
 
 ---
 
@@ -320,6 +321,47 @@ oat_generated: false
 - `.oat/repo/reference/current-state.md` - skill listing, config, quickstart update
 - `.oat/repo/reference/backlog.md` - removed completed item
 - `.oat/repo/reference/backlog-completed.md` - added completed archive entry
+
+---
+
+## Phase 7: Review Fixes
+
+**Status:** pending
+**Started:** -
+
+### Review Received: final
+
+**Date:** 2026-03-08
+**Review artifact:** reviews/final-review-2026-03-08.md
+
+**Findings:**
+- Critical: 1 (C1: skill not in workflow bundle)
+- Important: 2 (I1: skip leaves state as null; I2: partial failures recorded as complete)
+- Medium: 0
+- Minor: 0
+
+**New tasks added:** p07-t01, p07-t02, p07-t03
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+### Task p07-t01: (review) Add oat-project-document to workflow bundle
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p07-t02: (review) Fix skip path to set oat_docs_updated: skipped
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p07-t03: (review) Track partial apply failures in oat_docs_updated state
+
+**Status:** pending
+**Commit:** -
 
 ---
 

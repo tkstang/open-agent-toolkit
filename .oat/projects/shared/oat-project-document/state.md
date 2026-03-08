@@ -1,5 +1,5 @@
 ---
-oat_current_task: null
+oat_current_task: p07-t01
 oat_last_commit: e804a7a
 oat_blockers: []
 oat_hill_checkpoints: []
