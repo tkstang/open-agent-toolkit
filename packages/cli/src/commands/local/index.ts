@@ -4,6 +4,7 @@ import { readOatConfig, resolveLocalPaths } from '@config/oat-config';
 import { resolveProjectRoot } from '@fs/paths';
 import { Command } from 'commander';
 import { applyGitignore } from './apply';
+import { addLocalPaths, removeLocalPaths } from './manage';
 import { checkLocalPathsStatus } from './status';
 import { syncLocalPaths } from './sync';
 
@@ -195,6 +196,86 @@ export function createLocalCommand(): Command {
                 }
                 context.logger.info(
                   `\nSync complete: ${result.copied} copied, ${result.skipped} skipped, ${result.missing} missing`,
+                );
+              }
+              process.exitCode = 0;
+            } catch (error) {
+              const message =
+                error instanceof Error ? error.message : String(error);
+              if (context.json) {
+                context.logger.json({ status: 'error', message });
+              } else {
+                context.logger.error(message);
+              }
+              process.exitCode = 1;
+            }
+          },
+        ),
+    )
+    .addCommand(
+      new Command('add')
+        .description('Add paths to localPaths config')
+        .argument('<paths...>', 'Paths to add (e.g. .oat/ideas)')
+        .action(
+          async (paths: string[], _options: unknown, command: Command) => {
+            const context = buildCommandContext(readGlobalOptions(command));
+            try {
+              const repoRoot = await resolveProjectRoot(context.cwd);
+              const result = await addLocalPaths(repoRoot, paths);
+
+              if (context.json) {
+                context.logger.json({ status: 'ok', ...result });
+              } else {
+                if (result.added.length > 0) {
+                  context.logger.info(`Added: ${result.added.join(', ')}`);
+                }
+                if (result.alreadyPresent.length > 0) {
+                  context.logger.info(
+                    `Already present: ${result.alreadyPresent.join(', ')}`,
+                  );
+                }
+                context.logger.info(
+                  '\nRun `oat local apply` to update .gitignore.',
+                );
+              }
+              process.exitCode = 0;
+            } catch (error) {
+              const message =
+                error instanceof Error ? error.message : String(error);
+              if (context.json) {
+                context.logger.json({ status: 'error', message });
+              } else {
+                context.logger.error(message);
+              }
+              process.exitCode = 1;
+            }
+          },
+        ),
+    )
+    .addCommand(
+      new Command('remove')
+        .description('Remove paths from localPaths config')
+        .argument('<paths...>', 'Paths to remove')
+        .action(
+          async (paths: string[], _options: unknown, command: Command) => {
+            const context = buildCommandContext(readGlobalOptions(command));
+            try {
+              const repoRoot = await resolveProjectRoot(context.cwd);
+              const result = await removeLocalPaths(repoRoot, paths);
+
+              if (context.json) {
+                context.logger.json({ status: 'ok', ...result });
+              } else {
+                if (result.removed.length > 0) {
+                  context.logger.info(`Removed: ${result.removed.join(', ')}`);
+                }
+                if (result.notFound.length > 0) {
+                  context.logger.info(
+                    `Not found: ${result.notFound.join(', ')}`,
+                  );
+                }
+                context.logger.info(
+                  '\nRun `oat local apply` to update .gitignore.',
                 );
               }
               process.exitCode = 0;
