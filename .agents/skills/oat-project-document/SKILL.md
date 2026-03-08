@@ -332,7 +332,7 @@ Approve recommendations?
 
 - **Yes:** mark all recommendations as approved
 - **Individual:** present each recommendation one at a time with approve/reject
-- **Skip:** exit without changes, do not set `oat_docs_updated` (leave as null for future re-runs)
+- **Skip:** set `oat_docs_updated: skipped` in `$PROJECT_PATH/state.md` frontmatter, commit the state change, and exit without applying documentation changes
 
 Track which recommendations were approved for Step 6.
 
@@ -393,7 +393,7 @@ git diff --cached --quiet || git commit -m "chore({project-name}): mark docs upd
 
 **7c. Handle edge cases:**
 
-- If user explicitly skipped (chose [S]kip in Step 5): do not set `oat_docs_updated`. Leave as null so the skill can be re-run later.
+- If user explicitly skipped (chose [S]kip in Step 5): `oat_docs_updated` was already set to `skipped` in Step 5. No further state update needed here.
 - If no recommendations were found: set `oat_docs_updated: complete` (nothing to do is still "done").
 - If `--auto` mode: apply all, commit, set state — no user interaction.
 
