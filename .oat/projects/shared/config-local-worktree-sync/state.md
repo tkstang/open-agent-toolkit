@@ -1,6 +1,7 @@
 ---
 oat_current_task: null
-oat_last_commit: fb5506f
+oat_last_commit: 66bfa84
+oat_docs_updated: complete
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
