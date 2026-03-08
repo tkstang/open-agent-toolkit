@@ -38,6 +38,26 @@ Capture tasks and ideas that come up while dogfooding but aren’t ready to impl
     - Decision: ADR-014
   - Created: 2026-03-07
 
+- [ ] **(P1) [tooling] Single source of truth for bundled skill lists**
+  - Context: When adding a new skill to the CLI bundle, three independent arrays must be updated manually: (1) `packages/cli/scripts/bundle-assets.sh` `SKILLS` array (build-time asset generation), (2) `packages/cli/src/commands/init/tools/workflows/install-workflows.ts` `WORKFLOW_SKILLS` (runtime installer), (3) `packages/cli/src/commands/init/tools/workflows/install-workflows.test.ts` local `WORKFLOW_SKILLS` copy (test seeding). A consistency test (`bundle-consistency.test.ts`) now catches drift at CI time, but the root cause — three independent copies — remains.
+  - Proposed change:
+    - Extract a single manifest file (JSON or `.ts` constant) that defines all bundled skills per pack (workflows, ideas, utility).
+    - Have `bundle-assets.sh` read from this manifest (e.g., parse a JSON file or source a generated list) instead of maintaining its own bash array.
+    - Have `install-workflows.test.ts` import the canonical `WORKFLOW_SKILLS` from the source module instead of maintaining a local duplicate. The test's `seedAssets()` helper uses this array to create mock directories, so it must match the source.
+    - Eliminate the need for `bundle-consistency.test.ts` once all three consumers read from the same source (or keep it as a belt-and-suspenders check).
+  - Success criteria:
+    - Adding a new skill to any pack requires updating exactly one file.
+    - Build (`bundle-assets.sh`) and runtime (`install-*.ts`) always agree on which skills are bundled.
+    - Test files seed from the canonical source, not local copies.
+    - `bundle-consistency.test.ts` passes trivially (or is removed as redundant).
+  - Links:
+    - Guard test: `packages/cli/src/commands/init/tools/shared/bundle-consistency.test.ts`
+    - Build script: `packages/cli/scripts/bundle-assets.sh`
+    - Runtime source: `packages/cli/src/commands/init/tools/workflows/install-workflows.ts`
+    - Test duplicate: `packages/cli/src/commands/init/tools/workflows/install-workflows.test.ts` (lines 15-52)
+    - Prior incident: `oat-project-document` was added to `install-workflows.ts` but missed in `bundle-assets.sh`, causing the bundled asset to be deleted on every build
+  - Created: 2026-03-08
+
 - [ ] **(P2) [tooling] Scaffold `.oat/projects/{shared,local,archived}` during `oat init`**
   - Context: `oat init --scope project` scaffolds `.agents/` and `.oat/sync/` but does not create the projects directory tree. The `shared/`, `local/`, and `archived/` directories are created on-demand by individual skills/commands, which means new repos don't have the expected structure until the first project is created.
   - Proposed change:
