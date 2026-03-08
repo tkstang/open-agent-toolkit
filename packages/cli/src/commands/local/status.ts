@@ -1,6 +1,7 @@
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { dirExists, fileExists } from '@fs/io';
+import { expandLocalPaths } from './expand';
 
 export interface LocalPathStatus {
   path: string;
@@ -40,7 +41,16 @@ export async function checkLocalPathsStatus(
 ): Promise<LocalPathStatus[]> {
   const results: LocalPathStatus[] = [];
 
-  for (const localPath of localPaths) {
+  const { resolved, missingGlobs } = await expandLocalPaths(
+    repoRoot,
+    localPaths,
+  );
+
+  for (const pattern of missingGlobs) {
+    results.push({ path: pattern, exists: false, gitignored: false });
+  }
+
+  for (const localPath of resolved) {
     const absolutePath = join(repoRoot, localPath);
     const exists =
       (await dirExists(absolutePath)) || (await fileExists(absolutePath));

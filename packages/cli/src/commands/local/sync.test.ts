@@ -182,4 +182,66 @@ describe('oat local sync', () => {
     expect(result.copied).toBe(2);
     expect(result.entries).toHaveLength(2);
   });
+
+  it('should expand glob patterns to matching directories', async () => {
+    const source = await createDir();
+    const target = await createDir();
+
+    // Create multiple project review dirs
+    await mkdir(
+      join(source, '.oat', 'projects', 'shared', 'alpha', 'reviews'),
+      {
+        recursive: true,
+      },
+    );
+    await writeFile(
+      join(source, '.oat', 'projects', 'shared', 'alpha', 'reviews', 'r.md'),
+      'alpha review',
+      'utf8',
+    );
+    await mkdir(join(source, '.oat', 'projects', 'shared', 'beta', 'reviews'), {
+      recursive: true,
+    });
+    await writeFile(
+      join(source, '.oat', 'projects', 'shared', 'beta', 'reviews', 'r.md'),
+      'beta review',
+      'utf8',
+    );
+
+    const result = await syncLocalPaths({
+      sourceRoot: source,
+      targetRoot: target,
+      localPaths: ['.oat/projects/**/reviews'],
+      direction: 'to',
+      force: false,
+    });
+
+    expect(result.copied).toBe(2);
+    const alphaContent = await readFile(
+      join(target, '.oat', 'projects', 'shared', 'alpha', 'reviews', 'r.md'),
+      'utf8',
+    );
+    expect(alphaContent).toBe('alpha review');
+    const betaContent = await readFile(
+      join(target, '.oat', 'projects', 'shared', 'beta', 'reviews', 'r.md'),
+      'utf8',
+    );
+    expect(betaContent).toBe('beta review');
+  });
+
+  it('should report missing when glob matches nothing', async () => {
+    const source = await createDir();
+    const target = await createDir();
+
+    const result = await syncLocalPaths({
+      sourceRoot: source,
+      targetRoot: target,
+      localPaths: ['.oat/projects/**/nonexistent'],
+      direction: 'to',
+      force: false,
+    });
+
+    expect(result.missing).toBe(1);
+    expect(result.copied).toBe(0);
+  });
 });

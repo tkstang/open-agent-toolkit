@@ -1,6 +1,7 @@
 import { rm } from 'node:fs/promises';
 import { join } from 'node:path';
 import { copyDirectory, dirExists, fileExists } from '@fs/io';
+import { expandLocalPaths } from './expand';
 
 export type SyncStatus = 'copied' | 'skipped' | 'missing';
 
@@ -35,7 +36,16 @@ export async function syncLocalPaths(
 
   const entries: SyncEntry[] = [];
 
-  for (const localPath of localPaths) {
+  const { resolved, missingGlobs } = await expandLocalPaths(
+    fromRoot,
+    localPaths,
+  );
+
+  for (const pattern of missingGlobs) {
+    entries.push({ path: pattern, status: 'missing' });
+  }
+
+  for (const localPath of resolved) {
     const sourcePath = join(fromRoot, localPath);
     const destPath = join(toRoot, localPath);
 
