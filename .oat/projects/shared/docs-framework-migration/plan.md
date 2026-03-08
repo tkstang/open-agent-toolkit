@@ -133,7 +133,7 @@ git commit -m "feat(p01-t02): {description}"
 | p02 | code | pending | - | - |
 | final | code | pending | - | - |
 | spec | artifact | pending | - | - |
-| design | artifact | pending | - | - |
+| design | artifact | received | 2026-03-08 | reviews/artifact-design-review-2026-03-08.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
