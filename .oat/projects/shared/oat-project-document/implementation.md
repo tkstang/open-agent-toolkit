@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p05-t01
+oat_current_task_id: p06-t01
 oat_generated: false
 ---
 
@@ -29,10 +29,10 @@ oat_generated: false
 | Phase 2: Artifact Analysis and Code Verification | complete | 2 | 2/2 |
 | Phase 3: Surface Scanning and Delta Assessment | complete | 2 | 2/2 |
 | Phase 4: Approval, Apply, and State Updates | complete | 3 | 3/3 |
-| Phase 5: Config Schema and Integration | pending | 4 | 0/4 |
+| Phase 5: Config Schema and Integration | complete | 4 | 4/4 |
 | Phase 6: Sync and Final Polish | pending | 2 | 0/2 |
 
-**Total:** 9/15 tasks completed
+**Total:** 13/15 tasks completed
 
 ---
 
@@ -181,34 +181,89 @@ oat_generated: false
 
 ## Phase 5: Config Schema and Integration
 
-**Status:** pending
-**Started:** -
+**Status:** complete
+**Started:** 2026-03-08
+
+### Phase Summary
+
+**Outcome:**
+- Added `documentation` config schema to OAT config (root, tooling, config, requireForProjectCompletion)
+- Added `oat_docs_updated` field to state.md template
+- Integrated documentation sync check into oat-project-complete (soft suggestion / hard gate)
+- Added docs updated status to state dashboard with routing to oat-project-document
+
+**Key files touched:**
+- `packages/cli/src/config/oat-config.ts` - OatDocumentationConfig interface + normalization
+- `packages/cli/src/commands/config/index.ts` - documentation.* config key support
+- `packages/cli/src/commands/state/generate.ts` - docsUpdated in ProjectState, dashboard display, next-step routing
+- `.oat/templates/state.md` - oat_docs_updated field
+- `packages/cli/assets/templates/state.md` - oat_docs_updated field
+- `.agents/skills/oat-project-complete/SKILL.md` - Step 3.6 documentation sync check
+
+**Verification:**
+- Run: `pnpm type-check && pnpm --filter @oat/cli test`
+- Result: pass (793 tests)
 
 ### Task p05-t01: Add documentation config schema support
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 029c213
+
+**Outcome:**
+- Added `OatDocumentationConfig` interface with root, tooling, config, requireForProjectCompletion fields
+- Added normalization for documentation section in `normalizeOatConfig()`
+- Added documentation.* keys to ConfigKey union and KEY_ORDER
+- Added getter/setter logic for all documentation config keys
+
+**Files changed:**
+- `packages/cli/src/config/oat-config.ts` - interface + normalization
+- `packages/cli/src/commands/config/index.ts` - get/set/list support
+
+**Verification:**
+- Run: `pnpm type-check && pnpm --filter @oat/cli test`
+- Result: pass (793 tests)
 
 ---
 
 ### Task p05-t02: Add oat_docs_updated to state.md template
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 3c7532c
+
+**Outcome:**
+- Added `oat_docs_updated: null` with comment to both state.md template locations
+
+**Files changed:**
+- `.oat/templates/state.md` - new frontmatter field
+- `packages/cli/assets/templates/state.md` - new frontmatter field
 
 ---
 
 ### Task p05-t03: Integrate documentation check into oat-project-complete
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 8a7a148
+
+**Outcome:**
+- Added Step 3.6 to oat-project-complete: checks oat_docs_updated and documentation.requireForProjectCompletion
+- Soft suggestion (default) or hard gate behavior based on config
+
+**Files changed:**
+- `.agents/skills/oat-project-complete/SKILL.md` - Step 3.6 documentation sync check
 
 ---
 
 ### Task p05-t04: Add oat_docs_updated to state dashboard generation
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 4537ed3
+
+**Outcome:**
+- Dashboard shows "Docs Updated: ✓ complete / ⊘ skipped / ⚠ not yet run"
+- Next step routes to oat-project-document when implementation is complete but docs not synced
+
+**Files changed:**
+- `packages/cli/src/commands/state/generate.ts` - docsUpdated field, display, routing
 
 ---
 
@@ -266,6 +321,20 @@ Chronological log of implementation progress.
 **Decisions:**
 - Combined 9 plan tasks into 1 commit — single-file skill is more efficient to write atomically
 
+- [x] p05-t01: Add documentation config schema support - 029c213
+- [x] p05-t02: Add oat_docs_updated to state.md template - 3c7532c
+- [x] p05-t03: Integrate documentation check into oat-project-complete - 8a7a148
+- [x] p05-t04: Add oat_docs_updated to state dashboard generation - 4537ed3
+
+**What changed (high level):**
+- Documentation config schema (root, tooling, config, requireForProjectCompletion) added to OAT config
+- oat_docs_updated state field added to templates
+- Documentation sync check integrated into oat-project-complete
+- State dashboard shows docs status and routes to oat-project-document
+
+**Decisions:**
+- Kept requireForProjectCompletion as a boolean (default false) for soft suggestion behavior
+
 ---
 
 ## Deviations from Plan
@@ -279,7 +348,7 @@ Chronological log of implementation progress.
 | Phase | Tests Run | Passed | Failed | Coverage |
 |-------|-----------|--------|--------|----------|
 | 1-4 | lint | pass | 0 | - |
-| 5 | - | - | - | - |
+| 5 | type-check + test (793) | pass | 0 | - |
 | 6 | - | - | - | - |
 
 ## Final Summary (for PR/docs)
