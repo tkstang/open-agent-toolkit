@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t01
+oat_current_task_id: p01-t02
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -27,11 +27,11 @@ oat_template_name: implementation
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | pending | 4 | 0/4 |
+| Phase 1 | in_progress | 4 | 1/4 |
 | Phase 2 | pending | 4 | 0/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 0/12 tasks completed
+**Total:** 1/12 tasks completed
 
 ---
 
@@ -57,11 +57,24 @@ oat_template_name: implementation
 
 ### Task p01-t01: Add `localPaths` to OatConfig schema
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** e6ed890
 
-**Notes:**
-- First task -- extend config schema
+**Outcome (required):**
+- Added `localPaths?: string[]` to `OatConfig` interface
+- Normalization in `normalizeOatConfig()` filters non-strings, deduplicates, sorts
+- Exported `resolveLocalPaths(config)` helper returning resolved array (empty if omitted)
+- 5 new tests covering dedup, sort, filtering, and resolveLocalPaths
+
+**Files changed:**
+- `packages/cli/src/config/oat-config.ts` - added localPaths to interface + normalization + helper
+- `packages/cli/src/config/oat-config.test.ts` - added localPaths test suite
+
+**Verification:**
+- Run: `pnpm test -- --run src/config/oat-config.test.ts`
+- Result: 798 tests pass
+- Run: `pnpm lint && pnpm type-check`
+- Result: clean
 
 ---
 
