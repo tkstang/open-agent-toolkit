@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p06-t01
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -30,9 +30,9 @@ oat_generated: false
 | Phase 3: Surface Scanning and Delta Assessment | complete | 2 | 2/2 |
 | Phase 4: Approval, Apply, and State Updates | complete | 3 | 3/3 |
 | Phase 5: Config Schema and Integration | complete | 4 | 4/4 |
-| Phase 6: Sync and Final Polish | pending | 2 | 0/2 |
+| Phase 6: Sync and Final Polish | complete | 2 | 2/2 |
 
-**Total:** 13/15 tasks completed
+**Total:** 15/15 tasks completed
 
 ---
 
@@ -269,20 +269,57 @@ oat_generated: false
 
 ## Phase 6: Sync and Final Polish
 
-**Status:** pending
-**Started:** -
+**Status:** complete
+**Started:** 2026-03-08
+
+### Phase Summary
+
+**Outcome:**
+- Synced oat-project-document skill to claude and cursor provider directories
+- Updated current-state.md, backlog.md, backlog-completed.md with new skill and config additions
+
+**Key files touched:**
+- `.claude/skills/oat-project-document` - symlink to canonical skill
+- `.cursor/skills/oat-project-document` - symlink to canonical skill
+- `.oat/sync/manifest.json` - updated sync state
+- `.oat/repo/reference/current-state.md` - skill listing, config, quickstart
+- `.oat/repo/reference/backlog.md` - removed completed item
+- `.oat/repo/reference/backlog-completed.md` - added completed item
+
+**Verification:**
+- Run: `oat sync --scope all --apply`
+- Result: pass (symlinks created, manifest updated)
 
 ### Task p06-t01: Run oat sync for new skill
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 8ac0e64
+
+**Outcome:**
+- `oat sync --scope all --apply` created symlinks for oat-project-document in claude and cursor provider directories
+- Manifest updated with new skill entry
+
+**Files changed:**
+- `.claude/skills/oat-project-document` - new symlink
+- `.cursor/skills/oat-project-document` - new symlink
+- `.oat/sync/manifest.json` - updated
 
 ---
 
 ### Task p06-t02: Update repo reference docs
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** e804a7a
+
+**Outcome:**
+- Added oat-project-document to current-state.md workflow skills section
+- Updated skill count (44 → 45), added documentation config to notes, added docs sync to quickstart
+- Moved oat-project-document backlog item from Planned to backlog-completed.md
+
+**Files changed:**
+- `.oat/repo/reference/current-state.md` - skill listing, config, quickstart update
+- `.oat/repo/reference/backlog.md` - removed completed item
+- `.oat/repo/reference/backlog-completed.md` - added completed archive entry
 
 ---
 
@@ -335,6 +372,13 @@ Chronological log of implementation progress.
 **Decisions:**
 - Kept requireForProjectCompletion as a boolean (default false) for soft suggestion behavior
 
+- [x] p06-t01: Run oat sync for new skill - 8ac0e64
+- [x] p06-t02: Update repo reference docs - e804a7a
+
+**What changed (high level):**
+- Provider symlinks created for oat-project-document
+- Reference docs updated (current-state, backlog, backlog-completed)
+
 ---
 
 ## Deviations from Plan
@@ -349,25 +393,40 @@ Chronological log of implementation progress.
 |-------|-----------|--------|--------|----------|
 | 1-4 | lint | pass | 0 | - |
 | 5 | type-check + test (793) | pass | 0 | - |
-| 6 | - | - | - | - |
+| 6 | sync + lint | pass | 0 | - |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
-- {capability 1}
-- {capability 2}
+- `oat-project-document` skill: post-implementation documentation synthesis that reads project artifacts, verifies against code, scans all documentation surfaces, produces a delta plan (UPDATE/CREATE/SPLIT), and applies approved changes
+- `documentation` config schema in `.oat/config.json` (root, tooling, config, requireForProjectCompletion)
+- `oat_docs_updated` state field in state.md template (null | skipped | complete)
+- Documentation sync check integrated into `oat-project-complete` (soft suggestion by default, hard gate when `documentation.requireForProjectCompletion: true`)
+- State dashboard shows docs sync status and routes to `oat-project-document` when implementation is complete but docs not synced
 
 **Behavioral changes (user-facing):**
-- {bullet}
+- New skill `oat-project-document` available for post-implementation documentation updates
+- `oat-project-complete` now suggests running `oat-project-document` if docs haven't been synced
+- State dashboard shows "Docs Updated" status row
+- `oat config get/set` supports `documentation.*` keys
+- `--auto` flag bypasses interactive approval for autonomous flows
 
 **Key files / modules:**
-- `{path}` - {purpose}
+- `.agents/skills/oat-project-document/SKILL.md` - complete skill definition (7 process steps)
+- `packages/cli/src/config/oat-config.ts` - OatDocumentationConfig interface + normalization
+- `packages/cli/src/commands/config/index.ts` - documentation.* config key support
+- `packages/cli/src/commands/state/generate.ts` - docsUpdated field, dashboard display, next-step routing
+- `.oat/templates/state.md` + `packages/cli/assets/templates/state.md` - oat_docs_updated field
+- `.agents/skills/oat-project-complete/SKILL.md` - Step 3.6 documentation sync check
 
 **Verification performed:**
-- {tests/lint/typecheck/build/manual steps}
+- `pnpm type-check` - pass
+- `pnpm --filter @oat/cli test` - 793 tests passing
+- `pnpm lint` - pass
+- `oat sync --scope all --apply` - pass
 
 **Design deltas (if any):**
-- {what changed vs design.md and why}
+- None — implementation follows design.md as specified
 
 ## References
 
