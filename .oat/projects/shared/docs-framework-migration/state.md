@@ -3,10 +3,10 @@ oat_current_task: null
 oat_last_commit: null
 oat_blockers: []
 oat_hill_checkpoints: ["discovery", "spec", "design"]
-oat_hill_completed: []
+oat_hill_completed: ["discovery"]
 oat_parallel_execution: false
 oat_phase: discovery
-oat_phase_status: in_progress
+oat_phase_status: complete
 oat_execution_mode: single-thread
 oat_workflow_mode: spec-driven
 oat_workflow_origin: native
