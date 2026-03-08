@@ -29,9 +29,9 @@ oat_template_name: implementation
 |-------|--------|-------|-----------|
 | Phase 1 | pending | 4 | 0/4 |
 | Phase 2 | pending | 4 | 0/4 |
-| Phase 3 | pending | 3 | 0/3 |
+| Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 0/11 tasks completed
+**Total:** 0/12 tasks completed
 
 ---
 
@@ -167,14 +167,24 @@ oat_template_name: implementation
 
 ---
 
-### Task p03-t02: Delete legacy pointer files + clean up gitignore
+### Task p03-t02: Update autonomous worktree bootstrap for config + local sync
+
+**Status:** pending
+**Commit:** -
+
+**Notes:**
+- Added via artifact review (I2): mirrors p03-t01 changes for the auto bootstrap path
+
+---
+
+### Task p03-t03: Delete legacy pointer files + clean up gitignore
 
 **Status:** pending
 **Commit:** -
 
 ---
 
-### Task p03-t03: Final build + lint + type-check + test
+### Task p03-t04: Final build + lint + type-check + test
 
 **Status:** pending
 **Commit:** -
@@ -185,6 +195,28 @@ oat_template_name: implementation
 
 <!-- orchestration-runs-start -->
 <!-- orchestration-runs-end -->
+
+---
+
+## Review Notes
+
+### Artifact Review Received: plan
+
+**Date:** 2026-03-08
+**Review artifact:** reviews/artifact-plan-review-2026-03-08.md
+
+**Findings:**
+- Critical: 0
+- Important: 2
+- Medium: 0
+- Minor: 1
+
+**Dispositions:**
+- `I1` (activeIdea config surface): `resolved_in_artifact` — added explicit CLI config extension substep to p01-t02
+- `I2` (auto bootstrap coverage): `resolved_in_artifact` — added new task p03-t02 for autonomous bootstrap path
+- `m1` (HiLL metadata inconsistency): `resolved_in_artifact` — unchecked Planning Checklist to match empty `oat_plan_hill_phases`
+
+**Import skill gap noted:** `oat-project-import-plan` lacks a HiLL configuration step. The Planning Checklist was marked complete without running the HiLL flow. This is a separate fix outside this project's scope.
 
 ---
 

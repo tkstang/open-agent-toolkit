@@ -29,8 +29,8 @@ oat_template_name: plan
 
 ## Planning Checklist
 
-- [x] Confirmed HiLL checkpoints with user
-- [x] Set `oat_plan_hill_phases` in frontmatter
+- [ ] Confirmed HiLL checkpoints with user
+- [ ] Set `oat_plan_hill_phases` in frontmatter
 
 ---
 
@@ -116,6 +116,7 @@ Expected: Test fails (RED)
 - Add normalization for `activeIdea` in `normalizeOatLocalConfig()`
 - Export `resolveActiveIdea(repoRoot)`, `setActiveIdea(repoRoot, ideaPath)`, `clearActiveIdea(repoRoot)`
 - Add `readUserConfig()` / `writeUserConfig()` pair for `~/.oat/config.json`
+- Extend `ConfigKey` type and `KEY_ORDER` array in `packages/cli/src/commands/config/index.ts` to include `'activeIdea'`, so `oat config set activeIdea` works at the CLI level
 
 Run: `pnpm test packages/cli/src/config/oat-config.test.ts`
 Expected: Test passes (GREEN)
@@ -461,7 +462,41 @@ git commit -m "feat(p03-t01): update worktree bootstrap for config-based idea + 
 
 ---
 
-### Task p03-t02: Delete legacy pointer files + clean up gitignore
+### Task p03-t02: Update autonomous worktree bootstrap for config + local sync
+
+**Files:**
+- Modify: `.agents/skills/oat-worktree-bootstrap-auto/SKILL.md`
+- Modify: `.agents/skills/oat-worktree-bootstrap-auto/scripts/bootstrap.sh`
+
+**Step 1: Write test (RED)**
+
+No automated tests -- skill file is markdown + shell script.
+
+**Step 2: Implement (GREEN)**
+
+- Update SKILL.md: mirror the same config-based `activeIdea` + `oat local sync` integration from p03-t01
+- Update `bootstrap.sh`: after provider sync (Step 4), add `oat local sync --to "$TARGET_PATH"` to copy `localPaths` into the worktree
+- Remove any `active-idea` pointer file references if present
+
+**Step 3: Refactor**
+
+Ensure both bootstrap skills (manual + auto) share the same conventions per the auto skill's contract.
+
+**Step 4: Verify**
+
+Run: `grep -r "active-idea" .agents/skills/oat-worktree-bootstrap-auto/` -- should return no matches.
+Run: `grep -n "oat local sync" .agents/skills/oat-worktree-bootstrap-auto/scripts/bootstrap.sh` -- should return a match.
+
+**Step 5: Commit**
+
+```bash
+git add .agents/skills/oat-worktree-bootstrap-auto/
+git commit -m "feat(p03-t02): update autonomous worktree bootstrap for config + local sync"
+```
+
+---
+
+### Task p03-t03: Delete legacy pointer files + clean up gitignore
 
 **Files:**
 - Delete: `.oat/active-idea` (if exists)
@@ -488,12 +523,12 @@ Run: `grep -r "active-idea" .gitignore .agents/skills/ apps/oat-docs/` -- should
 
 ```bash
 git add .gitignore
-git commit -m "chore(p03-t02): delete legacy active-idea pointer files"
+git commit -m "chore(p03-t03): delete legacy active-idea pointer files"
 ```
 
 ---
 
-### Task p03-t03: Final build + lint + type-check + test
+### Task p03-t04: Final build + lint + type-check + test
 
 **Files:**
 - None (verification only)
@@ -520,7 +555,7 @@ Expected: All pass with no errors
 Fix any issues found, then:
 
 ```bash
-git commit -m "chore(p03-t03): fix issues from final verification"
+git commit -m "chore(p03-t04): fix issues from final verification"
 ```
 
 ---
@@ -535,7 +570,7 @@ git commit -m "chore(p03-t03): fix issues from final verification"
 | final | code | pending | - | - |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
-| plan | artifact | received | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
+| plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
 
 **Status values:** `pending` > `received` > `fixes_added` > `fixes_completed` > `passed`
 
@@ -546,9 +581,9 @@ git commit -m "chore(p03-t03): fix issues from final verification"
 **Summary:**
 - Phase 1: 4 tasks - Config schema + active idea migration + skill/docs updates
 - Phase 2: 4 tasks - `oat local` command group (status, apply, sync, add/remove)
-- Phase 3: 3 tasks - Worktree bootstrap integration + cleanup + final verification
+- Phase 3: 4 tasks - Worktree bootstrap integration (manual + auto) + cleanup + final verification
 
-**Total: 11 tasks**
+**Total: 12 tasks**
 
 Ready for code review and merge.
 
