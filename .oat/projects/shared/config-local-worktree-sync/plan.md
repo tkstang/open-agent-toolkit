@@ -535,6 +535,7 @@ git commit -m "chore(p03-t03): fix issues from final verification"
 | final | code | pending | - | - |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
+| plan | artifact | received | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
 
 **Status values:** `pending` > `received` > `fixes_added` > `fixes_completed` > `passed`
 
