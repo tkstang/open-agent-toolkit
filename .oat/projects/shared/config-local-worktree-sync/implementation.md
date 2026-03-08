@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t06
+oat_current_task_id: p03-t07
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -29,9 +29,9 @@ oat_template_name: implementation
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 8 | 5/8 |
+| Phase 3 | in_progress | 8 | 6/8 |
 
-**Total:** 13/16 tasks completed
+**Total:** 14/16 tasks completed
 
 ---
 
@@ -408,6 +408,24 @@ oat_template_name: implementation
 **Verification:**
 - Run: `pnpm --filter @oat/cli test -- --run`
 - Result: 827 tests pass, lint warning only, types clean
+
+---
+
+### Task p03-t06: (review) Fix stale state.md body content
+
+**Status:** completed
+**Commit:** dcdefef
+
+**Outcome (required):**
+- Updated state.md body to reflect implementation in progress (review fixes)
+- Progress section shows all 3 phases + review fix status
+- Removed stale "Plan Complete / Ready for implementation" text
+
+**Files changed:**
+- `.oat/projects/shared/config-local-worktree-sync/state.md` - updated body content
+
+**Verification:**
+- Visual inspection of state.md body vs frontmatter consistency
 
 ---
 
