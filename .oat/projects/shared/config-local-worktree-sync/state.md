@@ -1,6 +1,6 @@
 ---
-oat_current_task: p01-t03
-oat_last_commit: d87cada
+oat_current_task: p01-t04
+oat_last_commit: 182f7f8
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []

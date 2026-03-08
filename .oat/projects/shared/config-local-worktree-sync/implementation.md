@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t03
+oat_current_task_id: p01-t04
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -27,11 +27,11 @@ oat_template_name: implementation
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 4 | 2/4 |
+| Phase 1 | in_progress | 4 | 3/4 |
 | Phase 2 | pending | 4 | 0/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 2/12 tasks completed
+**Total:** 3/12 tasks completed
 
 ---
 
@@ -106,11 +106,26 @@ oat_template_name: implementation
 
 ### Task p01-t03: Update idea skills for config-based active idea
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 182f7f8
 
-**Notes:**
-- Hard cutover, no legacy fallback
+**Outcome (required):**
+- Replaced pointer file checks/reads/writes with config-based operations in all 4 idea skills
+- Step 0 resolution: `.oat/config.local.json` (repo) / `~/.oat/config.json` (user) instead of pointer files
+- Removed `ACTIVE_IDEA_FILE` variable from all skill variable tables
+- oat-idea-new Step 7: `oat config set activeIdea` instead of file write
+- oat-idea-ideate Step 1: `oat config get activeIdea` instead of `cat`
+- oat-idea-summarize Step 1: config read/write instead of file read/write
+
+**Files changed:**
+- `.agents/skills/oat-idea-new/SKILL.md` - config-based pointer
+- `.agents/skills/oat-idea-ideate/SKILL.md` - config-based resolve + set
+- `.agents/skills/oat-idea-summarize/SKILL.md` - config-based resolve + set
+- `.agents/skills/oat-idea-scratchpad/SKILL.md` - config-based level resolution
+
+**Verification:**
+- Run: `grep -r "active-idea" .agents/skills/oat-idea-*/SKILL.md`
+- Result: no matches (clean)
 
 ---
 
