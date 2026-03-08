@@ -49,7 +49,7 @@ The CLI commands (`migrate`, `nav generate`) operate on the consumer's `docs/` d
 │  │   │   ├── migrate/     (codemod command)             │
 │  │   │   └── nav/         (nav generate command)        │
 │  │   └── assets/templates/                              │
-│  │       ├── docs-app-mkdocs/    (existing, renamed)     │
+│  │       ├── docs-app-mkdocs/    (renamed from docs-app/) │
 │  │       └── docs-app-fuma/     (new Fumadocs)          │
 │  ├── docs-config/         (@oat/docs-config)            │
 │  ├── docs-transforms/     (@oat/docs-transforms)        │
@@ -362,9 +362,13 @@ interface NavGenerateOptions {
 
 Nav generation runs before both `dev` and `build` via shell `&&` chaining — this is package-manager-agnostic (works identically with `npm run`, `pnpm`, and `yarn`). The `oat` CLI is invoked directly as a binary (installed via `@oat/cli` dependency or globally), not through a package-manager-specific mechanism.
 
+**MkDocs Preservation (FR8):**
+
+The existing MkDocs template directory is renamed from `docs-app/` to `docs-app-mkdocs/` for clarity alongside the new `docs-app-fuma/` directory. Template *content* is unchanged — same files, same token interpolation, same output. The scaffold code is updated to reference the new directory name. This is a transparent organizational change that satisfies FR8: "Existing MkDocs templates are unchanged" refers to template content and behavior, not the internal directory name.
+
 **Design Decisions:**
 - Framework choice is a prompt, not a flag — discoverable for first-time users
-- MkDocs path is unchanged — no risk of regression
+- MkDocs template content is preserved as-is; only the directory name changes for organizational clarity
 - Config fields set automatically — skills don't need manual setup
 - Script contract uses `&&` chaining and direct CLI invocation — no package-manager assumptions
 
@@ -557,7 +561,6 @@ Consumer repos deploy their own docs sites — OAT doesn't prescribe this:
 ## Open Questions
 
 - **Tabs transform edge cases:** Need to prototype the `=== "Tab"` parser to understand how it handles nested content, code blocks inside tabs, adjacent tab groups
-- **Fumadocs version pinning:** Should packages pin exact Fumadocs versions or use ranges? Exact pins are safer but require more frequent updates.
 
 ## Implementation Phases
 
@@ -615,11 +618,13 @@ Consumer repos deploy their own docs sites — OAT doesn't prescribe this:
 
 ### External Dependencies
 
-- **fumadocs-core** (latest) — MDX plugins, search, page tree
-- **fumadocs-ui** (latest) — UI components, layout primitives
-- **fumadocs-mdx** (latest) — Content source, MDX compilation
-- **next** (15.x) — Framework
-- **react** (19.x) — UI
+- **fumadocs-core** (`^x.y.z` caret range) — MDX plugins, search, page tree
+- **fumadocs-ui** (`^x.y.z` caret range) — UI components, layout primitives
+- **fumadocs-mdx** (`^x.y.z` caret range) — Content source, MDX compilation
+- **next** (`^15.x`) — Framework
+- **react** (`^19.x`) — UI
+
+**Version policy:** Caret ranges (`^`) for all Fumadocs and framework dependencies. Allows patch and minor updates automatically; major version bumps require explicit package updates. This balances stability (no surprise breaking changes) with maintainability (automatic security/bug fixes). Consumer repos are insulated — only OAT packages need updating on major bumps.
 - **flexsearch** — Client-side search engine
 - **mermaid** — Diagram rendering
 - **next-themes** — Dark/light mode
@@ -641,7 +646,7 @@ Consumer repos deploy their own docs sites — OAT doesn't prescribe this:
 ## Risks and Mitigation
 
 - **Fumadocs breaking changes:** Medium probability | Medium impact
-  - **Mitigation:** Pin versions in shared packages. Consumer repos are insulated.
+  - **Mitigation:** Caret ranges in shared packages absorb patch/minor updates. Major bumps are explicit. Consumer repos are insulated.
   - **Contingency:** Fork or swap framework — authoring contract (plain markdown) is independent of framework.
 
 - **Tabs transform complexity:** Low probability | Low impact
