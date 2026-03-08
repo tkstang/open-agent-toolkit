@@ -90,7 +90,7 @@ See [`diagnostics.md`](diagnostics.md) for details.
 | ----------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | `oat project new <name>`      | Mode-aware project scaffolding (`--mode spec-driven\|quick\|import`). Creates project directories and template files. |
 | `oat project set-mode <mode>` | Set project implementation mode (`single-thread` or `subagent-driven`) in active project `state.md`.                  |
-| `oat cleanup project`         | Project-state hygiene cleanup (pointer/state/lifecycle drift). Dry-run by default.                                    |
+| `oat cleanup project`         | Project-state hygiene cleanup (pointer/state/lifecycle drift). Mutates by default; use `--dry-run` to preview.        |
 | `oat cleanup artifacts`       | Review/reference artifact hygiene cleanup with duplicate pruning and stale triage.                                    |
 
 ### Repo State and Index Commands
