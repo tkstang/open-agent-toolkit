@@ -769,7 +769,7 @@ git commit -m "fix(p03-t09): fix false drift warnings for glob-configured localP
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
-| final | code | fixes_completed | 2026-03-08 | reviews/final-review-2026-03-08-v2.md |
+| final | code | passed | 2026-03-08 | reviews/final-review-2026-03-08-v3.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 | plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |

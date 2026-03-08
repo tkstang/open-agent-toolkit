@@ -1,5 +1,5 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
@@ -606,31 +606,35 @@ oat_template_name: implementation
 - Config-based active idea resolution with repo > user precedence
 - Worktree bootstrap integration: config propagation + local sync on worktree creation
 - Hard cutover migration: all idea skills use config, legacy pointer files removed
+- Glob expansion for localPaths in `sync` and `status` (e.g. `.oat/projects/**/reviews`)
+- Path validation on `add` (rejects absolute, parent-relative, and empty paths)
+- Glob-aware gitignore matching in `status` (no false drift warnings for glob patterns)
 
 **Behavioral changes (user-facing):**
-- `oat local add/remove` manages localPaths in `.oat/config.json`
-- `oat local apply` writes a managed `.gitignore` section for localPaths
-- `oat local sync <path>` copies localPaths to/from worktrees
-- `oat local status` shows drift warnings for ungitignored paths
+- `oat local add/remove` manages localPaths in `.oat/config.json` with input validation
+- `oat local apply` writes a managed `.gitignore` section for localPaths (raw patterns)
+- `oat local sync <path>` copies localPaths to/from worktrees with glob expansion
+- `oat local status` shows drift warnings with glob-aware gitignore detection
 - `oat config set/get activeIdea` replaces `.oat/active-idea` pointer file
 - Worktree bootstrap automatically syncs localPaths + config into new worktrees
 
 **Key files / modules:**
 - `packages/cli/src/config/oat-config.ts` — schema extensions + helpers
-- `packages/cli/src/commands/local/` — full command group (5 subcommands)
+- `packages/cli/src/commands/local/` — full command group (7 files: 5 subcommands + expand + status helpers)
 - `packages/cli/src/commands/config/index.ts` — ConfigKey extension
 - `.agents/skills/oat-idea-*/SKILL.md` — config-based active idea (4 skills)
 - `.agents/skills/oat-worktree-bootstrap*/` — config + sync integration (2 skills)
 - `apps/oat-docs/docs/` — updated reference docs (3 files)
 
 **Verification performed:**
-- 824 tests pass (108 files), 20 new tests added
+- 830 tests pass (108 files), 26 new tests added
 - Build, lint, type-check all pass
 - Grep verification: no residual `active-idea` references in skills/gitignore
 
 **Design deltas (if any):**
-- Glob expansion omitted from `oat local sync` — localPaths are explicit directory paths
-- Dry-run is opt-in on `apply` (not the default)
+- Glob expansion added to `sync` and `status` (originally omitted, added per review finding)
+- `apply` writes raw glob patterns to `.gitignore` (gitignore handles globs natively)
+- Dry-run is opt-in on `apply` (not the default) — matches new CLI convention
 
 ## References
 
