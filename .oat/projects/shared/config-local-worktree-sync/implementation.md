@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t04
+oat_current_task_id: null
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -29,9 +29,9 @@ oat_template_name: implementation
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | pending | 4 | 0/4 |
+| Phase 3 | complete | 4 | 4/4 |
 
-**Total:** 11/12 tasks completed
+**Total:** 12/12 tasks completed
 
 ---
 
@@ -285,20 +285,27 @@ oat_template_name: implementation
 **Status:** pending
 **Started:** -
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
-- {TBD}
+- Both worktree bootstrap skills (manual + auto) updated to use config-based activeIdea + oat local sync
+- Auto bootstrap script gains Step 2.5 for config.local.json propagation + localPaths sync
+- Legacy `.oat/active-idea` removed from `.gitignore`
+- Full build/lint/type-check/test verification passes
 
 **Key files touched:**
-- {TBD}
+- `.agents/skills/oat-worktree-bootstrap/SKILL.md`
+- `.agents/skills/oat-worktree-bootstrap-auto/SKILL.md`
+- `.agents/skills/oat-worktree-bootstrap-auto/scripts/bootstrap.sh`
+- `.gitignore`
 
 **Verification:**
-- Run: `{TBD}`
-- Result: {TBD}
+- Run: `pnpm build && pnpm lint && pnpm type-check && pnpm test`
+- Result: all pass (824 tests, 108 files)
 
 **Notes / Decisions:**
-- {TBD}
+- Doc references to "active-idea" retained as compatibility notes (appropriate for migration docs)
+- Both bootstrap skills use non-blocking `oat local sync` (continue on failure)
 
 ### Task p03-t01: Update worktree bootstrap to use config + local sync
 
@@ -364,8 +371,21 @@ oat_template_name: implementation
 
 ### Task p03-t04: Final build + lint + type-check + test
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** (verification only, no code changes)
+
+**Outcome (required):**
+- Build: success (all packages)
+- Lint: clean (1 pre-existing warning — unused type import in status.test.ts)
+- Type-check: clean
+- Tests: 824 passed (108 files)
+
+**Files changed:**
+- None (verification only)
+
+**Verification:**
+- Run: `pnpm build && pnpm lint && pnpm type-check && pnpm test`
+- Result: all pass
 
 ---
 
@@ -438,19 +458,37 @@ oat_template_name: implementation
 ## Final Summary (for PR/docs)
 
 **What shipped:**
-- {TBD}
+- `localPaths` config key in `OatConfig` for declaring gitignored, worktree-synced directories
+- Full `oat local` CLI command group: `status`, `apply`, `sync`, `add`, `remove`
+- `activeIdea` config key in `OatLocalConfig` + `UserConfig` (replaces pointer files)
+- Config-based active idea resolution with repo > user precedence
+- Worktree bootstrap integration: config propagation + local sync on worktree creation
+- Hard cutover migration: all idea skills use config, legacy pointer files removed
 
 **Behavioral changes (user-facing):**
-- {TBD}
+- `oat local add/remove` manages localPaths in `.oat/config.json`
+- `oat local apply` writes a managed `.gitignore` section for localPaths
+- `oat local sync <path>` copies localPaths to/from worktrees
+- `oat local status` shows drift warnings for ungitignored paths
+- `oat config set/get activeIdea` replaces `.oat/active-idea` pointer file
+- Worktree bootstrap automatically syncs localPaths + config into new worktrees
 
 **Key files / modules:**
-- {TBD}
+- `packages/cli/src/config/oat-config.ts` — schema extensions + helpers
+- `packages/cli/src/commands/local/` — full command group (5 subcommands)
+- `packages/cli/src/commands/config/index.ts` — ConfigKey extension
+- `.agents/skills/oat-idea-*/SKILL.md` — config-based active idea (4 skills)
+- `.agents/skills/oat-worktree-bootstrap*/` — config + sync integration (2 skills)
+- `apps/oat-docs/docs/` — updated reference docs (3 files)
 
 **Verification performed:**
-- {TBD}
+- 824 tests pass (108 files), 20 new tests added
+- Build, lint, type-check all pass
+- Grep verification: no residual `active-idea` references in skills/gitignore
 
 **Design deltas (if any):**
-- {TBD}
+- Glob expansion omitted from `oat local sync` — localPaths are explicit directory paths
+- Dry-run is opt-in on `apply` (not the default)
 
 ## References
 
