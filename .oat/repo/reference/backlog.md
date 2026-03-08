@@ -92,30 +92,6 @@ Capture tasks and ideas that come up while dogfooding but aren’t ready to impl
 
 ## Planned
 
-- [ ] **(P1) [skills] Add `oat-project-document` for post-implementation documentation synthesis**
-  - Target milestone/phase: Workflow quality + closeout discipline
-  - Notes:
-    - Add a dedicated skill to run after implementation/review cycles and generate documentation update recommendations (and optional patches) based on project artifacts + implementation diffs.
-    - Scope should include, where applicable:
-      - repo docs under specified docs directory
-        - NOTE: We need to support setting a docs directory in .oat/config.json, could mirror worktrees/projects and have "documentation" with "root" key, this would support future documentation configuration values. E.g. documentation.tooling: MkDocs/etc.
-      - root `README.md`
-      - project or scoped `AGENTS.md` / `CLAUDE.md` instruction updates
-      - `.oat/repo/reference/**` updates for behavior/status drift.
-    - Support two execution contexts:
-      - active project before completion
-      - completed/archived project path (read-only source artifacts still available).
-    - Integrate into closeout flow:
-      - suggest `oat-project-document` before `oat-project-complete`
-      - optionally add a project frontmatter/status flag to record documentation-sync state.
-  - Success criteria:
-    - Running `oat-project-document` produces a clear docs delta plan and/or applies approved updates with traceability.
-    - Skill can target both active and archived projects without requiring phase mutation.
-    - `oat-project-complete` flow can recommend or gate on documentation sync status (policy configurable).
-  - Links:
-    - Related workflow skills: `oat-project-review-provide`, `oat-project-review-receive`, `oat-project-complete`
-  - Created: 2026-02-17
-
 - [ ] **(P1) [workflow] Add first-class OAT project/repo management workflow family (`oat-pjm-*` or `oat-repo-reference-*`)**
   - Target milestone/phase: Workflow governance + reference hygiene
   - Notes:
