@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t07
+oat_current_task_id: p03-t08
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -29,9 +29,9 @@ oat_template_name: implementation
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 8 | 6/8 |
+| Phase 3 | in_progress | 8 | 7/8 |
 
-**Total:** 14/16 tasks completed
+**Total:** 15/16 tasks completed
 
 ---
 
@@ -426,6 +426,28 @@ oat_template_name: implementation
 
 **Verification:**
 - Visual inspection of state.md body vs frontmatter consistency
+
+### Task p03-t07: (review) Add glob expansion to localPaths sync
+
+**Status:** completed
+**Commit:** ab1be83
+
+**Outcome (required):**
+- Created shared `expandLocalPaths` helper in `expand.ts` using Node.js 22 built-in `glob`
+- `syncLocalPaths()` now expands glob patterns (e.g. `.oat/projects/**/reviews`) before processing
+- `checkLocalPathsStatus()` also expands globs for consistent behavior
+- Glob patterns matching nothing are reported as `missing` (not error)
+- `applyGitignore()` unchanged — writes raw config patterns since gitignore natively supports globs
+
+**Files changed:**
+- `packages/cli/src/commands/local/expand.ts` - new shared glob expansion helper
+- `packages/cli/src/commands/local/sync.ts` - integrate expandLocalPaths before path iteration
+- `packages/cli/src/commands/local/sync.test.ts` - 2 new tests for glob expansion + no-match
+- `packages/cli/src/commands/local/status.ts` - integrate expandLocalPaths
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run src/commands/local/`
+- Result: All 829 tests pass, lint clean (except pre-existing unused import — p03-t08), types clean
 
 ---
 
