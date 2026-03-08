@@ -139,7 +139,9 @@ Keep this concise and outcome-oriented.
 
 ### Step 2.5: Decision Point — Design Depth
 
-After discovery is complete, present the user with a choice about how to proceed:
+**Auto-advance rule:** If the request was classified as **well-understood** in Step 2a and discovery surfaced no architecture decisions, component boundary questions, or unexpected complexity, skip this decision point entirely and continue directly to Step 3. This preserves the minimal-ceremony contract for straightforward requests.
+
+**Otherwise**, present the user with a choice about how to proceed:
 
 > "Discovery is complete. How would you like to proceed?"
 > 1. **Straight to plan** — scope is clear, ready to generate tasks
@@ -158,8 +160,16 @@ Use `AskUserQuestion` to present this choice.
 **If user chooses "Lightweight design first":** execute Step 2.75 before continuing to Step 3.
 
 **If user chooses "Promote to spec-driven":**
-- Update `state.md`: set `oat_workflow_mode: spec-driven`
-- Inform the user: "Run `oat-project-spec` next to formalize requirements."
+- Update `discovery.md` frontmatter:
+  - `oat_status: complete`
+  - `oat_ready_for: oat-project-spec`
+  - `oat_last_updated: {today}`
+- Update `state.md`:
+  - `oat_workflow_mode: spec-driven`
+  - `oat_phase: discovery`
+  - `oat_phase_status: complete`
+- Refresh repo dashboard: `oat state refresh`
+- Inform the user: "Discovery is complete. Run `oat-project-spec` next to formalize requirements."
 - Stop here. Do not generate a plan.
 
 ### Step 2.75: Lightweight Design (Optional)

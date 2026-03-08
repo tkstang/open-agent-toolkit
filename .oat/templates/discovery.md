@@ -31,7 +31,9 @@ Discovery is for requirements and decisions, not implementation details.
 
 ## Solution Space
 
-{Divergent exploration of the problem space before converging on an approach. Capture genuinely distinct strategies, not minor variations.}
+_Include this section only when the request is exploratory or multiple viable approaches exist. For well-understood requests with an obvious approach, omit or replace with a single sentence stating the chosen direction._
+
+{Divergent exploration of the problem space before converging on an approach. Capture genuinely distinct strategies, not minor variations. Include 2-3 approaches as needed.}
 
 ### Approach 1: {Strategy Name} _(Recommended)_
 
@@ -40,12 +42,6 @@ Discovery is for requirements and decisions, not implementation details.
 **Tradeoffs:** {What you give up by choosing this}
 
 ### Approach 2: {Strategy Name}
-
-**Description:** {What this approach involves}
-**When this is the right choice:** {Conditions under which this approach is best}
-**Tradeoffs:** {What you give up by choosing this}
-
-### Approach 3: {Strategy Name}
 
 **Description:** {What this approach involves}
 **When this is the right choice:** {Conditions under which this approach is best}
