@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t02
+oat_current_task_id: p03-t03
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -31,7 +31,7 @@ oat_template_name: implementation
 | Phase 2 | complete | 4 | 4/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 9/12 tasks completed
+**Total:** 10/12 tasks completed
 
 ---
 
@@ -322,11 +322,24 @@ oat_template_name: implementation
 
 ### Task p03-t02: Update autonomous worktree bootstrap for config + local sync
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 506d15a
 
-**Notes:**
-- Added via artifact review (I2): mirrors p03-t01 changes for the auto bootstrap path
+**Outcome (required):**
+- Added Step 2.5 to SKILL.md for config propagation + local sync
+- Updated bootstrap.sh: copy config.local.json + run `oat local sync` before baseline checks
+- activeIdea propagates via config copy (no pointer files)
+- Local sync is non-blocking (continues on failure)
+
+**Files changed:**
+- `.agents/skills/oat-worktree-bootstrap-auto/SKILL.md` - added Step 2.5
+- `.agents/skills/oat-worktree-bootstrap-auto/scripts/bootstrap.sh` - added config copy + sync
+
+**Verification:**
+- Run: `grep -r "active-idea" .agents/skills/oat-worktree-bootstrap-auto/`
+- Result: no matches (clean)
+- Run: `grep -n "oat local sync" .agents/skills/oat-worktree-bootstrap-auto/scripts/bootstrap.sh`
+- Result: line 115 matches
 
 ---
 
