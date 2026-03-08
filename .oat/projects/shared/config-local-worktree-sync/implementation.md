@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t02
+oat_current_task_id: p01-t03
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -27,11 +27,11 @@ oat_template_name: implementation
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1 | in_progress | 4 | 1/4 |
+| Phase 1 | in_progress | 4 | 2/4 |
 | Phase 2 | pending | 4 | 0/4 |
 | Phase 3 | pending | 4 | 0/4 |
 
-**Total:** 1/12 tasks completed
+**Total:** 2/12 tasks completed
 
 ---
 
@@ -80,11 +80,27 @@ oat_template_name: implementation
 
 ### Task p01-t02: Add `activeIdea` to OatLocalConfig + user-level config
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** d87cada
 
-**Notes:**
-- User-level config at `~/.oat/config.json` (no `.local` suffix)
+**Outcome (required):**
+- Added `activeIdea?: string | null` to `OatLocalConfig` interface
+- Added `UserConfig` interface with `activeIdea` for `~/.oat/config.json`
+- Exported `resolveActiveIdea()` (repo > user precedence), `setActiveIdea()`, `clearActiveIdea()`
+- Exported `readUserConfig()` / `writeUserConfig()` for user-level config
+- Extended `ConfigKey` + `KEY_ORDER` in config command to include `activeIdea`
+- 6 new tests covering normalization, precedence, read/write, set/clear
+
+**Files changed:**
+- `packages/cli/src/config/oat-config.ts` - activeIdea in OatLocalConfig + UserConfig + helpers
+- `packages/cli/src/config/oat-config.test.ts` - activeIdea test suite
+- `packages/cli/src/commands/config/index.ts` - added activeIdea to ConfigKey/KEY_ORDER/setConfigValue
+
+**Verification:**
+- Run: `pnpm test -- --run src/config/oat-config.test.ts`
+- Result: 804 tests pass
+- Run: `pnpm lint && pnpm type-check`
+- Result: clean
 
 ---
 
