@@ -1,6 +1,6 @@
 ---
-oat_current_task: p03-t09
-oat_last_commit: b290a05
+oat_current_task: null
+oat_last_commit: 53975be
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -17,13 +17,13 @@ oat_template_name: state
 
 # Project State: Configurable VCS Policy + Worktree Sync
 
-**Status:** Implementation In Progress (re-review v2 fix)
+**Status:** Review fixes complete, awaiting re-review v3
 **Started:** 2026-03-08
 **Last Updated:** 2026-03-08
 
 ## Current Phase
 
-Implementation - Executing re-review v2 fix task (p03-t09).
+Implementation - All review fix tasks complete; awaiting re-review v3.
 
 ## Artifacts
 
@@ -40,7 +40,8 @@ Implementation - Executing re-review v2 fix task (p03-t09).
 - ✓ Phase 2 complete (4/4): `oat local` command group
 - ✓ Phase 3 original tasks complete (4/4): Worktree bootstrap + cleanup
 - ✓ Phase 3 review fixes v1 complete (4/4)
-- ⧗ Phase 3 re-review v2 fix in progress (0/1)
+- ✓ Phase 3 re-review v2 fix complete (1/1)
+- ⧗ Awaiting final re-review v3
 
 ## Blockers
 
@@ -48,4 +49,4 @@ None
 
 ## Next Milestone
 
-Complete p03-t09 fix, then request final re-review v3
+Request final re-review v3, then proceed to PR

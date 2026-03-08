@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t09
+oat_current_task_id: null
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -29,9 +29,9 @@ oat_template_name: implementation
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 9 | 8/9 |
+| Phase 3 | complete | 9 | 9/9 |
 
-**Total:** 16/17 tasks completed
+**Total:** 17/17 tasks completed
 
 ---
 
@@ -467,6 +467,24 @@ oat_template_name: implementation
 - Run: `pnpm --filter @oat/cli lint`
 - Result: Checked 271 files, no warnings
 
+### Task p03-t09: (review) Fix false drift warnings for glob-configured localPaths in status
+
+**Status:** completed
+**Commit:** 53975be
+
+**Outcome (required):**
+- Replaced exact-string gitignore matching with `matchesGitignoreLine()` that normalizes leading `/` and trailing `/` then uses `path.matchesGlob()` for glob patterns
+- `oat local status` now correctly reports `gitignored: true` for paths expanded from glob patterns when the gitignore contains the raw glob
+- Added test verifying glob-expanded paths are detected as gitignored
+
+**Files changed:**
+- `packages/cli/src/commands/local/status.ts` - refactored `isPathGitignored()` with glob-aware matching
+- `packages/cli/src/commands/local/status.test.ts` - added glob gitignore detection test
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run src/commands/local/status.test.ts`
+- Result: 4 tests pass (830 total), lint clean, types clean
+
 ---
 
 ## Orchestration Runs
@@ -538,7 +556,7 @@ oat_template_name: implementation
 
 **New tasks added:** p03-t09
 
-**Next:** Execute fix task via the `oat-project-implement` skill.
+**Next:** Fix task complete. Request re-review via `oat-project-review-provide code final`.
 
 ---
 
