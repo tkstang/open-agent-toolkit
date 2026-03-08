@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t05
+oat_current_task_id: p03-t06
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -29,9 +29,9 @@ oat_template_name: implementation
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | in_progress | 8 | 4/8 |
+| Phase 3 | in_progress | 8 | 5/8 |
 
-**Total:** 12/16 tasks completed
+**Total:** 13/16 tasks completed
 
 ---
 
@@ -386,6 +386,28 @@ oat_template_name: implementation
 **Verification:**
 - Run: `pnpm build && pnpm lint && pnpm type-check && pnpm test`
 - Result: all pass
+
+---
+
+### Task p03-t05: (review) Fix localPaths path traversal — reject unsafe paths
+
+**Status:** completed
+**Commit:** b94c041
+
+**Outcome (required):**
+- Added `validatePath()` in manage.ts rejecting absolute, parent-relative, and empty paths
+- `AddResult` now includes `rejected: RejectedPath[]`
+- Command handler reports rejected paths with warnings
+- 3 new tests covering absolute, parent-relative, and empty paths
+
+**Files changed:**
+- `packages/cli/src/commands/local/manage.ts` - path validation + RejectedPath type
+- `packages/cli/src/commands/local/manage.test.ts` - 3 new tests
+- `packages/cli/src/commands/local/index.ts` - report rejected paths in add handler
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- --run`
+- Result: 827 tests pass, lint warning only, types clean
 
 ---
 
