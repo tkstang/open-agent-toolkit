@@ -560,6 +560,153 @@ git commit -m "chore(p03-t04): fix issues from final verification"
 
 ---
 
+### Task p03-t05: (review) Fix localPaths path traversal — reject unsafe paths
+
+**Files:**
+- Modify: `packages/cli/src/commands/local/manage.ts`
+- Modify: `packages/cli/src/commands/local/manage.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `addLocalPaths()` accepts any string including absolute paths (`/tmp/foo`) and parent-relative paths (`../other-repo`). With `--force`, `syncLocalPaths()` can delete/copy arbitrary filesystem paths outside the repo boundary.
+Location: `manage.ts:19-40`, `sync.ts:38-62`
+
+**Step 2: Write test (RED)**
+
+Add tests for:
+- Reject absolute paths (starting with `/`)
+- Reject parent-relative paths (containing `..`)
+- Accept valid `.oat/`-prefixed paths
+- Reject empty strings
+
+**Step 3: Implement fix (GREEN)**
+
+Add path validation in `addLocalPaths()`:
+- Reject absolute paths (starts with `/`)
+- Reject paths containing `..` segments
+- Normalize and validate before persisting
+- Return rejected paths with reason in result
+
+**Step 4: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/local/manage.test.ts`
+Expected: All tests pass
+
+Run: `pnpm --filter @oat/cli lint && pnpm --filter @oat/cli type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/local/manage.ts packages/cli/src/commands/local/manage.test.ts
+git commit -m "fix(p03-t05): reject unsafe paths in oat local add"
+```
+
+---
+
+### Task p03-t06: (review) Fix stale state.md body content
+
+**Files:**
+- Modify: `.oat/projects/shared/config-local-worktree-sync/state.md`
+
+**Step 1: Understand the issue**
+
+Review finding: `state.md` body text still says "Plan Complete" and "Ready for implementation" even though all 12 tasks are complete. Frontmatter is correct but body content is template-stale, which can misroute lifecycle skills.
+
+**Step 2: Implement fix**
+
+Update `state.md` body content:
+- "Current Phase" → "Implementation - Tasks complete; awaiting final review"
+- Progress section → mark implementation tasks as complete
+- Remove stale "Ready for implementation" text
+
+**Step 3: Verify**
+
+Read `state.md` to confirm body matches frontmatter state.
+
+**Step 4: Commit**
+
+```bash
+git add .oat/projects/shared/config-local-worktree-sync/state.md
+git commit -m "fix(p03-t06): update stale state.md body content"
+```
+
+---
+
+### Task p03-t07: (review) Add glob expansion to localPaths sync
+
+**Files:**
+- Modify: `packages/cli/src/commands/local/sync.ts`
+- Modify: `packages/cli/src/commands/local/sync.test.ts`
+- Modify: `packages/cli/src/commands/local/status.ts`
+- Modify: `packages/cli/src/commands/local/status.test.ts`
+- Modify: `packages/cli/src/commands/local/apply.ts`
+- Modify: `packages/cli/src/commands/local/apply.test.ts`
+
+**Step 1: Write test (RED)**
+
+Add tests for glob expansion:
+- Pattern like `.oat/projects/**/reviews` matches multiple project review dirs
+- Non-glob paths still work as literal directories
+- Missing glob matches report as missing (not error)
+
+**Step 2: Implement fix (GREEN)**
+
+- Add a shared `expandLocalPaths(repoRoot, localPaths)` helper that:
+  - Detects glob characters (`*`, `?`, `[`) in a path entry
+  - Expands globs using `node:fs` + `glob` (or `fast-glob`) relative to repoRoot
+  - Returns literal paths unchanged
+- Use `expandLocalPaths` in `syncLocalPaths()`, `checkLocalPathsStatus()`, and `applyGitignore()`
+- For `applyGitignore`: write the raw config patterns (not expanded) to `.gitignore` — gitignore natively supports globs
+
+**Step 3: Refactor**
+
+Extract `expandLocalPaths` into a shared utility if used by 3+ modules.
+
+**Step 4: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --run src/commands/local/`
+Expected: All tests pass
+
+Run: `pnpm --filter @oat/cli lint && pnpm --filter @oat/cli type-check`
+Expected: No errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/local/
+git commit -m "feat(p03-t07): add glob expansion for localPaths in sync/status"
+```
+
+---
+
+### Task p03-t08: (review) Remove unused LocalPathStatus import
+
+**Files:**
+- Modify: `packages/cli/src/commands/local/status.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `pnpm lint` reports unused `type LocalPathStatus` import at `status.test.ts:5`.
+
+**Step 2: Implement fix**
+
+Remove the unused `type LocalPathStatus` from the import statement.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli lint`
+Expected: No warnings in `status.test.ts`
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/local/status.test.ts
+git commit -m "fix(p03-t08): remove unused LocalPathStatus import"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
@@ -567,7 +714,7 @@ git commit -m "chore(p03-t04): fix issues from final verification"
 | p01 | code | pending | - | - |
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
-| final | code | received | 2026-03-08 | reviews/final-review-2026-03-08.md |
+| final | code | fixes_added | 2026-03-08 | reviews/final-review-2026-03-08.md |
 | spec | artifact | pending | - | - |
 | design | artifact | pending | - | - |
 | plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
@@ -581,9 +728,9 @@ git commit -m "chore(p03-t04): fix issues from final verification"
 **Summary:**
 - Phase 1: 4 tasks - Config schema + active idea migration + skill/docs updates
 - Phase 2: 4 tasks - `oat local` command group (status, apply, sync, add/remove)
-- Phase 3: 4 tasks - Worktree bootstrap integration (manual + auto) + cleanup + final verification
+- Phase 3: 8 tasks - Worktree bootstrap integration (manual + auto) + cleanup + final verification + review fixes
 
-**Total: 12 tasks**
+**Total: 16 tasks**
 
 Ready for code review and merge.
 

@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: null
+oat_current_task_id: p03-t05
 oat_generated: false
 oat_template: false
 oat_template_name: implementation
@@ -29,9 +29,9 @@ oat_template_name: implementation
 |-------|--------|-------|-----------|
 | Phase 1 | complete | 4 | 4/4 |
 | Phase 2 | complete | 4 | 4/4 |
-| Phase 3 | complete | 4 | 4/4 |
+| Phase 3 | in_progress | 8 | 4/8 |
 
-**Total:** 12/12 tasks completed
+**Total:** 12/16 tasks completed
 
 ---
 
@@ -415,6 +415,32 @@ oat_template_name: implementation
 - `m1` (HiLL metadata inconsistency): `resolved_in_artifact` — unchecked Planning Checklist to match empty `oat_plan_hill_phases`
 
 **Import skill gap noted:** `oat-project-import-plan` lacks a HiLL configuration step. The Planning Checklist was marked complete without running the HiLL flow. This is a separate fix outside this project's scope.
+
+### Code Review Received: final
+
+**Date:** 2026-03-08
+**Review artifact:** reviews/final-review-2026-03-08.md
+
+**Findings:**
+- Critical: 1
+- Important: 2
+- Medium: 1
+- Minor: 1
+
+**Dispositions:**
+- `C1` (path traversal): converted → p03-t05
+- `I1` (stale bookkeeping): converted → p03-t06
+- `I2` (glob expansion): converted → p03-t07 (user determined glob support is required for ephemeral projects)
+- `M1` (apply vs dry-run-first): rejected_with_rationale — current apply-by-default behavior matches new CLI convention being adopted across codebase (per backlog)
+- `m1` (unused import): converted → p03-t08
+
+**New tasks added:** p03-t05, p03-t06, p03-t07, p03-t08
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ---
 
