@@ -5,6 +5,7 @@ import { resolveProjectRoot } from '@fs/paths';
 import { Command } from 'commander';
 import { applyGitignore } from './apply';
 import { checkLocalPathsStatus } from './status';
+import { syncLocalPaths } from './sync';
 
 export function createLocalCommand(): Command {
   return new Command('local')
@@ -140,5 +141,74 @@ export function createLocalCommand(): Command {
             process.exitCode = 1;
           }
         }),
+    )
+    .addCommand(
+      new Command('sync')
+        .description('Copy localPaths between main repo and a worktree')
+        .argument('<worktree-path>', 'Path to the worktree directory')
+        .option('--from', 'Copy from worktree back to main repo')
+        .option('--force', 'Overwrite existing paths')
+        .action(
+          async (
+            worktreePath: string,
+            options: { from?: boolean; force?: boolean },
+            command: Command,
+          ) => {
+            const context = buildCommandContext(readGlobalOptions(command));
+            try {
+              const repoRoot = await resolveProjectRoot(context.cwd);
+              const config = await readOatConfig(repoRoot);
+              const localPaths = resolveLocalPaths(config);
+
+              if (localPaths.length === 0) {
+                if (context.json) {
+                  context.logger.json({
+                    status: 'ok',
+                    message: 'No localPaths configured.',
+                    entries: [],
+                  });
+                } else {
+                  context.logger.info(
+                    'No localPaths configured. Nothing to sync.',
+                  );
+                }
+                process.exitCode = 0;
+                return;
+              }
+
+              const direction = options.from ? 'from' : 'to';
+              const result = await syncLocalPaths({
+                sourceRoot: repoRoot,
+                targetRoot: worktreePath,
+                localPaths,
+                direction,
+                force: options.force ?? false,
+              });
+
+              if (context.json) {
+                context.logger.json({ status: 'ok', ...result });
+              } else {
+                for (const entry of result.entries) {
+                  context.logger.info(
+                    `  ${entry.status.padEnd(8)} ${entry.path}`,
+                  );
+                }
+                context.logger.info(
+                  `\nSync complete: ${result.copied} copied, ${result.skipped} skipped, ${result.missing} missing`,
+                );
+              }
+              process.exitCode = 0;
+            } catch (error) {
+              const message =
+                error instanceof Error ? error.message : String(error);
+              if (context.json) {
+                context.logger.json({ status: 'error', message });
+              } else {
+                context.logger.error(message);
+              }
+              process.exitCode = 1;
+            }
+          },
+        ),
     );
 }
