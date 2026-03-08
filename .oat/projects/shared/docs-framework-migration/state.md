@@ -5,8 +5,8 @@ oat_blockers: []
 oat_hill_checkpoints: ["discovery", "spec", "design"]
 oat_hill_completed: ["discovery"]
 oat_parallel_execution: false
-oat_phase: discovery
-oat_phase_status: complete
+oat_phase: spec
+oat_phase_status: in_progress
 oat_execution_mode: single-thread
 oat_workflow_mode: spec-driven
 oat_workflow_origin: native
@@ -16,29 +16,28 @@ oat_generated: false
 
 # Project State: docs-framework-migration
 
-**Status:** Discovery (awaiting HiLL approval)
+**Status:** Specification (awaiting HiLL approval)
 **Started:** 2026-03-08
 **Last Updated:** 2026-03-08
 
 ## Current Phase
 
-Discovery - Complete, awaiting approval to advance
+Specification - Complete, awaiting approval to advance
 
 ## Artifacts
 
-- **Discovery:** `discovery.md` (complete, pending approval)
-- **Spec:** Not yet created
+- **Discovery:** `discovery.md` (complete)
+- **Spec:** `spec.md` (complete, pending approval)
 - **Design:** Not yet created
 - **Plan:** Not yet created
 - **Implementation:** Not yet created
 
 ## Progress
 
-- ✓ Discovery started
-- ✓ Problem space explored (framework evaluation, feature audit, migration analysis)
-- ✓ Key decisions documented
-- ✓ Discovery artifact written
-- ⧗ Awaiting HiLL approval for discovery
+- ✓ Discovery complete (HiLL approved)
+- ✓ Specification drafted (8 FR, 5 NFR)
+- ✓ Quality gate passed
+- ⧗ Awaiting HiLL approval for spec
 
 ## Blockers
 
@@ -46,4 +45,4 @@ None
 
 ## Next Milestone
 
-HiLL approval for discovery, then proceed to specification phase
+HiLL approval for spec, then proceed to design phase
