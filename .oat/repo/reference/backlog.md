@@ -24,6 +24,30 @@ Capture tasks and ideas that come up while dogfooding but aren’t ready to impl
   - Links:
   - Created: YYYY-MM-DD
 
+- [ ] **(P1) [skills] Add retroactive project capture skill (`oat-project-capture`)**
+  - Context: When work happens outside the OAT project workflow (e.g., mobile/cloud sessions, quick fixes, ad-hoc brainstorming that turns into implementation), there's no way to retroactively create project tracking artifacts. The agent has full conversation context — requirements discussed, decisions made, alternatives considered — but none of it gets captured into OAT's project structure. This is especially common with cloud mobile sessions where the user works with the agent, then wants to open a PR and review it later from their computer.
+  - Proposed change:
+    - Add an `oat-project-capture` skill that creates a full project from an already-completed (or in-progress) branch:
+      - **Step 1: Name inference** — Propose a project name based on conversation context (what was accomplished), not the branch name (which is often just a slug of the first message). Let the user accept or rename.
+      - **Step 2: Branch analysis** — Detect current branch, infer base branch, run `git diff` and `git log` to understand scope of changes (files, commits, test results).
+      - **Step 3: Project scaffold** — Create project via `oat project new --mode quick` (or direct scaffold call).
+      - **Step 4: Discovery synthesis** — Populate `discovery.md` from conversation context: problem statement, requirements discussed, decisions made, alternatives considered. Ask user to confirm or clarify anything unclear.
+      - **Step 5: Implementation capture** — Populate `implementation.md` with commit-derived task list, files changed, tests added, issues encountered and how they were resolved.
+      - **Step 6: Lifecycle state** — Ask user: "Is this ready for review, or still in progress?" Default to `awaiting-review`. Set `oat_lifecycle` accordingly.
+    - Skill-only (no CLI command needed) — requires conversation context that only the agent has. The commit analysis is supplementary; the real value is capturing *intent* from the conversation.
+    - Should ask the user for details whenever anything is unclear rather than guessing.
+  - Success criteria:
+    - Agent can invoke `oat-project-capture` at end of a session to create a tracked project from untracked work.
+    - `discovery.md` captures the "why" from conversation context, not just the "what" from commits.
+    - `implementation.md` reflects actual work done with commit references.
+    - Project is set to `awaiting-review` (or user-chosen state) and is ready for `oat-project-review-provide` / `oat-project-pr-final`.
+    - Works naturally in the mobile/cloud session flow: brainstorm → implement → capture → PR → review at desk.
+  - Links:
+    - Related: `oat-project-reconcile` (bridges gaps in *existing* projects; capture creates from scratch)
+    - Related: `oat-project-quick-start` (forward-looking quick scaffold; capture is retroactive)
+    - Related: `oat-project-pr-final` (downstream consumer of captured project)
+  - Created: 2026-03-09
+
 - [ ] **(P1) [tooling] Add timestamp frontmatter to project state documents**
   - Context: Project `state.md` files currently lack machine-readable timestamps. Tooling that wants to find projects by most recently updated or created date has no structured field to query. Skills that scan archived projects for documentation gaps (e.g., `oat-docs-analyze`) also benefit from knowing when a project was created, completed, or last updated.
   - Proposed change:
