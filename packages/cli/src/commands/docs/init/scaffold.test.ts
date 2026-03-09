@@ -56,6 +56,8 @@ const FUMA_TEMPLATE_FILES: Record<string, string> = {
     "import { DocsLayout } from '@oat/docs-theme';\nexport default function Layout({ children }) { return <DocsLayout branding={{ title: '{{SITE_NAME}}', description: '{{SITE_DESCRIPTION}}' }} tree={{}}>{children}</DocsLayout>; }\n",
   'app/[[...slug]]/page.tsx':
     "import { Mermaid } from '@oat/docs-theme';\nexport default function Page() { return <div />; }\n",
+  'app/api/search/route.ts':
+    "import { source } from '@/lib/source';\nimport { createFromSource } from 'fumadocs-core/search/server';\nconst search = createFromSource(source);\nexport const { staticGET: GET } = search;\n",
   'docs/index.md': '# {{SITE_NAME}}\n\n{{SITE_DESCRIPTION}}\n',
   'docs/getting-started.md': '# Getting Started\n',
   'docs/contributing.md': '# Contributing\n',
@@ -229,6 +231,17 @@ describe('scaffoldDocsApp', () => {
     );
     expect(packageJson.devDependencies['markdownlint-cli2']).toBeDefined();
     expect(packageJson.devDependencies['prettier']).toBeDefined();
+
+    const searchRoute = await readFile(
+      join(result.appRoot, 'app', 'api', 'search', 'route.ts'),
+      'utf8',
+    );
+    expect(searchRoute).toContain('createFromSource');
+    expect(searchRoute).toContain('staticGET');
+
+    expect(result.createdFiles).toContain(
+      join('app', 'api', 'search', 'route.ts'),
+    );
     expect(result.documentationConfig).toEqual({
       root: 'apps/my-docs',
       tooling: 'fumadocs',

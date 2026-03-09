@@ -52,6 +52,10 @@ const FUMA_TEMPLATE_FILES: TemplateFile[] = [
     source: join('app', '[[...slug]]', 'page.tsx'),
     destination: join('app', '[[...slug]]', 'page.tsx'),
   },
+  {
+    source: join('app', 'api', 'search', 'route.ts'),
+    destination: join('app', 'api', 'search', 'route.ts'),
+  },
   { source: join('docs', 'index.md'), destination: join('docs', 'index.md') },
   {
     source: join('docs', 'getting-started.md'),
