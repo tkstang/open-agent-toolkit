@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-09
-oat_current_task_id: p04-t07
+oat_current_task_id: p04-t08
 oat_generated: false
 ---
 
@@ -888,6 +888,26 @@ After the fix tasks are complete:
 **Verification:**
 - Run: `pnpm --filter @oat/cli exec vitest run src/commands/docs/init/scaffold.test.ts src/commands/docs/index-generate/generator.test.ts && pnpm --filter @oat/cli type-check`
 - Result: 11 tests pass, type-check clean
+
+---
+
+### Task p04-t07: (review) Wire index generation into Fumadocs scaffold scripts
+
+**Status:** completed
+**Commit:** 9c45ca2
+
+**Outcome:**
+- Added `predev` and `prebuild` scripts running `npx oat docs index-generate` to Fumadocs template
+- Scaffolded apps now auto-generate the app-root index artifact before Next.js dev/build
+- Test assertion added verifying predev/prebuild contain index generation
+
+**Files changed:**
+- `.oat/templates/docs-app-fuma/package.json.template` - added predev/prebuild hooks
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - added script assertions
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli exec vitest run src/commands/docs/init/scaffold.test.ts`
+- Result: 4/4 tests pass
 
 ---
 
