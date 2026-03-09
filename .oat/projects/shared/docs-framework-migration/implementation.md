@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-09
-oat_current_task_id: p04-t13
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
 | Phase 2: Scaffold Templates + CLI | complete | 8 | 8/8 |
 | Phase 3: Migration + Index Commands | complete | 10 | 10/10 |
-| Phase 4: Integration + Polish | in_progress | 13 | 12/13 |
+| Phase 4: Integration + Polish | complete | 13 | 13/13 |
 
-**Total:** 42/43 tasks completed
+**Total:** 43/43 tasks completed
 
 ---
 
@@ -958,7 +958,26 @@ oat_generated: false
 
 **Review cycle:** 3 of 3 (limit reached — no further automated review cycles after this fix)
 
-**Next:** Execute fix task p04-t13, then mark final review as `passed` (fix is verifiable by inspection given cycle limit).
+**Status:** Fix task complete. Review cycle limit reached (3 of 3) — marking final review as `passed` (fix verified by test assertion).
+
+**Next:** Create PR via `oat-project-pr-final`.
+
+### Task p04-t13: (review) Add static route marker to search API route
+
+**Status:** completed
+**Commit:** 63d6532
+
+**Outcome:**
+- Added `export const revalidate = false` to search route template for Next.js static pre-rendering
+- Updated scaffold test fixture and added `revalidate` assertion
+
+**Files changed:**
+- `.oat/templates/docs-app-fuma/app/api/search/route.ts` - added `revalidate = false`
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - updated fixture + assertion
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli exec vitest run src/commands/docs/init/scaffold.test.ts`
+- Result: 4/4 tests pass
 
 ---
 
@@ -1127,37 +1146,40 @@ Track test execution during implementation.
 ## Final Summary (for PR/docs)
 
 **What shipped:**
-- `@oat/docs-transforms` — remarkTabs remark plugin (MkDocs tab syntax → Fumadocs `<Tabs>`/`<Tab>` JSX)
-- `@oat/docs-config` — Config factories for Next.js (static export + createMDX), source config (remark plugins), FlexSearch static search
+- `@oat/docs-transforms` — remarkTabs + remarkMermaid remark plugins (MkDocs tab syntax → Fumadocs JSX, mermaid code fences → `<Mermaid>` component)
+- `@oat/docs-config` — Config factories for Next.js (static export + createMDX), source config (remark plugins + search), FlexSearch static search
 - `@oat/docs-theme` — DocsLayout, DocsPage, Mermaid components wrapping fumadocs-ui
-- Fumadocs scaffold templates (10 files) with `oat docs init --framework fumadocs`
+- Fumadocs scaffold templates (11 files) with `oat docs init --framework fumadocs` — includes search API route with static pre-rendering
 - `oat docs migrate` — Admonition-to-GFM codemod + frontmatter injection from mkdocs.yml nav
-- `oat docs index-generate` — Recursive markdown index generation with config update
+- `oat docs generate-index` — Recursive markdown index generation with config update
 
 **Behavioral changes (user-facing):**
 - `oat docs init` now prompts for framework choice (fumadocs/mkdocs) and site description
-- `oat docs init --framework fumadocs` scaffolds a Next.js-based docs app with Fumadocs
+- `oat docs init --framework fumadocs` scaffolds a Next.js-based docs app with Fumadocs, search, and Mermaid support
 - `oat docs migrate` converts MkDocs admonitions to GFM blockquotes and injects frontmatter
-- `oat docs index-generate` creates a docs index from markdown files
+- `oat docs generate-index` creates a docs index from markdown files (auto-runs via predev/prebuild hooks)
 - MkDocs scaffold path unchanged (FR8 backward compatibility)
 
 **Key files / modules:**
-- `packages/docs-transforms/` - remarkTabs plugin
+- `packages/docs-transforms/` - remarkTabs, remarkMermaid plugins
 - `packages/docs-config/` - Next.js, source, and search config factories
 - `packages/docs-theme/` - DocsLayout, DocsPage, Mermaid components
-- `.oat/templates/docs-app-fuma/` - 10 Fumadocs template files
+- `.oat/templates/docs-app-fuma/` - 11 Fumadocs template files (incl. search route)
 - `packages/cli/src/commands/docs/migrate/` - codemod, frontmatter, command handler
 - `packages/cli/src/commands/docs/index-generate/` - generator, command handler
 
 **Verification performed:**
-- 867 tests pass (14 transforms, 7 config, ~846 CLI)
+- 867 tests pass (14 transforms, 9 config, ~844 CLI)
 - Lint: clean (Biome)
 - Type-check: clean (TypeScript)
 - Build: clean (Turborepo)
+- 3 final review cycles, all findings resolved
 
 **Design deltas (if any):**
 - E2E build test (p04-t02) tests pipeline logic rather than npm install + build (workspace:* deps can't resolve outside monorepo)
 - FlexSearch verification (p04-t04) is structural — config factory + template deps correct; runtime requires built app
+- CLI command `oat docs generate-index` (flat) instead of spec's `oat docs index generate` (nested) — user decision, no other index subcommands planned
+- Search route verified structurally (test asserts `createFromSource`, `staticGET`, `revalidate = false`); full build test deferred per workspace:* constraint
 
 ## References
 

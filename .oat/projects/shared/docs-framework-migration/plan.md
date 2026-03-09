@@ -1447,7 +1447,7 @@ git commit -m "fix(p04-t13): add static route marker to scaffold search API rout
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
-| final | code | fixes_added | 2026-03-09 | reviews/final-review-2026-03-09-v3.md |
+| final | code | passed | 2026-03-09 | reviews/final-review-2026-03-09-v3.md |
 | spec | artifact | pending | - | - |
 | design | artifact | received | 2026-03-08 | reviews/artifact-design-review-2026-03-08-v2.md |
 | plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
