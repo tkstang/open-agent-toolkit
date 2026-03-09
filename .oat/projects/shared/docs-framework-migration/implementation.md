@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p02-t02
+oat_current_task_id: p02-t03
 oat_generated: false
 ---
 
@@ -26,11 +26,11 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
-| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 1/8 |
+| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 2/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 13/35 tasks completed
+**Total:** 14/35 tasks completed
 
 ---
 
@@ -349,8 +349,24 @@ oat_generated: false
 
 ### Task p02-t02: Rename existing MkDocs template directory
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 327c469
+
+**Outcome:**
+- Renamed `.oat/templates/docs-app` → `.oat/templates/docs-app-mkdocs` to disambiguate from Fumadocs template
+- Updated `bundle-assets.sh` to reference `docs-app-mkdocs`
+- Updated `scaffold.ts` template root from `'docs-app'` to `'docs-app-mkdocs'`
+- Fixed scaffold test `seedAssets` to use new directory name
+
+**Files changed:**
+- `.oat/templates/docs-app-mkdocs/` - renamed from `docs-app`
+- `packages/cli/scripts/bundle-assets.sh` - updated template reference
+- `packages/cli/src/commands/docs/init/scaffold.ts` - updated template root
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - fixed test helper
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test`
+- Result: 834/834 tests pass
 
 ---
 
