@@ -30,7 +30,7 @@ const TEMPLATE_FILES = {
 
 async function seedAssets(root: string): Promise<string> {
   const assetsRoot = join(root, 'assets');
-  const templateRoot = join(assetsRoot, 'templates', 'docs-app');
+  const templateRoot = join(assetsRoot, 'templates', 'docs-app-mkdocs');
 
   for (const [relativePath, content] of Object.entries(TEMPLATE_FILES)) {
     const target = join(templateRoot, relativePath);

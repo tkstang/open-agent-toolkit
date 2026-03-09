@@ -108,7 +108,7 @@ export async function scaffoldDocsApp(
   options: ScaffoldDocsAppOptions,
 ): Promise<ScaffoldDocsAppResult> {
   const appRoot = join(options.repoRoot, options.targetDir);
-  const templateRoot = join(options.assetsRoot, 'templates', 'docs-app');
+  const templateRoot = join(options.assetsRoot, 'templates', 'docs-app-mkdocs');
   const createdFiles: string[] = [];
 
   if (!(await fileExists(join(templateRoot, 'mkdocs.yml')))) {
