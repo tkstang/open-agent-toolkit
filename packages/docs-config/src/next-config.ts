@@ -1,3 +1,4 @@
+import { createMDX } from 'fumadocs-mdx/next';
 import type { NextConfig } from 'next';
 
 export interface DocsConfigOptions {
@@ -7,9 +8,12 @@ export interface DocsConfigOptions {
 }
 
 export function createDocsConfig(_options: DocsConfigOptions): NextConfig {
-  return {
+  const baseConfig: NextConfig = {
     output: 'export',
     images: { unoptimized: true },
     reactStrictMode: true,
   };
+
+  const withMDX = createMDX();
+  return withMDX(baseConfig);
 }
