@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-09
-oat_current_task_id: p04-t06
+oat_current_task_id: p04-t07
 oat_generated: false
 ---
 
@@ -867,6 +867,27 @@ oat_generated: false
 After the fix tasks are complete:
 - Update the review row status to `fixes_completed`
 - Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+
+---
+
+### Task p04-t06: (review) Fix index generation output path and documentation.index config
+
+**Status:** completed
+**Commit:** 7a4ca43
+
+**Outcome:**
+- Default index output changed from `docs/index.md` to app-root `index.md`
+- `documentation.index` config now stores repo-relative path instead of absolute
+- Fumadocs scaffold `documentation.index` points at `<targetDir>/index.md` (app root artifact)
+
+**Files changed:**
+- `packages/cli/src/commands/docs/index-generate/index.ts` - fixed output default + relative config path
+- `packages/cli/src/commands/docs/init/scaffold.ts` - fixed Fumadocs documentation.index target
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - updated assertion
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli exec vitest run src/commands/docs/init/scaffold.test.ts src/commands/docs/index-generate/generator.test.ts && pnpm --filter @oat/cli type-check`
+- Result: 11 tests pass, type-check clean
 
 ---
 
