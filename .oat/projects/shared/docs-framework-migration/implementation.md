@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t06
+oat_current_task_id: p01-t07
 oat_generated: false
 ---
 
@@ -25,12 +25,12 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1: Foundation Packages | in_progress | 12 | 5/12 |
+| Phase 1: Foundation Packages | in_progress | 12 | 6/12 |
 | Phase 2: Scaffold Templates + CLI | pending | 8 | 0/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 5/35 tasks completed
+**Total:** 6/35 tasks completed
 
 ---
 
@@ -163,8 +163,21 @@ oat_generated: false
 
 ### Task p01-t06: Implement createSourceConfig factory — test + implement
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 78dc828
+
+**Outcome:**
+- `createSourceConfig()` returns remarkPlugins array with remarkTabs + remarkAlert, contentDir `./docs`
+- 3 unit tests verifying plugin presence and content directory
+
+**Files changed:**
+- `packages/docs-config/src/source-config.ts` - wired remarkTabs and remarkAlert plugins
+- `packages/docs-config/src/source-config.test.ts` - test suite
+- `packages/docs-config/package.json` - added @types/mdast
+
+**Verification:**
+- Run: `pnpm --filter @oat/docs-config test && pnpm --filter @oat/docs-config build`
+- Result: 5 tests pass, build clean
 
 ---
 
