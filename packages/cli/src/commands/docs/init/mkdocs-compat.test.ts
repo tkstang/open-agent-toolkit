@@ -10,11 +10,13 @@ const REPO_ROOT = join(THIS_DIR, '..', '..', '..', '..', '..', '..');
 
 async function bundleAssets(): Promise<string> {
   const { execSync } = await import('node:child_process');
+  const assetsDir = await mkdtemp(join(tmpdir(), 'oat-assets-mkdocs-compat-'));
   execSync('bash packages/cli/scripts/bundle-assets.sh', {
     cwd: REPO_ROOT,
     stdio: 'pipe',
+    env: { ...process.env, OAT_ASSETS_DIR: assetsDir },
   });
-  return join(REPO_ROOT, 'packages', 'cli', 'assets');
+  return assetsDir;
 }
 
 describe('MkDocs scaffold compatibility (FR8)', () => {
@@ -23,8 +25,10 @@ describe('MkDocs scaffold compatibility (FR8)', () => {
 
   afterEach(async () => {
     const { rm } = await import('node:fs/promises');
+    const toClean = [...createdRoots];
+    if (assetsRoot) toClean.push(assetsRoot);
     await Promise.all(
-      createdRoots.map((root) => rm(root, { recursive: true, force: true })),
+      toClean.map((root) => rm(root, { recursive: true, force: true })),
     );
     createdRoots.length = 0;
   });
