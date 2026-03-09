@@ -2,6 +2,7 @@ import { Command } from 'commander';
 import { createDocsAnalyzeCommand } from './analyze';
 import { createDocsApplyCommand } from './apply';
 import { createDocsInitCommand } from './init';
+import { createDocsMigrateCommand } from './migrate';
 import { createDocsNavCommand } from './nav';
 
 export function createDocsCommand(): Command {
@@ -10,5 +11,6 @@ export function createDocsCommand(): Command {
     .addCommand(createDocsAnalyzeCommand())
     .addCommand(createDocsApplyCommand())
     .addCommand(createDocsInitCommand())
+    .addCommand(createDocsMigrateCommand())
     .addCommand(createDocsNavCommand());
 }

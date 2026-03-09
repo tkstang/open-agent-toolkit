@@ -332,14 +332,16 @@ describe('help output snapshots', () => {
       OAT documentation bootstrap and maintenance commands
 
       Options:
-        -h, --help      display help for command
+        -h, --help         display help for command
 
       Commands:
-        analyze         Run the docs analysis workflow
-        apply           Run the docs apply workflow
-        init [options]  Scaffold an OAT docs app
-        nav             Docs navigation commands
-        help [command]  display help for command
+        analyze            Run the docs analysis workflow
+        apply              Run the docs apply workflow
+        init [options]     Scaffold an OAT docs app
+        migrate [options]  Migrate MkDocs markdown to Fumadocs format (admonitions,
+                           frontmatter)
+        nav                Docs navigation commands
+        help [command]     display help for command
       "
     `);
   });
