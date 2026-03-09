@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-09
-oat_current_task_id: p04-t10
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
 | Phase 2: Scaffold Templates + CLI | complete | 8 | 8/8 |
 | Phase 3: Migration + Index Commands | complete | 10 | 10/10 |
-| Phase 4: Integration + Polish | in_progress | 10 | 5/10 |
+| Phase 4: Integration + Polish | complete | 10 | 10/10 |
 
-**Total:** 35/40 tasks completed
+**Total:** 40/40 tasks completed
 
 ---
 
@@ -862,11 +862,9 @@ oat_generated: false
 
 **Deferred Findings:** None
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
+**Status:** All fix tasks complete. Review row updated to `fixes_completed`.
 
-After the fix tasks are complete:
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+**Next:** Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`.
 
 ---
 
@@ -954,6 +952,27 @@ After the fix tasks are complete:
 **Verification:**
 - Run: `pnpm --filter @oat/cli exec vitest run src/commands/docs/init/integration.test.ts src/commands/docs/init/mkdocs-compat.test.ts`
 - Result: 4/4 tests pass (no race condition)
+
+---
+
+### Task p04-t10: (review) Expose nested `docs index generate` command form
+
+**Status:** completed
+**Commit:** 23000fb
+
+**Outcome:**
+- Restructured from `oat docs index-generate` to `oat docs index generate` matching spec contract
+- Created `index` command group under `docs` with `generate` subcommand
+- Updated help snapshots
+
+**Files changed:**
+- `packages/cli/src/commands/docs/index-generate/index.ts` - renamed export, wrapped in index group
+- `packages/cli/src/commands/docs/index.ts` - use createDocsIndexCommand
+- `packages/cli/src/commands/help-snapshots.test.ts` - updated snapshot
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test && pnpm run cli -- docs index generate --help`
+- Result: 867 tests pass, command accessible via `oat docs index generate`
 
 ---
 
