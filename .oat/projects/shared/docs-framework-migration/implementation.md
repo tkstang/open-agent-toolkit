@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p02-t05
+oat_current_task_id: p02-t07
 oat_generated: false
 ---
 
@@ -26,11 +26,11 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
-| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 4/8 |
+| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 6/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 16/35 tasks completed
+**Total:** 18/35 tasks completed
 
 ---
 
@@ -419,15 +419,42 @@ oat_generated: false
 
 ### Task p02-t05: Set documentation config fields during scaffold
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 6fde133
+
+**Outcome:**
+- Added `index` field to `OatDocumentationConfig` type
+- `scaffoldDocsApp` returns `documentationConfig` with tooling, root, index (and config for MkDocs)
+- `runDocsInit` writes documentation config to `.oat/config.json` after scaffolding
+- Tests verify returned config for both frameworks
+
+**Files changed:**
+- `packages/cli/src/config/oat-config.ts` - added index field + normalization
+- `packages/cli/src/commands/docs/init/scaffold.ts` - buildDocumentationConfig, return in result
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - config assertions
+- `packages/cli/src/commands/docs/init/index.ts` - write config after scaffold
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test`
+- Result: 837/837 tests pass
 
 ---
 
 ### Task p02-t06: Update bundle-assets script for new templates
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 70602b2
+
+**Outcome:**
+- Both `docs-app-mkdocs` and `docs-app-fuma` are bundled by `bundle-assets.sh` (done in p02-t01)
+- Verified both directories present in `packages/cli/assets/templates/`
+
+**Files changed:**
+- `packages/cli/scripts/bundle-assets.sh` - already updated in p02-t01
+
+**Verification:**
+- Run: `bash packages/cli/scripts/bundle-assets.sh && ls packages/cli/assets/templates/`
+- Result: both docs-app-mkdocs and docs-app-fuma present
 
 ---
 
