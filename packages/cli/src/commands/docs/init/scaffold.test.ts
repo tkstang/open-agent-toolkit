@@ -57,7 +57,7 @@ const FUMA_TEMPLATE_FILES: Record<string, string> = {
   'app/[[...slug]]/page.tsx':
     "import { Mermaid } from '@oat/docs-theme';\nexport default function Page() { return <div />; }\n",
   'app/api/search/route.ts':
-    "import { source } from '@/lib/source';\nimport { createFromSource } from 'fumadocs-core/search/server';\nconst search = createFromSource(source);\nexport const { staticGET: GET } = search;\n",
+    "import { createFromSource } from 'fumadocs-core/search/server';\nimport { source } from '@/lib/source';\nconst search = createFromSource(source);\nexport const revalidate = false;\nexport const { staticGET: GET } = search;\n",
   'docs/index.md': '# {{SITE_NAME}}\n\n{{SITE_DESCRIPTION}}\n',
   'docs/getting-started.md': '# Getting Started\n',
   'docs/contributing.md': '# Contributing\n',
@@ -238,6 +238,7 @@ describe('scaffoldDocsApp', () => {
     );
     expect(searchRoute).toContain('createFromSource');
     expect(searchRoute).toContain('staticGET');
+    expect(searchRoute).toContain('revalidate = false');
 
     expect(result.createdFiles).toContain(
       join('app', 'api', 'search', 'route.ts'),
