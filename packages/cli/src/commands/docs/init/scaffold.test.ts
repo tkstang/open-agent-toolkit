@@ -38,7 +38,9 @@ const FUMA_TEMPLATE_FILES: Record<string, string> = {
   "name": "{{PACKAGE_NAME}}",
   "description": "{{SITE_DESCRIPTION}}",
   "scripts": {
+    "predev": "npx oat docs index-generate",
     "dev": "next dev",
+    "prebuild": "npx oat docs index-generate",
     "build": "next build",
     "docs:lint": "{{DOCS_LINT_SCRIPT}}",
     "docs:format": "{{DOCS_FORMAT_SCRIPT}}",
@@ -215,8 +217,16 @@ describe('scaffoldDocsApp', () => {
 
     const packageJson = JSON.parse(
       await readFile(join(result.appRoot, 'package.json'), 'utf8'),
-    ) as { description: string; devDependencies: Record<string, string> };
+    ) as {
+      description: string;
+      scripts: Record<string, string>;
+      devDependencies: Record<string, string>;
+    };
     expect(packageJson.description).toBe('Project documentation site');
+    expect(packageJson.scripts['predev']).toContain('oat docs index-generate');
+    expect(packageJson.scripts['prebuild']).toContain(
+      'oat docs index-generate',
+    );
     expect(packageJson.devDependencies['markdownlint-cli2']).toBeDefined();
     expect(packageJson.devDependencies['prettier']).toBeDefined();
     expect(result.documentationConfig).toEqual({
