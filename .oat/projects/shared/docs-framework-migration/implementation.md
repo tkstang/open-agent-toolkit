@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-09
-oat_current_task_id: null
+oat_current_task_id: p04-t13
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
 | Phase 2: Scaffold Templates + CLI | complete | 8 | 8/8 |
 | Phase 3: Migration + Index Commands | complete | 10 | 10/10 |
-| Phase 4: Integration + Polish | complete | 12 | 12/12 |
+| Phase 4: Integration + Polish | in_progress | 13 | 12/13 |
 
-**Total:** 42/42 tasks completed
+**Total:** 42/43 tasks completed
 
 ---
 
@@ -933,6 +933,32 @@ oat_generated: false
 **Verification:**
 - Run: `pnpm --filter @oat/cli test && pnpm --filter @oat/docs-config test`
 - Result: 867 CLI tests pass, 9 docs-config tests pass
+
+---
+
+### Review Received: final (re-review v3)
+
+**Date:** 2026-03-09
+**Review artifact:** reviews/final-review-2026-03-09-v3.md
+
+**Findings:**
+- Critical: 0
+- Important: 1
+- Medium: 0
+- Minor: 0
+
+**New tasks added:** p04-t13
+
+**Finding disposition map:**
+- I1 (search route missing static marker) → converted to p04-t13
+
+**Deferred Findings:** None
+**Deferred Medium Resurfacing:** No deferred mediums across any prior cycle.
+**Minor Disposition (final scope):** No minor findings.
+
+**Review cycle:** 3 of 3 (limit reached — no further automated review cycles after this fix)
+
+**Next:** Execute fix task p04-t13, then mark final review as `passed` (fix is verifiable by inspection given cycle limit).
 
 ---
 

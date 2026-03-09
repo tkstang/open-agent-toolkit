@@ -1409,6 +1409,36 @@ git commit -m "fix(p04-t12): wire search config into scaffold source.config.ts"
 
 ---
 
+### Task p04-t13: (review) Add static route marker to search API route
+
+**Files:**
+- Modify: `.oat/templates/docs-app-fuma/app/api/search/route.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: The search route exports `staticGET` as `GET` but omits `revalidate = false` — the Route Segment Config marker that explicitly tells Next.js to pre-render the route at build time. Without it, `output: 'export'` may fail to include the search index.
+Location: `.oat/templates/docs-app-fuma/app/api/search/route.ts:1`
+
+**Step 2: Implement fix**
+
+Add `export const revalidate = false;` to the search route template. This tells Next.js to treat the route as fully static.
+
+Note: A real scaffolded build test is not feasible (workspace:* deps don't resolve outside monorepo — established limitation from p04-t02/p04-t04).
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli exec vitest run src/commands/docs/init/scaffold.test.ts`
+Expected: Tests pass, search route template includes `revalidate`
+
+**Step 4: Commit**
+
+```bash
+git add .oat/templates/docs-app-fuma/app/api/search/route.ts packages/cli/src/commands/docs/init/scaffold.test.ts
+git commit -m "fix(p04-t13): add static route marker to scaffold search API route"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
@@ -1417,7 +1447,7 @@ git commit -m "fix(p04-t12): wire search config into scaffold source.config.ts"
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
-| final | code | received | 2026-03-09 | reviews/final-review-2026-03-09-v3.md |
+| final | code | fixes_added | 2026-03-09 | reviews/final-review-2026-03-09-v3.md |
 | spec | artifact | pending | - | - |
 | design | artifact | received | 2026-03-08 | reviews/artifact-design-review-2026-03-08-v2.md |
 | plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
@@ -1438,9 +1468,9 @@ git commit -m "fix(p04-t12): wire search config into scaffold source.config.ts"
 - Phase 1: 12 tasks — Foundation packages (docs-transforms, docs-config, docs-theme)
 - Phase 2: 8 tasks — Scaffold templates + CLI framework choice
 - Phase 3: 10 tasks — Migration codemod + index generation commands
-- Phase 4: 12 tasks — Integration testing, real-world validation, NFR verification, review fixes
+- Phase 4: 13 tasks — Integration testing, real-world validation, NFR verification, review fixes
 
-**Total: 42 tasks**
+**Total: 43 tasks**
 
 **Status:** Plan complete, awaiting implementation execution.
 
