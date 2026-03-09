@@ -10,7 +10,7 @@ oat_phase_status: complete
 oat_execution_mode: single-thread
 oat_workflow_mode: spec-driven
 oat_workflow_origin: native
-oat_docs_updated: null
+oat_docs_updated: complete
 oat_generated: false
 ---
 
