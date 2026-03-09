@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p02-t01
+oat_current_task_id: p02-t02
 oat_generated: false
 ---
 
@@ -26,11 +26,11 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
-| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 0/8 |
+| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 1/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 12/35 tasks completed
+**Total:** 13/35 tasks completed
 
 ---
 
@@ -324,8 +324,26 @@ oat_generated: false
 
 ### Task p02-t01: Create Fumadocs template directory
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 70602b2
+
+**Outcome:**
+- 10 template files for Fumadocs scaffold: next.config.js, source.config.ts, tsconfig, app layout/page, lib/source, package.json.template, 3 starter docs
+- Templates use `{{SITE_NAME}}`, `{{SITE_DESCRIPTION}}`, `{{PACKAGE_NAME}}` tokens
+- Template imports from @oat/docs-config, @oat/docs-theme, fumadocs-mdx, fumadocs-core
+- Updated bundle-assets.sh to include docs-app-fuma template
+
+**Files changed:**
+- `.oat/templates/docs-app-fuma/` - 10 template files
+- `packages/cli/scripts/bundle-assets.sh` - added docs-app-fuma to bundle
+
+**Verification:**
+- Run: `find .oat/templates/docs-app-fuma/ -type f | wc -l`
+- Result: 10 files present
+
+**Notes / Decisions:**
+- Templates live in `.oat/templates/` (not `packages/cli/assets/`) — assets dir is gitignored, populated at build time
+- Used `{{FUMA_DEV_DEPENDENCIES}}` token in package.json.template for conditional lint/format deps
 
 ---
 
