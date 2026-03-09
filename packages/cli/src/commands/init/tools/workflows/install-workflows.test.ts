@@ -10,46 +10,13 @@ import {
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { afterEach, describe, expect, it } from 'vitest';
-import { installWorkflows } from './install-workflows';
-
-const WORKFLOW_SKILLS = [
-  'oat-project-clear-active',
-  'oat-project-complete',
-  'oat-project-design',
-  'oat-project-discover',
-  'oat-project-document',
-  'oat-project-implement',
-  'oat-project-import-plan',
-  'oat-project-new',
-  'oat-project-open',
-  'oat-project-plan',
-  'oat-project-plan-writing',
-  'oat-project-pr-final',
-  'oat-project-pr-progress',
-  'oat-project-progress',
-  'oat-project-promote-spec-driven',
-  'oat-project-quick-start',
-  'oat-project-review-provide',
-  'oat-project-review-receive',
-  'oat-project-review-receive-remote',
-  'oat-project-spec',
-  'oat-repo-knowledge-index',
-  'oat-worktree-bootstrap',
-] as const;
-
-const WORKFLOW_AGENTS = ['oat-codebase-mapper.md', 'oat-reviewer.md'] as const;
-const WORKFLOW_TEMPLATES = [
-  'state.md',
-  'discovery.md',
-  'spec.md',
-  'design.md',
-  'plan.md',
-  'implementation.md',
-] as const;
-const WORKFLOW_SCRIPTS = [
-  'generate-oat-state.sh',
-  'generate-thin-index.sh',
-] as const;
+import {
+  installWorkflows,
+  WORKFLOW_AGENTS,
+  WORKFLOW_SCRIPTS,
+  WORKFLOW_SKILLS,
+  WORKFLOW_TEMPLATES,
+} from './install-workflows';
 
 const tempDirs: string[] = [];
 
