@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t12
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -25,12 +25,12 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1: Foundation Packages | in_progress | 12 | 11/12 |
-| Phase 2: Scaffold Templates + CLI | pending | 8 | 0/8 |
+| Phase 1: Foundation Packages | complete | 12 | 12/12 |
+| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 0/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 11/35 tasks completed
+**Total:** 12/35 tasks completed
 
 ---
 
@@ -39,20 +39,26 @@ oat_generated: false
 **Status:** in_progress
 **Started:** 2026-03-08
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
-- {2-5 bullets describing user-visible / behavior-level changes delivered in this phase}
+- `@oat/docs-transforms` package: remarkTabs plugin transforms MkDocs `=== "Tab"` syntax into Fumadocs-compatible `<Tabs>`/`<Tab>` JSX AST nodes
+- `@oat/docs-config` package: Config factories for Next.js (static export + createMDX), source config (remark plugins), and FlexSearch static search
+- `@oat/docs-theme` package: DocsLayout (wraps fumadocs-ui), DocsPage (wraps fumadocs-ui page + body), Mermaid (client-side, dark/light mode)
 
 **Key files touched:**
-- `{path}` - {why}
+- `packages/docs-transforms/` - remarkTabs remark plugin + barrel export
+- `packages/docs-config/` - createDocsConfig, createSourceConfig, createSearchConfig factories
+- `packages/docs-theme/` - DocsLayout, DocsPage, Mermaid components + BrandingConfig type
 
 **Verification:**
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `pnpm build && pnpm lint && pnpm type-check && pnpm test`
+- Result: all pass, 14 unit tests across transforms + config
 
 **Notes / Decisions:**
-- {trade-offs or deviations discovered during implementation}
+- Pinned fumadocs to v15 (fumadocs-core@15.8.5, fumadocs-mdx@13.0.8, fumadocs-ui@15.8.5) — v16 requires Next.js 16
+- remarkTabs re-parses indented code block content back into markdown AST — handles nested code blocks, lists, multi-paragraph content correctly
+- createDocsConfig internally wires createMDX, so template next.config.js is a one-liner
 
 ### Task p01-t01: Scaffold docs-transforms package
 
@@ -282,15 +288,24 @@ oat_generated: false
 
 ### Task p01-t12: Phase 1 integration verify — all packages build
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** (no code changes, verification only)
+
+**Outcome:**
+- All 3 new packages build, lint, type-check clean
+- All 14 unit tests pass (7 transforms, 7 config)
+- Turborepo dependency ordering correct
+
+**Verification:**
+- Run: `pnpm build && pnpm lint && pnpm type-check && pnpm --filter @oat/docs-transforms test && pnpm --filter @oat/docs-config test`
+- Result: all pass
 
 ---
 
 ## Phase 2: Scaffold Templates + CLI
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-08
 
 ### Phase Summary (fill when phase is complete)
 

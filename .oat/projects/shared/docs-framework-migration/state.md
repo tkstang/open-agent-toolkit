@@ -1,5 +1,5 @@
 ---
-oat_current_task: p01-t12
+oat_current_task: p02-t01
 oat_last_commit: aa024e6
 oat_blockers: []
 oat_hill_checkpoints: ["discovery", "spec", "design"]
