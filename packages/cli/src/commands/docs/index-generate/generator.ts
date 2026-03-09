@@ -1,4 +1,4 @@
-import { readFile, readdir } from 'node:fs/promises';
+import { readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 export interface IndexEntry {
@@ -20,9 +20,10 @@ function fileNameToTitle(fileName: string): string {
     .join(' ');
 }
 
-function parseFrontmatter(
-  content: string,
-): { title?: string; description?: string } {
+function parseFrontmatter(content: string): {
+  title?: string;
+  description?: string;
+} {
   const match = FRONTMATTER_RE.exec(content);
   if (!match) {
     return {};
@@ -133,5 +134,5 @@ export function renderIndex(entries: IndexEntry[]): string {
     return '';
   }
 
-  return renderEntries(entries, 0).join('\n') + '\n';
+  return `${renderEntries(entries, 0).join('\n')}\n`;
 }
