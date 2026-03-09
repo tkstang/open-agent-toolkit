@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t04
+oat_current_task_id: p01-t05
 oat_generated: false
 ---
 
@@ -25,12 +25,12 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1: Foundation Packages | in_progress | 12 | 3/12 |
+| Phase 1: Foundation Packages | in_progress | 12 | 4/12 |
 | Phase 2: Scaffold Templates + CLI | pending | 8 | 0/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 3/35 tasks completed
+**Total:** 4/35 tasks completed
 
 ---
 
@@ -118,8 +118,26 @@ oat_generated: false
 
 ### Task p01-t04: Scaffold docs-config package
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 0a757aa
+
+**Outcome:**
+- New `@oat/docs-config` package with fumadocs-core@15, fumadocs-mdx@13, flexsearch, remark-github-blockquote-alert
+- Placeholder factories: createDocsConfig, createSourceConfig, createSearchConfig
+- Pinned to fumadocs v15 for Next.js 15 compatibility (v16 requires Next.js 16)
+
+**Files changed:**
+- `packages/docs-config/package.json` - package manifest
+- `packages/docs-config/tsconfig.json` - TypeScript config with JSX support
+- `packages/docs-config/vitest.config.ts` - test config
+- `packages/docs-config/src/index.ts` - barrel export
+- `packages/docs-config/src/next-config.ts` - createDocsConfig placeholder
+- `packages/docs-config/src/source-config.ts` - createSourceConfig placeholder
+- `packages/docs-config/src/search-config.ts` - createSearchConfig placeholder
+
+**Verification:**
+- Run: `pnpm install && pnpm --filter @oat/docs-config build`
+- Result: pass, no peer dep warnings
 
 ---
 
