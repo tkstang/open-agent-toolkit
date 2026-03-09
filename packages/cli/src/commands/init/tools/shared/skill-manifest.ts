@@ -64,6 +64,7 @@ export const IDEA_SKILLS = [
 // ── Utility pack ───────────────────────────────────────────────────
 
 export const UTILITY_SKILLS = [
+  'create-agnostic-skill',
   'oat-agent-instructions-analyze',
   'oat-agent-instructions-apply',
   'oat-docs-analyze',
