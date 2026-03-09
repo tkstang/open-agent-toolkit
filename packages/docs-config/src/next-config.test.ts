@@ -1,4 +1,9 @@
-import { describe, expect, it } from 'vitest';
+import { describe, expect, it, vi } from 'vitest';
+
+vi.mock('fumadocs-mdx/next', () => ({
+  createMDX: () => (config: Record<string, unknown>) => config,
+}));
+
 import { createDocsConfig } from './next-config.js';
 
 describe('createDocsConfig', () => {
