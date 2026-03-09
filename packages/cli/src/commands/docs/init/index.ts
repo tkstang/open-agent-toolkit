@@ -10,6 +10,7 @@ import {
   selectWithAbort,
 } from '@commands/shared/shared.prompts';
 import { readGlobalOptions } from '@commands/shared/shared.utils';
+import { readOatConfig, writeOatConfig } from '@config/oat-config';
 import { resolveAssetsRoot } from '@fs/assets';
 import { Command, Option } from 'commander';
 import {
@@ -67,6 +68,13 @@ const DEFAULT_DEPENDENCIES: DocsInitDependencies = {
       ...options,
     });
 
+    const config = await readOatConfig(context.cwd);
+    config.documentation = {
+      ...config.documentation,
+      ...result.documentationConfig,
+    };
+    await writeOatConfig(context.cwd, config);
+
     if (context.json) {
       context.logger.json({
         status: 'ok',
@@ -78,6 +86,7 @@ const DEFAULT_DEPENDENCIES: DocsInitDependencies = {
     }
 
     context.logger.info(`Scaffolded docs app at ${options.targetDir}`);
+    context.logger.info(`  Framework: ${options.framework}`);
     context.logger.info(`  Repo shape: ${options.repoShape}`);
     context.logger.info(`  App name: ${options.appName}`);
     context.logger.info(`  Lint: ${options.lint}`);

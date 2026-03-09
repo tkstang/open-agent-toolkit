@@ -1,5 +1,6 @@
 import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, dirname, join } from 'node:path';
+import type { OatDocumentationConfig } from '@config/oat-config';
 import { dirExists, ensureDir, fileExists } from '@fs/io';
 import type {
   DocsFormatMode,
@@ -85,6 +86,7 @@ export interface ScaffoldDocsAppOptions extends DocsInitResolvedOptions {
 export interface ScaffoldDocsAppResult {
   appRoot: string;
   createdFiles: string[];
+  documentationConfig: OatDocumentationConfig;
 }
 
 function humanizeAppName(appName: string): string {
@@ -170,6 +172,26 @@ function renderTemplate(
   );
 }
 
+function buildDocumentationConfig(
+  framework: DocsFramework,
+  targetDir: string,
+): OatDocumentationConfig {
+  if (framework === 'fumadocs') {
+    return {
+      root: targetDir,
+      tooling: 'fumadocs',
+      index: join(targetDir, 'docs', 'index.md'),
+    };
+  }
+
+  return {
+    root: targetDir,
+    tooling: 'mkdocs',
+    config: join(targetDir, 'mkdocs.yml'),
+    index: join(targetDir, 'mkdocs.yml'),
+  };
+}
+
 async function ensureTargetWritable(appRoot: string): Promise<void> {
   if (!(await dirExists(appRoot))) {
     return;
@@ -210,5 +232,9 @@ export async function scaffoldDocsApp(
   return {
     appRoot,
     createdFiles,
+    documentationConfig: buildDocumentationConfig(
+      options.framework,
+      options.targetDir,
+    ),
   };
 }

@@ -125,6 +125,12 @@ describe('scaffoldDocsApp', () => {
     expect(packageJson.scripts['docs:lint']).toBe(
       "markdownlint-cli2 'docs/**/*.md'",
     );
+    expect(result.documentationConfig).toEqual({
+      root: 'apps/oat-docs',
+      tooling: 'mkdocs',
+      config: join('apps/oat-docs', 'mkdocs.yml'),
+      index: join('apps/oat-docs', 'mkdocs.yml'),
+    });
   });
 
   it('scaffolds a docs app in a single-package target without creating a workspace file', async () => {
@@ -213,6 +219,11 @@ describe('scaffoldDocsApp', () => {
     expect(packageJson.description).toBe('Project documentation site');
     expect(packageJson.devDependencies['markdownlint-cli2']).toBeDefined();
     expect(packageJson.devDependencies['prettier']).toBeDefined();
+    expect(result.documentationConfig).toEqual({
+      root: 'apps/my-docs',
+      tooling: 'fumadocs',
+      index: join('apps/my-docs', 'docs', 'index.md'),
+    });
   });
 
   it('scaffolds a Fumadocs app without optional lint/format deps', async () => {
