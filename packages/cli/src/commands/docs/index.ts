@@ -1,7 +1,7 @@
 import { Command } from 'commander';
 import { createDocsAnalyzeCommand } from './analyze';
 import { createDocsApplyCommand } from './apply';
-import { createDocsIndexGenerateCommand } from './index-generate';
+import { createDocsIndexCommand } from './index-generate';
 import { createDocsInitCommand } from './init';
 import { createDocsMigrateCommand } from './migrate';
 import { createDocsNavCommand } from './nav';
@@ -11,7 +11,7 @@ export function createDocsCommand(): Command {
     .description('OAT documentation bootstrap and maintenance commands')
     .addCommand(createDocsAnalyzeCommand())
     .addCommand(createDocsApplyCommand())
-    .addCommand(createDocsIndexGenerateCommand())
+    .addCommand(createDocsIndexCommand())
     .addCommand(createDocsInitCommand())
     .addCommand(createDocsMigrateCommand())
     .addCommand(createDocsNavCommand());
