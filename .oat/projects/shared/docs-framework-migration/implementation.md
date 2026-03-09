@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-09
-oat_current_task_id: p04-t11
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
 | Phase 2: Scaffold Templates + CLI | complete | 8 | 8/8 |
 | Phase 3: Migration + Index Commands | complete | 10 | 10/10 |
-| Phase 4: Integration + Polish | in_progress | 12 | 10/12 |
+| Phase 4: Integration + Polish | complete | 12 | 12/12 |
 
-**Total:** 40/42 tasks completed
+**Total:** 42/42 tasks completed
 
 ---
 
@@ -885,7 +885,54 @@ oat_generated: false
 
 **Deferred Findings:** None
 
-**Next:** Execute fix tasks p04-t11 and p04-t12 via `oat-project-implement`.
+**Status:** All fix tasks complete. Review row updated to `fixes_completed`.
+
+**Next:** Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`.
+
+### Task p04-t11: (review) Rename command to flat `generate-index` and fix scaffold template
+
+**Status:** completed
+**Commit:** 6013cf3
+
+**Outcome:**
+- Flattened nested `docs index generate` to `docs generate-index` (no other planned index subcommands)
+- Updated scaffold template `predev`/`prebuild` scripts from `index-generate` to `generate-index`
+- Updated scaffold test fixture and assertions for new command name
+- Updated help snapshots
+
+**Files changed:**
+- `packages/cli/src/commands/docs/index-generate/index.ts` - flat `generate-index` command
+- `packages/cli/src/commands/docs/index.ts` - import renamed export
+- `.oat/templates/docs-app-fuma/package.json.template` - updated script commands
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - updated fixture + assertions
+- `packages/cli/src/commands/help-snapshots.test.ts` - updated snapshot
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test && pnpm run cli -- docs generate-index --help`
+- Result: 867 tests pass, command accessible via `oat docs generate-index`
+
+---
+
+### Task p04-t12: (review) Wire search config into scaffold's Fumadocs runtime
+
+**Status:** completed
+**Commit:** a6d4f3d
+
+**Outcome:**
+- Added `app/api/search/route.ts` template using `createFromSource` + `staticGET` for static export search
+- Updated `source.config.ts` template to export `sourceConfig.search` for discoverability
+- Added search route to `FUMA_TEMPLATE_FILES` in `scaffold.ts`
+- Test verifies search route is scaffolded and contains `createFromSource`/`staticGET`
+
+**Files changed:**
+- `.oat/templates/docs-app-fuma/app/api/search/route.ts` - new search API route template
+- `.oat/templates/docs-app-fuma/source.config.ts` - export search config
+- `packages/cli/src/commands/docs/init/scaffold.ts` - added search route to template list
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - fixture + assertions for search
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test && pnpm --filter @oat/docs-config test`
+- Result: 867 CLI tests pass, 9 docs-config tests pass
 
 ---
 

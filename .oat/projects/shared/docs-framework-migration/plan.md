@@ -1417,7 +1417,7 @@ git commit -m "fix(p04-t12): wire search config into scaffold source.config.ts"
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
-| final | code | fixes_added | 2026-03-09 | reviews/final-review-2026-03-09-v2.md |
+| final | code | fixes_completed | 2026-03-09 | reviews/final-review-2026-03-09-v2.md |
 | spec | artifact | pending | - | - |
 | design | artifact | received | 2026-03-08 | reviews/artifact-design-review-2026-03-08-v2.md |
 | plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
