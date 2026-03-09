@@ -1,5 +1,5 @@
 import { writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, relative } from 'node:path';
 import {
   buildCommandContext,
   type CommandContext,
@@ -60,7 +60,7 @@ async function runIndexGenerate(
   const docsDir = join(context.cwd, options.docsDir);
   const outputPath = options.output
     ? join(context.cwd, options.output)
-    : join(docsDir, 'index.md');
+    : join(context.cwd, 'index.md');
 
   const entries = await deps.generateIndex(docsDir);
   const content = deps.renderIndex(entries);
@@ -70,7 +70,7 @@ async function runIndexGenerate(
   const config = await deps.readOatConfig(context.cwd);
   config.documentation = {
     ...config.documentation,
-    index: outputPath,
+    index: relative(context.cwd, outputPath) || 'index.md',
   };
   await deps.writeOatConfig(context.cwd, config);
 
