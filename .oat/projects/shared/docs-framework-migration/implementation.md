@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t03
+oat_current_task_id: p01-t04
 oat_generated: false
 ---
 
@@ -25,12 +25,12 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1: Foundation Packages | in_progress | 12 | 2/12 |
+| Phase 1: Foundation Packages | in_progress | 12 | 3/12 |
 | Phase 2: Scaffold Templates + CLI | pending | 8 | 0/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 2/35 tasks completed
+**Total:** 3/35 tasks completed
 
 ---
 
@@ -97,8 +97,22 @@ oat_generated: false
 
 ### Task p01-t03: Implement remarkTabs transform
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 5e2cb4f
+
+**Outcome:**
+- `remarkTabs` plugin transforms `=== "Title"` MkDocs tab syntax into `<Tabs>`/`<Tab>` mdxJsxFlowElement AST nodes
+- Re-parses indented code block content back into proper markdown AST
+- All 7 test cases pass, package builds cleanly
+
+**Files changed:**
+- `packages/docs-transforms/src/remark-tabs.ts` - remarkTabs plugin implementation
+- `packages/docs-transforms/src/index.ts` - barrel export with remarkTabs in defaultTransforms
+- `packages/docs-transforms/package.json` - moved remark-parse to regular dependency
+
+**Verification:**
+- Run: `pnpm --filter @oat/docs-transforms test && pnpm --filter @oat/docs-transforms build`
+- Result: 7 tests pass, build clean
 
 ---
 
