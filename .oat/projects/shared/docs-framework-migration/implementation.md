@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-09
-oat_current_task_id: p04-t08
+oat_current_task_id: p04-t09
 oat_generated: false
 ---
 
@@ -908,6 +908,31 @@ After the fix tasks are complete:
 **Verification:**
 - Run: `pnpm --filter @oat/cli exec vitest run src/commands/docs/init/scaffold.test.ts`
 - Result: 4/4 tests pass
+
+---
+
+### Task p04-t08: (review) Wire Mermaid remark plugin and search config into docs pipeline
+
+**Status:** completed
+**Commit:** d4ec081
+
+**Outcome:**
+- New `remarkMermaid` plugin transforms `mermaid` code fences → `<Mermaid chart="...">` MDX JSX elements
+- `createSourceConfig()` now includes `remarkMermaid` in `remarkPlugins` and `search` field from `createSearchConfig()`
+- Scaffold page template passes `{ Mermaid }` component mapping to MDX renderer
+- FR2 (Mermaid + FlexSearch) and NFR3 (static search) now fully wired
+
+**Files changed:**
+- `packages/docs-transforms/src/remark-mermaid.ts` - new remarkMermaid plugin
+- `packages/docs-transforms/src/index.ts` - export remarkMermaid, add to defaultTransforms
+- `packages/docs-config/src/source-config.ts` - add remarkMermaid + search config
+- `packages/docs-config/src/source-config.test.ts` - tests for remarkMermaid + search in config
+- `.oat/templates/docs-app-fuma/app/[[...slug]]/page.tsx` - Mermaid MDX component mapping
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - updated template fixture
+
+**Verification:**
+- Run: `pnpm --filter @oat/docs-transforms test && pnpm --filter @oat/docs-config test && pnpm build`
+- Result: 16 tests pass (7 transforms + 9 config), workspace build clean
 
 ---
 
