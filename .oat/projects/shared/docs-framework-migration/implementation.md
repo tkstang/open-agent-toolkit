@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-09
-oat_current_task_id: null
+oat_current_task_id: p04-t11
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
 | Phase 2: Scaffold Templates + CLI | complete | 8 | 8/8 |
 | Phase 3: Migration + Index Commands | complete | 10 | 10/10 |
-| Phase 4: Integration + Polish | complete | 10 | 10/10 |
+| Phase 4: Integration + Polish | in_progress | 12 | 10/12 |
 
-**Total:** 40/40 tasks completed
+**Total:** 40/42 tasks completed
 
 ---
 
@@ -865,6 +865,27 @@ oat_generated: false
 **Status:** All fix tasks complete. Review row updated to `fixes_completed`.
 
 **Next:** Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`.
+
+### Review Received: final (re-review v2)
+
+**Date:** 2026-03-09
+**Review artifact:** reviews/final-review-2026-03-09-v2.md
+
+**Findings:**
+- Critical: 2
+- Important: 0
+- Medium: 0
+- Minor: 0
+
+**New tasks added:** p04-t11, p04-t12
+
+**Finding disposition map:**
+- C1 (scaffold calls removed `index-generate` command) → converted to p04-t11 (also includes user decision to flatten to `generate-index`)
+- C2 (search config not consumed by scaffold) → converted to p04-t12
+
+**Deferred Findings:** None
+
+**Next:** Execute fix tasks p04-t11 and p04-t12 via `oat-project-implement`.
 
 ---
 

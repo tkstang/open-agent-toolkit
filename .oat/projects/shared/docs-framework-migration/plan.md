@@ -1333,6 +1333,82 @@ git commit -m "fix(p04-t10): expose nested docs index generate command form"
 
 ---
 
+### Task p04-t11: (review) Rename command to flat `generate-index` and fix scaffold template
+
+**Files:**
+- Modify: `packages/cli/src/commands/docs/index-generate/index.ts`
+- Modify: `packages/cli/src/commands/docs/index.ts`
+- Modify: `.oat/templates/docs-app-fuma/package.json.template`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts` (update snapshot)
+
+**Step 1: Understand the issue**
+
+Review finding: The scaffold still calls the removed `oat docs index-generate` command. Additionally, the nested `oat docs index generate` form is unnecessarily deep since there are no other planned `index` subcommands. User decided to use flat `oat docs generate-index` instead.
+Location: `.oat/templates/docs-app-fuma/package.json.template:8,10`, `packages/cli/src/commands/docs/index-generate/index.ts`
+
+**Step 2: Flatten command structure**
+
+Replace the nested `index > generate` command group with a single flat `generate-index` command:
+- In `index-generate/index.ts`: export a flat `createDocsGenerateIndexCommand()` that creates a `generate-index` command directly (no parent group)
+- In `docs/index.ts`: import and register the flat command
+
+**Step 3: Fix scaffold template**
+
+Update `.oat/templates/docs-app-fuma/package.json.template`:
+- `predev`: change to `npx oat docs generate-index`
+- `prebuild`: change to `npx oat docs generate-index`
+
+**Step 4: Update help snapshots**
+
+Run: `pnpm --filter @oat/cli exec vitest run --update src/commands/help-snapshots.test.ts`
+
+**Step 5: Verify**
+
+Run: `pnpm --filter @oat/cli test && pnpm run cli -- docs generate-index --help`
+Expected: Command accessible via `oat docs generate-index`, scaffold template uses correct name, tests pass
+
+**Step 6: Commit**
+
+```bash
+git add packages/cli/src/commands/docs/ .oat/templates/docs-app-fuma/package.json.template
+git commit -m "fix(p04-t11): rename to flat generate-index command and fix scaffold template"
+```
+
+---
+
+### Task p04-t12: (review) Wire search config into scaffold's Fumadocs runtime
+
+**Files:**
+- Modify: `.oat/templates/docs-app-fuma/source.config.ts`
+- Modify: `packages/cli/src/commands/docs/init/scaffold.test.ts` (verify search wiring)
+
+**Step 1: Understand the issue**
+
+Review finding: `createSourceConfig()` returns `search: createSearchConfig()`, but the scaffolded `source.config.ts` only passes `remarkPlugins` into `defineConfig()`. FlexSearch remains declared but unused.
+Location: `.oat/templates/docs-app-fuma/source.config.ts:10`, `packages/docs-config/src/source-config.ts:16`
+
+**Step 2: Wire search into source.config.ts template**
+
+Update `.oat/templates/docs-app-fuma/source.config.ts` to pass `sourceConfig.search` into the Fumadocs `defineConfig()`. Fumadocs MDX config accepts a `search` field that enables static search indexing at build time.
+
+**Step 3: Verify scaffold test**
+
+Update scaffold test to verify that the generated `source.config.ts` references `sourceConfig.search`.
+
+**Step 4: Verify**
+
+Run: `pnpm --filter @oat/cli test && pnpm --filter @oat/docs-config test`
+Expected: Tests pass, scaffold produces search-enabled config
+
+**Step 5: Commit**
+
+```bash
+git add .oat/templates/docs-app-fuma/source.config.ts packages/cli/src/commands/docs/init/scaffold.test.ts
+git commit -m "fix(p04-t12): wire search config into scaffold source.config.ts"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
@@ -1341,7 +1417,7 @@ git commit -m "fix(p04-t10): expose nested docs index generate command form"
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
-| final | code | received | 2026-03-09 | reviews/final-review-2026-03-09-v2.md |
+| final | code | fixes_added | 2026-03-09 | reviews/final-review-2026-03-09-v2.md |
 | spec | artifact | pending | - | - |
 | design | artifact | received | 2026-03-08 | reviews/artifact-design-review-2026-03-08-v2.md |
 | plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
@@ -1362,9 +1438,9 @@ git commit -m "fix(p04-t10): expose nested docs index generate command form"
 - Phase 1: 12 tasks — Foundation packages (docs-transforms, docs-config, docs-theme)
 - Phase 2: 8 tasks — Scaffold templates + CLI framework choice
 - Phase 3: 10 tasks — Migration codemod + index generation commands
-- Phase 4: 10 tasks — Integration testing, real-world validation, NFR verification, review fixes
+- Phase 4: 12 tasks — Integration testing, real-world validation, NFR verification, review fixes
 
-**Total: 40 tasks**
+**Total: 42 tasks**
 
 **Status:** Plan complete, awaiting implementation execution.
 
