@@ -1,38 +1,92 @@
+import { writeFile } from 'node:fs/promises';
+import { join } from 'node:path';
 import {
   buildCommandContext,
   type CommandContext,
   type GlobalOptions,
 } from '@app/command-context';
 import { readGlobalOptions } from '@commands/shared/shared.utils';
+import { readOatConfig, writeOatConfig } from '@config/oat-config';
 import { Command, Option } from 'commander';
+import { generateIndex, renderIndex } from './generator';
 
 interface IndexGenerateOptions {
   docsDir: string;
   output?: string;
 }
 
-interface IndexGenerateDependencies {
-  buildCommandContext: (options: GlobalOptions) => CommandContext;
-  runIndexGenerate: (
-    context: CommandContext,
-    options: IndexGenerateOptions,
+interface IndexGenerateFileDependencies {
+  generateIndex: (
+    docsDir: string,
+  ) => Promise<import('./generator').IndexEntry[]>;
+  renderIndex: (entries: import('./generator').IndexEntry[]) => string;
+  writeFile: (
+    path: string,
+    content: string,
+    encoding: BufferEncoding,
+  ) => Promise<void>;
+  readOatConfig: (
+    repoRoot: string,
+  ) => Promise<import('@config/oat-config').OatConfig>;
+  writeOatConfig: (
+    repoRoot: string,
+    config: import('@config/oat-config').OatConfig,
   ) => Promise<void>;
 }
 
+interface IndexGenerateDependencies {
+  buildCommandContext: (options: GlobalOptions) => CommandContext;
+  fileDeps: IndexGenerateFileDependencies;
+}
+
+const DEFAULT_FILE_DEPS: IndexGenerateFileDependencies = {
+  generateIndex,
+  renderIndex,
+  writeFile,
+  readOatConfig,
+  writeOatConfig,
+};
+
 const DEFAULT_DEPENDENCIES: IndexGenerateDependencies = {
   buildCommandContext,
-  runIndexGenerate: async (context, options) => {
-    if (context.json) {
-      context.logger.json({
-        status: 'ok',
-        docsDir: options.docsDir,
-        output: options.output ?? 'index.md',
-      });
-      return;
-    }
-    context.logger.info('docs index generate: not yet implemented');
-  },
+  fileDeps: DEFAULT_FILE_DEPS,
 };
+
+async function runIndexGenerate(
+  context: CommandContext,
+  options: IndexGenerateOptions,
+  deps: IndexGenerateFileDependencies,
+): Promise<void> {
+  const docsDir = join(context.cwd, options.docsDir);
+  const outputPath = options.output
+    ? join(context.cwd, options.output)
+    : join(docsDir, 'index.md');
+
+  const entries = await deps.generateIndex(docsDir);
+  const content = deps.renderIndex(entries);
+
+  await deps.writeFile(outputPath, content, 'utf8');
+
+  const config = await deps.readOatConfig(context.cwd);
+  config.documentation = {
+    ...config.documentation,
+    index: outputPath,
+  };
+  await deps.writeOatConfig(context.cwd, config);
+
+  if (context.json) {
+    context.logger.json({
+      status: 'ok',
+      entriesGenerated: entries.length,
+      outputPath,
+    });
+    return;
+  }
+
+  context.logger.info(
+    `Generated index with ${entries.length} entries → ${outputPath}`,
+  );
+}
 
 async function runIndexGenerateCommand(
   context: CommandContext,
@@ -40,7 +94,7 @@ async function runIndexGenerateCommand(
   dependencies: IndexGenerateDependencies,
 ): Promise<void> {
   try {
-    await dependencies.runIndexGenerate(context, options);
+    await runIndexGenerate(context, options, dependencies.fileDeps);
     process.exitCode = 0;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
