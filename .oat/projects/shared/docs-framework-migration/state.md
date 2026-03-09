@@ -1,5 +1,5 @@
 ---
-oat_current_task: null
+oat_current_task: p04-t06
 oat_last_commit: 7baa85d
 oat_blockers: []
 oat_hill_checkpoints: ["discovery", "spec", "design"]
@@ -16,13 +16,13 @@ oat_generated: false
 
 # Project State: docs-framework-migration
 
-**Status:** Implementation tasks complete (35/35), awaiting final review
+**Status:** Implementation in progress (35/40), executing review fix tasks
 **Started:** 2026-03-08
-**Last Updated:** 2026-03-08
+**Last Updated:** 2026-03-09
 
 ## Current Phase
 
-Implementation - Tasks complete; awaiting final review.
+Implementation - Executing review fix tasks (p04-t06 through p04-t10).
 
 ## Artifacts
 
@@ -41,8 +41,7 @@ Implementation - Tasks complete; awaiting final review.
 - ✓ Phase 1: Foundation Packages (12/12)
 - ✓ Phase 2: Scaffold Templates + CLI (8/8)
 - ✓ Phase 3: Migration + Index Commands (10/10)
-- ✓ Phase 4: Integration + Polish (5/5)
-- ⧗ Awaiting final review
+- ⧗ Phase 4: Integration + Polish (5/10) — review fix tasks p04-t06..t10 pending
 
 ## Blockers
 
@@ -50,4 +49,4 @@ None
 
 ## Next Milestone
 
-Final code review, then PR
+Execute review fix tasks (p04-t06..t10), then re-review for `passed`

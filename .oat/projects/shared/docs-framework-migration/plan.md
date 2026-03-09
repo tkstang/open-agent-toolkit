@@ -991,7 +991,7 @@ git commit -m "fix(p03-t10): phase 3 verification fixes"
 
 ---
 
-## Phase 4: Integration + Polish (5 tasks)
+## Phase 4: Integration + Polish (10 tasks)
 
 End-to-end validation, real-world migration testing, and NFR verification.
 
@@ -1140,6 +1140,199 @@ git commit -m "fix(p04-t05): phase 4 final verification fixes"
 
 ---
 
+### Task p04-t06: (review) Fix index generation output path and documentation.index config
+
+**Files:**
+- Modify: `packages/cli/src/commands/docs/index-generate/index.ts`
+- Modify: `packages/cli/src/commands/docs/init/scaffold.ts`
+- Modify: `packages/cli/src/commands/docs/index-generate/generator.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `oat docs index-generate` defaults to `join(docsDir, "index.md")`, overwriting the authored `docs/index.md` home page. The config writes an absolute path to `documentation.index`. The Fumadocs scaffold sets `documentation.index` to `join(targetDir, 'docs', 'index.md')` — pointing at the authored page, not a generated discoverability artifact.
+Location: `packages/cli/src/commands/docs/index-generate/index.ts:62-63`, `packages/cli/src/commands/docs/init/scaffold.ts:183`
+
+**Step 2: Fix output path default**
+
+Change the default output path from `join(docsDir, 'index.md')` to `join(context.cwd, 'index.md')` (app root). This produces the generated index at the app root, leaving the authored `docs/index.md` untouched.
+
+**Step 3: Fix documentation.index to use repo-relative path**
+
+Change the config write from storing `outputPath` (absolute) to storing a repo-relative path (e.g., `path.relative(context.cwd, outputPath)` or just `'index.md'`).
+
+**Step 4: Fix scaffold's documentation.index default**
+
+In `buildDocumentationConfig()`, change the Fumadocs `index` from `join(targetDir, 'docs', 'index.md')` to `join(targetDir, 'index.md')` — pointing at the app-root generated artifact.
+
+**Step 5: Update tests**
+
+Update generator tests and scaffold tests to reflect the new default output path and repo-relative config value.
+
+**Step 6: Verify**
+
+Run: `pnpm --filter @oat/cli test && pnpm --filter @oat/cli type-check`
+Expected: All tests pass
+
+**Step 7: Commit**
+
+```bash
+git add packages/cli/src/commands/docs/index-generate/ packages/cli/src/commands/docs/init/scaffold.ts
+git commit -m "fix(p04-t06): correct index generation output path and config pointer"
+```
+
+---
+
+### Task p04-t07: (review) Wire index generation into Fumadocs scaffold scripts
+
+**Files:**
+- Modify: `.oat/templates/docs-app-fuma/package.json.template`
+- Modify: `packages/cli/src/commands/docs/init/integration.test.ts` (or scaffold tests)
+
+**Step 1: Understand the issue**
+
+Review finding: The Fumadocs template only has raw `next dev`/`next build` scripts. A freshly scaffolded app never generates the AI-facing `index.md` artifact automatically.
+Location: `.oat/templates/docs-app-fuma/package.json.template:7`
+
+**Step 2: Add index generation to scaffold scripts**
+
+Update `package.json.template` scripts to run `oat docs index-generate` before `next dev` and `next build`:
+- `"predev": "npx oat docs index-generate"` or `"dev": "npx oat docs index-generate && next dev"`
+- `"prebuild": "npx oat docs index-generate"` or `"build": "npx oat docs index-generate && next build"`
+
+Use a package-manager-agnostic approach (e.g., `npx` or a script that works with npm/pnpm/yarn).
+
+**Step 3: Update tests**
+
+Verify integration tests check that scaffolded package.json contains index generation in scripts.
+
+**Step 4: Verify**
+
+Run: `pnpm --filter @oat/cli test`
+Expected: Tests pass, scaffolded package.json includes index generation
+
+**Step 5: Commit**
+
+```bash
+git add .oat/templates/docs-app-fuma/package.json.template packages/cli/src/
+git commit -m "fix(p04-t07): wire index generation into Fumadocs scaffold scripts"
+```
+
+---
+
+### Task p04-t08: (review) Wire Mermaid remark plugin and search config into docs pipeline
+
+**Files:**
+- Modify: `packages/docs-config/src/source-config.ts`
+- Modify: `packages/docs-config/src/source-config.test.ts`
+- Modify: `.oat/templates/docs-app-fuma/source.config.ts` (if search wiring needed at template level)
+- Modify: `packages/docs-config/package.json` (add remark-mdx-mermaid dependency if needed)
+
+**Step 1: Understand the issue**
+
+Review finding: `createSourceConfig()` only returns `remarkTabs` and `remarkAlert`. The Mermaid remark plugin (`remark-mdx-mermaid` or equivalent) is not wired, and `createSearchConfig()` is exported but never consumed by the scaffold. FR2 and NFR3 are partially unmet.
+Location: `packages/docs-config/src/source-config.ts:14`, `.oat/templates/docs-app-fuma/source.config.ts:10`
+
+**Step 2: Add Mermaid remark plugin to source config**
+
+Add the appropriate Mermaid remark plugin (e.g., `remark-mdx-mermaid`) to `createSourceConfig().remarkPlugins`. This enables Mermaid code fences to be transformed at build time. Add the dependency to `packages/docs-config/package.json`.
+
+Note: The `@oat/docs-theme` Mermaid component already handles client-side rendering. The remark plugin maps `mermaid` code fences to the `<Mermaid>` component. Wire the component mapping in the MDX components config or the scaffold template.
+
+**Step 3: Wire search config into scaffold**
+
+Ensure the scaffolded app consumes `createSearchConfig()`. This may involve updating the template `source.config.ts` or `app/layout.tsx` to import and use the search configuration from `@oat/docs-config`.
+
+**Step 4: Update tests**
+
+Update `source-config.test.ts` to verify Mermaid plugin is in `remarkPlugins`. Add test coverage for search config consumption if applicable.
+
+**Step 5: Verify**
+
+Run: `pnpm --filter @oat/docs-config test && pnpm --filter @oat/cli test && pnpm build`
+Expected: All tests pass, build clean
+
+**Step 6: Commit**
+
+```bash
+git add packages/docs-config/ .oat/templates/docs-app-fuma/
+git commit -m "fix(p04-t08): wire Mermaid remark plugin and search config into pipeline"
+```
+
+---
+
+### Task p04-t09: (review) Fix integration test race on shared assets directory
+
+**Files:**
+- Modify: `packages/cli/src/commands/docs/init/integration.test.ts`
+- Modify: `packages/cli/src/commands/docs/init/mkdocs-compat.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Both `integration.test.ts` and `mkdocs-compat.test.ts` call `bundle-assets.sh`, which `rm -rf`'s then recreates `packages/cli/assets`. When Vitest runs both test files in parallel, they race on that shared directory and fail.
+Location: `packages/cli/src/commands/docs/init/integration.test.ts:11`, `packages/cli/src/commands/docs/init/mkdocs-compat.test.ts:11`
+
+**Step 2: Implement fix**
+
+Options (choose the simplest):
+1. **Shared setup**: Extract `bundleAssets()` into a shared test setup that runs once (e.g., a Vitest `globalSetup` or `beforeAll` at the suite level) so both test files share the same pre-built assets directory.
+2. **Isolated output**: Modify `bundleAssets()` in each test to output to an isolated temp directory instead of the shared `packages/cli/assets`.
+3. **Serialize**: Configure Vitest to run these specific test files sequentially (e.g., via `vitest.workspace` or `test.pool` config).
+
+**Step 3: Verify**
+
+Run both test suites together:
+```bash
+pnpm --filter @oat/cli exec vitest run src/commands/docs/init/integration.test.ts src/commands/docs/init/mkdocs-compat.test.ts
+```
+Expected: Both pass without race conditions
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/docs/init/
+git commit -m "fix(p04-t09): eliminate integration test race on shared assets directory"
+```
+
+---
+
+### Task p04-t10: (review) Expose nested `docs index generate` command form
+
+**Files:**
+- Modify: `packages/cli/src/commands/docs/index.ts`
+- Modify: `packages/cli/src/commands/docs/index-generate/index.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts` (update snapshot)
+
+**Step 1: Understand the issue**
+
+Review finding: Implementation ships `oat docs index-generate` (hyphenated), but spec/design/plan describe `oat docs index generate` (space-separated). This breaks documented examples.
+Location: `packages/cli/src/commands/docs/index.ts:14`, `packages/cli/src/commands/docs/index-generate/index.ts:118`
+
+**Step 2: Implement fix**
+
+Expose the command as a nested subcommand under `oat docs index generate` to match the spec. Options:
+- Create an `index` subcommand group under `docs` with a `generate` subcommand
+- Or add an alias so both `oat docs index-generate` and `oat docs index generate` work
+
+Prefer the nested form as primary since that matches the spec.
+
+**Step 3: Update help snapshots**
+
+Update help snapshot tests to reflect the new command structure.
+
+**Step 4: Verify**
+
+Run: `pnpm --filter @oat/cli test && pnpm run cli -- docs index generate --help`
+Expected: Command accessible via `oat docs index generate`, tests pass
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/docs/
+git commit -m "fix(p04-t10): expose nested docs index generate command form"
+```
+
+---
+
 ## Reviews
 
 | Scope | Type | Status | Date | Artifact |
@@ -1148,7 +1341,7 @@ git commit -m "fix(p04-t05): phase 4 final verification fixes"
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
-| final | code | received | 2026-03-09 | reviews/final-review-2026-03-09.md |
+| final | code | fixes_added | 2026-03-09 | reviews/final-review-2026-03-09.md |
 | spec | artifact | pending | - | - |
 | design | artifact | received | 2026-03-08 | reviews/artifact-design-review-2026-03-08-v2.md |
 | plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
@@ -1169,9 +1362,9 @@ git commit -m "fix(p04-t05): phase 4 final verification fixes"
 - Phase 1: 12 tasks — Foundation packages (docs-transforms, docs-config, docs-theme)
 - Phase 2: 8 tasks — Scaffold templates + CLI framework choice
 - Phase 3: 10 tasks — Migration codemod + index generation commands
-- Phase 4: 5 tasks — Integration testing, real-world validation, NFR verification
+- Phase 4: 10 tasks — Integration testing, real-world validation, NFR verification, review fixes
 
-**Total: 35 tasks**
+**Total: 40 tasks**
 
 **Status:** Plan complete, awaiting implementation execution.
 

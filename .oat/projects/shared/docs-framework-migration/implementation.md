@@ -2,8 +2,8 @@
 oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
-oat_last_updated: 2026-03-08
-oat_current_task_id: null
+oat_last_updated: 2026-03-09
+oat_current_task_id: p04-t06
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
 | Phase 2: Scaffold Templates + CLI | complete | 8 | 8/8 |
 | Phase 3: Migration + Index Commands | complete | 10 | 10/10 |
-| Phase 4: Integration + Polish | complete | 5 | 5/5 |
+| Phase 4: Integration + Polish | in_progress | 10 | 5/10 |
 
-**Total:** 35/35 tasks completed
+**Total:** 35/40 tasks completed
 
 ---
 
@@ -837,6 +837,36 @@ oat_generated: false
 **Verification:**
 - Run: `pnpm build && pnpm lint && pnpm type-check && pnpm test`
 - Result: all pass
+
+---
+
+### Review Received: final
+
+**Date:** 2026-03-09
+**Review artifact:** reviews/final-review-2026-03-09.md
+
+**Findings:**
+- Critical: 3
+- Important: 1
+- Medium: 1
+- Minor: 0
+
+**New tasks added:** p04-t06, p04-t07, p04-t08, p04-t09, p04-t10
+
+**Finding disposition map:**
+- C1 (index generation wrong output path) → converted to p04-t06
+- C2 (scaffold missing index generation scripts) → converted to p04-t07
+- C3 (Mermaid/search not wired) → converted to p04-t08
+- I1 (integration test race on shared assets) → converted to p04-t09
+- M1 (CLI command contract mismatch) → converted to p04-t10
+
+**Deferred Findings:** None
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ---
 
