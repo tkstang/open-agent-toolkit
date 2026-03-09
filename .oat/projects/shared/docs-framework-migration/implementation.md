@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-09
-oat_current_task_id: p04-t09
+oat_current_task_id: p04-t10
 oat_generated: false
 ---
 
@@ -933,6 +933,27 @@ After the fix tasks are complete:
 **Verification:**
 - Run: `pnpm --filter @oat/docs-transforms test && pnpm --filter @oat/docs-config test && pnpm build`
 - Result: 16 tests pass (7 transforms + 9 config), workspace build clean
+
+---
+
+### Task p04-t09: (review) Fix integration test race on shared assets directory
+
+**Status:** completed
+**Commit:** d9dd7df
+
+**Outcome:**
+- `bundle-assets.sh` now respects `OAT_ASSETS_DIR` env var for output directory
+- Both `integration.test.ts` and `mkdocs-compat.test.ts` bundle to isolated temp directories
+- Tests pass reliably when run in parallel (verified with 5 docs test files concurrently)
+
+**Files changed:**
+- `packages/cli/scripts/bundle-assets.sh` - OAT_ASSETS_DIR env var support
+- `packages/cli/src/commands/docs/init/integration.test.ts` - isolated temp assets dir
+- `packages/cli/src/commands/docs/init/mkdocs-compat.test.ts` - isolated temp assets dir
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli exec vitest run src/commands/docs/init/integration.test.ts src/commands/docs/init/mkdocs-compat.test.ts`
+- Result: 4/4 tests pass (no race condition)
 
 ---
 
