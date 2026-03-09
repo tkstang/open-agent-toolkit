@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t01
+oat_current_task_id: p03-t09
 oat_generated: false
 ---
 
@@ -27,10 +27,10 @@ oat_generated: false
 |-------|--------|-------|-----------|
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
 | Phase 2: Scaffold Templates + CLI | complete | 8 | 8/8 |
-| Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
+| Phase 3: Migration + Index Commands | in_progress | 10 | 8/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 20/35 tasks completed
+**Total:** 28/35 tasks completed
 
 ---
 
@@ -525,57 +525,159 @@ oat_generated: false
 
 ### Task p03-t01: Create docs migrate command skeleton
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** b1863f8
+
+**Outcome:**
+- Created `docs migrate` command with `--docs-dir`, `--config`, `--apply` flags
+- Dry-run by default, --apply writes changes
+- Dependency injection pattern for testability
+- Registered in docs command index
+
+**Files changed:**
+- `packages/cli/src/commands/docs/migrate/index.ts` - command skeleton with DI
+- `packages/cli/src/commands/docs/index.ts` - registered migrate command
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test`
+- Result: pass
 
 ---
 
 ### Task p03-t02: Implement admonition-to-GFM codemod — tests
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** b07e0ad
+
+**Outcome:**
+- 7 test cases for convertAdmonitions covering note, warning, tip, collapsible, multi-type, nested content, and no-op
+- Tests confirm RED — codemod module does not exist yet
+
+**Files changed:**
+- `packages/cli/src/commands/docs/migrate/codemod.test.ts` - test suite
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- codemod.test`
+- Result: fails (RED) as expected
 
 ---
 
 ### Task p03-t03: Implement admonition-to-GFM codemod
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** b0cbd29
+
+**Outcome:**
+- `convertAdmonitions()` converts MkDocs `!!!`/`???` syntax to GFM `> [!TYPE]` blockquotes
+- ADMONITION_TYPE_MAP maps 14 MkDocs types to 5 GFM types (NOTE, WARNING, TIP, IMPORTANT, CAUTION)
+- Line-by-line processing handles indented content blocks
+- All 7 test cases pass
+
+**Files changed:**
+- `packages/cli/src/commands/docs/migrate/codemod.ts` - codemod implementation
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- codemod.test`
+- Result: 7/7 tests pass (GREEN)
 
 ---
 
 ### Task p03-t04: Implement frontmatter injection — tests + implement
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** b0e6412
+
+**Outcome:**
+- `injectFrontmatter()` with title resolution chain: mkdocsTitle → heading → filename title-case
+- Seeds empty `description: ""` when missing
+- Does not modify files that already have both title and description
+- 6 test cases covering all resolution paths
+
+**Files changed:**
+- `packages/cli/src/commands/docs/migrate/frontmatter.ts` - frontmatter injection
+- `packages/cli/src/commands/docs/migrate/frontmatter.test.ts` - test suite
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- frontmatter`
+- Result: 6/6 tests pass
 
 ---
 
 ### Task p03-t05: Wire migrate command handler
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** c81aa4e, d403beb
+
+**Outcome:**
+- Wired `migrateFiles()` handler: walks docs dir, applies convertAdmonitions + injectFrontmatter per .md file
+- `parseMkdocsNavTitles()` extracts title mappings from mkdocs.yml nav section
+- Dry-run reports changes, --apply writes files
+- JSON output mode supported
+
+**Files changed:**
+- `packages/cli/src/commands/docs/migrate/index.ts` - full handler implementation
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test && pnpm lint`
+- Result: pass (biome lint fix: replaced assignment-in-while with matchAll)
 
 ---
 
 ### Task p03-t06: Create docs index generate command skeleton
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** f81d2f5
+
+**Outcome:**
+- Created `docs index-generate` command with `--docs-dir` and `--output` flags
+- Dependency injection pattern matching migrate command
+- Registered in docs command index
+
+**Files changed:**
+- `packages/cli/src/commands/docs/index-generate/index.ts` - command skeleton
+- `packages/cli/src/commands/docs/index.ts` - registered command
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test`
+- Result: pass (updated help snapshots)
 
 ---
 
 ### Task p03-t07: Implement index generation logic — tests
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 2c500d0
+
+**Outcome:**
+- 7 test cases for generateIndex and renderIndex covering flat dirs, nested dirs, fallback titles, empty dirs, and rendering
+- Tests confirm RED for generateIndex, GREEN for renderIndex stubs
+
+**Files changed:**
+- `packages/cli/src/commands/docs/index-generate/generator.test.ts` - test suite
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- generator.test`
+- Result: RED as expected for generateIndex
 
 ---
 
 ### Task p03-t08: Implement index generation logic
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** dba9e9e, 73d54d4
+
+**Outcome:**
+- `generateIndex()` recursively walks docsDir, parses frontmatter/headings/filenames for titles
+- `renderIndex()` produces markdown list with descriptions and nested indentation
+- Sorting: index.md first, then directories, then lexical
+- All 860 tests pass
+
+**Files changed:**
+- `packages/cli/src/commands/docs/index-generate/generator.ts` - full implementation
+
+**Verification:**
+- Run: `pnpm test`
+- Result: 860/860 tests pass (GREEN)
 
 ---
 
