@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p02-t07
+oat_current_task_id: p03-t01
 oat_generated: false
 ---
 
@@ -26,11 +26,11 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
-| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 6/8 |
+| Phase 2: Scaffold Templates + CLI | complete | 8 | 8/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 18/35 tasks completed
+**Total:** 20/35 tasks completed
 
 ---
 
@@ -307,20 +307,31 @@ oat_generated: false
 **Status:** in_progress
 **Started:** 2026-03-08
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
-- {placeholder}
+- Fumadocs template directory (`.oat/templates/docs-app-fuma/`) with 10 template files for Next.js scaffold
+- Renamed existing template to `docs-app-mkdocs` to disambiguate
+- Framework choice prompt (`--framework fumadocs|mkdocs`) and site description (`--description`) in `oat docs init`
+- `scaffoldDocsApp` branches on framework with per-framework template file lists, sentinel files, and token replacements
+- Documentation config fields (tooling, root, index) written to `.oat/config.json` after scaffold
+- Integration tests verify end-to-end scaffold with real template files
 
 **Key files touched:**
-- `{path}` - {why}
+- `.oat/templates/docs-app-fuma/` - 10 Fumadocs template files
+- `.oat/templates/docs-app-mkdocs/` - renamed from docs-app
+- `packages/cli/src/commands/docs/init/resolve-options.ts` - DocsFramework type, framework/description prompts
+- `packages/cli/src/commands/docs/init/scaffold.ts` - framework-aware scaffold with FRAMEWORK_CONFIGS
+- `packages/cli/src/commands/docs/init/index.ts` - --framework, --description CLI flags, config writing
+- `packages/cli/src/config/oat-config.ts` - added index field
 
 **Verification:**
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `pnpm build && pnpm lint && pnpm type-check && pnpm test`
+- Result: all pass, 839 tests
 
 **Notes / Decisions:**
-- {placeholder}
+- Integration test verifies token replacement and file structure but not npm install/build (workspace:* deps don't resolve outside monorepo)
+- Default framework is `fumadocs` in non-interactive mode
 
 ### Task p02-t01: Create Fumadocs template directory
 
@@ -460,22 +471,42 @@ oat_generated: false
 
 ### Task p02-t07: Integration test — scaffold Fumadocs app builds
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** ff9dcb4
+
+**Outcome:**
+- Integration test scaffolds both Fumadocs and MkDocs apps using real template files from bundle-assets.sh
+- Verifies file structure, no unresolved tokens, package.json validity, branding interpolation
+- Tests run against real template files (not synthetic test data)
+
+**Files changed:**
+- `packages/cli/src/commands/docs/init/integration.test.ts` - new integration test
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- src/commands/docs/init/integration.test.ts`
+- Result: 2/2 integration tests pass
 
 ---
 
 ### Task p02-t08: Phase 2 verification — end-to-end scaffold flow
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** (no code changes, verification only)
+
+**Outcome:**
+- Full workspace build, lint, type-check, test all pass
+- 839 tests across all packages
+
+**Verification:**
+- Run: `pnpm build && pnpm lint && pnpm type-check && pnpm test`
+- Result: all pass
 
 ---
 
 ## Phase 3: Migration + Index Commands
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-08
 
 ### Phase Summary (fill when phase is complete)
 
