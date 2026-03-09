@@ -47,6 +47,7 @@ export interface InstallWorkflowsResult {
   projectsRootInitialized: boolean;
   projectsRootConfigInitialized: boolean;
   projectsDirsScaffolded: boolean;
+  resolvedProjectsRoot: string;
 }
 
 export async function installWorkflows(
@@ -71,6 +72,7 @@ export async function installWorkflows(
     projectsRootInitialized: false,
     projectsRootConfigInitialized: false,
     projectsDirsScaffolded: false,
+    resolvedProjectsRoot: '',
   };
 
   for (const skill of WORKFLOW_SKILLS) {
@@ -166,10 +168,12 @@ export async function installWorkflows(
     result.projectsRootConfigInitialized = true;
   }
 
-  const projectsRoot = join(options.targetRoot, '.oat', 'projects');
-  const sharedDir = join(projectsRoot, 'shared');
-  const localGitkeep = join(projectsRoot, 'local', '.gitkeep');
-  const archivedGitkeep = join(projectsRoot, 'archived', '.gitkeep');
+  const effectiveRoot = config.projects?.root?.trim() || '.oat/projects/shared';
+  result.resolvedProjectsRoot = effectiveRoot;
+  const sharedDir = join(options.targetRoot, effectiveRoot);
+  const projectsBase = dirname(sharedDir);
+  const localGitkeep = join(projectsBase, 'local', '.gitkeep');
+  const archivedGitkeep = join(projectsBase, 'archived', '.gitkeep');
 
   const sharedExists = await dirExists(sharedDir);
   if (!sharedExists) {

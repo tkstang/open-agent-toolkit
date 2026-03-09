@@ -177,6 +177,56 @@ describe('installWorkflows', () => {
     ).resolves.toBe('');
   });
 
+  it('scaffolds projects directories under custom projects.root', async () => {
+    const root = await makeTempDir();
+    const assetsRoot = join(root, 'assets');
+    const targetRoot = join(root, 'target');
+    await seedAssets(assetsRoot);
+
+    // Pre-configure a custom projects root
+    await mkdir(join(targetRoot, '.oat'), { recursive: true });
+    await writeFile(
+      join(targetRoot, '.oat', 'projects-root'),
+      '.oat/custom-projects/shared\n',
+      'utf8',
+    );
+    await writeFile(
+      join(targetRoot, '.oat', 'config.json'),
+      JSON.stringify({
+        version: 1,
+        projects: { root: '.oat/custom-projects/shared' },
+      }),
+      'utf8',
+    );
+
+    const result = await installWorkflows({ assetsRoot, targetRoot });
+
+    expect(result.projectsDirsScaffolded).toBe(true);
+    expect(result.resolvedProjectsRoot).toBe('.oat/custom-projects/shared');
+    // Shared dir should be under the custom root
+    const sharedStat = await stat(
+      join(targetRoot, '.oat', 'custom-projects', 'shared'),
+    );
+    expect(sharedStat.isDirectory()).toBe(true);
+    // Sibling dirs should also be under the custom root
+    await expect(
+      readFile(
+        join(targetRoot, '.oat', 'custom-projects', 'local', '.gitkeep'),
+        'utf8',
+      ),
+    ).resolves.toBe('');
+    await expect(
+      readFile(
+        join(targetRoot, '.oat', 'custom-projects', 'archived', '.gitkeep'),
+        'utf8',
+      ),
+    ).resolves.toBe('');
+    // Default location should NOT exist
+    await expect(
+      stat(join(targetRoot, '.oat', 'projects', 'shared')),
+    ).rejects.toThrow();
+  });
+
   it('does not re-scaffold projects dirs when shared already exists', async () => {
     const root = await makeTempDir();
     const assetsRoot = join(root, 'assets');

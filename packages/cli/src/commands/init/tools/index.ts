@@ -268,12 +268,23 @@ async function runInitTools(
         outdatedSkills.push({ ...skill, targetRoot: projectRoot });
       }
 
-      if (workflowsResult.projectsDirsScaffolded) {
-        const PR_REVIEW_LOCAL_PATHS = [
-          '.oat/projects/**/pr',
-          '.oat/projects/**/reviews',
-        ];
+      const resolvedRoot =
+        workflowsResult.resolvedProjectsRoot || '.oat/projects/shared';
+      const projectsBase = resolvedRoot.replace(/\/[^/]+$/, '');
+      const PR_REVIEW_LOCAL_PATHS = [
+        `${projectsBase}/**/pr`,
+        `${projectsBase}/**/reviews`,
+      ];
 
+      const existingConfig = await dependencies.readOatConfig(projectRoot);
+      const existingLocalPaths = new Set(
+        dependencies.resolveLocalPaths(existingConfig),
+      );
+      const alreadyConfigured = PR_REVIEW_LOCAL_PATHS.every((p) =>
+        existingLocalPaths.has(p),
+      );
+
+      if (!alreadyConfigured) {
         let makeLocal = true;
         if (context.interactive) {
           const selected = await dependencies.selectWithAbort(
