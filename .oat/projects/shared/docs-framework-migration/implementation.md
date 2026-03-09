@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t02
+oat_current_task_id: p01-t03
 oat_generated: false
 ---
 
@@ -25,12 +25,12 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1: Foundation Packages | in_progress | 12 | 1/12 |
+| Phase 1: Foundation Packages | in_progress | 12 | 2/12 |
 | Phase 2: Scaffold Templates + CLI | pending | 8 | 0/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 1/35 tasks completed
+**Total:** 2/35 tasks completed
 
 ---
 
@@ -78,8 +78,20 @@ oat_generated: false
 
 ### Task p01-t02: Implement remarkTabs transform — test cases
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 01cb9ca
+
+**Outcome:**
+- 7 test cases for remarkTabs covering single/multiple groups, code blocks, multi-paragraph, empty tabs, and no-op
+- Tests confirm RED — remarkTabs module does not exist yet
+
+**Files changed:**
+- `packages/docs-transforms/src/remark-tabs.test.ts` - test suite for remarkTabs transform
+- `packages/docs-transforms/package.json` - added remark-parse devDependency
+
+**Verification:**
+- Run: `pnpm --filter @oat/docs-transforms test`
+- Result: fails (RED) as expected — module not found
 
 ---
 
