@@ -384,12 +384,15 @@ describe('help output snapshots', () => {
       Scaffold an OAT docs app
 
       Options:
-        --app-name <name>    Docs app name
-        --target-dir <path>  Target directory for the docs app
-        --lint <mode>        Markdown lint mode (choices: "markdownlint", "none")
-        --format <mode>      Markdown format mode (choices: "prettier", "none")
-        --yes                Accept defaults without prompting
-        -h, --help           display help for command
+        --framework <framework>  Documentation framework (choices: "fumadocs",
+                                 "mkdocs")
+        --app-name <name>        Docs app name
+        --target-dir <path>      Target directory for the docs app
+        --description <text>     Site description
+        --lint <mode>            Markdown lint mode (choices: "markdownlint", "none")
+        --format <mode>          Markdown format mode (choices: "prettier", "none")
+        --yes                    Accept defaults without prompting
+        -h, --help               display help for command
       "
     `);
   });

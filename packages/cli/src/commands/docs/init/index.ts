@@ -15,6 +15,7 @@ import { Command, Option } from 'commander';
 import {
   DEFAULT_DOCS_REPO_SHAPE_DEPENDENCIES,
   type DocsFormatMode,
+  type DocsFramework,
   type DocsInitResolvedOptions,
   type DocsLintMode,
   detectDocsRepoShape,
@@ -23,8 +24,10 @@ import {
 import { scaffoldDocsApp } from './scaffold';
 
 interface DocsInitCommandOptions {
+  framework?: DocsFramework;
   appName?: string;
   targetDir?: string;
+  description?: string;
   lint?: DocsLintMode;
   format?: DocsFormatMode;
   yes?: boolean;
@@ -94,8 +97,10 @@ async function runDocsInitCommand(
       repoShape,
       interactive: context.interactive,
       acceptDefaults: options.yes ?? false,
+      providedFramework: options.framework,
       providedAppName: options.appName,
       providedTargetDir: options.targetDir,
+      providedSiteDescription: options.description,
       providedLint: options.lint,
       providedFormat: options.format,
       inputWithDefault: dependencies.inputWithDefault,
@@ -134,10 +139,17 @@ export function createDocsInitCommand(
 
   return new Command('init')
     .description('Scaffold an OAT docs app')
+    .addOption(
+      new Option('--framework <framework>', 'Documentation framework').choices([
+        'fumadocs',
+        'mkdocs',
+      ]),
+    )
     .addOption(new Option('--app-name <name>', 'Docs app name'))
     .addOption(
       new Option('--target-dir <path>', 'Target directory for the docs app'),
     )
+    .addOption(new Option('--description <text>', 'Site description'))
     .addOption(
       new Option('--lint <mode>', 'Markdown lint mode').choices([
         'markdownlint',

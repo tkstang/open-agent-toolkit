@@ -64,8 +64,10 @@ describe('scaffoldDocsApp', () => {
       assetsRoot,
       repoRoot: root,
       repoShape: 'monorepo',
+      framework: 'mkdocs',
       appName: 'oat-docs',
       targetDir: 'apps/oat-docs',
+      siteDescription: '',
       lint: 'markdownlint',
       format: 'prettier',
     });
@@ -100,8 +102,10 @@ describe('scaffoldDocsApp', () => {
       assetsRoot,
       repoRoot: root,
       repoShape: 'single-package',
+      framework: 'mkdocs',
       appName: 'docs',
       targetDir: 'docs',
+      siteDescription: '',
       lint: 'none',
       format: 'prettier',
     });
