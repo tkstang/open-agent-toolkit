@@ -55,7 +55,7 @@ const FUMA_TEMPLATE_FILES: Record<string, string> = {
   'app/layout.tsx':
     "import { DocsLayout } from '@oat/docs-theme';\nexport default function Layout({ children }) { return <DocsLayout branding={{ title: '{{SITE_NAME}}', description: '{{SITE_DESCRIPTION}}' }} tree={{}}>{children}</DocsLayout>; }\n",
   'app/[[...slug]]/page.tsx':
-    'export default function Page() { return <div />; }\n',
+    "import { Mermaid } from '@oat/docs-theme';\nexport default function Page() { return <div />; }\n",
   'docs/index.md': '# {{SITE_NAME}}\n\n{{SITE_DESCRIPTION}}\n',
   'docs/getting-started.md': '# Getting Started\n',
   'docs/contributing.md': '# Contributing\n',

@@ -1,6 +1,8 @@
-import { DocsPage } from '@oat/docs-theme';
+import { DocsPage, Mermaid } from '@oat/docs-theme';
 import { notFound } from 'next/navigation';
 import { source } from '@/lib/source';
+
+const mdxComponents = { Mermaid };
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;
@@ -13,7 +15,7 @@ export default async function Page(props: {
 
   return (
     <DocsPage toc={page.data.toc}>
-      <MDX />
+      <MDX components={mdxComponents} />
     </DocsPage>
   );
 }
