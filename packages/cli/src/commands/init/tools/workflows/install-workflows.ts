@@ -11,7 +11,7 @@ import {
   WORKFLOW_TEMPLATES,
 } from '@commands/init/tools/shared/skill-manifest';
 import { readOatConfig, writeOatConfig } from '@config/oat-config';
-import { ensureDir, fileExists } from '@fs/io';
+import { dirExists, ensureDir, fileExists } from '@fs/io';
 
 export {
   WORKFLOW_AGENTS,
@@ -46,6 +46,7 @@ export interface InstallWorkflowsResult {
   skippedScripts: string[];
   projectsRootInitialized: boolean;
   projectsRootConfigInitialized: boolean;
+  projectsDirsScaffolded: boolean;
 }
 
 export async function installWorkflows(
@@ -69,6 +70,7 @@ export async function installWorkflows(
     skippedScripts: [],
     projectsRootInitialized: false,
     projectsRootConfigInitialized: false,
+    projectsDirsScaffolded: false,
   };
 
   for (const skill of WORKFLOW_SKILLS) {
@@ -162,6 +164,25 @@ export async function installWorkflows(
       projects: { root: '.oat/projects/shared' },
     });
     result.projectsRootConfigInitialized = true;
+  }
+
+  const projectsRoot = join(options.targetRoot, '.oat', 'projects');
+  const sharedDir = join(projectsRoot, 'shared');
+  const localGitkeep = join(projectsRoot, 'local', '.gitkeep');
+  const archivedGitkeep = join(projectsRoot, 'archived', '.gitkeep');
+
+  const sharedExists = await dirExists(sharedDir);
+  if (!sharedExists) {
+    await ensureDir(sharedDir);
+    await ensureDir(dirname(localGitkeep));
+    await ensureDir(dirname(archivedGitkeep));
+    if (!(await fileExists(localGitkeep))) {
+      await writeFile(localGitkeep, '', 'utf8');
+    }
+    if (!(await fileExists(archivedGitkeep))) {
+      await writeFile(archivedGitkeep, '', 'utf8');
+    }
+    result.projectsDirsScaffolded = true;
   }
 
   return result;

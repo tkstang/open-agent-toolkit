@@ -150,6 +150,45 @@ describe('installWorkflows', () => {
     ).resolves.toContain('.oat/projects/custom-config');
   });
 
+  it('scaffolds projects directories with .gitkeep files on fresh install', async () => {
+    const root = await makeTempDir();
+    const assetsRoot = join(root, 'assets');
+    const targetRoot = join(root, 'target');
+    await seedAssets(assetsRoot);
+
+    const result = await installWorkflows({ assetsRoot, targetRoot });
+
+    expect(result.projectsDirsScaffolded).toBe(true);
+    const sharedStat = await stat(
+      join(targetRoot, '.oat', 'projects', 'shared'),
+    );
+    expect(sharedStat.isDirectory()).toBe(true);
+    await expect(
+      readFile(
+        join(targetRoot, '.oat', 'projects', 'local', '.gitkeep'),
+        'utf8',
+      ),
+    ).resolves.toBe('');
+    await expect(
+      readFile(
+        join(targetRoot, '.oat', 'projects', 'archived', '.gitkeep'),
+        'utf8',
+      ),
+    ).resolves.toBe('');
+  });
+
+  it('does not re-scaffold projects dirs when shared already exists', async () => {
+    const root = await makeTempDir();
+    const assetsRoot = join(root, 'assets');
+    const targetRoot = join(root, 'target');
+    await seedAssets(assetsRoot);
+
+    await installWorkflows({ assetsRoot, targetRoot });
+    const second = await installWorkflows({ assetsRoot, targetRoot });
+
+    expect(second.projectsDirsScaffolded).toBe(false);
+  });
+
   it('gracefully skips missing source scripts', async () => {
     const root = await makeTempDir();
     const assetsRoot = join(root, 'assets');
