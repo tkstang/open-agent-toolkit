@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t08
+oat_current_task_id: p01-t12
 oat_generated: false
 ---
 
@@ -25,12 +25,12 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1: Foundation Packages | in_progress | 12 | 7/12 |
+| Phase 1: Foundation Packages | in_progress | 12 | 11/12 |
 | Phase 2: Scaffold Templates + CLI | pending | 8 | 0/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 7/35 tasks completed
+**Total:** 11/35 tasks completed
 
 ---
 
@@ -208,29 +208,75 @@ oat_generated: false
 
 ### Task p01-t08: Implement DocsLayout component
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** f95e7fe
+
+**Outcome:**
+- DocsLayout wraps fumadocs-ui DocsLayout, maps BrandingConfig to nav options
+- Accepts PageTree.Root + children, passes through to fumadocs
+
+**Files changed:**
+- `packages/docs-theme/src/docs-layout.tsx` - implemented with fumadocs-ui wrapping
+- `packages/docs-theme/src/types.ts` - BrandingConfig (unchanged)
+- `packages/docs-theme/package.json` - added fumadocs-core dependency
+
+**Verification:**
+- Run: `pnpm --filter @oat/docs-theme build && pnpm --filter @oat/docs-theme type-check`
+- Result: pass
 
 ---
 
 ### Task p01-t09: Implement DocsPage component
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 738c991
+
+**Outcome:**
+- DocsPage wraps fumadocs-ui DocsPage + DocsBody, accepts TOC + children
+
+**Files changed:**
+- `packages/docs-theme/src/docs-page.tsx` - wraps fumadocs-ui DocsPage/DocsBody
+
+**Verification:**
+- Run: `pnpm --filter @oat/docs-theme build`
+- Result: pass
 
 ---
 
 ### Task p01-t10: Implement Mermaid component
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 1f3e31b
+
+**Outcome:**
+- Client-side Mermaid component with dynamic import, dark/light mode support via next-themes
+- Lazy mermaid.initialize() on first render, re-renders on theme change
+
+**Files changed:**
+- `packages/docs-theme/src/mermaid.tsx` - 'use client' component with dynamic mermaid import
+- `packages/docs-theme/package.json` - added mermaid dependency
+
+**Verification:**
+- Run: `pnpm --filter @oat/docs-theme build`
+- Result: pass
 
 ---
 
 ### Task p01-t11: Wire FlexSearch in docs-config
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** aa024e6
+
+**Outcome:**
+- createSearchConfig returns FlexSearch static search config
+- 2 tests verifying config shape
+
+**Files changed:**
+- `packages/docs-config/src/search-config.test.ts` - test suite
+
+**Verification:**
+- Run: `pnpm --filter @oat/docs-config test`
+- Result: 7 tests pass
 
 ---
 

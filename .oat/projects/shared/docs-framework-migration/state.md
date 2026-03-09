@@ -1,6 +1,6 @@
 ---
-oat_current_task: p01-t08
-oat_last_commit: 190cec0
+oat_current_task: p01-t12
+oat_last_commit: aa024e6
 oat_blockers: []
 oat_hill_checkpoints: ["discovery", "spec", "design"]
 oat_hill_completed: ["discovery", "spec", "design"]
