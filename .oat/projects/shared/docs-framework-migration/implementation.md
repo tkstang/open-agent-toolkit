@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p03-t09
+oat_current_task_id: p04-t01
 oat_generated: false
 ---
 
@@ -27,10 +27,10 @@ oat_generated: false
 |-------|--------|-------|-----------|
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
 | Phase 2: Scaffold Templates + CLI | complete | 8 | 8/8 |
-| Phase 3: Migration + Index Commands | in_progress | 10 | 8/10 |
-| Phase 4: Integration + Polish | pending | 5 | 0/5 |
+| Phase 3: Migration + Index Commands | complete | 10 | 10/10 |
+| Phase 4: Integration + Polish | in_progress | 5 | 0/5 |
 
-**Total:** 28/35 tasks completed
+**Total:** 30/35 tasks completed
 
 ---
 
@@ -505,23 +505,29 @@ oat_generated: false
 
 ## Phase 3: Migration + Index Commands
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-08
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
-- {placeholder}
+- `oat docs migrate` command: converts MkDocs admonitions to GFM blockquotes, injects frontmatter (title/description) from mkdocs.yml nav or heading/filename fallback
+- `oat docs index-generate` command: recursively walks docs directory, generates markdown index with titles from frontmatter/headings/filenames, writes output and updates config
+- Both commands support dry-run/apply modes and JSON output
 
 **Key files touched:**
-- `{path}` - {why}
+- `packages/cli/src/commands/docs/migrate/` - command, codemod, frontmatter modules + tests
+- `packages/cli/src/commands/docs/index-generate/` - command, generator modules + tests
+- `packages/cli/src/commands/docs/index.ts` - registered both commands
 
 **Verification:**
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `pnpm test && pnpm lint && pnpm type-check && pnpm build`
+- Result: 860 tests pass, all clean
 
 **Notes / Decisions:**
-- {placeholder}
+- Admonition type mapping covers 14 MkDocs types → 5 GFM types (NOTE, WARNING, TIP, IMPORTANT, CAUTION)
+- Frontmatter title resolution chain: mkdocsTitle → h1 heading → filename title-case
+- Index generation sorts: index.md first, then directories before files, then lexical
 
 ### Task p03-t01: Create docs migrate command skeleton
 
@@ -683,22 +689,44 @@ oat_generated: false
 
 ### Task p03-t09: Wire index generate command + config update
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** c243fe2
+
+**Outcome:**
+- Wired generateIndex/renderIndex to command handler
+- Writes output file (default: `<docsDir>/index.md`)
+- Updates `.oat/config.json` `documentation.index` field
+- JSON and human-readable output modes
+- Dependency injection for testability
+
+**Files changed:**
+- `packages/cli/src/commands/docs/index-generate/index.ts` - full handler implementation
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test && pnpm --filter @oat/cli type-check`
+- Result: 860/860 tests pass, type-check clean
 
 ---
 
 ### Task p03-t10: Phase 3 verification — migrate + index commands
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** (no code changes, verification only)
+
+**Outcome:**
+- All migrate + index-generate code verified via existing test suites
+- Full workspace: tests, lint, type-check, build all pass
+
+**Verification:**
+- Run: `pnpm test && pnpm lint && pnpm type-check && pnpm build`
+- Result: 860 tests pass, all clean
 
 ---
 
 ## Phase 4: Integration + Polish
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-08
 
 ### Phase Summary (fill when phase is complete)
 

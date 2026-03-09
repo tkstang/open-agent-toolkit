@@ -1,6 +1,6 @@
 ---
-oat_current_task: p03-t09
-oat_last_commit: 73d54d4
+oat_current_task: p04-t01
+oat_last_commit: c243fe2
 oat_blockers: []
 oat_hill_checkpoints: ["discovery", "spec", "design"]
 oat_hill_completed: ["discovery", "spec", "design"]
@@ -16,13 +16,13 @@ oat_generated: false
 
 # Project State: docs-framework-migration
 
-**Status:** Implementation in progress (28/35 tasks)
+**Status:** Implementation in progress (30/35 tasks)
 **Started:** 2026-03-08
 **Last Updated:** 2026-03-08
 
 ## Current Phase
 
-Implementation - Phase 3 in progress (p03-t09 next)
+Implementation - Phase 4 in progress (p04-t01 next)
 
 ## Artifacts
 
@@ -40,7 +40,7 @@ Implementation - Phase 3 in progress (p03-t09 next)
 - ✓ Plan complete (review passed, 35 tasks across 4 phases)
 - ✓ Phase 1: Foundation Packages (12/12)
 - ✓ Phase 2: Scaffold Templates + CLI (8/8)
-- ⧗ Phase 3: Migration + Index Commands (8/10)
+- ✓ Phase 3: Migration + Index Commands (10/10)
 - ⧗ Phase 4: Integration + Polish (0/5)
 
 ## Blockers
@@ -49,4 +49,4 @@ None
 
 ## Next Milestone
 
-Complete Phase 3 (p03-t09, p03-t10), then Phase 4
+Complete Phase 4 (5 tasks: integration + polish)
