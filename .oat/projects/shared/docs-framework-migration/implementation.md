@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p02-t03
+oat_current_task_id: p02-t04
 oat_generated: false
 ---
 
@@ -26,11 +26,11 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
-| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 2/8 |
+| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 3/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 14/35 tasks completed
+**Total:** 15/35 tasks completed
 
 ---
 
@@ -372,8 +372,27 @@ oat_generated: false
 
 ### Task p02-t03: Add framework choice prompt to docs init
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 858640c
+
+**Outcome:**
+- Added `DocsFramework` type (`fumadocs | mkdocs`) and `siteDescription` field to resolved options
+- Interactive prompt offers framework choice (Fumadocs/MkDocs) and optional site description
+- Non-interactive defaults to `fumadocs` with empty description
+- CLI accepts `--framework` and `--description` flags
+- `getTemplateDir()` maps framework to template directory name
+- Updated help snapshot and existing tests for new required fields
+
+**Files changed:**
+- `packages/cli/src/commands/docs/init/resolve-options.ts` - new types, prompts, getTemplateDir
+- `packages/cli/src/commands/docs/init/resolve-options.test.ts` - updated expectations, new test
+- `packages/cli/src/commands/docs/init/index.ts` - CLI flags for --framework, --description
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - added required fields to test options
+- `packages/cli/src/commands/help-snapshots.test.ts` - updated snapshot
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test`
+- Result: 835/835 tests pass
 
 ---
 
