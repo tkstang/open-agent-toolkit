@@ -1148,7 +1148,7 @@ git commit -m "fix(p04-t05): phase 4 final verification fixes"
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
-| final | code | pending | - | - |
+| final | code | received | 2026-03-09 | reviews/final-review-2026-03-09.md |
 | spec | artifact | pending | - | - |
 | design | artifact | received | 2026-03-08 | reviews/artifact-design-review-2026-03-08-v2.md |
 | plan | artifact | passed | 2026-03-08 | reviews/artifact-plan-review-2026-03-08.md |
