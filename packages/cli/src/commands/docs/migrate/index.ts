@@ -1,4 +1,4 @@
-import { readFile, readdir, writeFile } from 'node:fs/promises';
+import { readdir, readFile, writeFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import {
   buildCommandContext,
@@ -19,8 +19,15 @@ interface MigrateOptions {
 
 interface MigrateFileDependencies {
   readFile: (path: string, encoding: BufferEncoding) => Promise<string>;
-  writeFile: (path: string, content: string, encoding: BufferEncoding) => Promise<void>;
-  readdir: (path: string, options: { withFileTypes: true; recursive: true }) => Promise<import('node:fs').Dirent[]>;
+  writeFile: (
+    path: string,
+    content: string,
+    encoding: BufferEncoding,
+  ) => Promise<void>;
+  readdir: (
+    path: string,
+    options: { withFileTypes: true; recursive: true },
+  ) => Promise<import('node:fs').Dirent[]>;
   fileExists: (path: string) => Promise<boolean>;
 }
 
@@ -39,8 +46,7 @@ interface FileChange {
 function parseMkdocsNavTitles(yamlContent: string): Map<string, string> {
   const titles = new Map<string, string>();
   const lineRe = /^\s*-\s+(?:'([^']+)'|"([^"]+)")\s*:\s*(.+)\s*$/gm;
-  let match: RegExpExecArray | null;
-  while ((match = lineRe.exec(yamlContent)) !== null) {
+  for (const match of yamlContent.matchAll(lineRe)) {
     const title = match[1] ?? match[2]!;
     const path = match[3]!.trim().replace(/^['"]|['"]$/g, '');
     titles.set(path, title);
