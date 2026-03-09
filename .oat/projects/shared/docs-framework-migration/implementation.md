@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p01-t07
+oat_current_task_id: p01-t08
 oat_generated: false
 ---
 
@@ -25,12 +25,12 @@ oat_generated: false
 
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
-| Phase 1: Foundation Packages | in_progress | 12 | 6/12 |
+| Phase 1: Foundation Packages | in_progress | 12 | 7/12 |
 | Phase 2: Scaffold Templates + CLI | pending | 8 | 0/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 6/35 tasks completed
+**Total:** 7/35 tasks completed
 
 ---
 
@@ -183,8 +183,26 @@ oat_generated: false
 
 ### Task p01-t07: Scaffold docs-theme package
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 190cec0
+
+**Outcome:**
+- New `@oat/docs-theme` package with fumadocs-ui@15, next-themes
+- Stub components: DocsLayout, DocsPage, Mermaid
+- BrandingConfig type interface exported
+
+**Files changed:**
+- `packages/docs-theme/package.json` - package manifest with peer deps
+- `packages/docs-theme/tsconfig.json` - TypeScript config with JSX
+- `packages/docs-theme/src/index.ts` - barrel export
+- `packages/docs-theme/src/types.ts` - BrandingConfig interface
+- `packages/docs-theme/src/docs-layout.tsx` - stub layout component
+- `packages/docs-theme/src/docs-page.tsx` - stub page component
+- `packages/docs-theme/src/mermaid.tsx` - stub Mermaid component
+
+**Verification:**
+- Run: `pnpm install && pnpm --filter @oat/docs-theme build`
+- Result: pass
 
 ---
 
