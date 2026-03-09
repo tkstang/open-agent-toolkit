@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p02-t04
+oat_current_task_id: p02-t05
 oat_generated: false
 ---
 
@@ -26,11 +26,11 @@ oat_generated: false
 | Phase | Status | Tasks | Completed |
 |-------|--------|-------|-----------|
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
-| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 3/8 |
+| Phase 2: Scaffold Templates + CLI | in_progress | 8 | 4/8 |
 | Phase 3: Migration + Index Commands | pending | 10 | 0/10 |
 | Phase 4: Integration + Polish | pending | 5 | 0/5 |
 
-**Total:** 15/35 tasks completed
+**Total:** 16/35 tasks completed
 
 ---
 
@@ -398,8 +398,22 @@ oat_generated: false
 
 ### Task p02-t04: Implement Fumadocs scaffold path in scaffold.ts
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 2b82588
+
+**Outcome:**
+- `scaffoldDocsApp` now branches on `options.framework` using per-framework template file lists and sentinel files
+- MkDocs path unchanged; Fumadocs path scaffolds Next.js app structure (next.config.js, source.config.ts, tsconfig, app/, lib/, docs/)
+- Added `{{SITE_DESCRIPTION}}` and `{{FUMA_DEV_DEPENDENCIES}}` token replacements
+- 2 new tests: Fumadocs scaffold with lint/format deps, and without
+
+**Files changed:**
+- `packages/cli/src/commands/docs/init/scaffold.ts` - framework-aware scaffold with FRAMEWORK_CONFIGS map
+- `packages/cli/src/commands/docs/init/scaffold.test.ts` - 2 new Fumadocs test cases
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test`
+- Result: 837/837 tests pass
 
 ---
 
