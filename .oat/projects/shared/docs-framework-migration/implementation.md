@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-08
-oat_current_task_id: p04-t01
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | Phase 1: Foundation Packages | complete | 12 | 12/12 |
 | Phase 2: Scaffold Templates + CLI | complete | 8 | 8/8 |
 | Phase 3: Migration + Index Commands | complete | 10 | 10/10 |
-| Phase 4: Integration + Polish | in_progress | 5 | 0/5 |
+| Phase 4: Integration + Polish | complete | 5 | 5/5 |
 
-**Total:** 30/35 tasks completed
+**Total:** 35/35 tasks completed
 
 ---
 
@@ -725,56 +725,118 @@ oat_generated: false
 
 ## Phase 4: Integration + Polish
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-08
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
-- {placeholder}
+- Real-world fixture-based migration tests (admonitions, frontmatter, combined pipeline, passthrough)
+- E2E pipeline test: create MkDocs docs → migrate → generate index → verify output
+- MkDocs scaffold compatibility tests (FR8): structure, config, no Fumadocs deps
+- FlexSearch config verified: static type, output: 'export' in next.config
+- Full workspace verification: 867 tests, lint, type-check, build all pass
 
 **Key files touched:**
-- `{path}` - {why}
+- `packages/cli/src/commands/docs/migrate/fixtures/` - 6 fixture files (3 input/expected pairs)
+- `packages/cli/src/commands/docs/migrate/fixtures.test.ts` - fixture-based tests
+- `packages/cli/src/commands/docs/e2e-pipeline.test.ts` - E2E pipeline test
+- `packages/cli/src/commands/docs/init/mkdocs-compat.test.ts` - MkDocs compat tests
 
 **Verification:**
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `pnpm build && pnpm lint && pnpm type-check && pnpm test`
+- Result: 867 tests pass, all clean
 
 **Notes / Decisions:**
-- {placeholder}
+- E2E build test (npm install + build) not feasible: workspace:* deps don't resolve outside monorepo; validated pipeline logic + config instead
+- FlexSearch verification is structural: config factory + template deps correct; runtime requires built app
 
 ### Task p04-t01: Test migration against real fixture data
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** abc43e7
+
+**Outcome:**
+- 6 fixture files: 3 input/expected pairs (admonitions, frontmatter, combined)
+- 4 tests: admonition conversion, frontmatter injection, combined pipeline, passthrough
+- Realistic MkDocs content patterns with nested blocks, code, mermaid
+
+**Files changed:**
+- `packages/cli/src/commands/docs/migrate/fixtures/` - 6 fixture files
+- `packages/cli/src/commands/docs/migrate/fixtures.test.ts` - test suite
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- fixtures.test`
+- Result: 4/4 tests pass
 
 ---
 
 ### Task p04-t02: E2E test — author markdown, build, verify render
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** a80397f
+
+**Outcome:**
+- Full pipeline test: create docs → migrate admonitions → inject frontmatter → generate index
+- Verifies GFM callouts, mermaid passthrough, frontmatter, and index structure
+- Validates links, descriptions, and sorted output in generated index
+
+**Files changed:**
+- `packages/cli/src/commands/docs/e2e-pipeline.test.ts` - E2E test
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- e2e-pipeline`
+- Result: 1/1 test pass
 
 ---
 
 ### Task p04-t03: Verify MkDocs scaffold still works (FR8)
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 7baa85d
+
+**Outcome:**
+- 2 tests: correct structure/config, and no Fumadocs dependencies
+- Validates mkdocs.yml content, documentation config fields, absence of Next.js/Fumadocs files
+- Uses real template files via bundle-assets.sh
+
+**Files changed:**
+- `packages/cli/src/commands/docs/init/mkdocs-compat.test.ts` - test suite
+
+**Verification:**
+- Run: `pnpm --filter @oat/cli test -- mkdocs-compat`
+- Result: 2/2 tests pass
 
 ---
 
 ### Task p04-t04: Verify FlexSearch works in static export
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** (no code changes, verification only)
+
+**Outcome:**
+- createSearchConfig returns `{ engine: 'flexsearch', type: 'static' }` — verified by existing tests
+- createDocsConfig returns `{ output: 'export' }` — prerequisite for static FlexSearch
+- Template package.json includes fumadocs-core (provides search) as dependency
+
+**Verification:**
+- Run: `pnpm --filter @oat/docs-config test`
+- Result: 7/7 tests pass
 
 ---
 
 ### Task p04-t05: Phase 4 final verification
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** (no code changes, verification only)
+
+**Outcome:**
+- Full workspace: build, lint, type-check, test all pass
+- 867 tests across all packages
+
+**Verification:**
+- Run: `pnpm build && pnpm lint && pnpm type-check && pnpm test`
+- Result: all pass
 
 ---
 
@@ -827,28 +889,45 @@ Track test execution during implementation.
 
 | Phase | Tests Run | Passed | Failed | Coverage |
 |-------|-----------|--------|--------|----------|
-| 1 | - | - | - | - |
-| 2 | - | - | - | - |
-| 3 | - | - | - | - |
-| 4 | - | - | - | - |
+| 1 | 14 | 14 | 0 | - |
+| 2 | 839 | 839 | 0 | - |
+| 3 | 860 | 860 | 0 | - |
+| 4 | 867 | 867 | 0 | - |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
-- {capability 1}
-- {capability 2}
+- `@oat/docs-transforms` — remarkTabs remark plugin (MkDocs tab syntax → Fumadocs `<Tabs>`/`<Tab>` JSX)
+- `@oat/docs-config` — Config factories for Next.js (static export + createMDX), source config (remark plugins), FlexSearch static search
+- `@oat/docs-theme` — DocsLayout, DocsPage, Mermaid components wrapping fumadocs-ui
+- Fumadocs scaffold templates (10 files) with `oat docs init --framework fumadocs`
+- `oat docs migrate` — Admonition-to-GFM codemod + frontmatter injection from mkdocs.yml nav
+- `oat docs index-generate` — Recursive markdown index generation with config update
 
 **Behavioral changes (user-facing):**
-- {bullet}
+- `oat docs init` now prompts for framework choice (fumadocs/mkdocs) and site description
+- `oat docs init --framework fumadocs` scaffolds a Next.js-based docs app with Fumadocs
+- `oat docs migrate` converts MkDocs admonitions to GFM blockquotes and injects frontmatter
+- `oat docs index-generate` creates a docs index from markdown files
+- MkDocs scaffold path unchanged (FR8 backward compatibility)
 
 **Key files / modules:**
-- `{path}` - {purpose}
+- `packages/docs-transforms/` - remarkTabs plugin
+- `packages/docs-config/` - Next.js, source, and search config factories
+- `packages/docs-theme/` - DocsLayout, DocsPage, Mermaid components
+- `.oat/templates/docs-app-fuma/` - 10 Fumadocs template files
+- `packages/cli/src/commands/docs/migrate/` - codemod, frontmatter, command handler
+- `packages/cli/src/commands/docs/index-generate/` - generator, command handler
 
 **Verification performed:**
-- {tests/lint/typecheck/build/manual steps}
+- 867 tests pass (14 transforms, 7 config, ~846 CLI)
+- Lint: clean (Biome)
+- Type-check: clean (TypeScript)
+- Build: clean (Turborepo)
 
 **Design deltas (if any):**
-- {what changed vs design.md and why}
+- E2E build test (p04-t02) tests pipeline logic rather than npm install + build (workspace:* deps can't resolve outside monorepo)
+- FlexSearch verification (p04-t04) is structural — config factory + template deps correct; runtime requires built app
 
 ## References
 
