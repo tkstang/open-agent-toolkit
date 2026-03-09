@@ -5,9 +5,9 @@
   "version": "0.1.0",
   "description": "{{SITE_DESCRIPTION}}",
   "scripts": {
-    "predev": "npx oat docs index-generate",
+    "predev": "npx oat docs generate-index",
     "dev": "next dev",
-    "prebuild": "npx oat docs index-generate",
+    "prebuild": "npx oat docs generate-index",
     "build": "next build",
     "start": "next start",
     "docs:lint": "{{DOCS_LINT_SCRIPT}}",

@@ -107,7 +107,7 @@ async function runIndexGenerateCommand(
   }
 }
 
-function createGenerateCommand(
+export function createDocsGenerateIndexCommand(
   overrides: Partial<IndexGenerateDependencies> = {},
 ): Command {
   const dependencies: IndexGenerateDependencies = {
@@ -115,7 +115,7 @@ function createGenerateCommand(
     ...overrides,
   };
 
-  return new Command('generate')
+  return new Command('generate-index')
     .description('Generate a docs index from markdown files')
     .addOption(
       new Option('--docs-dir <path>', 'Documentation source directory').default(
@@ -131,12 +131,4 @@ function createGenerateCommand(
       );
       await runIndexGenerateCommand(context, options, dependencies);
     });
-}
-
-export function createDocsIndexCommand(
-  overrides: Partial<IndexGenerateDependencies> = {},
-): Command {
-  return new Command('index')
-    .description('Docs index management commands')
-    .addCommand(createGenerateCommand(overrides));
 }
