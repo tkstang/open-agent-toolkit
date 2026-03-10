@@ -5,7 +5,6 @@
   "version": "0.1.0",
   "description": "{{SITE_DESCRIPTION}}",
   "scripts": {
-    "postinstall": "fumadocs-mdx",
     "predev": "fumadocs-mdx && npx oat docs generate-index",
     "dev": "next dev",
     "prebuild": "fumadocs-mdx && npx oat docs generate-index",

@@ -3,7 +3,6 @@
   "version": "0.1.0",
   "description": "Documentation for Open Agent Toolkit",
   "scripts": {
-    "postinstall": "fumadocs-mdx",
     "predev": "fumadocs-mdx && pnpm exec oat docs generate-index",
     "dev": "next dev",
     "prebuild": "fumadocs-mdx && pnpm exec oat docs generate-index",
