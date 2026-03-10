@@ -4,7 +4,7 @@
   - Provider Interop
     - [Provider Interop CLI Docs](provider-interop/index.md)
     - [Provider Interop Commands](provider-interop/commands.md)
-    - [Sync Config (`.oat/sync/config.json`)](provider-interop/config.md)
+    - [Sync Config (.oat/sync/config.json)](provider-interop/config.md)
     - [Hooks and Safety](provider-interop/hooks-and-safety.md)
     - [Manifest and Drift](provider-interop/manifest-and-drift.md)
     - [Providers](provider-interop/providers.md)
@@ -28,7 +28,7 @@
   - [Commit Conventions](reference/commit-conventions.md)
   - [Docs Index Contract](reference/docs-index-contract.md)
   - [File Locations](reference/file-locations.md)
-  - [`.oat` Directory Structure](reference/oat-directory-structure.md)
+  - [.oat Directory Structure](reference/oat-directory-structure.md)
   - [Troubleshooting](reference/troubleshooting.md)
 - Skills
   - [Skills Index](skills/index.md)
