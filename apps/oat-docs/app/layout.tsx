@@ -1,5 +1,5 @@
 import { DocsLayout } from '@oat/docs-theme';
-import { RootProvider } from 'fumadocs-ui/provider';
+import { RootProvider } from 'fumadocs-ui/provider/next';
 import { source } from '@/lib/source';
 import 'fumadocs-ui/style.css';
 import type { ReactNode } from 'react';
