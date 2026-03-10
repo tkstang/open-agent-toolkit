@@ -179,6 +179,7 @@ Use `AskUserQuestion` to present this choice.
   - `oat_workflow_mode: spec-driven`
   - `oat_phase: discovery`
   - `oat_phase_status: complete`
+  - `oat_project_state_updated: "{ISO 8601 UTC timestamp}"`
 - Refresh repo dashboard: `oat state refresh`
 - Inform the user: "Discovery is complete. Run `oat-project-spec` next to formalize requirements."
 - Stop here. Do not generate a plan.
@@ -262,6 +263,7 @@ Update `"$PROJECT_PATH/state.md"`:
 - `oat_phase: plan`
 - `oat_phase_status: complete`
 - `oat_current_task: null`
+- `oat_project_state_updated: "{ISO 8601 UTC timestamp, e.g. 2026-03-10T14:30:00Z}"`
 - set `oat_hill_checkpoints: []` for quick mode to avoid spec/design gate confusion
 
 Recommended quick-mode gate defaults:
