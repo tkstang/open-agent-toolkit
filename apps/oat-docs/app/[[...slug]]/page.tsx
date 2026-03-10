@@ -1,9 +1,9 @@
-import { DocsPage, Mermaid } from '@oat/docs-theme';
+import { DocsPage, Mermaid, Tab, Tabs } from '@oat/docs-theme';
 import defaultComponents from 'fumadocs-ui/mdx';
 import { notFound } from 'next/navigation';
 import { source } from '@/lib/source';
 
-const mdxComponents = { ...defaultComponents, Mermaid };
+const mdxComponents = { ...defaultComponents, Mermaid, Tab, Tabs };
 
 export default async function Page(props: {
   params: Promise<{ slug?: string[] }>;

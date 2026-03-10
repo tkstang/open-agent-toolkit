@@ -65,7 +65,7 @@ const FUMA_TEMPLATE_FILES: Record<string, string> = {
   'app/layout.tsx':
     "import { DocsLayout } from '@oat/docs-theme';\nexport default function Layout({ children }) { return <DocsLayout branding={{ title: '{{SITE_NAME}}', description: '{{SITE_DESCRIPTION}}' }} tree={{}}>{children}</DocsLayout>; }\n",
   'app/[[...slug]]/page.tsx':
-    "import { Mermaid } from '@oat/docs-theme';\nexport default function Page() { return <div />; }\n",
+    "import { DocsPage, Mermaid, Tab, Tabs } from '@oat/docs-theme';\nimport defaultComponents from 'fumadocs-ui/mdx';\nexport default function Page() { return <div />; }\n",
   'app/api/search/route.ts':
     "import { createFromSource } from 'fumadocs-core/search/server';\nimport { source } from '@/lib/source';\nconst search = createFromSource(source);\nexport const revalidate = false;\nexport const { staticGET: GET } = search;\n",
   'docs/index.md': '# {{SITE_NAME}}\n\n{{SITE_DESCRIPTION}}\n',
