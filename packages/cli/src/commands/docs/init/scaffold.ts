@@ -18,6 +18,11 @@ interface TemplateFile {
 }
 
 const MKDOCS_TEMPLATE_FILES: TemplateFile[] = [
+  { source: '.gitignore', destination: '.gitignore' },
+  {
+    source: '.markdownlint-cli2.jsonc',
+    destination: '.markdownlint-cli2.jsonc',
+  },
   { source: 'mkdocs.yml', destination: 'mkdocs.yml' },
   { source: 'package.json.template', destination: 'package.json' },
   { source: 'requirements.txt', destination: 'requirements.txt' },
@@ -34,6 +39,7 @@ const MKDOCS_TEMPLATE_FILES: TemplateFile[] = [
 ];
 
 const FUMA_TEMPLATE_FILES: TemplateFile[] = [
+  { source: '.gitignore', destination: '.gitignore' },
   { source: 'next.config.js', destination: 'next.config.js' },
   { source: 'source.config.ts', destination: 'source.config.ts' },
   { source: 'tsconfig.json', destination: 'tsconfig.json' },

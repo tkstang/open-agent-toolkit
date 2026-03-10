@@ -7,6 +7,9 @@ import { afterEach, describe, expect, it } from 'vitest';
 import { scaffoldDocsApp } from './scaffold';
 
 const MKDOCS_TEMPLATE_FILES: Record<string, string> = {
+  '.gitignore':
+    '# MkDocs build output\nsite/\n\n# Python virtual environment\n.venv/\n',
+  '.markdownlint-cli2.jsonc': '{ "config": { "MD013": false } }\n',
   'mkdocs.yml': 'site_name: {{SITE_NAME}}\n',
   'package.json.template': `{
   "name": "{{PACKAGE_NAME}}",
@@ -30,6 +33,8 @@ const MKDOCS_TEMPLATE_FILES: Record<string, string> = {
 };
 
 const FUMA_TEMPLATE_FILES: Record<string, string> = {
+  '.gitignore':
+    '# Next.js build output\n.next/\nout/\n\n# fumadocs-mdx generated source\n.source/\n\n# Next.js generated types\nnext-env.d.ts\n',
   'next.config.js':
     "import { createDocsConfig } from '@oat/docs-config';\nexport default createDocsConfig({ title: '{{SITE_NAME}}', description: '{{SITE_DESCRIPTION}}' });\n",
   'source.config.ts':
