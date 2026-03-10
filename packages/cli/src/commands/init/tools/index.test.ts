@@ -8,7 +8,7 @@ import type { Scope } from '@shared/types';
 import { Command } from 'commander';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createInitToolsCommand } from './index';
+import { buildWorkflowsSectionBody, createInitToolsCommand } from './index';
 
 interface HarnessOptions {
   scope?: Scope;
@@ -87,6 +87,9 @@ function createHarness(options: HarnessOptions = {}) {
   const resolveLocalPaths = vi.fn(
     (config: { localPaths?: string[] }) => config.localPaths ?? [],
   );
+  const upsertAgentsMdSection = vi.fn(async () => ({
+    action: 'updated' as const,
+  }));
 
   const command = createInitToolsCommand({
     buildCommandContext: (globalOptions: GlobalOptions): CommandContext => ({
@@ -112,6 +115,7 @@ function createHarness(options: HarnessOptions = {}) {
     applyGitignore,
     readOatConfig,
     resolveLocalPaths,
+    upsertAgentsMdSection,
   });
 
   return {
@@ -127,6 +131,7 @@ function createHarness(options: HarnessOptions = {}) {
     applyGitignore,
     readOatConfig,
     resolveLocalPaths,
+    upsertAgentsMdSection,
   };
 }
 
@@ -359,5 +364,73 @@ describe('createInitToolsCommand', () => {
     expect(capture.info.join('\n')).toContain(
       'oat-project-new  (unversioned) -> 1.1.0',
     );
+  });
+
+  it('calls upsertAgentsMdSection with workflows key and selected packs', async () => {
+    const { command, upsertAgentsMdSection } = createHarness({
+      interactive: false,
+    });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    expect(upsertAgentsMdSection).toHaveBeenCalledTimes(1);
+    expect(upsertAgentsMdSection).toHaveBeenCalledWith(
+      '/tmp/workspace',
+      'workflows',
+      expect.stringContaining('Workflow System'),
+    );
+  });
+
+  it('logs AGENTS.md workflows section update', async () => {
+    const { command, capture } = createHarness({ interactive: false });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    expect(capture.info.join('\n')).toContain(
+      'AGENTS.md workflows section updated.',
+    );
+  });
+
+  it('does not log AGENTS.md update when section is unchanged', async () => {
+    const { command, capture, upsertAgentsMdSection } = createHarness({
+      interactive: false,
+    });
+
+    upsertAgentsMdSection.mockResolvedValueOnce({ action: 'no-change' });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    expect(capture.info.join('\n')).not.toContain('AGENTS.md');
+  });
+
+  it('does not call upsertAgentsMdSection when no packs are selected', async () => {
+    const { command, upsertAgentsMdSection } = createHarness({
+      interactive: true,
+      packSelection: [null],
+    });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    expect(upsertAgentsMdSection).not.toHaveBeenCalled();
+  });
+});
+
+describe('buildWorkflowsSectionBody', () => {
+  it('includes all selected packs', () => {
+    const body = buildWorkflowsSectionBody(['ideas', 'workflows', 'utility']);
+
+    expect(body).toContain('## Workflow System');
+    expect(body).toContain('`.agents/skills/`');
+    expect(body).toContain('**ideas**');
+    expect(body).toContain('**workflows**');
+    expect(body).toContain('**utility**');
+  });
+
+  it('only includes selected packs', () => {
+    const body = buildWorkflowsSectionBody(['workflows']);
+
+    expect(body).toContain('**workflows**');
+    expect(body).not.toContain('**ideas**');
+    expect(body).not.toContain('**utility**');
   });
 });
