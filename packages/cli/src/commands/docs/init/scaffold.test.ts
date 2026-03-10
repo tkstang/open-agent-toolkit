@@ -9,7 +9,6 @@ import { scaffoldDocsApp } from './scaffold';
 const MKDOCS_TEMPLATE_FILES: Record<string, string> = {
   '.gitignore':
     '# Dependencies\nnode_modules/\n\n# MkDocs build output\nsite/\n\n# Python virtual environment\n.venv/\n',
-  '.markdownlint-cli2.jsonc': '{ "config": { "MD013": false } }\n',
   'mkdocs.yml': 'site_name: {{SITE_NAME}}\n',
   'package.json.template': `{
   "name": "{{PACKAGE_NAME}}",

@@ -19,10 +19,6 @@ interface TemplateFile {
 
 const MKDOCS_TEMPLATE_FILES: TemplateFile[] = [
   { source: '.gitignore', destination: '.gitignore' },
-  {
-    source: '.markdownlint-cli2.jsonc',
-    destination: '.markdownlint-cli2.jsonc',
-  },
   { source: 'mkdocs.yml', destination: 'mkdocs.yml' },
   { source: 'package.json.template', destination: 'package.json' },
   { source: 'requirements.txt', destination: 'requirements.txt' },

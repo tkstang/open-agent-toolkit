@@ -5,7 +5,7 @@ import type { Plugin } from 'unified';
 
 import { createSearchConfig, type SearchConfig } from './search-config.js';
 
-// biome-ignore lint/suspicious/noExplicitAny: unified Plugin generics are covariant but typed invariantly
+// oxlint-disable-next-line typescript-eslint/no-explicit-any -- unified Plugin generics are covariant but typed invariantly
 type RemarkPlugin = Plugin<any[], Root>;
 
 export interface SourceConfigResult {

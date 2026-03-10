@@ -1,8 +1,9 @@
-import type { InlineCode, Link, Root } from 'mdast';
+import type { Link, Root } from 'mdast';
 import remarkParse from 'remark-parse';
 import { unified } from 'unified';
 import { visit } from 'unist-util-visit';
 import { describe, expect, it } from 'vitest';
+
 import { remarkLinks } from './remark-links.js';
 
 interface LinkResult {
