@@ -45,14 +45,14 @@ export function Tabs({ children }: TabsProps) {
   return (
     <FumaTabs
       defaultValue={tabs[0]!.title}
-      className='my-4 overflow-hidden rounded-lg border border-fd-border'
+      className='my-4 overflow-hidden rounded-xl border border-fd-border bg-fd-card'
     >
-      <TabsList className='flex border-b border-fd-border bg-fd-secondary'>
+      <TabsList className='flex border-b border-fd-border'>
         {tabs.map((tab) => (
           <TabsTrigger
             key={tab.title}
             value={tab.title}
-            className='px-4 py-2 text-sm font-medium text-fd-muted-foreground transition-colors data-[state=active]:bg-fd-background data-[state=active]:text-fd-foreground data-[state=active]:shadow-sm'
+            className='border-b border-transparent px-4 py-2 text-sm font-medium text-fd-muted-foreground transition-colors hover:text-fd-accent-foreground data-[state=active]:border-fd-primary data-[state=active]:text-fd-primary'
           >
             {tab.title}
           </TabsTrigger>
