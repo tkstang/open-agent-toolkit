@@ -1,7 +1,6 @@
 {
   "recommendations": [
-    "nicolo-ribaudo.oxfmt-vscode",
-    "nicolo-ribaudo.oxlint-vscode",
+    "oxc.oxc-vscode",
     "mikestead.dotenv",
     "editorconfig.editorconfig"
   ]

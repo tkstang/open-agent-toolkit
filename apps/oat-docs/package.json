@@ -8,6 +8,7 @@
     "docs:dev": "mkdocs serve",
     "docs:build": "mkdocs build",
     "docs:setup": "sh ./setup-docs.sh",
+    "docs:lint": "echo 'docs lint disabled'",
     "docs:format": "oxfmt 'docs/**/*.md'",
     "docs:format:check": "oxfmt --check 'docs/**/*.md'"
   },

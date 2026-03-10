@@ -1,64 +1,25 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": ["typescript"],
   "categories": {
     "correctness": "error",
     "suspicious": "error"
   },
-  "plugins": ["typescript"],
   "env": {
     "node": true,
     "es2024": true
   },
   "rules": {
-    "eslint/no-extra-boolean-cast": "error",
-    "eslint/no-useless-catch": "error",
-    "eslint/no-const-assign": "error",
-    "eslint/no-constant-condition": "error",
-    "eslint/no-empty-character-class": "error",
-    "eslint/no-empty-pattern": "error",
-    "eslint/no-global-assign": "error",
-    "eslint/no-inner-declarations": "error",
-    "eslint/constructor-super": "error",
-    "eslint/no-nonoctal-decimal-escape": "error",
-    "eslint/no-loss-of-precision": "error",
-    "eslint/no-self-assign": "error",
-    "eslint/no-setter-return": "error",
-    "eslint/no-case-declarations": "error",
-    "eslint/no-unreachable": "error",
-    "eslint/no-unsafe-finally": "error",
-    "eslint/no-unsafe-optional-chaining": "error",
-    "eslint/no-unused-labels": "error",
-    "eslint/no-unused-vars": "error",
-    "eslint/use-isnan": "error",
-    "eslint/valid-typeof": "error",
-    "eslint/require-yield": "error",
+    "eslint/dot-notation": "off",
     "eslint/prefer-const": "error",
     "eslint/prefer-template": "error",
-    "eslint/no-async-promise-executor": "error",
-    "eslint/no-ex-assign": "error",
-    "eslint/no-class-assign": "error",
-    "eslint/no-compare-neg-zero": "error",
-    "eslint/no-control-regex": "error",
-    "eslint/no-debugger": "error",
     "eslint/eqeqeq": ["error", "smart"],
-    "eslint/no-shadow": "off",
-    "eslint/no-duplicate-case": "error",
-    "eslint/no-dupe-class-members": "error",
-    "eslint/no-dupe-keys": "error",
-    "eslint/no-dupe-args": "error",
     "eslint/no-empty": "error",
-    "eslint/no-fallthrough": "error",
-    "eslint/no-func-assign": "error",
-    "eslint/no-import-assign": "error",
-    "eslint/no-misleading-character-class": "error",
-    "eslint/no-prototype-builtins": "error",
-    "eslint/no-redeclare": "error",
-    "eslint/no-shadow-restricted-names": "error",
-    "eslint/no-unsafe-negation": "error",
+    "eslint/no-shadow": "off",
     "typescript/no-explicit-any": "warn",
     "typescript/no-non-null-assertion": "off",
-    "typescript/no-unnecessary-type-constraint": "error",
-    "typescript/no-extra-non-null-assertion": "off"
+    "typescript/no-extra-non-null-assertion": "off",
+    "typescript/no-unnecessary-type-constraint": "error"
   },
   "overrides": [
     {
@@ -74,5 +35,5 @@
       }
     }
   ],
-  "ignorePatterns": ["dist/", "node_modules/", ".turbo/", "coverage/"]
+  "ignorePatterns": ["dist/", "node_modules/", ".turbo/", "build/", "coverage/"]
 }

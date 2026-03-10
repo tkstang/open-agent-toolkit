@@ -216,7 +216,7 @@ Negative rules:
 Run the smallest relevant verification set based on what changed:
 
 - `oat docs nav sync`
-- `pnpm --dir <docs-app> docs:lint`
+- `pnpm --dir <docs-app> docs:lint` (no-op when no linter is configured)
 - `pnpm --dir <docs-app> docs:format:check`
 - `pnpm --dir <docs-app> docs:build`
 

@@ -1,6 +1,5 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  // Matches previous Biome formatter settings
   "printWidth": 80,
   "tabWidth": 2,
   "useTabs": false,
@@ -11,11 +10,11 @@
   "bracketSpacing": true,
   "bracketSameLine": false,
   "arrowParens": "always",
-  // Import sorting (replaces Biome organizeImports)
+  "quoteProps": "as-needed",
+  "endOfLine": "lf",
+  "proseWrap": "preserve",
   "sortImports": {},
-  // Package.json field sorting
   "sortPackageJson": {},
-  // Exclude template files with mustache-style placeholders
   "ignorePatterns": [
     "packages/cli/assets/templates/**/*.yml",
     ".oat/templates/**/*.yml",

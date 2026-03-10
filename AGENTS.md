@@ -16,7 +16,7 @@
 
 - `pnpm build` - Build all packages and applications
 - `pnpm lint` - Lint code using oxlint
-- `pnpm format` - Format code using oxfmt
+- `pnpm format` - Check formatting (oxfmt --check); use `pnpm format:fix` to auto-fix
 - `pnpm type-check` - TypeScript type checking across all packages
 - `pnpm test` - Run tests across the workspace
 
