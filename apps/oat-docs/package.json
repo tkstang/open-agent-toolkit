@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "Documentation for Open Agent Toolkit",
   "scripts": {
-    "predev": "fumadocs-mdx && pnpm exec oat docs generate-index",
+    "predev": "fumadocs-mdx && pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md",
     "dev": "next dev",
-    "prebuild": "fumadocs-mdx && pnpm exec oat docs generate-index",
+    "prebuild": "fumadocs-mdx && pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md",
     "build": "next build",
     "start": "next start",
     "docs:lint": "markdownlint-cli2 'docs/**/*.md'",

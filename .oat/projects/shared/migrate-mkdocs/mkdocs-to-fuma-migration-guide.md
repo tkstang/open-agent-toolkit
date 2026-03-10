@@ -94,17 +94,22 @@ cp -r /tmp/docs-backup <app-dir>/docs
 
 ### Fix package.json scripts
 
-The scaffold uses `npx oat` which doesn't work in a pnpm workspace (private package). Change to `pnpm exec oat`:
+The scaffold uses `npx oat` which doesn't work in a pnpm workspace — the `@oat/cli` bin link fails at install time because `dist/index.js` doesn't exist yet. Use `pnpm -w run cli --` instead, which runs the workspace root's `cli` script via `tsx`:
 
 ```json
 {
-  "predev": "fumadocs-mdx && pnpm exec oat docs generate-index --docs-dir docs --output index.md",
-  "prebuild": "fumadocs-mdx && pnpm exec oat docs generate-index --docs-dir docs --output index.md"
+  "predev": "fumadocs-mdx && pnpm -w run cli -- docs generate-index --docs-dir <app-dir>/docs --output <app-dir>/index.md",
+  "prebuild": "fumadocs-mdx && pnpm -w run cli -- docs generate-index --docs-dir <app-dir>/docs --output <app-dir>/index.md"
 }
 ```
 
 > [!WARNING]
-> Do **not** put `fumadocs-mdx` in `postinstall`. It generates code that imports `@oat/docs-config`, which hasn't been built yet during a fresh `pnpm install` in CI. Keep it in `predev`/`prebuild` where turbo ensures dependencies are built first.
+> **Two CI gotchas:**
+>
+> 1. Do **not** use `pnpm exec oat` — the bin link is created during `pnpm install` before `@oat/cli` is built, so it silently fails and the command is never available.
+> 2. Do **not** put `fumadocs-mdx` in `postinstall` — it generates code that imports `@oat/docs-config`, which hasn't been built yet during install. Keep it in `predev`/`prebuild` where turbo ensures dependencies build first.
+>
+> Paths in `pnpm -w run cli` are relative to the **workspace root**, not the app directory.
 
 ### Commit
 
