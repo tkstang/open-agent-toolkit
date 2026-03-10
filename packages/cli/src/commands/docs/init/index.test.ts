@@ -4,13 +4,13 @@ import type { SelectChoice } from '@commands/shared/shared.prompts';
 import type { Scope } from '@shared/types';
 import { Command } from 'commander';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+
 import { buildDocsSectionBody, createDocsInitCommand } from './index';
 import type { DocsInitResolvedOptions } from './resolve-options';
 
 function createHarness(options: { interactive?: boolean } = {}) {
   const capture = createLoggerCapture();
 
-  // biome-ignore lint/suspicious/noEmptyBlockStatements: mock stub
   const runDocsInit = vi.fn(async () => {});
   const upsertAgentsMdSection = vi.fn(async () => ({
     action: 'updated' as const,
@@ -88,8 +88,6 @@ describe('createDocsInitCommand', () => {
       'apps/my-docs',
       '--description',
       'Test',
-      '--lint',
-      'none',
       '--format',
       'none',
       '--yes',
@@ -115,8 +113,6 @@ describe('createDocsInitCommand', () => {
       'apps/docs',
       '--description',
       '',
-      '--lint',
-      'none',
       '--format',
       'none',
       '--yes',
@@ -143,8 +139,6 @@ describe('createDocsInitCommand', () => {
       'apps/docs',
       '--description',
       '',
-      '--lint',
-      'none',
       '--format',
       'none',
       '--yes',
@@ -163,8 +157,8 @@ describe('buildDocsSectionBody', () => {
       appName: 'my-docs',
       targetDir: 'apps/my-docs',
       siteDescription: 'My docs',
-      lint: 'markdownlint',
-      format: 'prettier',
+      lint: 'none',
+      format: 'oxfmt',
     };
 
     const body = buildDocsSectionBody(options);
