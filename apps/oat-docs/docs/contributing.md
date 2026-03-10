@@ -1,3 +1,8 @@
+---
+title: Contributing to OAT Docs
+description: ""
+---
+
 # Contributing to OAT Docs
 
 Documentation should ship with the code it explains. This docs app is scaffolded to give contributors and agents a shared contract for navigation, Markdown features, and local tooling.
@@ -54,7 +59,7 @@ Supports GitHub-style callout blocks in Markdown for note, warning, and tip cont
 Supports MkDocs callout syntax:
 
 ```markdown
-!!! note
+> [!NOTE]
 Useful supporting context.
 ```
 
