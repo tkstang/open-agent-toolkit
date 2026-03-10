@@ -230,20 +230,33 @@ const PACK_DESCRIPTIONS: Record<ToolPack, string> = {
   utility: 'Standalone utilities (reviews, docs analysis, agent instructions)',
 };
 
-export function buildWorkflowsSectionBody(selectedPacks: ToolPack[]): string {
+interface PackScopeInfo {
+  pack: ToolPack;
+  scope: InstallScope;
+}
+
+export function buildWorkflowsSectionBody(packs: PackScopeInfo[]): string {
+  const userPacks = packs.filter((p) => p.scope === 'user');
+
   const lines = [
     '## Workflow System',
     '',
     '- **Skills directory:** `.agents/skills/`',
     '- **Discover available skills:** scan `.agents/skills/*/SKILL.md`',
     '- **Refresh provider views:** `oat sync --scope all`',
-    '',
-    '### Installed Packs',
-    '',
   ];
 
-  for (const pack of selectedPacks) {
-    lines.push(`- **${pack}** — ${PACK_DESCRIPTIONS[pack]}`);
+  if (userPacks.length > 0) {
+    lines.push(
+      '- **User-scoped skills:** `~/.agents/skills/` (ideas and utility packs installed at user scope)',
+    );
+  }
+
+  lines.push('', '### Installed Packs', '');
+
+  for (const { pack, scope } of packs) {
+    const suffix = scope === 'user' ? ' _(user scope)_' : '';
+    lines.push(`- **${pack}** — ${PACK_DESCRIPTIONS[pack]}${suffix}`);
   }
 
   return lines.join('\n');
@@ -409,7 +422,11 @@ async function runInitTools(
       }
     }
 
-    const sectionBody = buildWorkflowsSectionBody(selectedPacks);
+    const packScopeInfo: PackScopeInfo[] = selectedPacks.map((pack) => ({
+      pack,
+      scope: pack === 'workflows' ? 'project' : userEligibleScope,
+    }));
+    const sectionBody = buildWorkflowsSectionBody(packScopeInfo);
     const sectionResult = await dependencies.upsertAgentsMdSection(
       projectRoot,
       'workflows',

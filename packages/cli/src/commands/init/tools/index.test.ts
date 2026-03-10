@@ -403,6 +403,19 @@ describe('createInitToolsCommand', () => {
     expect(capture.info.join('\n')).not.toContain('AGENTS.md');
   });
 
+  it('AGENTS.md section marks user-scoped packs when scope is user', async () => {
+    const { command, upsertAgentsMdSection } = createHarness({
+      interactive: false,
+    });
+
+    await runCommand(command, [], ['--scope', 'user']);
+
+    expect(upsertAgentsMdSection).toHaveBeenCalledTimes(1);
+    const body = upsertAgentsMdSection.mock.calls[0]?.[2] as string;
+    expect(body).toContain('_(user scope)_');
+    expect(body).toContain('`~/.agents/skills/`');
+  });
+
   it('does not call upsertAgentsMdSection when no packs are selected', async () => {
     const { command, upsertAgentsMdSection } = createHarness({
       interactive: true,
@@ -417,20 +430,44 @@ describe('createInitToolsCommand', () => {
 
 describe('buildWorkflowsSectionBody', () => {
   it('includes all selected packs', () => {
-    const body = buildWorkflowsSectionBody(['ideas', 'workflows', 'utility']);
+    const body = buildWorkflowsSectionBody([
+      { pack: 'ideas', scope: 'project' },
+      { pack: 'workflows', scope: 'project' },
+      { pack: 'utility', scope: 'project' },
+    ]);
 
     expect(body).toContain('## Workflow System');
     expect(body).toContain('`.agents/skills/`');
     expect(body).toContain('**ideas**');
     expect(body).toContain('**workflows**');
     expect(body).toContain('**utility**');
+    expect(body).not.toContain('user scope');
   });
 
   it('only includes selected packs', () => {
-    const body = buildWorkflowsSectionBody(['workflows']);
+    const body = buildWorkflowsSectionBody([
+      { pack: 'workflows', scope: 'project' },
+    ]);
 
     expect(body).toContain('**workflows**');
     expect(body).not.toContain('**ideas**');
     expect(body).not.toContain('**utility**');
+  });
+
+  it('marks user-scoped packs and adds user skills directory note', () => {
+    const body = buildWorkflowsSectionBody([
+      { pack: 'ideas', scope: 'user' },
+      { pack: 'workflows', scope: 'project' },
+      { pack: 'utility', scope: 'user' },
+    ]);
+
+    expect(body).toContain(
+      '**ideas** — Idea capture and refinement _(user scope)_',
+    );
+    expect(body).toContain('**utility** — Standalone utilities');
+    expect(body).toContain('_(user scope)_');
+    expect(body).toContain('`~/.agents/skills/`');
+    expect(body).toContain('**workflows**');
+    expect(body).not.toMatch(/\*\*workflows\*\*.*user scope/);
   });
 });

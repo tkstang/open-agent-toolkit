@@ -185,7 +185,7 @@ describe('buildDocsSectionBody', () => {
 
     expect(body).toContain('`docs`');
     expect(body).toContain('MkDocs (Python)');
-    expect(body).toContain('`docs/mkdocs.yml`');
-    expect(body).toContain('**Config:**');
+    expect(body).toContain('**Index file:** `docs/docs/index.md`');
+    expect(body).toContain('**Config:** `docs/mkdocs.yml`');
   });
 });

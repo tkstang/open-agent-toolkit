@@ -116,7 +116,7 @@ export function buildDocsSectionBody(options: DocsInitResolvedOptions): string {
     '',
     `- **Docs root:** \`${options.targetDir}\``,
     `- **Framework:** ${FRAMEWORK_LABELS[options.framework]}`,
-    `- **Index file:** \`${options.targetDir}/${options.framework === 'mkdocs' ? 'mkdocs.yml' : 'docs/index.md'}\``,
+    `- **Index file:** \`${options.targetDir}/docs/index.md\``,
   ];
 
   if (options.framework === 'mkdocs') {
