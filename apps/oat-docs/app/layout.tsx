@@ -8,7 +8,7 @@ export default function Layout({ children }: { children: ReactNode }) {
   return (
     <html lang='en' suppressHydrationWarning>
       <body>
-        <RootProvider>
+        <RootProvider search={{ options: { type: 'static' as const } }}>
           <DocsLayout
             branding={{
               title: 'Oat Docs Documentation',
