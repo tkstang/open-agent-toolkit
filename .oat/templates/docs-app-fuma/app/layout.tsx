@@ -2,7 +2,7 @@ import { DocsLayout } from '@oat/docs-theme';
 import { RootProvider } from 'fumadocs-ui/provider/next';
 import type { ReactNode } from 'react';
 
-import 'fumadocs-ui/style.css';
+import './globals.css';
 import { source } from '@/lib/source';
 
 export default function Layout({ children }: { children: ReactNode }) {

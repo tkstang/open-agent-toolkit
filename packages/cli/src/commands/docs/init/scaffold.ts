@@ -41,12 +41,17 @@ const MKDOCS_TEMPLATE_FILES: TemplateFile[] = [
 const FUMA_TEMPLATE_FILES: TemplateFile[] = [
   { source: '.gitignore', destination: '.gitignore' },
   { source: 'next.config.js', destination: 'next.config.js' },
+  { source: 'postcss.config.mjs', destination: 'postcss.config.mjs' },
   { source: 'source.config.ts', destination: 'source.config.ts' },
   { source: 'tsconfig.json', destination: 'tsconfig.json' },
   { source: 'package.json.template', destination: 'package.json' },
   {
     source: join('lib', 'source.ts'),
     destination: join('lib', 'source.ts'),
+  },
+  {
+    source: join('app', 'globals.css'),
+    destination: join('app', 'globals.css'),
   },
   {
     source: join('app', 'layout.tsx'),
