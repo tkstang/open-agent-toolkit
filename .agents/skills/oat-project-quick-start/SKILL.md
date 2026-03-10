@@ -98,6 +98,7 @@ Update `"$PROJECT_PATH/state.md"` frontmatter:
 - `oat_workflow_origin: native`
 - `oat_phase: discovery`
 - `oat_phase_status: in_progress`
+- `oat_project_state_updated: "{ISO 8601 UTC timestamp}"`
 
 ### Step 2: Capture Discovery (Adaptive Depth)
 
