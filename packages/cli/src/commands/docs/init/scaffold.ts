@@ -162,6 +162,7 @@ function renderTemplate(
       options.format,
     ),
     '{{REPO_NAME}}': repoName,
+    '{{APP_DIR}}': options.targetDir,
   };
 
   return Object.entries(replacements).reduce(

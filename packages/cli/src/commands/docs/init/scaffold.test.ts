@@ -45,9 +45,9 @@ const FUMA_TEMPLATE_FILES: Record<string, string> = {
   "name": "{{PACKAGE_NAME}}",
   "description": "{{SITE_DESCRIPTION}}",
   "scripts": {
-    "predev": "npx oat docs generate-index",
+    "predev": "pnpm -w run cli -- docs generate-index --docs-dir {{APP_DIR}}/docs --output {{APP_DIR}}/index.md",
     "dev": "next dev",
-    "prebuild": "npx oat docs generate-index",
+    "prebuild": "pnpm -w run cli -- docs generate-index --docs-dir {{APP_DIR}}/docs --output {{APP_DIR}}/index.md",
     "build": "next build",
     "docs:lint": "{{DOCS_LINT_SCRIPT}}",
     "docs:format": "{{DOCS_FORMAT_SCRIPT}}",
@@ -232,10 +232,8 @@ describe('scaffoldDocsApp', () => {
       devDependencies: Record<string, string>;
     };
     expect(packageJson.description).toBe('Project documentation site');
-    expect(packageJson.scripts['predev']).toContain('oat docs generate-index');
-    expect(packageJson.scripts['prebuild']).toContain(
-      'oat docs generate-index',
-    );
+    expect(packageJson.scripts['predev']).toContain('docs generate-index');
+    expect(packageJson.scripts['prebuild']).toContain('docs generate-index');
     expect(packageJson.devDependencies['markdownlint-cli2']).toBeUndefined();
     expect(packageJson.devDependencies['prettier']).toBeUndefined();
 
