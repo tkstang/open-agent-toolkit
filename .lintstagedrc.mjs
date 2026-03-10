@@ -1,10 +1,10 @@
 export default {
-  // TypeScript/JavaScript files: lint and format with Biome
-  '*.{ts,tsx,js,jsx}': ['biome check --write --no-errors-on-unmatched'],
+  // TypeScript/JavaScript files: lint with oxlint, format with oxfmt
+  '*.{ts,tsx,js,jsx}': ['oxlint --fix', 'oxfmt'],
 
-  // JSON files: format with Biome
-  '*.json': ['biome format --write --no-errors-on-unmatched'],
+  // JSON files: format with oxfmt
+  '*.json': ['oxfmt'],
 
-  // Markdown files: format with Biome
-  '*.md': ['biome format --write --no-errors-on-unmatched'],
+  // Markdown files: format with oxfmt
+  '*.md': ['oxfmt'],
 };

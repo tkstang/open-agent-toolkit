@@ -1,6 +1,7 @@
 {
   "recommendations": [
-    "biomejs.biome",
+    "nicolo-ribaudo.oxfmt-vscode",
+    "nicolo-ribaudo.oxlint-vscode",
     "mikestead.dotenv",
     "editorconfig.editorconfig"
   ]
