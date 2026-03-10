@@ -1,5 +1,5 @@
 ---
-title: Sync Config (`.oat/sync/config.json`)
+title: "Sync Config (.oat/sync/config.json)"
 description: ""
 ---
 

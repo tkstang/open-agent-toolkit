@@ -1,5 +1,5 @@
 ---
-title: `.oat` Directory Structure
+title: ".oat Directory Structure"
 description: ""
 ---
 

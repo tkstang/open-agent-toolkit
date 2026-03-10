@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "description": "Documentation for Open Agent Toolkit",
   "scripts": {
-    "predev": "npx oat docs generate-index",
+    "predev": "pnpm exec oat docs generate-index",
     "dev": "next dev",
-    "prebuild": "npx oat docs generate-index",
+    "prebuild": "pnpm exec oat docs generate-index",
     "build": "next build",
     "start": "next start",
     "docs:lint": "markdownlint-cli2 'docs/**/*.md'",
@@ -24,6 +24,7 @@
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
+    "@oat/cli": "workspace:*",
     "@types/mdx": "^2.0.13",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
