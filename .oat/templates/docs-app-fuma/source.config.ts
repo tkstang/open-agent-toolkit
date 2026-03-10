@@ -3,8 +3,6 @@ import { defineConfig, defineDocs } from 'fumadocs-mdx/config';
 
 const sourceConfig = createSourceConfig();
 
-export const { search } = sourceConfig;
-
 export const docs = defineDocs({
   dir: sourceConfig.contentDir,
 });

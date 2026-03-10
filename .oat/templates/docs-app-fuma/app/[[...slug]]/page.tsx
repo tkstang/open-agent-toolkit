@@ -23,5 +23,8 @@ export default async function Page(props: {
 }
 
 export function generateStaticParams() {
-  return source.generateParams();
+  return [
+    { slug: undefined },
+    ...source.generateParams().filter((p) => p.slug.length > 0),
+  ];
 }
