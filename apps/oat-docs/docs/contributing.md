@@ -40,9 +40,20 @@ Documentation should ship with the code it explains. This docs app is scaffolded
 
 Every page should have `title` and `description` fields in YAML frontmatter. The `title` is used for sidebar navigation and page headings.
 
+**Syntax:**
+
+```yaml
+---
+title: Page Title
+description: A short summary of the page.
+---
+```
+
 ### Callouts
 
-GitHub-style callout blocks are supported:
+GitHub-style callout blocks are supported.
+
+**Syntax:**
 
 ```text
 > [!NOTE]
@@ -52,20 +63,83 @@ GitHub-style callout blocks are supported:
 > Important caution for the reader.
 ```
 
+**Rendered:**
+
+> [!NOTE]
+> Useful supporting context.
+
+> [!WARNING]
+> Important caution for the reader.
+
 ### Mermaid diagrams
 
-Fenced code blocks with `mermaid` language are rendered as diagrams:
+Fenced code blocks with `mermaid` language are rendered as diagrams.
 
-````markdown
+**Syntax:**
+
+````text
 ```mermaid
 flowchart LR
   A[Read index.md] --> B[Generate nav]
 ```
 ````
 
+**Rendered:**
+
+```mermaid
+flowchart LR
+  A[Read index.md] --> B[Generate nav]
+```
+
+### Tabs
+
+Tab groups use MkDocs-style tab markers. Each `=== "Title"` followed by an indented code block creates a tab.
+
+**Syntax:**
+
+```text
+=== "pnpm"
+
+    pnpm install
+
+=== "npm"
+
+    npm install
+```
+
+**Rendered:**
+
+=== "pnpm"
+
+    pnpm install
+
+=== "npm"
+
+    npm install
+
+=== "yarn"
+
+    yarn install
+
 ### Code blocks
 
-Standard fenced code blocks with syntax highlighting are supported for all common languages.
+Standard fenced code blocks with syntax highlighting are supported for all common languages. Add a `title` to the meta string to display a filename header.
+
+**Syntax:**
+
+````text
+```typescript title="src/example.ts"
+const greeting = 'hello world';
+console.log(greeting);
+```
+````
+
+**Rendered:**
+
+```typescript title="src/example.ts"
+const greeting = 'hello world';
+console.log(greeting);
+```
 
 ## Agent guidance
 
