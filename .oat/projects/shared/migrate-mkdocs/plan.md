@@ -330,7 +330,7 @@ No commit — verification only.
 | p02 | code | pending | - | - |
 | p03 | code | pending | - | - |
 | p04 | code | pending | - | - |
-| final | code | passed | 2026-03-09 | reviews/final-review-2026-03-09.md |
+| final | code | received | 2026-03-10 | reviews/final-review-2026-03-10.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
