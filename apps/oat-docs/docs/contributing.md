@@ -44,7 +44,7 @@ Every page should have `title` and `description` fields in YAML frontmatter. The
 
 GitHub-style callout blocks are supported:
 
-```markdown
+```text
 > [!NOTE]
 > Useful supporting context.
 

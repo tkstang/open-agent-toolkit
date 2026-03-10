@@ -61,7 +61,7 @@ const FUMA_TEMPLATE_FILES: Record<string, string> = {
 `,
   'lib/source.ts': 'export const source = {};\n',
   'app/globals.css':
-    "@import 'tailwindcss';\n@import 'fumadocs-ui/css/black.css';\n@import 'fumadocs-ui/css/preset.css';\n",
+    "@import 'tailwindcss';\n@import 'fumadocs-ui/css/black.css';\n@import 'fumadocs-ui/css/preset.css';\n\n@source '../node_modules/fumadocs-ui/dist/**/*.js';\n",
   'app/layout.tsx':
     "import { DocsLayout } from '@oat/docs-theme';\nexport default function Layout({ children }) { return <DocsLayout branding={{ title: '{{SITE_NAME}}', description: '{{SITE_DESCRIPTION}}' }} tree={{}}>{children}</DocsLayout>; }\n",
   'app/[[...slug]]/page.tsx':
