@@ -12,7 +12,6 @@ Documentation should ship with the code it explains. This docs app is scaffolded
 - Every documentation directory must contain an `index.md`.
 - Each `index.md` must include a `## Contents` section.
 - The `## Contents` section is the machine-readable local map for sibling pages and child directories.
-- `overview.md` is deprecated. Replace it with `index.md` or a descriptive leaf page when the directory already has an `index.md`.
 
 ## Local workflow
 
