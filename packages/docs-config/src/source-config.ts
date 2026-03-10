@@ -1,4 +1,4 @@
-import { remarkMermaid, remarkTabs } from '@oat/docs-transforms';
+import { remarkLinks, remarkMermaid, remarkTabs } from '@oat/docs-transforms';
 import type { Root } from 'mdast';
 import { remarkAlert } from 'remark-github-blockquote-alert';
 import type { Plugin } from 'unified';
@@ -16,7 +16,7 @@ export interface SourceConfigResult {
 
 export function createSourceConfig(): SourceConfigResult {
   return {
-    remarkPlugins: [remarkTabs, remarkAlert, remarkMermaid],
+    remarkPlugins: [remarkLinks, remarkTabs, remarkAlert, remarkMermaid],
     contentDir: './docs',
     search: createSearchConfig(),
   };
