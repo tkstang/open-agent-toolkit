@@ -16,92 +16,45 @@ Documentation should ship with the code it explains. This docs app is scaffolded
 
 ## Local workflow
 
-1. Install Python dependencies:
+1. Start the dev server from the repo root:
 
    ```bash
-   pnpm docs:setup
+   pnpm dev:docs
    ```
 
-2. Run the live preview:
+2. Run Markdown linting:
 
    ```bash
-   pnpm docs:dev
+   pnpm --filter oat-docs docs:lint
    ```
 
-3. Run Markdown formatting and linting as configured for this docs app.
+3. Run Markdown formatting:
 
-## Installed plugins
+   ```bash
+   pnpm --filter oat-docs docs:format
+   ```
 
-### `search`
+## Supported Markdown features
 
-Adds full-text search to the generated docs site so readers can discover content without browsing the full tree.
+### Frontmatter
 
-### `git-revision-date`
+Every page should have `title` and `description` fields in YAML frontmatter. The `title` is used for sidebar navigation and page headings.
 
-Shows file revision dates using Git history, which helps surface stale pages during maintenance reviews.
+### Callouts
 
-### `macros`
-
-Enables variable-style content reuse and small computed fragments inside MkDocs pages.
-
-### `glightbox`
-
-Adds lightbox behavior for linked images so diagrams and screenshots can be expanded in-place.
-
-### `callouts`
-
-Supports GitHub-style callout blocks in Markdown for note, warning, and tip content.
-
-## Enabled Markdown extensions
-
-### `admonition`
-
-Supports MkDocs callout syntax:
+GitHub-style callout blocks are supported:
 
 ```markdown
 > [!NOTE]
-Useful supporting context.
+> Useful supporting context.
+
+> [!WARNING]
+> Important caution for the reader.
 ```
 
-### `attr_list`
+### Mermaid diagrams
 
-Lets you attach attributes such as classes or IDs to Markdown elements.
-
-### `md_in_html`
-
-Allows Markdown content inside raw HTML blocks when layout needs extra structure.
-
-### `nl2br`
-
-Treats single newlines as line breaks in rendered output.
-
-### `pymdownx.caret`, `pymdownx.mark`, `pymdownx.tilde`
-
-Adds inline formatting helpers for insertions, highlights, and strikethrough-like syntax.
-
-### `pymdownx.details`
-
-Supports collapsible details blocks for optional reference content.
-
-### `pymdownx.emoji`
-
-Enables emoji shortcodes and richer emoji rendering.
-
-### `pymdownx.inlinehilite`
-
-Adds inline code highlighting helpers for short syntax examples.
-
-### `pymdownx.highlight`
-
-Provides fenced code block highlighting.
-
-### `pymdownx.snippets`
-
-Supports file and snippet inclusion patterns for reusable documentation fragments.
-
-### `pymdownx.superfences`
-
-Extends fenced code support and enables custom fences such as Mermaid:
+Fenced code blocks with `mermaid` language are rendered as diagrams:
 
 ````markdown
 ```mermaid
@@ -110,16 +63,12 @@ flowchart LR
 ```
 ````
 
-### `pymdownx.tabbed`
+### Code blocks
 
-Supports tabbed content blocks for related workflows or platform variants.
-
-### `toc`
-
-Adds table-of-contents anchors and permalinks for headings.
+Standard fenced code blocks with syntax highlighting are supported for all common languages.
 
 ## Agent guidance
 
 - Treat `index.md` plus its `## Contents` section as the local discovery source of truth.
 - Prefer linking to source files and commands explicitly when documenting behavior.
-- When adding a new plugin or extension, update this guide with what it does and how to use it.
+- Run `pnpm exec oat docs generate-index` to regenerate the docs surface index after adding or removing pages.
