@@ -1,5 +1,6 @@
-import { rm } from 'node:fs/promises';
-import { join, relative, resolve } from 'node:path';
+import { createHash } from 'node:crypto';
+import { mkdir, rm, writeFile } from 'node:fs/promises';
+import { dirname, join, relative, resolve } from 'node:path';
 
 import { copyDirectory, copySingleFile, createSymlink } from '@fs/io';
 import { computeContentHash } from '@manifest/hash';
@@ -46,10 +47,12 @@ async function toManifestEntry(
   const { canonicalPath, providerPath } = resolveManifestPaths(entry);
   const contentHash =
     strategy === 'copy'
-      ? await computeContentHash(
-          resolve(entry.canonical.canonicalPath),
-          entry.canonical.isFile,
-        )
+      ? entry.renderedContent !== undefined
+        ? createHash('sha256').update(entry.renderedContent).digest('hex')
+        : await computeContentHash(
+            resolve(entry.canonical.canonicalPath),
+            entry.canonical.isFile,
+          )
       : null;
 
   return {
@@ -115,7 +118,17 @@ async function applyEntry(
       if (planEntry.operation === 'update_copy') {
         await rm(planEntry.providerPath, { recursive: true, force: true });
       }
-      if (planEntry.canonical.isFile) {
+      if (
+        planEntry.canonical.isFile &&
+        planEntry.renderedContent !== undefined
+      ) {
+        await mkdir(dirname(planEntry.providerPath), { recursive: true });
+        await writeFile(
+          planEntry.providerPath,
+          planEntry.renderedContent,
+          'utf8',
+        );
+      } else if (planEntry.canonical.isFile) {
         await copySingleFile(
           planEntry.canonical.canonicalPath,
           planEntry.providerPath,
