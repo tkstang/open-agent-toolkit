@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t02
+oat_current_task_id: p01-t03
 oat_generated: false
 ---
 
@@ -26,13 +26,13 @@ oat_generated: false
 
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
-| Phase 1: Directory Structure and File Moves                        | in_progress | 5     | 1/5       |
+| Phase 1: Directory Structure and File Moves                        | in_progress | 5     | 2/5       |
 | Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | pending     | 7     | 0/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 1/19 tasks completed
+**Total:** 2/19 tasks completed
 
 ---
 
@@ -74,8 +74,37 @@ oat_generated: false
 
 ### Task p01-t02: Move Provider Interop Files to guide/provider-sync/
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 23254255
+
+**Outcome (required):**
+
+- Moved the provider interop docs into the new `guide/provider-sync/` section.
+- Moved operational safety guidance into `contributing/hooks-and-safety.md`.
+- Preserved file history with `git mv` so later rewrites still track back to the original docs.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/provider-sync/index.md` - moved provider-sync section landing page
+- `apps/oat-docs/docs/guide/provider-sync/scope-and-surface.md` - moved scope/surface doc
+- `apps/oat-docs/docs/guide/provider-sync/commands.md` - moved command reference doc
+- `apps/oat-docs/docs/guide/provider-sync/providers.md` - moved provider-specific behavior doc
+- `apps/oat-docs/docs/guide/provider-sync/manifest-and-drift.md` - moved manifest/drift doc
+- `apps/oat-docs/docs/guide/provider-sync/config.md` - moved sync config doc
+- `apps/oat-docs/docs/contributing/hooks-and-safety.md` - moved safety guidance into contributing
+
+**Verification:**
+
+- Run: `find apps/oat-docs/docs/guide/provider-sync -maxdepth 1 -type f | sort`
+- Result: pass
+- Run: `test -f apps/oat-docs/docs/contributing/hooks-and-safety.md && echo PASS`
+- Result: pass
+- Run: `find apps/oat-docs/docs/cli/provider-interop -maxdepth 1 -type f | sort`
+- Result: pass (empty)
+
+**Notes / Decisions:**
+
+- Left the now-empty `apps/oat-docs/docs/cli/provider-interop/` directory in place for later stale-path cleanup, matching the plan.
 
 ---
 
