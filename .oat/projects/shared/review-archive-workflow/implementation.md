@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t03
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -26,16 +26,16 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 3     | 2/3       |
-| Phase 2 | pending     | 4     | 0/4       |
+| Phase 1 | complete    | 3     | 3/3       |
+| Phase 2 | in_progress | 4     | 0/4       |
 
-**Total:** 2/7 tasks completed
+**Total:** 3/7 tasks completed
 
 ---
 
 ## Phase 1: Review Lifecycle Archiving
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-11
 
 ### Task p01-t01: Update review receive workflows to archive consumed artifacts
@@ -62,8 +62,8 @@ oat_generated: false
 
 ### Task p01-t03: Align review-provider and review-path documentation with the new contract
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** `chore(p01-t03): document active vs archived review paths`
 
 **Notes:**
 
@@ -73,12 +73,12 @@ oat_generated: false
 
 ## Phase 2: Init Defaults And Verification
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-11
 
 ### Task p02-t01: Change init and local-path defaults to ignore only archived reviews
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
@@ -125,6 +125,7 @@ oat_generated: false
 - **2026-03-11:** Began implementation with `p01-t01`; updating receive workflows to archive consumed review artifacts and keep lifecycle references truthful.
 - **2026-03-11:** Completed `p01-t01`; receive skills now select only active review artifacts, archive consumed reviews, and point lifecycle references at archived paths.
 - **2026-03-11:** Completed `p01-t02`; PR and completion skills now archive stray active reviews before continuing and only treat `reviews/archived/` as local-only by default.
+- **2026-03-11:** Completed `p01-t03`; provider-side review instructions and repo reference docs now describe `reviews/` as the active tracked location and `reviews/archived/` as local-only history.
 
 ## Deviations from Plan
 
@@ -136,10 +137,10 @@ oat_generated: false
 
 Track test execution during implementation.
 
-| Phase | Tests Run                                                           | Passed | Failed | Coverage |
-| ----- | ------------------------------------------------------------------- | ------ | ------ | -------- |
-| 1     | `rg` consistency checks on receive/PR/completion skill instructions | yes    | 0      | n/a      |
-| 2     | -                                                                   | -      | -      | -        |
+| Phase | Tests Run                                                      | Passed | Failed | Coverage |
+| ----- | -------------------------------------------------------------- | ------ | ------ | -------- |
+| 1     | `rg` consistency checks on review workflow instruction updates | yes    | 0      | n/a      |
+| 2     | -                                                              | -      | -      | -        |
 
 ## Final Summary (for PR/docs)
 
@@ -159,6 +160,7 @@ Track test execution during implementation.
 
 - `rg` consistency checks on updated receive-skill archive guidance
 - `rg` consistency checks on progress/final PR and completion archive preflights
+- `rg` consistency checks on provider-side review path documentation
 
 **Design deltas (if any):**
 
