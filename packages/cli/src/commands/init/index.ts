@@ -329,7 +329,7 @@ function createDependencies(): InitDependencies {
     runGuidedSetup: runGuidedSetupImpl,
     runToolPacks: runInitToolsWithDefaults,
     async runProviderSync(projectRoot: string) {
-      execSync('pnpm run cli -- sync --scope project', {
+      execSync('oat sync --scope project', {
         cwd: projectRoot,
         stdio: 'inherit',
       });
