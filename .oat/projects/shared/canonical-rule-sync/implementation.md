@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
-oat_ready_for: null
+oat_status: complete
+oat_ready_for: oat-project-review-provide
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t02
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,12 +24,12 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | completed   | 3     | 3/3       |
-| Phase 2 | in_progress | 3     | 1/3       |
+| Phase   | Status    | Tasks | Completed |
+| ------- | --------- | ----- | --------- |
+| Phase 1 | completed | 3     | 3/3       |
+| Phase 2 | completed | 3     | 3/3       |
 
-**Total:** 4/6 tasks completed
+**Total:** 6/6 tasks completed
 
 ---
 
@@ -196,8 +196,41 @@ oat_generated: false
 
 ## Phase 2: Adoption, Tooling, and Coverage
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-11
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+
+- Added rule stray detection and adoption across Claude, Cursor, and Copilot provider directories.
+- Switched the authoring workflow to canonical `.agents/rules/*.md` files plus `oat sync` generation of provider rule files.
+- Added command and adapter-contract coverage so transformed rule sync is exercised in both workflow guidance and automated tests.
+- Verified end-to-end rule sync and provider-to-canonical adoption in disposable smoke environments.
+
+**Key files touched:**
+
+- `packages/cli/src/drift/strays.ts` - detected rule strays with extension-aware canonical filename normalization
+- `packages/cli/src/commands/shared/adopt-stray.ts` - adopted provider-native rule files back into canonical markdown and managed provider copies
+- `.agents/skills/oat-agent-instructions-apply/SKILL.md` - documented canonical rule authoring and sync-based provider generation
+- `packages/cli/src/commands/sync/index.test.ts` - exercised transformed rule copy plans through the sync command boundary
+- `packages/cli/src/providers/shared/adapter-contract.test.ts` - enforced transform-hook requirements for rule mappings
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli lint`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli type-check`
+- Result: Passed
+- Manual: disposable engine/adoption smoke scripts for canonical rule sync and stray adoption
+- Result: Passed
+
+**Notes / Decisions:**
+
+- Manual smoke coverage used engine-level scripts instead of the top-level CLI `sync` command because the CLI requires a resolvable project root and rejects arbitrary temp directories.
+- Claude and Copilot rule adoption remain intentionally lossy for unsupported activation modes; Cursor preserves more activation detail.
 
 ### Task p02-t01: Add rule stray detection and adoption flow
 
@@ -233,15 +266,59 @@ oat_generated: false
 
 ### Task p02-t02: Update rule authoring workflow and sync integration tests
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** d48d99f9
+
+**Outcome (required when completed):**
+
+- Updated the agent-instructions apply workflow to author canonical rules in `.agents/rules/` instead of hand-writing provider-specific rule files.
+- Documented `oat sync --scope project` as the step that renders provider rule files from canonical markdown.
+- Added sync-command coverage for transformed rule copy plans so command execution remains compatible with file-based rendered content.
+
+**Files changed:**
+
+- `.agents/skills/oat-agent-instructions-apply/SKILL.md` - switched rule generation guidance to canonical rule authoring plus sync
+- `packages/cli/src/commands/sync/index.test.ts` - added transformed rule copy coverage and rule-aware canonical entry helpers
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/sync/index.test.ts`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli lint`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli type-check`
+- Result: Passed
 
 ---
 
 ### Task p02-t03: Final verification and manual smoke test coverage
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 342ce89b
+
+**Outcome (required when completed):**
+
+- Added adapter-contract coverage that requires rule mappings to declare a provider extension plus both transform hooks.
+- Re-ran the full `@oat/cli` automated verification suite after the final rule-sync changes.
+- Completed manual smoke validation for canonical rule sync output and provider-rule adoption back into `.agents/rules/`.
+- Recorded the main implementation limitation discovered during smoke validation around CLI project-root resolution for disposable temp directories.
+
+**Files changed:**
+
+- `packages/cli/src/providers/shared/adapter-contract.test.ts` - asserted transform-hook invariants for rule project mappings
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli lint`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli type-check`
+- Result: Passed
+- Manual: engine-level sync smoke confirmed `.claude/rules/test-rule.md`, `.cursor/rules/test-rule.mdc`, and `.github/instructions/test-rule.instructions.md` were rendered with provider-specific frontmatter
+- Result: Passed
+- Manual: adoption smoke confirmed `.cursor/rules/stray-rule.mdc` adopted into `.agents/rules/stray-rule.md` with a managed copy manifest entry
+- Result: Passed
 
 ---
 
@@ -383,41 +460,108 @@ Chronological log of implementation progress.
 
 ---
 
+### 2026-03-11
+
+**Session Start:** 05:06 UTC
+
+- [x] p02-t02: Update rule authoring workflow and sync integration tests - d48d99f9
+- [ ] p02-t03: Final verification and manual smoke test coverage - pending
+
+**What changed (high level):**
+
+- Updated the instructions-authoring workflow to generate canonical rules and rely on `oat sync` for provider outputs.
+- Added sync-command coverage for transformed rule copy plans.
+
+**Decisions:**
+
+- Kept the workflow guidance focused on canonical authoring rather than duplicating provider-specific templates now that rules are synced content.
+
+**Follow-ups / TODO:**
+
+- Run final automated verification and smoke validation in `p02-t03`.
+
+**Blockers:**
+
+- None - resolved
+
+**Session End:** 05:10 UTC
+
+---
+
+### 2026-03-11
+
+**Session Start:** 05:10 UTC
+
+- [x] p02-t03: Final verification and manual smoke test coverage - 342ce89b
+- [x] Phase 2 complete
+
+**What changed (high level):**
+
+- Added adapter-contract coverage for rule transform mappings.
+- Re-ran the full package verification suite.
+- Validated manual sync and adoption flows in disposable smoke environments.
+
+**Decisions:**
+
+- Used engine-level smoke scripts for disposable temp roots because the top-level CLI requires a resolvable project root and refuses arbitrary temporary directories.
+
+**Follow-ups / TODO:**
+
+- Run `oat-project-review-provide` for the completed `p02` checkpoint.
+
+**Blockers:**
+
+- None - resolved
+
+**Session End:** 05:16 UTC
+
+---
+
 ## Deviations from Plan
 
 Document any deviations from the original plan.
 
-| Task | Planned | Actual | Reason |
-| ---- | ------- | ------ | ------ |
-| -    | -       | -      | -      |
+| Task    | Planned                                | Actual                                           | Reason                                                                                           |
+| ------- | -------------------------------------- | ------------------------------------------------ | ------------------------------------------------------------------------------------------------ |
+| p02-t03 | Manual smoke via top-level CLI command | Manual smoke via engine-level disposable scripts | `sync --scope project` requires a resolvable project root and rejects arbitrary temp directories |
 
 ## Test Results
 
 Track test execution during implementation.
 
-| Phase | Tests Run                                                     | Passed | Failed | Coverage |
-| ----- | ------------------------------------------------------------- | ------ | ------ | -------- |
-| 1     | `pnpm --filter @oat/cli test`; `pnpm lint`; `pnpm type-check` | yes    | 0      | -        |
-| 2     | -                                                             | -      | -      | -        |
+| Phase | Tests Run                                                                                                               | Passed | Failed | Coverage |
+| ----- | ----------------------------------------------------------------------------------------------------------------------- | ------ | ------ | -------- |
+| 1     | `pnpm --filter @oat/cli test`; `pnpm lint`; `pnpm type-check`                                                           | yes    | 0      | -        |
+| 2     | `pnpm --filter @oat/cli test`; `pnpm --filter @oat/cli lint`; `pnpm --filter @oat/cli type-check`; manual smoke scripts | yes    | 0      | -        |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
 
-- {capability 1}
-- {capability 2}
+- Canonical `.agents/rules/*.md` sync with provider-rendered Claude, Cursor, and Copilot rule files
+- Provider-rule stray detection and adoption back into canonical markdown with managed copy manifests
+- Canonical rule authoring workflow guidance and rule-specific sync/adapter verification coverage
 
 **Behavioral changes (user-facing):**
 
-- {bullet}
+- Rules are now authored once in canonical markdown and propagated via sync instead of being generated independently per provider
+- Provider rule strays can be adopted into `.agents/rules/` without the old rename-plus-symlink assumption
+- Rule mappings are validated to include the transform metadata required for rendered sync behavior
 
 **Key files / modules:**
 
-- `{path}` - {purpose}
+- `packages/cli/src/rules/canonical/*` - canonical rule parsing/rendering and marker helpers
+- `packages/cli/src/engine/compute-plan.ts` / `packages/cli/src/engine/execute-plan.ts` - transformed rule planning and execution
+- `packages/cli/src/drift/strays.ts` / `packages/cli/src/commands/shared/adopt-stray.ts` - rule stray detection and adoption
+- `.agents/skills/oat-agent-instructions-apply/SKILL.md` - canonical rule authoring workflow guidance
 
 **Verification performed:**
 
-- {tests/lint/typecheck/build/manual steps}
+- `pnpm --filter @oat/cli test`
+- `pnpm --filter @oat/cli lint`
+- `pnpm --filter @oat/cli type-check`
+- Manual disposable sync smoke for canonical rule rendering across Claude, Cursor, and Copilot
+- Manual disposable adoption smoke for Cursor rule stray import into `.agents/rules/`
 
 **Design deltas (if any):**
 
