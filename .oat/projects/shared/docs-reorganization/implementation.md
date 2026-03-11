@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t01
+oat_current_task_id: p01-t02
 oat_generated: false
 ---
 
@@ -24,27 +24,51 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase                                                              | Status  | Tasks | Completed |
-| ------------------------------------------------------------------ | ------- | ----- | --------- |
-| Phase 1: Directory Structure and File Moves                        | pending | 5     | 0/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | pending | 7     | 0/7       |
-| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending | 3     | 0/3       |
-| Phase 4: Visual Elements and Content Enhancements                  | pending | 2     | 0/2       |
-| Phase 5: Final Verification                                        | pending | 2     | 0/2       |
+| Phase                                                              | Status      | Tasks | Completed |
+| ------------------------------------------------------------------ | ----------- | ----- | --------- |
+| Phase 1: Directory Structure and File Moves                        | in_progress | 5     | 1/5       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | pending     | 7     | 0/7       |
+| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
+| Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
+| Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 0/19 tasks completed
+**Total:** 1/19 tasks completed
 
 ---
 
 ## Phase 1: Directory Structure and File Moves
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-11
 
 ### Task p01-t01: Scaffold New Directory Structure
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** a0269c87
+
+**Outcome (required):**
+
+- Added the new `guide/` and `contributing/` section roots required by the rebased plan.
+- Created non-conflicting placeholder `index.md` files for `guide/`, `guide/documentation/`, `guide/workflow/`, and `contributing/`.
+- Kept the placeholders minimal so later move tasks can replace or rewrite section content cleanly.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/index.md` - added the user-guide root placeholder
+- `apps/oat-docs/docs/guide/documentation/index.md` - added the documentation-section placeholder
+- `apps/oat-docs/docs/guide/workflow/index.md` - added the workflow-section placeholder
+- `apps/oat-docs/docs/contributing/index.md` - added the contributor-guide root placeholder
+
+**Verification:**
+
+- Run: `find apps/oat-docs/docs -type d | sort`
+- Result: pass
+- Run: `find apps/oat-docs/docs/guide apps/oat-docs/docs/contributing -maxdepth 3 -type f | sort`
+- Result: pass
+
+**Notes / Decisions:**
+
+- Did not create placeholder `guide/provider-sync/index.md`, `guide/skills/index.md`, or `guide/ideas/index.md` because later `git mv` tasks supply those files and the artifact review explicitly removed the create-then-overwrite pattern.
 
 ---
 
@@ -210,6 +234,7 @@ oat_generated: false
 Chronological log of implementation progress.
 
 - 2026-03-11: Rebased project artifacts against post-plan merged work. Added lightweight `design.md` and refreshed `discovery.md` and `plan.md` for the current Fumadocs docs app. No implementation tasks completed yet; next task remains `p01-t01`.
+- 2026-03-11: Received `artifact-plan-review-2026-03-11.md` for the rebased plan. Applied the approved artifact-only edits to resolve placeholder overwrite conflicts and make legacy workflow/project index handling explicit. No implementation tasks were added.
 
 ---
 

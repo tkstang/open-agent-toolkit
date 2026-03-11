@@ -5,7 +5,7 @@ oat_blockers: []
 oat_last_updated: 2026-03-11
 oat_phase: plan
 oat_phase_status: complete
-oat_plan_hill_phases: []
+oat_plan_hill_phases: ['p05']
 oat_plan_source: quick
 oat_import_reference: null
 oat_import_source_path: null
@@ -98,16 +98,13 @@ apps/oat-docs/docs/
 **Files:**
 
 - Create: `apps/oat-docs/docs/guide/index.md` (placeholder)
-- Create: `apps/oat-docs/docs/guide/provider-sync/index.md` (placeholder)
 - Create: `apps/oat-docs/docs/guide/documentation/index.md` (placeholder)
 - Create: `apps/oat-docs/docs/guide/workflow/index.md` (placeholder)
-- Create: `apps/oat-docs/docs/guide/skills/index.md` (placeholder)
-- Create: `apps/oat-docs/docs/guide/ideas/index.md` (placeholder)
 - Create: `apps/oat-docs/docs/contributing/index.md` (placeholder)
 
 **Step 1: Create directories and placeholder landing pages**
 
-Create every new directory plus a minimal `index.md` containing frontmatter, a heading, and `## Contents` so the docs contract remains valid throughout the move.
+Create every new directory plus the placeholder `index.md` files that are not immediately supplied by a later `git mv`. `guide/provider-sync/index.md`, `guide/skills/index.md`, and `guide/ideas/index.md` should be created by their later move tasks instead of being scaffolded and overwritten here.
 
 **Step 2: Verify**
 
@@ -165,6 +162,7 @@ git commit -m "docs(p01-t02): elevate provider sync docs into the user guide"
 - Move: `apps/oat-docs/docs/projects/artifacts.md` → `apps/oat-docs/docs/guide/workflow/artifacts.md`
 - Move: `apps/oat-docs/docs/projects/state-machine.md` → `apps/oat-docs/docs/guide/workflow/state-machine.md`
 - Move: `apps/oat-docs/docs/cli/repo-analysis.md` → `apps/oat-docs/docs/guide/workflow/repo-analysis.md`
+- Retain temporarily as legacy stubs/source material: `apps/oat-docs/docs/workflow/index.md`, `apps/oat-docs/docs/projects/index.md`
 
 **Step 1: Move files**
 
@@ -172,7 +170,7 @@ Use `git mv` for each file.
 
 **Step 2: Preserve cleanup sequencing**
 
-Do not remove the legacy `workflow/`, `projects/`, or `cli/` directories yet. Old-path cleanup happens after Phase 3 confirms repo-wide references are updated.
+Do not remove the legacy `workflow/`, `projects/`, or `cli/` directories yet. Keep `workflow/index.md` and `projects/index.md` in place as temporary legacy stubs/source material until `guide/workflow/index.md` has absorbed their introductory content and Phase 3 confirms repo-wide references are updated.
 
 **Step 3: Verify**
 
@@ -411,8 +409,8 @@ Each section must satisfy the `## Contents` contract and reflect the new merged 
 Specific requirements:
 
 - `guide/provider-sync/index.md`: reflect canonical rule sync/adoption and cross-link to hooks/safety contributor material.
-- `guide/workflow/index.md`: merge workflow and project intros; include `repo-analysis.md` in `## Contents`.
-- `guide/documentation/index.md`: route readers into docs app quickstart, commands, and docs workflows.
+- `guide/workflow/index.md`: merge the intro and routing content from the legacy `workflow/index.md` and `projects/index.md`, then include `repo-analysis.md` in `## Contents`.
+- `guide/documentation/index.md`: this page starts from the p01-t01 placeholder; rewrite it to route readers into docs app quickstart, commands, and docs workflows.
 - `guide/skills/index.md`: add a short "Key Skills by Use Case" section before the full catalog.
 - `reference/index.md`: slim it down to durable shared references after contributor material moves out.
 
@@ -662,16 +660,16 @@ git commit -m "docs(p05-t02): fix docs quality gate failures"
 
 ## Reviews
 
-| Scope  | Type     | Status   | Date       | Artifact                                     |
-| ------ | -------- | -------- | ---------- | -------------------------------------------- |
-| design | artifact | pending  | -          | -                                            |
-| plan   | artifact | received | 2026-03-11 | `reviews/artifact-plan-review-2026-03-11.md` |
-| p01    | code     | pending  | -          | -                                            |
-| p02    | code     | pending  | -          | -                                            |
-| p03    | code     | pending  | -          | -                                            |
-| p04    | code     | pending  | -          | -                                            |
-| p05    | code     | pending  | -          | -                                            |
-| final  | code     | pending  | -          | -                                            |
+| Scope  | Type     | Status          | Date       | Artifact                                              |
+| ------ | -------- | --------------- | ---------- | ----------------------------------------------------- |
+| design | artifact | pending         | -          | -                                                     |
+| plan   | artifact | fixes_completed | 2026-03-11 | `reviews/archived/artifact-plan-review-2026-03-11.md` |
+| p01    | code     | pending         | -          | -                                                     |
+| p02    | code     | pending         | -          | -                                                     |
+| p03    | code     | pending         | -          | -                                                     |
+| p04    | code     | pending         | -          | -                                                     |
+| p05    | code     | pending         | -          | -                                                     |
+| final  | code     | pending         | -          | -                                                     |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -704,4 +702,4 @@ Ready for implementation against the current docs app.
 
 - Discovery: `discovery.md`
 - Design: `design.md`
-- Plan review: `reviews/artifact-plan-review-2026-03-10.md`
+- Plan review: `reviews/archived/artifact-plan-review-2026-03-11.md`
