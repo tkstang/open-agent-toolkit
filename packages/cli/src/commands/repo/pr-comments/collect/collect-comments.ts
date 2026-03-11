@@ -90,9 +90,10 @@ export const defaultCollectDependencies: CollectDependencies = {
     ]);
     const url = stdout.trim();
     // Handle SSH (git@github.com:owner/name.git) and HTTPS (https://github.com/owner/name.git)
-    const sshMatch = url.match(/git@[^:]+:([^/]+\/[^/.]+)/);
+    // Allow dots in repo names (e.g., owner/repo.name)
+    const sshMatch = url.match(/git@[^:]+:([^/]+\/[^/]+?)(?:\.git)?$/);
     if (sshMatch?.[1]) return sshMatch[1];
-    const httpsMatch = url.match(/github\.com\/([^/]+\/[^/.]+)/);
+    const httpsMatch = url.match(/github\.com\/([^/]+\/[^/]+?)(?:\.git)?$/);
     if (httpsMatch?.[1]) return httpsMatch[1];
     throw new Error(
       `Could not parse repository owner/name from git remote URL: ${url}`,
