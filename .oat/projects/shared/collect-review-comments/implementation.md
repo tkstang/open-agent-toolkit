@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: null
+oat_current_task_id: p01-t08
 oat_generated: false
 ---
 
@@ -24,17 +24,17 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status   | Tasks | Completed |
-| ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 7     | 7/7       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | in_progress | 10    | 7/10      |
 
-**Total:** 7/7 tasks completed
+**Total:** 7/10 tasks completed
 
 ---
 
 ## Phase 1: Core Commands
 
-**Status:** complete
+**Status:** in_progress
 **Started:** 2026-03-11
 
 ### Phase Summary
@@ -156,6 +156,7 @@ oat_generated: false
 - **2026-03-11:** All 4 tasks implemented in a single commit (d766175). Built all files, verified type-check/lint/build pass, pushed to feature branch.
 - **2026-03-11:** Final code review received — 3 fix tasks added (p01-t05, p01-t06, p01-t07).
 - **2026-03-11:** All 3 review fix tasks completed (18cf5c5f, f24a06f3, 7fded065). Type-check + build pass.
+- **2026-03-11:** Final re-review received — 3 additional fix tasks added (p01-t08, p01-t09, p01-t10).
 
 ---
 
@@ -225,6 +226,27 @@ Track test execution during implementation.
 **Fix tasks completed:** p01-t05 (18cf5c5f), p01-t06 (f24a06f3), p01-t07 (7fded065)
 
 **Next:** Request re-review via `oat-project-review-provide code final`, then `oat-project-review-receive` to reach `passed`.
+
+### Review Received: final (re-review)
+
+**Date:** 2026-03-11
+**Review artifact:** reviews/code-review-final-recheck-2026-03-11.md
+
+**Findings:**
+
+- Critical: 0
+- Important: 2
+- Medium: 0
+- Minor: 1
+
+**New tasks added:** p01-t08, p01-t09, p01-t10
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ## References
 

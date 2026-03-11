@@ -208,13 +208,103 @@ git commit -m "fix(p01-t07): extend bot detection and trivial-comment filtering 
 
 ---
 
+### Task p01-t08: (review) Update stale root help snapshot
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: The new `repo` command changed root help output, but the snapshot in `help-snapshots.test.ts` was not updated. `pnpm --filter @oat/cli test` fails on "root --help matches snapshot".
+Location: `help-snapshots.test.ts:26`
+
+**Step 2: Implement fix**
+
+- Run the test suite with snapshot update flag to regenerate the snapshot, OR manually update the expected output string in the test to include the new `repo` command
+- Verify the updated snapshot matches the actual `--help` output
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test`
+Expected: All tests pass, including "root --help matches snapshot"
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "fix(p01-t08): update root help snapshot to include repo command"
+```
+
+---
+
+### Task p01-t09: (review) Fix Markdown fenced code block corruption
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/repo/pr-comments/collect/collect-comments.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Monthly Markdown output wraps each comment body in a raw triple-backtick fence. GitHub review comments commonly contain fenced code blocks or ` ```suggestion ` blocks, which terminate the outer fence early and corrupt the `{month}.md`.
+Location: `collect-comments.ts:385`
+
+**Step 2: Implement fix**
+
+- Replace the triple-backtick fence in `renderMarkdown()` with a four-backtick fence (` ```` `) so that inner triple-backtick content does not terminate the outer fence
+- This follows the CommonMark spec: a code fence can be opened with N backticks, and only closed by a fence of >= N backticks
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli type-check`
+Run: `pnpm build`
+Expected: No type errors, build succeeds
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/repo/pr-comments/collect/collect-comments.ts
+git commit -m "fix(p01-t09): use four-backtick fence to prevent code block corruption in Markdown output"
+```
+
+---
+
+### Task p01-t10: (review) Fix repo name regex to allow dots
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/repo/pr-comments/collect/collect-comments.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Default repo resolution regexes stop at `.` so remotes like `owner/repo.name.git` resolve to `owner/repo`, targeting the wrong repository.
+Location: `collect-comments.ts:93`, `collect-comments.ts:95`
+
+**Step 2: Implement fix**
+
+- Update both regex capture groups to allow dots in the repo name portion (e.g., `[^/]+` instead of `[^/.]+` for the name segment, while still stripping the trailing `.git`)
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli type-check`
+Expected: No type errors
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/repo/pr-comments/collect/collect-comments.ts
+git commit -m "fix(p01-t10): allow dots in repo name during git remote resolution"
+```
+
+---
+
 ## Reviews
 
-| Scope | Type     | Status          | Date       | Artifact                                |
-| ----- | -------- | --------------- | ---------- | --------------------------------------- |
-| plan  | artifact | pending         | -          | -                                       |
-| p01   | code     | pending         | -          | -                                       |
-| final | code     | fixes_completed | 2026-03-11 | reviews/code-review-final-2026-03-11.md |
+| Scope | Type     | Status      | Date       | Artifact                                        |
+| ----- | -------- | ----------- | ---------- | ----------------------------------------------- |
+| plan  | artifact | pending     | -          | -                                               |
+| p01   | code     | pending     | -          | -                                               |
+| final | code     | fixes_added | 2026-03-11 | reviews/code-review-final-recheck-2026-03-11.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -224,9 +314,9 @@ git commit -m "fix(p01-t07): extend bot detection and trivial-comment filtering 
 
 **Summary:**
 
-- Phase 1: 7 tasks — Command group structure, collect command with GraphQL, triage command, verification, 3 review fix tasks
+- Phase 1: 10 tasks — Command group structure, collect command with GraphQL, triage command, verification, 6 review fix tasks
 
-**Total: 7 tasks**
+**Total: 10 tasks**
 
 Review fix tasks pending execution.
 
