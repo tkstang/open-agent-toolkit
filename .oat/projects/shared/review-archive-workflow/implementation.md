@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t05
+oat_current_task_id: p02-t06
 oat_generated: false
 ---
 
@@ -27,9 +27,9 @@ oat_generated: false
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | complete    | 3     | 3/3       |
-| Phase 2 | in_progress | 6     | 4/6       |
+| Phase 2 | in_progress | 6     | 5/6       |
 
-**Total:** 7/9 tasks completed
+**Total:** 8/9 tasks completed
 
 ---
 
@@ -118,12 +118,29 @@ oat_generated: false
 
 ### Task p02-t05: Leave HiLL checkpoints unset until implementation confirms them
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** `85f95c83`
 
-**Notes:**
+**Outcome (required):**
 
-- Replace the temporary `[]` placeholder with an actually-unconfirmed state so planning artifacts do not imply a checkpoint choice has already been made.
+- Planning guidance now defers HiLL checkpoint selection without seeding a placeholder `oat_plan_hill_phases` value.
+- The shared plan-writing contract now treats `oat_plan_hill_phases` as optional until implementation confirms it.
+- Implementation guidance now treats a missing checkpoint field as valid only on the first run and as bookkeeping drift on later resumes.
+
+**Files changed:**
+
+- `.agents/skills/oat-project-plan/SKILL.md` - removed the planning-time placeholder requirement and updated checklist/finalization guidance.
+- `.agents/skills/oat-project-plan-writing/SKILL.md` - made `oat_plan_hill_phases` optional until implementation confirmation.
+- `.agents/skills/oat-project-implement/SKILL.md` - aligned first-run, resume, and phase-boundary semantics with the deferred-write model.
+
+**Verification:**
+
+- Run: `rg -n "oat_plan_hill_phases|Defer HiLL checkpoint confirmation|missing entirely|bookkeeping drift" .agents/skills/oat-project-plan/SKILL.md .agents/skills/oat-project-plan-writing/SKILL.md .agents/skills/oat-project-implement/SKILL.md`
+- Result: pass; the contract now consistently distinguishes an unconfirmed missing field on first run from resume-time drift after implementation has already written a confirmed value.
+
+**Notes / Decisions:**
+
+- Verified resume behavior against the active project state, which still resumes cleanly from `p02-t05` with confirmed `oat_plan_hill_phases: ['p02']` already recorded in `plan.md`.
 
 ---
 
@@ -162,6 +179,7 @@ oat_generated: false
 - **2026-03-11:** Completed `p02-t03`; targeted CLI verification passed, workspace `pnpm test` passed, and sequential workspace `lint`, `type-check`, and `build` exited successfully.
 - **2026-03-11:** Added follow-up task `p02-t05` to leave `oat_plan_hill_phases` unset until implementation confirms the checkpoint choice.
 - **2026-03-11:** Received final code review; converted minor finding `m1` into follow-up task `p02-t06` and explicitly deferred minor findings `m2` and `m3`.
+- **2026-03-11:** Completed `p02-t05`; planning and implementation guidance now leave `oat_plan_hill_phases` unset until implementation confirms the user's checkpoint choice.
 
 ### Review Received: final
 
