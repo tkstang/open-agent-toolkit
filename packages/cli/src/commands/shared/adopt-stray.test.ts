@@ -2,7 +2,10 @@ import { mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
+import { computeContentHash } from '@manifest/hash';
 import { createEmptyManifest } from '@manifest/manager';
+import { CURSOR_PROJECT_MAPPINGS } from '@providers/cursor/paths';
+import { parseCursorRuleToCanonical } from '@providers/cursor/rule-transform';
 import { afterEach, describe, expect, it } from 'vitest';
 
 import { adoptStrayToCanonical } from './adopt-stray';
@@ -108,5 +111,81 @@ describe('adoptStrayToCanonical', () => {
     );
 
     expect(canonical).toContain('New body');
+  });
+
+  it('adopts cursor rule strays into canonical markdown and tracks the provider copy', async () => {
+    const scopeRoot = await mkdtemp(join(tmpdir(), 'oat-adopt-stray-'));
+    tempDirs.push(scopeRoot);
+    await mkdir(join(scopeRoot, '.cursor', 'rules'), { recursive: true });
+
+    const providerContent = `---
+description: React components
+alwaysApply: false
+globs:
+  - src/components/**/*.tsx
+---
+
+# React Components
+
+Prefer composition over inheritance.
+
+<!-- OAT-managed: do not edit directly. Source: .agents/rules/react-components.md -->
+`;
+
+    await writeFile(
+      join(scopeRoot, '.cursor', 'rules', 'react-components.mdc'),
+      providerContent,
+      'utf8',
+    );
+
+    const mapping = CURSOR_PROJECT_MAPPINGS.find(
+      (entry) => entry.contentType === 'rule',
+    );
+    expect(mapping).toBeDefined();
+
+    const nextManifest = await adoptStrayToCanonical(
+      scopeRoot,
+      {
+        provider: 'cursor',
+        report: {
+          providerPath: '.cursor/rules/react-components.mdc',
+        },
+        mapping: mapping!,
+      },
+      createEmptyManifest(),
+    );
+
+    const canonicalPath = join(
+      scopeRoot,
+      '.agents',
+      'rules',
+      'react-components.md',
+    );
+    const providerPath = join(
+      scopeRoot,
+      '.cursor',
+      'rules',
+      'react-components.mdc',
+    );
+
+    expect(await readFile(canonicalPath, 'utf8')).toBe(
+      parseCursorRuleToCanonical(providerContent),
+    );
+    expect(await readFile(providerPath, 'utf8')).toContain(
+      'alwaysApply: false',
+    );
+    expect(nextManifest.entries).toMatchObject([
+      {
+        canonicalPath: '.agents/rules/react-components.md',
+        providerPath: '.cursor/rules/react-components.mdc',
+        provider: 'cursor',
+        contentType: 'rule',
+        strategy: 'copy',
+        isFile: true,
+      },
+    ]);
+    expect(nextManifest.entries[0]?.contentHash).toBe(
+      await computeContentHash(providerPath, true),
+    );
   });
 });

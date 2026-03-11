@@ -233,6 +233,7 @@ async function collectStraysDefault(
         providerDir,
         manifest,
         canonicalEntries,
+        mapping,
       );
       for (const report of strays) {
         if (report.state.status !== 'stray') {
