@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t06
+oat_current_task_id: p02-t07
 oat_generated: false
 ---
 
@@ -27,12 +27,12 @@ oat_generated: false
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 5/7       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 6/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 10/19 tasks completed
+**Total:** 11/19 tasks completed
 
 ---
 
@@ -388,14 +388,42 @@ oat_generated: false
 
 ### Task p02-t06: Write Section Index Pages
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** 3a1b16f7
+
+**Outcome (required):**
+
+- Rewrote the six section landing pages so the new guide/reference structure is discoverable from each section root.
+- Merged the old workflow and project introductions into `guide/workflow/index.md`.
+- Slimmed `reference/index.md` down to durable reference material and routed contributor-facing material to its new home.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/provider-sync/index.md` - rewrote provider-sync landing page around canonical sync/adoption
+- `apps/oat-docs/docs/guide/workflow/index.md` - merged workflow and project intro/routing
+- `apps/oat-docs/docs/guide/documentation/index.md` - replaced placeholder with docs routing page
+- `apps/oat-docs/docs/guide/skills/index.md` - added use-case guidance and updated skill catalog links
+- `apps/oat-docs/docs/guide/ideas/index.md` - reframed ideas as lightweight exploration before projects
+- `apps/oat-docs/docs/reference/index.md` - reduced reference to durable shared contracts
+
+**Verification:**
+
+- Run: `sed -n '1,260p'` on the six rewritten index pages
+- Result: pass
+- Run: stale-path grep across the six rewritten pages
+- Result: pass
+- Run: targeted `test -f` checks for every `## Contents` destination referenced by the rewritten pages
+- Result: pass
+
+**Notes / Decisions:**
+
+- Kept contributor cross-links outside `## Contents` where they are related but not part of the section’s own child-page navigation contract.
 
 ---
 
 ### Task p02-t07: Refresh the Generated Docs Surface
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
