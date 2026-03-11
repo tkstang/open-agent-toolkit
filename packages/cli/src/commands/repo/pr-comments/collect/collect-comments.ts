@@ -382,9 +382,9 @@ function renderMarkdown(chunk: CollectionChunk): string {
     lines.push(`- **Date:** ${c.createdAt.slice(0, 10)}`);
     lines.push(`- **URL:** ${c.url}`);
     lines.push('');
-    lines.push('```');
+    lines.push('````');
     lines.push(c.body);
-    lines.push('```');
+    lines.push('````');
     lines.push('');
     lines.push('---');
     lines.push('');
