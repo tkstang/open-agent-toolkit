@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t04
+oat_current_task_id: p02-t05
 oat_generated: false
 ---
 
@@ -27,12 +27,12 @@ oat_generated: false
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 3/7       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 4/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 8/19 tasks completed
+**Total:** 9/19 tasks completed
 
 ---
 
@@ -326,14 +326,41 @@ oat_generated: false
 
 ### Task p02-t04: Write Contributing Section Index and Sub-Pages
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** cc3a5cc0
+
+**Outcome (required):**
+
+- Replaced the placeholder contributing hub with a real contributor routing page.
+- Added a dedicated code-contribution page and a separate markdown-features reference page.
+- Reframed the docs and skills pages so contributor guidance is separated from the user-facing guide.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/contributing/index.md` - rewrote contributor landing page
+- `apps/oat-docs/docs/contributing/code.md` - added code contribution guide
+- `apps/oat-docs/docs/contributing/documentation.md` - reframed docs contributor guide
+- `apps/oat-docs/docs/contributing/markdown-features.md` - added markdown syntax reference
+- `apps/oat-docs/docs/contributing/skills.md` - reframed execution contracts as skill-authoring guidance
+
+**Verification:**
+
+- Run: contributing file and link existence checks
+- Result: pass
+- Run: `sed -n '1,220p' apps/oat-docs/docs/contributing/index.md`
+- Result: pass
+- Run: `sed -n '1,260p' apps/oat-docs/docs/contributing/documentation.md`
+- Result: pass
+
+**Notes / Decisions:**
+
+- Reused the existing docs contract content, but moved syntax examples into a dedicated markdown-features page so the contributor landing path is more focused.
 
 ---
 
 ### Task p02-t05: Write CLI Reference Page (guide/cli-reference.md)
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
