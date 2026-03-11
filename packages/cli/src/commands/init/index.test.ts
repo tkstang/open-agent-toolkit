@@ -40,6 +40,7 @@ interface HarnessOptions {
   adapters?: ProviderAdapter[];
   configAwareActiveAdapterNames?: string[];
   loadedSyncConfig?: SyncConfig;
+  oatDirExists?: boolean;
 }
 
 interface RunInitArgs {
@@ -93,6 +94,7 @@ function createHarness(options: HarnessOptions = {}): {
   adoptStray: ReturnType<typeof vi.fn>;
   installHook: ReturnType<typeof vi.fn>;
   uninstallHook: ReturnType<typeof vi.fn>;
+  runGuidedSetup: ReturnType<typeof vi.fn>;
 } {
   const capture = createLoggerCapture();
   const scopeRoots = {
@@ -121,6 +123,8 @@ function createHarness(options: HarnessOptions = {}): {
   );
   const installHook = vi.fn(async () => undefined);
   const uninstallHook = vi.fn(async () => undefined);
+  const dirExistsFn = vi.fn(async () => options.oatDirExists ?? true);
+  const runGuidedSetup = vi.fn(async () => undefined);
   const saveSyncConfig = vi.fn(async (_path: string, config: SyncConfig) => {
     return config;
   });
@@ -193,6 +197,8 @@ function createHarness(options: HarnessOptions = {}): {
       action: 'no-change' as const,
       entries: [],
     })),
+    dirExists: dirExistsFn,
+    runGuidedSetup,
   };
 
   if (!options.useDefaultAdopt) {
@@ -219,6 +225,7 @@ function createHarness(options: HarnessOptions = {}): {
     adoptStray,
     installHook,
     uninstallHook,
+    runGuidedSetup,
   };
 }
 
@@ -929,5 +936,72 @@ config_file = "agents/reviewer.toml"
     expect(noHook.confirmAction).not.toHaveBeenCalled();
     expect(noHook.installHook).not.toHaveBeenCalled();
     expect(noHook.uninstallHook).toHaveBeenCalledWith('/tmp/workspace');
+  });
+
+  describe('guided setup', () => {
+    it('--setup flag triggers guided setup directly without prompt', async () => {
+      const { command, runGuidedSetup, confirmAction } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        providerSelectResponses: [['claude']],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(runGuidedSetup).toHaveBeenCalledTimes(1);
+      expect(confirmAction).not.toHaveBeenCalled();
+    });
+
+    it('fresh init prompts for guided setup when .oat/ did not exist', async () => {
+      const { command, runGuidedSetup, confirmAction } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: false,
+        confirmResponses: [true],
+        providerSelectResponses: [['claude']],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+      });
+
+      expect(confirmAction).toHaveBeenCalledTimes(1);
+      expect(confirmAction.mock.calls[0]?.[0]).toContain('guided setup');
+      expect(runGuidedSetup).toHaveBeenCalledTimes(1);
+    });
+
+    it('existing .oat/ without --setup skips guided setup', async () => {
+      const { command, runGuidedSetup } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        providerSelectResponses: [['claude']],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+      });
+
+      expect(runGuidedSetup).not.toHaveBeenCalled();
+    });
+
+    it('non-interactive mode never enters guided setup', async () => {
+      const { command, runGuidedSetup } = createHarness({
+        interactive: false,
+        hookInstalled: true,
+        oatDirExists: false,
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(runGuidedSetup).not.toHaveBeenCalled();
+    });
   });
 });

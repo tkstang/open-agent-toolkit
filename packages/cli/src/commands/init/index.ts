@@ -43,6 +43,7 @@ import {
   scanCanonical,
   uninstallHook,
 } from '@engine/index';
+import { dirExists } from '@fs/io';
 import { resolveProjectRoot, resolveScopeRoot } from '@fs/paths';
 import {
   createEmptyManifest,
@@ -90,6 +91,7 @@ function getDefaultAdapters(): ProviderAdapter[] {
 
 interface InitOptions extends GlobalOptions {
   hook?: boolean;
+  setup?: boolean;
 }
 
 export interface InitStrayCandidate {
@@ -158,6 +160,8 @@ interface InitDependencies {
     config: SyncConfig,
   ) => Promise<ConfigAwareAdaptersResult>;
   applyOatCoreGitignore: (repoRoot: string) => Promise<ApplyOatCoreResult>;
+  dirExists: (dirPath: string) => Promise<boolean>;
+  runGuidedSetup: (context: CommandContext) => Promise<void>;
 }
 
 interface InitScopeSummary {
@@ -294,6 +298,10 @@ function createDependencies(): InitDependencies {
     saveSyncConfig,
     getConfigAwareAdapters,
     applyOatCoreGitignore,
+    dirExists,
+    async runGuidedSetup() {
+      // Stub — guided setup steps implemented in subsequent tasks
+    },
   };
 }
 
@@ -370,9 +378,11 @@ async function runInitCommand(
   context: CommandContext,
   dependencies: InitDependencies,
   hookFlag: boolean | undefined,
+  setupFlag: boolean | undefined,
 ): Promise<void> {
   const scopes = resolveConcreteScopes(context.scope);
   let projectRoot: string | null = null;
+  let oatDirExistedBefore = true;
   const scopeSummaries: InitScopeSummary[] = [];
 
   for (const scope of scopes) {
@@ -380,6 +390,9 @@ async function runInitCommand(
     let activeAdaptersForStrays: ProviderAdapter[] | undefined;
     if (scope === 'project') {
       projectRoot = scopeRoot;
+      oatDirExistedBefore = await dependencies.dirExists(
+        join(scopeRoot, '.oat'),
+      );
       const configPath = join(scopeRoot, '.oat', 'sync', 'config.json');
       const adapters = dependencies.getAdapters();
       let config = await dependencies.loadSyncConfig(configPath);
@@ -570,6 +583,20 @@ async function runInitCommand(
   }
 
   process.exitCode = 0;
+
+  const freshInit = projectRoot !== null && !oatDirExistedBefore;
+  if (context.interactive && (setupFlag || freshInit)) {
+    let shouldRunSetup = !!setupFlag;
+    if (!shouldRunSetup && freshInit) {
+      shouldRunSetup = await dependencies.confirmAction(
+        'Would you like to run guided setup?',
+        { interactive: context.interactive },
+      );
+    }
+    if (shouldRunSetup) {
+      await dependencies.runGuidedSetup(context);
+    }
+  }
 }
 
 export function createInitCommand(
@@ -584,10 +611,11 @@ export function createInitCommand(
     .description('Initialize canonical directories, manifest, and tool packs')
     .option('--hook', 'Install optional pre-commit hook')
     .option('--no-hook', 'Skip optional pre-commit hook install')
+    .option('--setup', 'Run guided setup after initialization')
     .addCommand(createInitToolsCommand())
     .action(async (_options, command: Command) => {
       const options = readGlobalOptions(command) as InitOptions;
       const context = dependencies.buildCommandContext(options);
-      await runInitCommand(context, dependencies, options.hook);
+      await runInitCommand(context, dependencies, options.hook, options.setup);
     });
 }
