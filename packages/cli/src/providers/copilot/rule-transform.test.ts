@@ -87,6 +87,25 @@ activation: glob
     );
   });
 
+  it('degrades manual rules to always for Copilot', () => {
+    const canonical = `---
+description: Run manually
+activation: manual
+---
+
+# Manual Rule`;
+
+    const rendered = transformCanonicalToCopilotRule(
+      canonical,
+      '.agents/rules/manual-rule.md',
+    );
+
+    expect(rendered).not.toContain('applyTo:');
+    expect(parseCopilotRuleToCanonical(rendered)).toContain(
+      'activation: always',
+    );
+  });
+
   it('rejects ambiguous provider applyTo values with comma-containing globs', () => {
     const provider = `---
 description: Brace expansion
