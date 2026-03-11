@@ -1,5 +1,10 @@
 import type { PathMapping } from '@providers/shared/adapter.types';
 
+import {
+  parseClaudeRuleToCanonical,
+  transformCanonicalToClaudeRule,
+} from './rule-transform';
+
 export const CLAUDE_PROJECT_MAPPINGS: PathMapping[] = [
   {
     contentType: 'skill',
@@ -18,6 +23,9 @@ export const CLAUDE_PROJECT_MAPPINGS: PathMapping[] = [
     canonicalDir: '.agents/rules',
     providerDir: '.claude/rules',
     nativeRead: false,
+    providerExtension: '.md',
+    transformCanonical: transformCanonicalToClaudeRule,
+    parseToCanonical: parseClaudeRuleToCanonical,
   },
 ];
 

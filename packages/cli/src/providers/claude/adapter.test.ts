@@ -24,26 +24,32 @@ describe('claudeAdapter', () => {
   });
 
   it('project mappings include rules under .claude/rules', () => {
-    expect(claudeAdapter.projectMappings).toEqual([
-      {
-        contentType: 'skill',
-        canonicalDir: '.agents/skills',
-        providerDir: '.claude/skills',
-        nativeRead: false,
-      },
-      {
-        contentType: 'agent',
-        canonicalDir: '.agents/agents',
-        providerDir: '.claude/agents',
-        nativeRead: false,
-      },
-      {
-        contentType: 'rule',
-        canonicalDir: '.agents/rules',
-        providerDir: '.claude/rules',
-        nativeRead: false,
-      },
-    ]);
+    expect(claudeAdapter.projectMappings).toHaveLength(3);
+    expect(claudeAdapter.projectMappings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contentType: 'skill',
+          canonicalDir: '.agents/skills',
+          providerDir: '.claude/skills',
+          nativeRead: false,
+        }),
+        expect.objectContaining({
+          contentType: 'agent',
+          canonicalDir: '.agents/agents',
+          providerDir: '.claude/agents',
+          nativeRead: false,
+        }),
+        expect.objectContaining({
+          contentType: 'rule',
+          canonicalDir: '.agents/rules',
+          providerDir: '.claude/rules',
+          nativeRead: false,
+          providerExtension: '.md',
+          transformCanonical: expect.any(Function),
+          parseToCanonical: expect.any(Function),
+        }),
+      ]),
+    );
   });
 
   it('user mappings: skills → .claude/skills, agents → .claude/agents', () => {

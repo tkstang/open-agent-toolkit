@@ -24,26 +24,32 @@ describe('copilotAdapter', () => {
   });
 
   it('project mappings include rules under .github/instructions', () => {
-    expect(copilotAdapter.projectMappings).toEqual([
-      {
-        contentType: 'skill',
-        canonicalDir: '.agents/skills',
-        providerDir: '.github/skills',
-        nativeRead: false,
-      },
-      {
-        contentType: 'agent',
-        canonicalDir: '.agents/agents',
-        providerDir: '.github/agents',
-        nativeRead: false,
-      },
-      {
-        contentType: 'rule',
-        canonicalDir: '.agents/rules',
-        providerDir: '.github/instructions',
-        nativeRead: false,
-      },
-    ]);
+    expect(copilotAdapter.projectMappings).toHaveLength(3);
+    expect(copilotAdapter.projectMappings).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          contentType: 'skill',
+          canonicalDir: '.agents/skills',
+          providerDir: '.github/skills',
+          nativeRead: false,
+        }),
+        expect.objectContaining({
+          contentType: 'agent',
+          canonicalDir: '.agents/agents',
+          providerDir: '.github/agents',
+          nativeRead: false,
+        }),
+        expect.objectContaining({
+          contentType: 'rule',
+          canonicalDir: '.agents/rules',
+          providerDir: '.github/instructions',
+          nativeRead: false,
+          providerExtension: '.instructions.md',
+          transformCanonical: expect.any(Function),
+          parseToCanonical: expect.any(Function),
+        }),
+      ]),
+    );
   });
 
   it('user mappings: skills → .copilot/skills, agents → .copilot/agents', () => {
