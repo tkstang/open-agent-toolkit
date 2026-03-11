@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p03-t01
+oat_current_task_id: p03-t03
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | completed   | 3     | 3/3       |
 | Phase 2 | completed   | 3     | 3/3       |
-| Phase 3 | in_progress | 10    | 0/10      |
+| Phase 3 | in_progress | 10    | 2/10      |
 
-**Total:** 6/16 tasks completed
+**Total:** 8/16 tasks completed
 
 ---
 
@@ -323,6 +323,69 @@ oat_generated: false
 
 ---
 
+## Phase 3: Review Fixes
+
+**Status:** in_progress
+**Started:** 2026-03-11
+
+### Task p03-t01: (review) Extract shared canonical rule filename normalization
+
+**Status:** completed
+**Commit:** 5361ec66
+
+**Outcome (required when completed):**
+
+- Extracted a shared helper for provider rule filename to canonical `.md` normalization.
+- Reused that helper from both stray detection and stray adoption so rule filename mapping stays consistent.
+- Added Copilot `.instructions.md` coverage in both stray detection and adoption tests.
+
+**Files changed:**
+
+- `packages/cli/src/rules/canonical/provider-filenames.ts` - added shared provider-to-canonical rule filename normalization
+- `packages/cli/src/rules/canonical/index.ts` - re-exported the shared filename helper
+- `packages/cli/src/drift/strays.ts` - switched rule stray suppression to the shared helper
+- `packages/cli/src/drift/strays.test.ts` - covered Copilot rule filename normalization during stray detection
+- `packages/cli/src/commands/shared/adopt-stray.ts` - switched rule adoption canonical naming to the shared helper
+- `packages/cli/src/commands/shared/adopt-stray.test.ts` - covered Copilot rule adoption using `.instructions.md`
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/drift/strays.test.ts src/commands/shared/adopt-stray.test.ts`
+- Result: Passed (`vitest` ran the full `@oat/cli` suite; 124 files / 929 tests green)
+
+**Notes / Decisions:**
+
+- Centralizing provider filename normalization removes the risk that stray detection and adoption drift apart on provider-specific rule extensions.
+
+---
+
+### Task p03-t02: (review) Handle Copilot comma-containing glob limitations
+
+**Status:** completed
+**Commit:** c4770f04
+
+**Outcome (required when completed):**
+
+- Added explicit Copilot transform guards for globs containing commas, which the `applyTo` format cannot represent without ambiguity.
+- Added explicit Copilot adoption guards for ambiguous provider `applyTo` values that cannot be losslessly parsed back into canonical globs.
+- Expanded Copilot transform coverage so the limitation is encoded in tests instead of remaining implicit behavior.
+
+**Files changed:**
+
+- `packages/cli/src/providers/copilot/rule-transform.ts` - rejected ambiguous comma-containing Copilot glob transforms and parses with explicit CLI errors
+- `packages/cli/src/providers/copilot/rule-transform.test.ts` - covered canonical and provider-side rejection of ambiguous comma-containing glob values
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/providers/copilot/rule-transform.test.ts`
+- Result: Passed (`vitest` ran the full `@oat/cli` suite; 124 files / 931 tests green)
+
+**Notes / Decisions:**
+
+- Failing fast is safer than silently splitting a single brace-expansion glob into multiple unrelated globs during sync or adoption.
+
+---
+
 ## Orchestration Runs
 
 > This section is used by `oat-project-subagent-implement` to log parallel execution runs.
@@ -554,6 +617,38 @@ Chronological log of implementation progress.
 - None
 
 **Next:** Execute fix tasks via the `oat-project-implement` skill starting at `p03-t01`.
+
+---
+
+### 2026-03-11
+
+**Session Start:** 05:39 UTC
+
+- [x] p03-t01: (review) Extract shared canonical rule filename normalization - 5361ec66
+- [x] p03-t02: (review) Handle Copilot comma-containing glob limitations - c4770f04
+- [ ] p03-t03: (review) Centralize rendered string hashing - pending
+
+**What changed (high level):**
+
+- Extracted shared rule filename normalization into `@rules/canonical`.
+- Reused the shared helper in both stray detection and adoption flows.
+- Added Copilot-specific regression coverage for `.instructions.md` normalization.
+- Made Copilot comma-containing glob handling fail fast with explicit transform and adoption errors.
+- Added explicit tests for ambiguous Copilot `applyTo` values.
+
+**Decisions:**
+
+- Shared normalization now owns provider-extension stripping so future provider rule filename changes only need one update point.
+- Copilot comma-containing glob cases now error explicitly rather than silently corrupting adoption data during sync or adoption.
+
+**Follow-ups / TODO:**
+
+- Centralize rendered string hashing in `p03-t03`.
+- Continue remaining review-fix tasks in phase order after `p03-t03`.
+
+**Blockers:**
+
+- None - resolved
 
 After the fix tasks are complete:
 
