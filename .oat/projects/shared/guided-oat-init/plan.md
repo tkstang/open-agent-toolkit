@@ -260,11 +260,11 @@ git commit -m "test(p01-t05): add integration tests for guided setup flow"
 
 ## Reviews
 
-| Scope | Type     | Status  | Date       | Artifact                                   |
-| ----- | -------- | ------- | ---------- | ------------------------------------------ |
-| plan  | artifact | passed  | 2026-03-10 | reviews/artifact-plan-review-2026-03-10.md |
-| p01   | code     | pending | -          | -                                          |
-| final | code     | pending | -          | -                                          |
+| Scope | Type     | Status   | Date       | Artifact                                   |
+| ----- | -------- | -------- | ---------- | ------------------------------------------ |
+| plan  | artifact | passed   | 2026-03-10 | reviews/artifact-plan-review-2026-03-10.md |
+| p01   | code     | pending  | -          | -                                          |
+| final | code     | received | 2026-03-10 | reviews/final-review-2026-03-10.md         |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
