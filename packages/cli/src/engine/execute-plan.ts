@@ -67,6 +67,13 @@ async function toManifestEntry(
 }
 
 function markerFileNameForEntry(entry: SyncPlanEntry): string {
+  if (entry.canonical.isFile) {
+    throw new Error(
+      'Directory marker filenames are only valid for copied directory entries.',
+    );
+  }
+
+  // Rules are file-based, so only agent and skill directory copies reach here.
   return entry.canonical.type === 'agent' ? 'AGENT.md' : 'SKILL.md';
 }
 
