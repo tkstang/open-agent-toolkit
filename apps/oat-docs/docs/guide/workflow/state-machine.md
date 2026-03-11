@@ -5,6 +5,23 @@ description: 'Workflow and review state transitions across lifecycle phases and 
 
 # State Machine
 
+## State Transition Map
+
+```mermaid
+flowchart TD
+  D["Discovery in progress"] --> RS["Ready for spec"]
+  RS --> S["Spec in progress"] --> RD["Ready for design"]
+  RD --> G["Design in progress"] --> RP["Ready for plan"]
+  RP --> P["Plan in progress"] --> RI["Ready for implement"]
+  RI --> I["Implement in progress"] --> C["Complete"]
+
+  I --> RV["Review received"]
+  RV --> FA["Fixes added"]
+  FA --> FC["Fixes completed"]
+  FC --> PASSED["Review passed"]
+  PASSED --> I
+```
+
 ## Lifecycle progression
 
 Typical progression:

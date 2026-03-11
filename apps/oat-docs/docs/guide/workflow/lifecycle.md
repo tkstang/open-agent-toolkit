@@ -19,6 +19,21 @@ OAT lifecycle order:
 8. Documentation sync (`oat-project-document`) — optional; reads project artifacts to identify docs needing updates
 9. Complete (`oat-project-complete`)
 
+## Lifecycle Map
+
+```mermaid
+flowchart LR
+  D["Discovery"] --> S["Spec"] --> G["Design"] --> P["Plan"]
+  P --> M{"Implementation mode"}
+  M --> I1["Sequential"]
+  M --> I2["Subagent-driven"]
+  I1 --> R["Review loop"]
+  I2 --> R
+  R --> PR["PR flow"]
+  PR --> DOC["Docs sync (optional)"]
+  DOC --> C["Complete"]
+```
+
 ## Implementation modes
 
 - **Sequential (default):** `oat-project-implement`

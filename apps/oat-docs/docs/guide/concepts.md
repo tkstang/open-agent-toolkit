@@ -7,6 +7,14 @@ description: Mental model for canonical assets, provider views, scopes, skills, 
 
 OAT combines a provider-sync layer, reusable skills and CLI tooling, and an optional workflow system. This page gives the high-level mental model so the detailed docs are easier to navigate.
 
+## Capability Stack
+
+```mermaid
+flowchart TD
+  BASE["Provider sync + CLI\ncanonical assets, status, sync, docs commands"] --> MIDDLE["Reusable skills + tooling\nideas, docs workflows, repo helpers"]
+  MIDDLE --> TOP["Optional workflow layer\ntracked projects, reviews, PR flow, HiLL"]
+```
+
 ## Canonical Assets and Provider Views
 
 OAT keeps canonical assets in repo-controlled locations and projects provider-specific views from that source of truth. The canonical form is what you edit and review directly; provider views are synchronized outputs that let Claude Code, Cursor, Copilot, Gemini, and Codex consume the same intent in their native layouts.

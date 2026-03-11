@@ -24,6 +24,19 @@ Provider sync is a standalone path. You can adopt it without using tracked OAT p
 - drift detection, stray discovery, and adoption decisions when provider files change
 - command behavior for inspecting sync state, configuring providers, and writing synced output
 
+## Sync Flow
+
+```mermaid
+flowchart LR
+  CANON["Canonical assets\n.agents/ + .oat/"] --> STATUS["oat status"]
+  STATUS --> SYNC["oat sync"]
+  SYNC --> PROVIDERS["Provider views"]
+  PROVIDERS --> DRIFT{"Drift or strays?"}
+  DRIFT -->|No| OK["In sync"]
+  DRIFT -->|Yes| ADOPT["Adopt or reconcile"]
+  ADOPT --> CANON
+```
+
 ## Typical Flow
 
 1. Run `oat init` to create canonical OAT directories and base config.
