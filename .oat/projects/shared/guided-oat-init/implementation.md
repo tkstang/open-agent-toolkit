@@ -4,7 +4,7 @@ oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-10
 oat_project_state_updated: '2026-03-10T21:48:00Z'
-oat_current_task_id: p01-t02
+oat_current_task_id: p01-t03
 oat_generated: false
 ---
 
@@ -27,9 +27,9 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 5     | 1/5       |
+| Phase 1 | in_progress | 5     | 2/5       |
 
-**Total:** 1/5 tasks completed
+**Total:** 2/5 tasks completed
 
 ---
 
@@ -85,8 +85,28 @@ oat_generated: false
 
 ### Task p01-t02: Implement guided setup — tool packs step
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 37dfbb48
+
+**Outcome:**
+
+- Exported `runInitTools` and added `runInitToolsWithDefaults` convenience wrapper from `tools/index.ts`
+- Changed `runGuidedSetup` to receive dependencies for proper DI testability
+- Added `runToolPacks` dependency to `InitDependencies` for mockable tool pack installation
+- Implemented tool packs step in `runGuidedSetupImpl`: banner + confirm + call runToolPacks with scope forced to 'project'
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/index.ts` - Added runGuidedSetupImpl, runToolPacks dep, updated signatures
+- `packages/cli/src/commands/init/tools/index.ts` - Exported runInitTools + runInitToolsWithDefaults
+- `packages/cli/src/commands/init/index.test.ts` - 2 new tests for tool packs step, harness enhancements
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: 901/901 pass
+- Run: `pnpm lint && pnpm type-check`
+- Result: pass
 
 ### Task p01-t03: Implement guided setup — local paths step
 
