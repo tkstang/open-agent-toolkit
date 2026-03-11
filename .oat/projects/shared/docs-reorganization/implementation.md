@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t05
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -26,19 +26,19 @@ oat_generated: false
 
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
-| Phase 1: Directory Structure and File Moves                        | in_progress | 5     | 4/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | pending     | 7     | 0/7       |
+| Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 0/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 4/19 tasks completed
+**Total:** 5/19 tasks completed
 
 ---
 
 ## Phase 1: Directory Structure and File Moves
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-11
 
 ### Task p01-t01: Scaffold New Directory Structure
@@ -178,14 +178,65 @@ oat_generated: false
 
 ### Task p01-t05: Move Remaining Files to New Locations
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 93a96c57
+
+**Outcome (required):**
+
+- Moved the remaining planned Phase 1 docs into `guide/` and `contributing/`.
+- Created the new `guide/skills/` and `guide/ideas/` directories as move targets.
+- Left only the intentionally retained legacy docs in place: `cli/diagnostics.md`, `cli/local-paths.md`, `workflow/index.md`, `projects/index.md`, and the durable reference files.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/getting-started.md` - moved bootstrap docs
+- `apps/oat-docs/docs/guide/tool-packs.md` - moved tool-pack docs
+- `apps/oat-docs/docs/guide/cli-reference.md` - moved CLI index for later rewrite
+- `apps/oat-docs/docs/guide/skills/index.md` - moved skills index
+- `apps/oat-docs/docs/guide/ideas/index.md` - moved ideas index
+- `apps/oat-docs/docs/guide/ideas/lifecycle.md` - moved ideas lifecycle docs
+- `apps/oat-docs/docs/contributing/skills.md` - moved skill authoring/runtime contract docs
+- `apps/oat-docs/docs/contributing/design-principles.md` - moved CLI design principles
+- `apps/oat-docs/docs/contributing/commit-conventions.md` - moved commit conventions
+- `apps/oat-docs/docs/contributing/documentation.md` - moved contributor docs page
+
+**Verification:**
+
+- Run: `find apps/oat-docs/docs/guide -maxdepth 2 -type f | sort`
+- Result: pass
+- Run: `find apps/oat-docs/docs/contributing -maxdepth 1 -type f | sort`
+- Result: pass
+- Run: `find apps/oat-docs/docs/cli -maxdepth 1 -type f | sort && find apps/oat-docs/docs/reference -maxdepth 1 -type f | sort`
+- Result: pass
+
+**Notes / Decisions:**
+
+- `cli/diagnostics.md` and `cli/local-paths.md` remain intentionally for the later CLI-reference rewrite.
+
+### Phase 1 Summary
+
+**Outcome:** The audience-driven directory layout now exists on disk and all planned Phase 1 content moves are complete.
+
+**Key files touched:**
+
+- `apps/oat-docs/docs/guide/**`
+- `apps/oat-docs/docs/contributing/**`
+- legacy stub survivors in `apps/oat-docs/docs/workflow/index.md` and `apps/oat-docs/docs/projects/index.md`
+
+**Verification run:**
+
+- directory and moved-file presence checks across `guide/`, `contributing/`, and the retained legacy directories
+
+**Notable decisions/deviations:**
+
+- preserved the reviewed temporary-stub strategy for `workflow/index.md` and `projects/index.md`
+- retained `cli/diagnostics.md` and `cli/local-paths.md` for planned content absorption in Phase 2
 
 ---
 
 ## Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh
 
-**Status:** pending
+**Status:** in_progress
 **Started:** -
 
 ### Task p02-t01: Rewrite Homepage (apps/oat-docs/docs/index.md)
