@@ -1,8 +1,8 @@
 ---
-oat_current_task: p01-t03
-oat_last_commit: f48fb46a
+oat_current_task: p02-t01
+oat_last_commit: 555e6331
 oat_blockers: []
-oat_hill_checkpoints: [] # Quick mode keeps implementation gating in the plan, not discovery/spec/design artifact checkpoints
+oat_hill_checkpoints: ['p02'] # Quick mode keeps implementation gating in the plan, not discovery/spec/design artifact checkpoints
 oat_hill_completed: [] # Progress: which HiLL checkpoints have been completed
 oat_parallel_execution: false
 oat_phase: implement # Current phase: discovery | spec | design | plan | implement
@@ -13,7 +13,7 @@ oat_workflow_origin: native # native | imported
 oat_docs_updated: null # null | skipped | complete — documentation sync status
 oat_project_created: '2026-03-11T03:59:13.896Z' # ISO 8601 UTC timestamp — set once at project creation
 oat_project_completed: null # ISO 8601 UTC timestamp — set when project is completed/archived
-oat_project_state_updated: '2026-03-11T04:50:32Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
+oat_project_state_updated: '2026-03-11T04:59:32Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
 oat_generated: false
 ---
 
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation in progress - Phase 1 underway
+Implementation in progress - Phase 2 underway
 
 ## Artifacts
 
@@ -33,7 +33,7 @@ Implementation in progress - Phase 1 underway
 - **Spec:** Not used in quick mode unless promoted later
 - **Design:** N/A (quick mode)
 - **Plan:** `plan.md` (complete - 2 phases, 6 tasks; pause after `p02`)
-- **Implementation:** `implementation.md` (in_progress - `p01-t03` next)
+- **Implementation:** `implementation.md` (in_progress - `p02-t01` next)
 
 ## Progress
 
@@ -43,7 +43,8 @@ Implementation in progress - Phase 1 underway
 - ✓ Implementation started
 - ✓ `p01-t01` complete
 - ✓ `p01-t02` complete
-- ⧗ `p01-t03` ready
+- ✓ `p01-t03` complete
+- ⧗ `p02-t01` ready
 
 ## Blockers
 
@@ -51,4 +52,4 @@ None
 
 ## Next Milestone
 
-Finish Phase 1 engine integration, then continue through `p02` before pausing for review.
+Implement Phase 2 adoption and workflow updates, then pause after `p02` for review.

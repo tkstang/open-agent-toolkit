@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t03
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -26,36 +26,48 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 3     | 2/3       |
-| Phase 2 | pending     | 3     | 0/3       |
+| Phase 1 | completed   | 3     | 3/3       |
+| Phase 2 | in_progress | 3     | 0/3       |
 
-**Total:** 2/6 tasks completed
+**Total:** 3/6 tasks completed
 
 ---
 
 ## Phase 1: Transform-Aware Sync Foundation
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-11
 
 ### Phase Summary (fill when phase is complete)
 
 **Outcome (what changed):**
 
-- {2-5 bullets describing user-visible / behavior-level changes delivered in this phase}
+- Added canonical rule types plus provider mappings and transforms for Claude, Cursor, and Copilot.
+- Extended sync planning and execution so transformed rule files are rendered into provider-specific copies with provider-specific filenames.
+- Switched transformed copy drift behavior to compare and store rendered provider output hashes, avoiding rule-only manifest fields.
+- Added engine coverage for transformed planning, execution, and manifest compatibility.
 
 **Key files touched:**
 
-- `{path}` - {why}
+- `packages/cli/src/shared/types.ts` - registered `rule` as a canonical sync content type
+- `packages/cli/src/providers/*/paths.ts` - attached provider rule mappings, extensions, and transform hooks
+- `packages/cli/src/rules/canonical/*` - defined canonical rule parsing/rendering and marker helpers
+- `packages/cli/src/engine/compute-plan.ts` - planned transformed rule copies using rendered provider output
+- `packages/cli/src/engine/execute-plan.ts` - wrote rendered files and persisted provider-output hashes in the manifest
 
 **Verification:**
 
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `pnpm --filter @oat/cli test`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli lint`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli type-check`
+- Result: Passed
 
 **Notes / Decisions:**
 
-- {trade-offs or deviations discovered during implementation}
+- Rendered provider output is now the source of truth for transformed copies during plan comparison and manifest hashing, which keeps drift logic generic instead of adding rule-specific body-hash fields.
+- Generated rule markers remain trailing HTML comments so provider frontmatter stays on the first line.
 
 ### Task p01-t01: Add rule content type and mapping contract
 
@@ -151,15 +163,41 @@ oat_generated: false
 
 ### Task p01-t03: Integrate transformed sync planning, execution, and manifest handling
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 555e6331
+
+**Outcome (required when completed):**
+
+- Forced transformed mappings onto copy strategy during planning while honoring provider-specific output extensions.
+- Compared transformed rule entries against rendered provider output and skipped updates when the provider file already matched.
+- Wrote rendered rule content directly during sync execution and stored the rendered provider hash in the manifest.
+- Added regression coverage around transformed planning, execution, manifest validation, and drift expectations.
+
+**Files changed:**
+
+- `packages/cli/src/engine/compute-plan.ts` - rendered transformed file entries during planning and compared provider output hashes
+- `packages/cli/src/engine/execute-plan.ts` - wrote rendered file content and hashed rendered output in manifest entries
+- `packages/cli/src/engine/engine.types.ts` - threaded rendered content through sync plan entries
+- `packages/cli/src/engine/compute-plan.test.ts` - covered forced copy strategy, extension mapping, and rendered-output skip behavior
+- `packages/cli/src/engine/execute-plan.test.ts` - covered rendered file writes and manifest hashing for rule copies
+- `packages/cli/src/drift/detector.test.ts` - covered transformed copy drift expectations
+- `packages/cli/src/manifest/manifest.types.test.ts` - covered manifest acceptance for copy-mode rule file entries
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli lint`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli type-check`
+- Result: Passed
 
 ---
 
 ## Phase 2: Adoption, Tooling, and Coverage
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-11
 
 ### Task p02-t01: Add rule stray detection and adoption flow
 
@@ -255,6 +293,37 @@ Chronological log of implementation progress.
 - None - resolved
 
 **Session End:** 04:50 UTC
+
+---
+
+### 2026-03-11
+
+**Session Start:** 04:50 UTC
+
+- [x] p01-t03: Integrate transformed sync planning, execution, and manifest handling - 555e6331
+- [ ] p02-t01: Add rule stray detection and adoption flow - pending
+
+**What changed (high level):**
+
+- Added transform-aware planning and execution for provider-rendered rule files.
+- Stored rendered provider-output hashes for transformed copies so drift detection stays generic.
+- Expanded engine and manifest tests around transformed rule sync behavior.
+
+**Decisions:**
+
+- Used rendered provider output as the comparison and manifest hash input for transformed copies instead of adding rule-specific body-hash manifest fields.
+- Kept transformed file writes on the existing copy path by threading rendered content through `SyncPlanEntry`.
+
+**Follow-ups / TODO:**
+
+- Implement rule stray detection and provider-to-canonical adoption in `p02-t01`.
+- Update authoring workflow and broader sync integration coverage in `p02-t02`.
+
+**Blockers:**
+
+- None - resolved
+
+**Session End:** 04:59 UTC
 
 ---
 
