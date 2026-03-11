@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t01
+oat_current_task_id: p02-t02
 oat_generated: false
 ---
 
@@ -27,12 +27,12 @@ oat_generated: false
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 0/7       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 1/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 5/19 tasks completed
+**Total:** 6/19 tasks completed
 
 ---
 
@@ -241,8 +241,29 @@ oat_generated: false
 
 ### Task p02-t01: Rewrite Homepage (apps/oat-docs/docs/index.md)
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 42e72795
+
+**Outcome (required):**
+
+- Rewrote the homepage around the new guide/contributing/reference information architecture.
+- Removed the obsolete manual navigation list that referenced legacy section paths.
+- Re-routed the “Choose a usage path” section to the new moved docs sections.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/index.md` - rewrote homepage structure and routing links
+
+**Verification:**
+
+- Run: `sed -n '1,220p' apps/oat-docs/docs/index.md`
+- Result: pass
+- Run: `test -f apps/oat-docs/docs/guide/index.md && test -f apps/oat-docs/docs/contributing/index.md && test -f apps/oat-docs/docs/reference/index.md`
+- Result: pass
+
+**Notes / Decisions:**
+
+- Kept the existing three-capability framing and source-of-truth hierarchy intact, only changing navigation and routing language.
 
 ---
 
