@@ -27,9 +27,9 @@ oat_generated: false
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | complete    | 3     | 3/3       |
-| Phase 2 | in_progress | 5     | 4/5       |
+| Phase 2 | in_progress | 6     | 4/6       |
 
-**Total:** 7/8 tasks completed
+**Total:** 7/9 tasks completed
 
 ---
 
@@ -127,6 +127,17 @@ oat_generated: false
 
 ---
 
+### Task p02-t06: (review) Fix stale Phase 1 implementation status bookkeeping
+
+**Status:** pending
+**Commit:** -
+
+**Notes:**
+
+- Final review finding `m1` identified Phase 1 status drift in this file; fix after `p02-t05` so final re-review sees consistent bookkeeping.
+
+---
+
 ## Orchestration Runs
 
 > This section is used by `oat-project-subagent-implement` to log parallel execution runs.
@@ -150,12 +161,35 @@ oat_generated: false
 - **2026-03-11:** Completed `p02-t04`; planning now sets default HiLL frontmatter silently, and implementation start owns the single checkpoint confirmation prompt with phase summaries and simple examples.
 - **2026-03-11:** Completed `p02-t03`; targeted CLI verification passed, workspace `pnpm test` passed, and sequential workspace `lint`, `type-check`, and `build` exited successfully.
 - **2026-03-11:** Added follow-up task `p02-t05` to leave `oat_plan_hill_phases` unset until implementation confirms the checkpoint choice.
+- **2026-03-11:** Received final code review; converted minor finding `m1` into follow-up task `p02-t06` and explicitly deferred minor findings `m2` and `m3`.
+
+### Review Received: final
+
+**Date:** 2026-03-11
+**Review artifact:** `reviews/archived/final-review-2026-03-11.md`
+
+**Findings:**
+
+- Critical: 0
+- Important: 0
+- Medium: 0
+- Minor: 3
+
+**New tasks added:** `p02-t06`
+
+**Deferred Findings:**
+
+- `m2` Plan file list drift for `p02-t01` deferred. Rationale: the implementation changed the correct files, and the mismatch is traceability cleanup rather than a behavioral defect.
+- `m3` Review metadata omission for `packages/cli/src/commands/init/tools/index.ts` deferred. Rationale: this is a historical review-scoping metadata gap, not a product issue in the shipped implementation.
+
+**Next:** Complete `p02-t05`, then execute `p02-t06` via `oat-project-implement`. After those tasks are complete, update the final review row to `fixes_completed` and re-run `oat-project-review-provide code final`, then `oat-project-review-receive`.
 
 ## Deviations from Plan
 
-| Task    | Planned                         | Actual                                                     | Reason                                                                    |
-| ------- | ------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------- |
-| p02-t05 | No follow-up task after p02-t04 | Added follow-up task to stop seeding `[]` as a placeholder | User review identified cleaner semantics for unconfirmed checkpoint state |
+| Task    | Planned                         | Actual                                                     | Reason                                                                     |
+| ------- | ------------------------------- | ---------------------------------------------------------- | -------------------------------------------------------------------------- |
+| p02-t05 | No follow-up task after p02-t04 | Added follow-up task to stop seeding `[]` as a placeholder | User review identified cleaner semantics for unconfirmed checkpoint state  |
+| p02-t06 | No follow-up task after p02-t05 | Added final-review bookkeeping fix task                    | User selected minor finding `m1` for tracked remediation before final pass |
 
 ## Test Results
 
@@ -175,6 +209,7 @@ Track test execution during implementation.
 - CLI init defaults, repo config, gitignore handling, and tests now ignore only archived review history instead of all review directories.
 - HiLL checkpoint confirmation was centralized in `oat-project-implement`, with planning now setting defaults silently.
 - A follow-up task is queued to remove the temporary `[]` placeholder and leave checkpoint choice unset until implementation confirmation.
+- A follow-up task is queued to correct the stale Phase 1 status bookkeeping in `implementation.md` before final re-review.
 
 **Behavioral changes (user-facing):**
 

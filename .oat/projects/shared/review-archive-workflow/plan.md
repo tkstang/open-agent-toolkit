@@ -180,15 +180,30 @@ oat_generated: false
 
 ---
 
+### Task p02-t06: (review) Fix stale Phase 1 implementation status bookkeeping
+
+**Files:**
+
+- Modify: `.oat/projects/shared/review-archive-workflow/implementation.md`
+
+**Steps:**
+
+1. Review final finding `m1` about the Phase 1 status block still reading `in_progress` despite all `p01` tasks being complete.
+2. Update the Phase 1 status bookkeeping in `implementation.md` so the phase-level status matches the completed tasks and Progress Overview.
+3. Verify `implementation.md` remains internally consistent for resume behavior after the bookkeeping correction.
+4. Commit with `chore(p02-t06): correct phase 1 implementation status`.
+
+---
+
 ## Reviews
 
-| Scope  | Type     | Status   | Date       | Artifact                           |
-| ------ | -------- | -------- | ---------- | ---------------------------------- |
-| p01    | code     | pending  | -          | -                                  |
-| p02    | code     | pending  | -          | -                                  |
-| final  | code     | received | 2026-03-11 | reviews/final-review-2026-03-11.md |
-| spec   | artifact | pending  | -          | -                                  |
-| design | artifact | pending  | -          | -                                  |
+| Scope  | Type     | Status      | Date       | Artifact                                    |
+| ------ | -------- | ----------- | ---------- | ------------------------------------------- |
+| p01    | code     | pending     | -          | -                                           |
+| p02    | code     | pending     | -          | -                                           |
+| final  | code     | fixes_added | 2026-03-11 | reviews/archived/final-review-2026-03-11.md |
+| spec   | artifact | pending     | -          | -                                           |
+| design | artifact | pending     | -          | -                                           |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -206,9 +221,9 @@ oat_generated: false
 **Summary:**
 
 - Phase 1: 3 tasks - archive consumed reviews and align review workflow contracts
-- Phase 2: 5 tasks - update init/gitignore defaults, verify the new policy, improve checkpoint confirmation UX, and defer checkpoint field writes until confirmation
+- Phase 2: 6 tasks - update init/gitignore defaults, verify the new policy, improve checkpoint confirmation UX, defer checkpoint field writes until confirmation, and apply final review bookkeeping fixes
 
-**Total: 8 tasks**
+**Total: 9 tasks**
 
 Ready for implementation.
 
