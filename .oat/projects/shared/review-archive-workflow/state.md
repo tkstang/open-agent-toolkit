@@ -10,10 +10,10 @@ oat_phase_status: complete
 oat_execution_mode: single-thread
 oat_workflow_mode: import
 oat_workflow_origin: imported
-oat_docs_updated: null
+oat_docs_updated: complete
 oat_project_created: '2026-03-11T17:27:24.744Z'
 oat_project_completed: null
-oat_project_state_updated: '2026-03-11T20:37:23Z'
+oat_project_state_updated: '2026-03-11T20:47:57Z'
 oat_generated: false
 ---
 
