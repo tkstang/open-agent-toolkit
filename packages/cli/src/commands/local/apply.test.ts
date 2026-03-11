@@ -97,7 +97,7 @@ describe('oat local apply', () => {
     // Both should have trailing slash, no duplicates
     expect(content).toContain('.oat/ideas/');
     expect(content).toContain('.oat/projects/**/reviews/archived/');
-    expect(content).not.toContain('.oat/projects/**/reviews/');
+    expect(content.split('\n')).not.toContain('.oat/projects/**/reviews/');
   });
 
   it('should create .gitignore if it does not exist', async () => {
