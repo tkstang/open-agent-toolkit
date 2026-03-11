@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t02
+oat_current_task_id: p01-t03
 oat_generated: false
 ---
 
@@ -26,10 +26,10 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 3     | 1/3       |
+| Phase 1 | in_progress | 3     | 2/3       |
 | Phase 2 | pending     | 3     | 0/3       |
 
-**Total:** 1/6 tasks completed
+**Total:** 2/6 tasks completed
 
 ---
 
@@ -101,8 +101,51 @@ oat_generated: false
 
 ### Task p01-t02: Implement canonical rule model and provider transforms
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** f48fb46a
+
+**Outcome (required when completed):**
+
+- Added a canonical rule parsing/rendering layer under `packages/cli/src/rules/canonical`.
+- Implemented provider-local rule transforms for Claude, Cursor, and Copilot, including trailing generated markers.
+- Wired project rule mappings to provider extensions and transform hooks.
+- Documented and tested intentional lossy round-tripping for providers that cannot preserve all canonical metadata.
+
+**Files changed:**
+
+- `packages/cli/src/rules/canonical/types.ts` - defined canonical rule document/frontmatter types
+- `packages/cli/src/rules/canonical/parse.ts` - added frontmatter parsing and marker stripping
+- `packages/cli/src/rules/canonical/render.ts` - added canonical rendering and generated-marker helpers
+- `packages/cli/src/rules/canonical/index.ts` - exported the canonical rule surface
+- `packages/cli/src/rules/canonical/parse.test.ts` - covered parsing and marker stripping
+- `packages/cli/src/rules/canonical/render.test.ts` - covered canonical serialization
+- `packages/cli/src/providers/claude/rule-transform.ts` - implemented Claude render/parse behavior
+- `packages/cli/src/providers/claude/rule-transform.test.ts` - covered Claude round-trip and degradation behavior
+- `packages/cli/src/providers/cursor/rule-transform.ts` - implemented Cursor render/parse behavior
+- `packages/cli/src/providers/cursor/rule-transform.test.ts` - covered all Cursor activation modes
+- `packages/cli/src/providers/copilot/rule-transform.ts` - implemented Copilot render/parse behavior
+- `packages/cli/src/providers/copilot/rule-transform.test.ts` - covered Copilot round-trip and degradation behavior
+- `packages/cli/src/providers/claude/paths.ts` - attached Claude rule transform hooks and extension
+- `packages/cli/src/providers/cursor/paths.ts` - attached Cursor rule transform hooks and extension
+- `packages/cli/src/providers/copilot/paths.ts` - attached Copilot rule transform hooks and extension
+- `packages/cli/src/providers/shared/adapter.types.ts` - widened transform hook signatures to accept source metadata
+- `packages/cli/src/providers/shared/adapter.types.test.ts` - validated optional transform hook typing
+- `packages/cli/src/providers/claude/adapter.test.ts` - asserted rule mapping extension/hook presence
+- `packages/cli/src/providers/copilot/adapter.test.ts` - asserted rule mapping extension/hook presence
+- `packages/cli/tsconfig.json` - registered `@rules/*` alias for build-time resolution
+- `packages/cli/vitest.config.ts` - registered `@rules` alias for test-time resolution
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: Passed after aligning Claude tests with intentional description lossiness
+- Run: `pnpm lint && pnpm type-check`
+- Result: Passed
+
+**Notes / Decisions:**
+
+- The generated-file marker stays as a trailing HTML comment, preserving provider frontmatter at the top of the file.
+- Cursor can round-trip `manual` and `agent-requested` distinctly; Claude and Copilot intentionally degrade unsupported modes to `always`.
 
 ---
 
@@ -186,9 +229,32 @@ Chronological log of implementation progress.
 
 ### 2026-03-11
 
-**Session Start:** {time}
+**Session Start:** 04:39 UTC
 
-{Continue log...}
+- [x] p01-t02: Implement canonical rule model and provider transforms - f48fb46a
+- [ ] p01-t03: Integrate transformed sync planning, execution, and manifest handling - pending
+
+**What changed (high level):**
+
+- Added canonical rule parsing/rendering helpers and provider-specific codecs.
+- Attached provider rule mappings to extensions and transform/adoption hooks.
+- Added rule-focused tests plus runtime alias support for the new rules module.
+
+**Decisions:**
+
+- Kept the OAT-managed generated marker as a trailing HTML comment so provider frontmatter remains first in generated files.
+- Treated Claude and Copilot activation lossiness as explicit behavior in tests rather than trying to fake unsupported metadata.
+
+**Follow-ups / TODO:**
+
+- Integrate rendered-provider comparison logic into compute/execute/drift in `p01-t03`.
+- Update manifest handling so transformed copies track rendered output hashes rather than canonical source hashes.
+
+**Blockers:**
+
+- None - resolved
+
+**Session End:** 04:50 UTC
 
 ---
 
