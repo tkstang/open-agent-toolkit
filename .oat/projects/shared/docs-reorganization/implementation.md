@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t05
+oat_current_task_id: p02-t06
 oat_generated: false
 ---
 
@@ -27,12 +27,12 @@ oat_generated: false
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 4/7       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 5/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 9/19 tasks completed
+**Total:** 10/19 tasks completed
 
 ---
 
@@ -360,14 +360,35 @@ oat_generated: false
 
 ### Task p02-t05: Write CLI Reference Page (guide/cli-reference.md)
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** 5aa21501
+
+**Outcome (required):**
+
+- Rewrote the moved CLI landing page into a shallow command-surface reference aligned to the new guide structure.
+- Folded the short diagnostics and local-path guidance into the reference instead of keeping them as separate top-level destinations.
+- Replaced stale pre-reorg links with routes into `guide/documentation/`, `guide/provider-sync/`, and `guide/workflow/`.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/cli-reference.md` - rewrote the CLI map and absorbed diagnostics/local-path guidance
+
+**Verification:**
+
+- Run: `sed -n '1,260p' apps/oat-docs/docs/guide/cli-reference.md`
+- Result: pass
+- Run: `rg -n "docs-consumer-quickstart|design-principles|bootstrap\\.md|tool-packs-and-assets|local-paths\\.md|diagnostics\\.md|repo-analysis\\.md|provider-interop|docs-apps\\.md" apps/oat-docs/docs/guide/cli-reference.md`
+- Result: pass (only expected new-tree link targets remained)
+
+**Notes / Decisions:**
+
+- Kept the page intentionally shallow per plan by routing detailed command behavior to neighboring guide pages instead of duplicating their tables.
 
 ---
 
 ### Task p02-t06: Write Section Index Pages
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
