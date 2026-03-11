@@ -435,12 +435,16 @@ async function runGuidedSetupImpl(
 ): Promise<void> {
   const projectRoot = await dependencies.resolveScopeRoot('project', context);
   const adapters = dependencies.getAdapters();
-  const detectedProviders: string[] = [];
-  for (const adapter of adapters) {
-    if (await adapter.detect(projectRoot)) {
-      detectedProviders.push(adapter.displayName);
-    }
-  }
+  const configPath = join(projectRoot, '.oat', 'sync', 'config.json');
+  const syncConfig = await dependencies.loadSyncConfig(configPath);
+  const resolution = await dependencies.getConfigAwareAdapters(
+    adapters,
+    projectRoot,
+    syncConfig,
+  );
+  const activeProviderNames = resolution.activeAdapters.map(
+    (a) => a.displayName,
+  );
 
   context.logger.info('[1/4] Tool packs…');
   const installTools = await dependencies.confirmAction(
@@ -471,7 +475,10 @@ async function runGuidedSetupImpl(
     )) ?? [];
 
   let addedCount = 0;
-  const existingCount = existingPaths.size;
+  const guidedPathValues = new Set(LOCAL_PATH_CHOICES.map((c) => c.value));
+  const existingGuidedCount = [...existingPaths].filter((p) =>
+    guidedPathValues.has(p),
+  ).length;
 
   if (selectedPaths.length > 0) {
     const delta = selectedPaths.filter((p) => !existingPaths.has(p));
@@ -502,13 +509,13 @@ async function runGuidedSetupImpl(
   context.logger.info('Guided setup complete.');
   context.logger.info('');
   context.logger.info(
-    `  Providers:      ${detectedProviders.length > 0 ? detectedProviders.join(', ') : 'none detected'}`,
+    `  Providers:      ${activeProviderNames.length > 0 ? activeProviderNames.join(', ') : 'none detected'}`,
   );
   context.logger.info(
     `  Tool packs:     ${installTools ? 'installed' : 'skipped'}`,
   );
   context.logger.info(
-    `  Local paths:    ${selectedPaths.length > 0 ? `${addedCount} added, ${existingCount} existing` : 'skipped'}`,
+    `  Local paths:    ${selectedPaths.length > 0 ? `${addedCount} added, ${existingGuidedCount} existing` : 'skipped'}`,
   );
   context.logger.info(
     `  Provider sync:  ${syncProviders ? 'done' : 'skipped'}`,

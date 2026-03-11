@@ -42,6 +42,7 @@ interface HarnessOptions {
   loadedSyncConfig?: SyncConfig;
   oatDirExists?: boolean;
   useDefaultGuidedSetup?: boolean;
+  resolvedLocalPaths?: string[];
 }
 
 interface RunInitArgs {
@@ -217,7 +218,9 @@ function createHarness(options: HarnessOptions = {}): {
     dirExists: dirExistsFn,
     runToolPacks,
     readOatConfig: vi.fn(async () => ({ version: 1 })),
-    resolveLocalPaths: vi.fn(() => [] as string[]),
+    resolveLocalPaths: vi.fn(
+      () => (options.resolvedLocalPaths ?? []) as string[],
+    ),
     addLocalPaths: addLocalPathsFn,
     applyGitignore: applyGitignoreFn,
     runProviderSync: vi.fn(async () => undefined),
@@ -1233,6 +1236,82 @@ config_file = "agents/reviewer.toml"
       });
 
       expect(addLocalPathsMock).not.toHaveBeenCalled();
+    });
+
+    it('summary excludes detectable-but-disabled providers', async () => {
+      const { command, capture } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        useDefaultGuidedSetup: true,
+        adapters: [
+          {
+            name: 'claude',
+            displayName: 'Claude Code',
+            defaultStrategy: 'symlink',
+            projectMappings: [],
+            userMappings: [],
+            detect: async () => true,
+          },
+          {
+            name: 'cursor',
+            displayName: 'Cursor',
+            defaultStrategy: 'symlink',
+            projectMappings: [],
+            userMappings: [],
+            detect: async () => true,
+          },
+        ],
+        configAwareActiveAdapterNames: ['claude'],
+        providerSelectResponses: [['claude']],
+        confirmResponses: [false, false],
+        selectResponses: [[]],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(
+        capture.info.some(
+          (msg) => msg.includes('Providers') && msg.includes('Claude Code'),
+        ),
+      ).toBe(true);
+      expect(
+        capture.info.some(
+          (msg) => msg.includes('Providers') && msg.includes('Cursor'),
+        ),
+      ).toBe(false);
+    });
+
+    it('existing count only reflects guided choice paths, not custom paths', async () => {
+      const { command, capture } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        useDefaultGuidedSetup: true,
+        providerSelectResponses: [['claude']],
+        resolvedLocalPaths: [
+          '.oat/**/analysis',
+          'custom/path1',
+          'custom/path2',
+        ],
+        confirmResponses: [false, false],
+        selectResponses: [['.oat/**/reviews']],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(
+        capture.info.some(
+          (msg) =>
+            msg.includes('Local paths') && msg.includes('1 added, 1 existing'),
+        ),
+      ).toBe(true);
     });
 
     it('non-interactive mode never enters guided setup', async () => {
