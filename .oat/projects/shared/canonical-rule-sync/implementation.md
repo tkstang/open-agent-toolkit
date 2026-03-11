@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p03-t03
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,13 +24,13 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | completed   | 3     | 3/3       |
-| Phase 2 | completed   | 3     | 3/3       |
-| Phase 3 | in_progress | 10    | 2/10      |
+| Phase   | Status    | Tasks | Completed |
+| ------- | --------- | ----- | --------- |
+| Phase 1 | completed | 3     | 3/3       |
+| Phase 2 | completed | 3     | 3/3       |
+| Phase 3 | completed | 10    | 10/10     |
 
-**Total:** 8/16 tasks completed
+**Total:** 16/16 tasks completed
 
 ---
 
@@ -325,8 +325,34 @@ oat_generated: false
 
 ## Phase 3: Review Fixes
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-11
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+
+- Removed duplicate rule-filename normalization logic and centralized rendered string hashing.
+- Made Copilot comma-containing glob handling explicit and fail-fast instead of silently lossy.
+- Expanded Claude and Copilot transform coverage for intentional lossy activation behavior and baseline activation modes.
+- Hardened init and execution edge cases with explicit directory-marker guards and canonical `.agents/rules/` directory creation.
+
+**Key files touched:**
+
+- `packages/cli/src/rules/canonical/provider-filenames.ts` - shared provider-to-canonical rule filename mapping
+- `packages/cli/src/providers/copilot/rule-transform.ts` - explicit comma-glob rejection for sync and adoption
+- `packages/cli/src/manifest/hash.ts` - centralized rendered string hashing helper
+- `packages/cli/src/providers/claude/rule-transform.test.ts` / `packages/cli/src/providers/copilot/rule-transform.test.ts` - review-driven transform coverage additions
+- `packages/cli/src/engine/execute-plan.ts` / `packages/cli/src/commands/init/index.ts` - review-driven guardrail and init ergonomics updates
+
+**Verification:**
+
+- Run: targeted review-fix verification commands per task plus `OAT_ASSETS_DIR=$(mktemp -d) pnpm test`, `OAT_ASSETS_DIR=$(mktemp -d) pnpm lint`, `OAT_ASSETS_DIR=$(mktemp -d) pnpm type-check`, and `OAT_ASSETS_DIR=$(mktemp -d) pnpm build`
+- Result: Passed
+
+**Notes / Decisions:**
+
+- Full workspace verification must be run sequentially because multiple root `turbo` commands in parallel all invoke `@oat/cli:build`, which races on the generated `packages/cli/assets` directory.
 
 ### Task p03-t01: (review) Extract shared canonical rule filename normalization
 
@@ -383,6 +409,189 @@ oat_generated: false
 **Notes / Decisions:**
 
 - Failing fast is safer than silently splitting a single brace-expansion glob into multiple unrelated globs during sync or adoption.
+
+---
+
+### Task p03-t03: (review) Centralize rendered string hashing
+
+**Status:** completed
+**Commit:** e5773a8b
+
+**Outcome (required when completed):**
+
+- Added a shared `computeStringHash()` helper in `@manifest/hash`.
+- Switched both sync planning and manifest write paths to use the shared helper for rendered provider-content hashing.
+- Added direct unit coverage for deterministic string hashing.
+
+**Files changed:**
+
+- `packages/cli/src/manifest/hash.ts` - added the shared rendered-string hash helper
+- `packages/cli/src/manifest/hash.test.ts` - covered deterministic and change-sensitive string hashing
+- `packages/cli/src/engine/compute-plan.ts` - reused the shared helper for rendered-copy comparisons
+- `packages/cli/src/engine/execute-plan.ts` - reused the shared helper for rendered-copy manifest hashes
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/manifest/hash.test.ts src/engine/compute-plan.test.ts src/engine/execute-plan.test.ts`
+- Result: Passed (`vitest` ran the full `@oat/cli` suite; 124 files / 933 tests green)
+
+**Notes / Decisions:**
+
+- File and directory hashing stayed byte-oriented; only rendered string hashing was centralized.
+
+---
+
+### Task p03-t04: (review) Reuse canonical activation constants in parsing
+
+**Status:** completed
+**Commit:** 5b144d97, a08a4e56
+
+**Outcome (required when completed):**
+
+- Replaced duplicated activation string literals in canonical parsing with `RULE_ACTIVATIONS`.
+- Added an explicit activation type guard so the shared constant remains the source of truth without weakening TypeScript safety.
+
+**Files changed:**
+
+- `packages/cli/src/rules/canonical/parse.ts` - derived activation validation from `RULE_ACTIVATIONS` and added a type guard
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/rules/canonical/parse.test.ts`
+- Result: Passed (`vitest` ran the full `@oat/cli` suite; 124 files / 933 tests green)
+- Run: `pnpm --filter @oat/cli type-check`
+- Result: Passed
+
+**Notes / Decisions:**
+
+- The initial constant refactor needed a follow-up type guard after full-workspace verification surfaced a TypeScript narrowing error.
+
+---
+
+### Task p03-t05: (review) Assert Claude description lossiness explicitly
+
+**Status:** completed
+**Commit:** 28890849
+
+**Outcome (required when completed):**
+
+- Added an explicit assertion that Claude round-tripping drops `description`.
+- Kept the existing round-trip expectation while making the lossy behavior obvious in the test body.
+
+**Files changed:**
+
+- `packages/cli/src/providers/claude/rule-transform.test.ts` - asserted explicit description lossiness for Claude
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/providers/claude/rule-transform.test.ts`
+- Result: Passed (`vitest` ran the full `@oat/cli` suite; 124 files / 933 tests green)
+
+---
+
+### Task p03-t06: (review) Add Claude always-activation coverage
+
+**Status:** completed
+**Commit:** eea8d08a
+
+**Outcome (required when completed):**
+
+- Added a baseline Claude test for canonical `activation: always`.
+- Verified Claude renders the rule body without frontmatter and round-trips back to `always`.
+
+**Files changed:**
+
+- `packages/cli/src/providers/claude/rule-transform.test.ts` - added `always` activation coverage
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/providers/claude/rule-transform.test.ts`
+- Result: Passed (`vitest` ran the full `@oat/cli` suite; 124 files / 934 tests green)
+
+---
+
+### Task p03-t07: (review) Add Copilot always-activation coverage
+
+**Status:** completed
+**Commit:** 2cb00aa5
+
+**Outcome (required when completed):**
+
+- Added a baseline Copilot test for canonical `activation: always`.
+- Verified Copilot omits `applyTo` and round-trips the rule back to `always`.
+
+**Files changed:**
+
+- `packages/cli/src/providers/copilot/rule-transform.test.ts` - added `always` activation coverage
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/providers/copilot/rule-transform.test.ts`
+- Result: Passed (`vitest` ran the full `@oat/cli` suite; 124 files / 935 tests green)
+
+---
+
+### Task p03-t08: (review) Add Copilot manual-degradation coverage
+
+**Status:** completed
+**Commit:** 94782b94
+
+**Outcome (required when completed):**
+
+- Added an explicit test for Copilot `manual -> always` degradation.
+- Verified the lossy behavior is now codified alongside the other Copilot transform expectations.
+
+**Files changed:**
+
+- `packages/cli/src/providers/copilot/rule-transform.test.ts` - added `manual` degradation coverage
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/providers/copilot/rule-transform.test.ts`
+- Result: Passed (`vitest` ran the full `@oat/cli` suite; 124 files / 936 tests green)
+
+---
+
+### Task p03-t09: (review) Clarify directory-marker filename assumptions
+
+**Status:** completed
+**Commit:** d35526c2
+
+**Outcome (required when completed):**
+
+- Added an explicit guard so directory-marker filename resolution rejects file-based entries.
+- Documented in code that only copied skill and agent directories should reach that path.
+
+**Files changed:**
+
+- `packages/cli/src/engine/execute-plan.ts` - added the file-entry guard and comment for directory marker assumptions
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/engine/execute-plan.test.ts`
+- Result: Passed (`vitest` ran the full `@oat/cli` suite; 124 files / 936 tests green)
+
+---
+
+### Task p03-t10: (review) Create canonical rules directory during init
+
+**Status:** completed
+**Commit:** dccbce83
+
+**Outcome (required when completed):**
+
+- Extended `oat init` to pre-create `.agents/rules/` for project scope.
+- Added init-command coverage that exercises the real canonical-directory helper and verifies `skills`, `agents`, and `rules` directories are created.
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/index.ts` - created `.agents/rules/` during project-scope init
+- `packages/cli/src/commands/init/index.test.ts` - verified project-scope init creates canonical rules directories
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/init/index.test.ts`
+- Result: Passed (`vitest` ran the full `@oat/cli` suite; 124 files / 937 tests green)
 
 ---
 
@@ -616,7 +825,7 @@ Chronological log of implementation progress.
 
 - None
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill starting at `p03-t01`.
+**Next:** Re-run `oat-project-review-provide code final`, then process the result with `oat-project-review-receive`.
 
 ---
 
@@ -626,7 +835,15 @@ Chronological log of implementation progress.
 
 - [x] p03-t01: (review) Extract shared canonical rule filename normalization - 5361ec66
 - [x] p03-t02: (review) Handle Copilot comma-containing glob limitations - c4770f04
-- [ ] p03-t03: (review) Centralize rendered string hashing - pending
+- [x] p03-t03: (review) Centralize rendered string hashing - e5773a8b
+- [x] p03-t04: (review) Reuse canonical activation constants in parsing - 5b144d97, a08a4e56
+- [x] p03-t05: (review) Assert Claude description lossiness explicitly - 28890849
+- [x] p03-t06: (review) Add Claude always-activation coverage - eea8d08a
+- [x] p03-t07: (review) Add Copilot always-activation coverage - 2cb00aa5
+- [x] p03-t08: (review) Add Copilot manual-degradation coverage - 94782b94
+- [x] p03-t09: (review) Clarify directory-marker filename assumptions - d35526c2
+- [x] p03-t10: (review) Create canonical rules directory during init - dccbce83
+- [x] Phase 3 complete
 
 **What changed (high level):**
 
@@ -635,20 +852,26 @@ Chronological log of implementation progress.
 - Added Copilot-specific regression coverage for `.instructions.md` normalization.
 - Made Copilot comma-containing glob handling fail fast with explicit transform and adoption errors.
 - Added explicit tests for ambiguous Copilot `applyTo` values.
+- Centralized rendered string hashing and anchored activation parsing on canonical constants.
+- Added the remaining Claude/Copilot transform coverage requested by review.
+- Hardened init and execute-plan edge cases from the remaining minor findings.
+- Re-ran full workspace verification sequentially with temporary bundled-asset output.
 
 **Decisions:**
 
 - Shared normalization now owns provider-extension stripping so future provider rule filename changes only need one update point.
 - Copilot comma-containing glob cases now error explicitly rather than silently corrupting adoption data during sync or adoption.
+- Full workspace verification should run sequentially because concurrent root `turbo` commands race on `@oat/cli` asset bundling.
 
 **Follow-ups / TODO:**
 
-- Centralize rendered string hashing in `p03-t03`.
-- Continue remaining review-fix tasks in phase order after `p03-t03`.
+- Request final re-review for the completed review-fix set.
 
 **Blockers:**
 
 - None - resolved
+
+**Session End:** 05:55 UTC
 
 After the fix tasks are complete:
 
@@ -669,11 +892,11 @@ Document any deviations from the original plan.
 
 Track test execution during implementation.
 
-| Phase | Tests Run                                                                                                               | Passed | Failed | Coverage |
-| ----- | ----------------------------------------------------------------------------------------------------------------------- | ------ | ------ | -------- |
-| 1     | `pnpm --filter @oat/cli test`; `pnpm lint`; `pnpm type-check`                                                           | yes    | 0      | -        |
-| 2     | `pnpm --filter @oat/cli test`; `pnpm --filter @oat/cli lint`; `pnpm --filter @oat/cli type-check`; manual smoke scripts | yes    | 0      | -        |
-| 3     | -                                                                                                                       | -      | -      | -        |
+| Phase | Tests Run                                                                                                                                                                                                        | Passed | Failed | Coverage |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ | -------- |
+| 1     | `pnpm --filter @oat/cli test`; `pnpm lint`; `pnpm type-check`                                                                                                                                                    | yes    | 0      | -        |
+| 2     | `pnpm --filter @oat/cli test`; `pnpm --filter @oat/cli lint`; `pnpm --filter @oat/cli type-check`; manual smoke scripts                                                                                          | yes    | 0      | -        |
+| 3     | task-targeted review-fix verification; `OAT_ASSETS_DIR=$(mktemp -d) pnpm test`; `OAT_ASSETS_DIR=$(mktemp -d) pnpm lint`; `OAT_ASSETS_DIR=$(mktemp -d) pnpm type-check`; `OAT_ASSETS_DIR=$(mktemp -d) pnpm build` | yes    | 0      | -        |
 
 ## Final Summary (for PR/docs)
 
@@ -682,12 +905,14 @@ Track test execution during implementation.
 - Canonical `.agents/rules/*.md` sync with provider-rendered Claude, Cursor, and Copilot rule files
 - Provider-rule stray detection and adoption back into canonical markdown with managed copy manifests
 - Canonical rule authoring workflow guidance and rule-specific sync/adapter verification coverage
+- Review-driven hardening for provider filename normalization, rendered hashing, transform coverage, and project init ergonomics
 
 **Behavioral changes (user-facing):**
 
 - Rules are now authored once in canonical markdown and propagated via sync instead of being generated independently per provider
 - Provider rule strays can be adopted into `.agents/rules/` without the old rename-plus-symlink assumption
 - Rule mappings are validated to include the transform metadata required for rendered sync behavior
+- Ambiguous Copilot comma-containing globs now fail fast instead of being silently mis-parsed
 
 **Key files / modules:**
 
@@ -695,18 +920,24 @@ Track test execution during implementation.
 - `packages/cli/src/engine/compute-plan.ts` / `packages/cli/src/engine/execute-plan.ts` - transformed rule planning and execution
 - `packages/cli/src/drift/strays.ts` / `packages/cli/src/commands/shared/adopt-stray.ts` - rule stray detection and adoption
 - `.agents/skills/oat-agent-instructions-apply/SKILL.md` - canonical rule authoring workflow guidance
+- `packages/cli/src/providers/claude/rule-transform.test.ts` / `packages/cli/src/providers/copilot/rule-transform.test.ts` - review-driven transform coverage
+- `packages/cli/src/commands/init/index.ts` - canonical rules directory creation during init
 
 **Verification performed:**
 
 - `pnpm --filter @oat/cli test`
 - `pnpm --filter @oat/cli lint`
 - `pnpm --filter @oat/cli type-check`
+- `OAT_ASSETS_DIR=$(mktemp -d) pnpm test`
+- `OAT_ASSETS_DIR=$(mktemp -d) pnpm lint`
+- `OAT_ASSETS_DIR=$(mktemp -d) pnpm type-check`
+- `OAT_ASSETS_DIR=$(mktemp -d) pnpm build`
 - Manual disposable sync smoke for canonical rule rendering across Claude, Cursor, and Copilot
 - Manual disposable adoption smoke for Cursor rule stray import into `.agents/rules/`
 
 **Design deltas (if any):**
 
-- {what changed vs design.md and why}
+- No design delta beyond review-driven hardening and verification coverage refinement.
 
 ## References
 
