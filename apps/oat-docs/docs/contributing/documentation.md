@@ -55,3 +55,9 @@ Documentation should ship with the code it explains. This page covers the core d
 
 - [Markdown Features](markdown-features.md)
 - [Documentation User Guide](../guide/documentation/index.md)
+
+## If You Are Trying To...
+
+- use docs commands or bootstrap a docs app, start with [Documentation User Guide](../guide/documentation/index.md)
+- follow the authoring contract for `index.md` and navigation, stay on this page and then read [Docs Index Contract](../reference/docs-index-contract.md)
+- understand supported markdown patterns, use [Markdown Features](markdown-features.md)

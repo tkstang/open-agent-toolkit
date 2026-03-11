@@ -22,6 +22,12 @@ Use this section when you want to choose the right OAT skill for a task. If you 
 - Work on docs surfaces: `oat-docs-analyze`, `oat-docs-apply`, and `oat-project-document`
 - Capture or refine ideas: `oat-idea-new`, `oat-idea-ideate`, `oat-idea-scratchpad`, `oat-idea-summarize`
 
+## If You Are Trying To...
+
+- choose the right skill for a task, stay in this guide page
+- write or update a skill, use [Writing Skills](../../contributing/skills.md)
+- understand how docs-specific skills fit with docs commands, use [Docs Workflows](../documentation/workflows.md)
+
 ## Full Catalog
 
 ### Project lifecycle

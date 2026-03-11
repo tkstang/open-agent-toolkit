@@ -44,3 +44,9 @@ Recent OAT changes moved more behavior into canonical rules plus explicit adopti
 
 - [Hooks and Safety](../../contributing/hooks-and-safety.md) - Operational safety guidance for hooks, mutation commands, and synced changes.
 - [Writing Skills](../../contributing/skills.md) - Contributor guidance when sync behavior depends on skill authoring changes.
+
+## If You Are Trying To...
+
+- operate sync, drift, or provider configuration as a user, stay in this section
+- change hook behavior or understand mutation safety, jump to [Hooks and Safety](../../contributing/hooks-and-safety.md)
+- update canonical skills that later sync into provider views, jump to [Writing Skills](../../contributing/skills.md)
