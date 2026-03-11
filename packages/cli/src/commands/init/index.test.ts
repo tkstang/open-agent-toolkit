@@ -220,6 +220,7 @@ function createHarness(options: HarnessOptions = {}): {
     resolveLocalPaths: vi.fn(() => [] as string[]),
     addLocalPaths: addLocalPathsFn,
     applyGitignore: applyGitignoreFn,
+    runProviderSync: vi.fn(async () => undefined),
   };
 
   if (!options.useDefaultGuidedSetup) {
@@ -1110,6 +1111,80 @@ config_file = "agents/reviewer.toml"
         '.oat/**/reviews',
       ]);
       expect(applyGitignore).toHaveBeenCalledTimes(1);
+    });
+
+    it('provider sync is offered and runs when confirmed', async () => {
+      const { command, capture } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        useDefaultGuidedSetup: true,
+        providerSelectResponses: [['claude']],
+        confirmResponses: [false, true],
+        selectResponses: [[]],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(capture.info.some((msg) => msg.includes('[3/4]'))).toBe(true);
+      expect(capture.info.some((msg) => msg.includes('[4/4]'))).toBe(true);
+    });
+
+    it('summary output includes all configured items', async () => {
+      const { command, capture } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        useDefaultGuidedSetup: true,
+        providerSelectResponses: [['claude']],
+        confirmResponses: [true, false],
+        selectResponses: [['.oat/**/analysis']],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(
+        capture.info.some((msg) => msg.includes('Guided setup complete')),
+      ).toBe(true);
+      expect(capture.info.some((msg) => msg.includes('Tool packs'))).toBe(true);
+      expect(capture.info.some((msg) => msg.includes('Local paths'))).toBe(
+        true,
+      );
+      expect(capture.info.some((msg) => msg.includes('Provider sync'))).toBe(
+        true,
+      );
+    });
+
+    it('skipped steps are reflected in summary', async () => {
+      const { command, capture } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        useDefaultGuidedSetup: true,
+        providerSelectResponses: [['claude']],
+        confirmResponses: [false, false],
+        selectResponses: [[]],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(
+        capture.info.some((msg) => msg.includes('Guided setup complete')),
+      ).toBe(true);
+      expect(
+        capture.info.some(
+          (msg) => msg.includes('Tool packs') && msg.includes('skipped'),
+        ),
+      ).toBe(true);
     });
 
     it('user can skip local paths without adding any', async () => {

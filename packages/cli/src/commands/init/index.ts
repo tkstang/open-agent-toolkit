@@ -1,3 +1,4 @@
+import { execSync } from 'node:child_process';
 import { mkdir } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 
@@ -183,6 +184,7 @@ interface InitDependencies {
     dependencies: InitDependencies,
   ) => Promise<void>;
   runToolPacks: (context: CommandContext) => Promise<void>;
+  runProviderSync: (projectRoot: string) => Promise<void>;
 }
 
 interface InitScopeSummary {
@@ -326,6 +328,12 @@ function createDependencies(): InitDependencies {
     applyGitignore,
     runGuidedSetup: runGuidedSetupImpl,
     runToolPacks: runInitToolsWithDefaults,
+    async runProviderSync(projectRoot: string) {
+      execSync('pnpm run cli -- sync --scope project', {
+        cwd: projectRoot,
+        stdio: 'inherit',
+      });
+    },
   };
 }
 
@@ -466,6 +474,41 @@ async function runGuidedSetupImpl(
   }
   context.logger.info(
     'Add custom local paths anytime with `oat local add <path>`',
+  );
+
+  context.logger.info('[3/4] Provider sync…');
+  const syncProviders = await dependencies.confirmAction(
+    'Sync provider project views now?',
+    { interactive: context.interactive },
+  );
+  if (syncProviders) {
+    await dependencies.runProviderSync(projectRoot);
+  }
+
+  context.logger.info('[4/4] Setup complete');
+  context.logger.info('');
+  context.logger.info('Guided setup complete.');
+  context.logger.info('');
+  context.logger.info(
+    `  Tool packs:     ${installTools ? 'installed' : 'skipped'}`,
+  );
+  context.logger.info(
+    `  Local paths:    ${selectedPaths.length > 0 ? `${selectedPaths.length} configured` : 'skipped'}`,
+  );
+  context.logger.info(
+    `  Provider sync:  ${syncProviders ? 'done' : 'skipped'}`,
+  );
+  context.logger.info('');
+  context.logger.info('Next steps:');
+  context.logger.info(
+    '  - Run `oat init tools` to customize tool pack selection',
+  );
+  context.logger.info(
+    '  - Run `oat local add <path>` to add custom local paths',
+  );
+  context.logger.info('  - Run `oat local status` to verify gitignore state');
+  context.logger.info(
+    '  - Start a project: `oat-project-quick-start` or `oat-project-new`',
   );
 }
 
