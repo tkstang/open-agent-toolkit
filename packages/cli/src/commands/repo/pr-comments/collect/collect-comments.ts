@@ -29,6 +29,7 @@ export interface CollectDependencies {
     query: string,
     variables: Record<string, unknown>,
   ) => Promise<unknown>;
+  resolveCurrentRepo: () => Promise<string>;
 }
 
 export const defaultCollectDependencies: CollectDependencies = {
@@ -46,6 +47,22 @@ export const defaultCollectDependencies: CollectDependencies = {
     });
     return JSON.parse(stdout);
   },
+  resolveCurrentRepo: async () => {
+    const { stdout } = await execFileAsync('git', [
+      'remote',
+      'get-url',
+      'origin',
+    ]);
+    const url = stdout.trim();
+    // Handle SSH (git@github.com:owner/name.git) and HTTPS (https://github.com/owner/name.git)
+    const sshMatch = url.match(/git@[^:]+:([^/]+\/[^/.]+)/);
+    if (sshMatch?.[1]) return sshMatch[1];
+    const httpsMatch = url.match(/github\.com\/([^/]+\/[^/.]+)/);
+    if (httpsMatch?.[1]) return httpsMatch[1];
+    throw new Error(
+      `Could not parse repository owner/name from git remote URL: ${url}`,
+    );
+  },
 };
 
 export async function runCollectComments(
@@ -54,13 +71,28 @@ export async function runCollectComments(
   deps: CollectDependencies = defaultCollectDependencies,
 ): Promise<void> {
   const { logger } = context;
-  const { since, until, outDir, repo, ignoreBots } = options;
+  const { since, until, outDir, ignoreBots } = options;
+  let { repo } = options;
 
   const untilDate = until ?? new Date().toISOString().slice(0, 10);
 
+  if (!repo) {
+    logger.debug('No --repo provided, resolving from git remote…');
+    try {
+      repo = await deps.resolveCurrentRepo();
+      logger.info(`Resolved repository: ${repo}`);
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      throw new Error(
+        `--repo not provided and could not resolve current repository: ${message}`,
+        { cause: error },
+      );
+    }
+  }
+
   logger.info(`Collecting PR review comments from ${since} to ${untilDate}...`);
 
-  const repoQualifier = repo ? `repo:${repo}` : '';
+  const repoQualifier = `repo:${repo}`;
 
   const allComments = await fetchAllComments(
     deps,
