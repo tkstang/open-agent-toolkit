@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t02
+oat_current_task_id: p02-t03
 oat_generated: false
 ---
 
@@ -27,12 +27,12 @@ oat_generated: false
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 1/7       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 2/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 6/19 tasks completed
+**Total:** 7/19 tasks completed
 
 ---
 
@@ -269,14 +269,36 @@ oat_generated: false
 
 ### Task p02-t02: Write User Guide Index (guide/index.md)
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** eb13b3c3
+
+**Outcome (required):**
+
+- Replaced the placeholder user-guide index with a real landing page for the new `guide/` section.
+- Added the intended guide routing structure so the section now points users to provider sync, docs tooling, workflow, skills, ideas, and CLI reference material.
+- Staged `guide/concepts.md` as the immediate next child page so the `## Contents` contract stays valid between tasks.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/index.md` - rewrote the user-guide landing page
+- `apps/oat-docs/docs/guide/concepts.md` - added the initial placeholder shell needed for linked section integrity
+
+**Verification:**
+
+- Run: `sed -n '1,220p' apps/oat-docs/docs/guide/index.md`
+- Result: pass
+- Run: `for f in concepts.md getting-started.md provider-sync/index.md tool-packs.md documentation/index.md workflow/index.md skills/index.md ideas/index.md cli-reference.md; do test -f "apps/oat-docs/docs/guide/$f" || echo "MISSING $f"; done`
+- Result: pass after staging `concepts.md`
+
+**Notes / Decisions:**
+
+- Creating a minimal `concepts.md` shell in this task avoided a broken `## Contents` link before `p02-t03` could expand the page.
 
 ---
 
 ### Task p02-t03: Write Core Concepts Page (guide/concepts.md)
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
