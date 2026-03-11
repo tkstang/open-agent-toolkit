@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p03-t01
+oat_current_task_id: p03-t02
 oat_generated: false
 ---
 
@@ -28,11 +28,11 @@ oat_generated: false
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
 | Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed   | 7     | 7/7       |
-| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | in_progress | 3     | 0/3       |
+| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | in_progress | 3     | 1/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 12/19 tasks completed
+**Total:** 13/19 tasks completed
 
 ---
 
@@ -456,14 +456,50 @@ oat_generated: false
 
 ### Task p03-t01: Audit and Fix Cross-References, Then Remove Retired Paths
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** a0431e6d
+
+**Outcome (required):**
+
+- Fixed live docs references that still pointed at retired pre-reorg docs paths.
+- Removed the remaining legacy stub pages under `docs/cli/`, `docs/projects/`, and `docs/workflow/`.
+- Regenerated the app-root index so the root surface now reflects only the reorganized sections.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/tool-packs.md` - rerouted related links to the new guide pages
+- `apps/oat-docs/docs/guide/getting-started.md` - rerouted utility and provider-sync references
+- `apps/oat-docs/docs/quickstart.md` - updated provider-agnostic tooling links to new guide paths
+- `apps/oat-docs/docs/guide/documentation/quickstart.md` - fixed docs-workflow link
+- `apps/oat-docs/docs/guide/documentation/workflows.md` - fixed related links into the new docs/contributing structure
+- `apps/oat-docs/docs/guide/documentation/commands.md` - fixed related docs link
+- `apps/oat-docs/docs/contributing/design-principles.md` - rerouted provider-sync references
+- `apps/oat-docs/docs/guide/provider-sync/commands.md` - rerouted adjacent docs and design-principles links
+- `apps/oat-docs/docs/guide/provider-sync/scope-and-surface.md` - rerouted adjacent docs links
+- `apps/oat-docs/docs/cli/diagnostics.md` - removed retired legacy page
+- `apps/oat-docs/docs/cli/local-paths.md` - removed retired legacy page
+- `apps/oat-docs/docs/projects/index.md` - removed retired legacy stub
+- `apps/oat-docs/docs/workflow/index.md` - removed retired legacy stub
+- `apps/oat-docs/index.md` - regenerated after legacy-path cleanup
+
+**Verification:**
+
+- Run: docs-link-specific stale-path audit against old top-level docs roots
+- Result: pass
+- Run: `find` check confirming the retired legacy docs roots no longer contained files
+- Result: pass
+- Run: `pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The stale-reference audit was narrowed to markdown link targets and known old docs paths so code-path references like `packages/cli/src/**` did not create false positives.
 
 ---
 
 ### Task p03-t02: Trim Quickstart Page
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
