@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t07
+oat_current_task_id: p03-t01
 oat_generated: false
 ---
 
@@ -27,12 +27,12 @@ oat_generated: false
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 6/7       |
-| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed   | 7     | 7/7       |
+| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | in_progress | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 11/19 tasks completed
+**Total:** 12/19 tasks completed
 
 ---
 
@@ -423,19 +423,40 @@ oat_generated: false
 
 ### Task p02-t07: Refresh the Generated Docs Surface
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** 7dd16c6b
+
+**Outcome (required):**
+
+- Regenerated the app-root docs index from the moved and rewritten docs tree.
+- Confirmed the new `Guide`, `Contributing`, and `Reference` sections are now visible from the app root.
+- Captured the expected duplicate legacy `Cli`, `Projects`, and `Workflow` entries that remain until Phase 3 cleanup removes or rewires the old paths.
+
+**Files changed:**
+
+- `apps/oat-docs/index.md` - regenerated app-root index for the current docs tree
+
+**Verification:**
+
+- Run: `pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md`
+- Result: pass
+- Run: `sed -n '1,260p' apps/oat-docs/index.md`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The generated index still contains old top-level sections because their source files remain on disk for the planned Phase 3 stale-path audit and removal sequence.
 
 ---
 
 ## Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-11
 
 ### Task p03-t01: Audit and Fix Cross-References, Then Remove Retired Paths
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
