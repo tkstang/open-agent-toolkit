@@ -3,7 +3,8 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-10
-oat_current_task_id: p01-t01
+oat_project_state_updated: '2026-03-10T21:48:00Z'
+oat_current_task_id: p01-t02
 oat_generated: false
 ---
 
@@ -24,18 +25,18 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status  | Tasks | Completed |
-| ------- | ------- | ----- | --------- |
-| Phase 1 | pending | 5     | 0/5       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | in_progress | 5     | 1/5       |
 
-**Total:** 0/5 tasks completed
+**Total:** 1/5 tasks completed
 
 ---
 
 ## Phase 1: Guided Setup Flow
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-10
 
 ### Phase Summary (fill when phase is complete)
 
@@ -58,8 +59,29 @@ oat_generated: false
 
 ### Task p01-t01: Add `--setup` flag and guided entry point
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** bd568feb
+
+**Outcome:**
+
+- Added `--setup` flag to `oat init` Commander registration
+- Added `setup?: boolean` to `InitOptions` interface
+- Added `dirExists` and `runGuidedSetup` to `InitDependencies` for fresh-init detection and guided flow injection
+- After init logic completes, detects fresh init (`.oat/` didn't exist before) and prompts for guided setup; `--setup` flag skips the prompt
+- Non-interactive mode never enters guided setup
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/index.ts` - Added --setup flag, freshInit detection, guided setup entry point
+- `packages/cli/src/commands/init/index.test.ts` - 4 new tests for guided setup behavior
+- `packages/cli/src/commands/help-snapshots.test.ts` - Updated help snapshot for --setup option
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: 899/899 pass
+- Run: `pnpm lint && pnpm type-check`
+- Result: pass
 
 ### Task p01-t02: Implement guided setup — tool packs step
 
