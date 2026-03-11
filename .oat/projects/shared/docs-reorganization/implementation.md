@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p03-t02
+oat_current_task_id: p03-t03
 oat_generated: false
 ---
 
@@ -28,11 +28,11 @@ oat_generated: false
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
 | Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed   | 7     | 7/7       |
-| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | in_progress | 3     | 1/3       |
+| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | in_progress | 3     | 2/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 13/19 tasks completed
+**Total:** 14/19 tasks completed
 
 ---
 
@@ -499,14 +499,35 @@ oat_generated: false
 
 ### Task p03-t02: Trim Quickstart Page
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** 8aed40bd
+
+**Outcome (required):**
+
+- Kept Path A as the primary quickstart lane for interop-first setup.
+- Left Path B concise and focused on routing readers into the new guide surfaces.
+- Replaced the long inline workflow lane with shorter routing guidance into `guide/workflow/`.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/quickstart.md` - trimmed workflow detail and rerouted readers to the guide
+
+**Verification:**
+
+- Run: `sed -n '1,240p' apps/oat-docs/docs/quickstart.md`
+- Result: pass
+- Run: stale-link grep for old docs paths in `apps/oat-docs/docs/quickstart.md`
+- Result: pass
+
+**Notes / Decisions:**
+
+- Kept the external provider-plan import note inline because it is still useful quickstart context without requiring the full workflow docs.
 
 ---
 
 ### Task p03-t03: Add Audience Cross-Links
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
