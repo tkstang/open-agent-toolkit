@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p04-t01
+oat_current_task_id: p04-t02
 oat_generated: false
 ---
 
@@ -29,10 +29,10 @@ oat_generated: false
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
 | Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed   | 7     | 7/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | completed   | 3     | 3/3       |
-| Phase 4: Visual Elements and Content Enhancements                  | in_progress | 2     | 0/2       |
+| Phase 4: Visual Elements and Content Enhancements                  | in_progress | 2     | 1/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 15/19 tasks completed
+**Total:** 16/19 tasks completed
 
 ---
 
@@ -563,14 +563,44 @@ oat_generated: false
 
 ### Task p04-t01: Add Mermaid Diagrams
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** c20fc6eb
+
+**Outcome (required):**
+
+- Added a high-level lifecycle map, a workflow state transition map, a provider-sync flow diagram, and a capability-stack diagram.
+- Kept the diagrams close to the conceptual sections they explain instead of isolating them in a visuals-only appendix.
+- Verified that the current Fumadocs build path accepts the Mermaid blocks after building the missing local docs packages.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/workflow/lifecycle.md` - added a top-level lifecycle map
+- `apps/oat-docs/docs/guide/workflow/state-machine.md` - added a state transition diagram
+- `apps/oat-docs/docs/guide/provider-sync/index.md` - added a sync-flow diagram
+- `apps/oat-docs/docs/guide/concepts.md` - added a capability-stack diagram
+
+**Verification:**
+
+- Run: `sed -n '1,220p'` across the four touched pages
+- Result: pass
+- Run: `pnpm --filter @oat/docs-config build`
+- Result: pass
+- Run: `pnpm --filter @oat/docs-theme build`
+- Result: pass
+- Run: `pnpm --filter @oat/docs-transforms build`
+- Result: pass
+- Run: `pnpm --filter oat-docs build`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The first `oat-docs` build attempt failed before docs parsing because the local `@oat/docs-config` workspace package had not been built in this worktree. After building the required docs packages, the docs build passed without Mermaid errors.
 
 ---
 
 ### Task p04-t02: Add Tabbed Content
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
