@@ -1,6 +1,6 @@
 ---
-oat_status: in_progress
-oat_ready_for: null
+oat_status: complete
+oat_ready_for: plan
 oat_blockers: []
 oat_last_updated: 2026-03-11
 oat_generated: false
@@ -19,13 +19,15 @@ Build a repo-wide PR review comment collector. The existing tooling (`agent-revi
 
 ## Solution Space
 
-### Approach 1: GitHub API Direct _(Recommended / Chosen)_
+### Approach 1: GitHub GraphQL API _(Recommended / Chosen)_
 
-**Description:** Use `gh api repos/{owner}/{repo}/pulls/comments --paginate` to fetch all PR review comments repo-wide in a single pass. Own the JSON normalization and field mapping.
+**Description:** Use GitHub's GraphQL API via `gh api graphql` to fetch merged PRs with their review comments in nested queries. A single query pulls PR metadata (title, number, merge date, author) alongside comments — no join needed.
 
-**When this is the right choice:** You want bulk collection, don't need per-PR orchestration overhead, and want full control over field mapping/filtering. Gives access to both resolved and unresolved comments.
+**When this is the right choice:** You want bulk collection with rich context (PR metadata per comment), fewer API round-trips, and access to fields like `isResolved` if needed later. Can filter merged PRs by `mergedAt` date range server-side via search query.
 
-**Tradeoffs:** You own the JSON normalization (mapping raw GitHub fields to the output model). But the schema is well-documented and stable.
+**Tradeoffs:** GraphQL queries are more complex to write, but `gh api graphql` handles auth and pagination. Nested pagination (PRs → comments) requires a secondary query for PRs with >100 comments.
+
+**Pivot note:** Originally considered REST (`pulls/comments --paginate`), but GraphQL was chosen because it provides PR context (title, author, merge date) alongside each comment in a single query, eliminating the need for post-processing joins.
 
 ### Approach 2: Iterate `agent-reviews` Across PRs
 
@@ -45,14 +47,14 @@ Build a repo-wide PR review comment collector. The existing tooling (`agent-revi
 
 ### Chosen Direction
 
-**Approach:** GitHub API Direct (Approach 1)
-**Rationale:** Simplest, fastest, most complete data. Single API pass. Full control over normalization. Access to all comments (resolved + unresolved).
+**Approach:** GitHub GraphQL API (Approach 1)
+**Rationale:** Single query fetches PR metadata + comments together. Fewer API calls than REST. Server-side date filtering via search query. Full control over normalization. Access to all comments (resolved + unresolved). `isResolved` available for future use.
 **User validated:** Yes
 
 ## Key Decisions
 
 1. **Two-layer architecture:** CLI command for raw collection/filtering + OAT skill for analysis/classification. The skill can either consume an already-generated file or invoke the CLI itself.
-2. **GitHub API direct:** Use `gh api` for repo-wide collection rather than iterating `agent-reviews` per-PR.
+2. **GitHub GraphQL API:** Use `gh api graphql` for repo-wide collection rather than REST or iterating `agent-reviews` per-PR. GraphQL provides PR context (title, author, merge date) alongside each comment in a single query.
 3. **Configurable time window:** `--since` flag on merged PRs. Supports historical deep-dives (3–18 months) and incremental runs (30 days).
 4. **Noise filtering at CLI layer:** Filter out bot comments and trivial/low-signal comments programmatically. Resolved threads and file path filtering deferred to the analysis skill.
 5. **Dual output format:** Both JSON (for skill consumption) and Markdown (for human review).
@@ -118,4 +120,4 @@ Build a repo-wide PR review comment collector. The existing tooling (`agent-revi
 
 ## Next Steps
 
-Proceed to design depth decision point, then plan generation.
+Discovery complete. Proceed to plan generation.
