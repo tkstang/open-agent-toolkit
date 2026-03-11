@@ -38,6 +38,11 @@ oat_ready_for: null | oat-project-implement # downstream consumer
 ---
 ```
 
+Planning-time default:
+
+- Plan-producing skills should set `oat_plan_hill_phases: []` during planning/import unless a user explicitly provided a value in the source artifact.
+- The actual checkpoint choice is confirmed when `oat-project-implement` starts execution.
+
 Runtime routing note:
 
 - Keep `oat_ready_for` canonical as `oat-project-implement`.

@@ -141,9 +141,22 @@ Determine whether this is a first implementation run:
 
 Prompt behavior:
 
-- **If `oat_plan_hill_phases` is missing/empty/invalid:** ask user to confirm checkpoint phases before any task execution.
-- **If first run and `oat_plan_hill_phases` is valid:** ask user to confirm keep/change.
+- **If first run:** always present a brief phase summary and confirm checkpoint phases before any task execution, even if `oat_plan_hill_phases` is already set to the default `[]`.
 - **If resuming and `oat_plan_hill_phases` is valid:** do not re-ask; print active checkpoint config and continue.
+- **If resuming and `oat_plan_hill_phases` is missing/invalid:** ask the user to repair the checkpoint configuration before continuing.
+
+Required prompt shape for first-run confirmation:
+
+1. Briefly summarize each plan phase:
+   - `p01 — {short phase summary}`
+   - `p02 — {short phase summary}`
+   - ...
+2. Ask a simple checkpoint question:
+   - `Which checkpoints do you want: every phase, or specific checkpoints?`
+3. Offer concrete examples:
+   - `Every phase` -> `[]`
+   - `Final phase only` -> `["p07"]` (replace `p07` with the actual final phase ID for this plan)
+   - `Specific checkpoints` -> `["p02","p05"]`
 
 When user confirms/changes:
 

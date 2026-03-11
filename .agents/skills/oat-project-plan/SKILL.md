@@ -298,23 +298,19 @@ Follow the review table preservation rules from `oat-project-plan-writing`:
 
 **Why stable IDs:** Using `p01-t03` instead of "Task 3" prevents broken references when tasks are inserted or reordered.
 
-### Step 11: Configure Plan Phase Checkpoints
+### Step 11: Set Default Plan Phase Checkpoints
 
-Ask user: "During implementation, should I stop for review at every phase boundary, or only at specific phases?"
+Do **not** ask the user to choose HiLL checkpoints during planning.
 
-**Options:**
-- **Every phase** (default): Leave `oat_plan_hill_phases: []` - stop at end of every plan phase
-- **Only the end**: Set `oat_plan_hill_phases` to the **last plan phase ID** (e.g., `["p03"]`) - stop only at the end of implementation
-- **Specific phases**: Set `oat_plan_hill_phases: ["p01", "p04"]` - only stop at listed phases
-
-Update plan.md frontmatter with user's choice.
+Set `oat_plan_hill_phases: []` in `plan.md` frontmatter as the default, meaning "pause after every phase" until `oat-project-implement` confirms the real checkpoint configuration at implementation start.
 
 **Required plan body update (do not skip):**
 - In `## Planning Checklist`, mark:
-  - `[x] Confirmed HiLL checkpoints with user`
   - `[x] Set oat_plan_hill_phases in frontmatter`
+- If a legacy checklist item such as `Confirmed HiLL checkpoints with user` exists, replace it with:
+  - `[x] Defer HiLL checkpoint confirmation to oat-project-implement`
 
-If `## Planning Checklist` is missing (older plans), add it before finalizing and then check both items.
+If `## Planning Checklist` is missing (older plans), add it before finalizing with the items above.
 
 ### Step 12: Review Plan with User
 
@@ -322,7 +318,8 @@ Present plan summary:
 - Number of phases
 - Tasks per phase
 - Key milestones
-- HiLL checkpoints configured
+
+Also note that `oat-project-implement` will confirm the actual HiLL checkpoint selection at execution start.
 
 Ask: "Does this breakdown make sense? Any tasks missing?"
 
@@ -333,7 +330,7 @@ Iterate until user confirms.
 Before setting `oat_status: complete`, verify:
 - `oat_plan_hill_phases` is explicitly set in frontmatter (empty array is valid for "every phase")
 - `## Planning Checklist` exists
-- both HiLL checklist items are checked (`[x]`)
+- the checklist records that frontmatter was set and checkpoint confirmation is deferred to implementation
 
 Update frontmatter:
 ```yaml
