@@ -4,6 +4,7 @@ import { join } from 'node:path';
 
 import { computeContentHash } from '@manifest/hash';
 import { createEmptyManifest } from '@manifest/manager';
+import { COPILOT_PROJECT_MAPPINGS } from '@providers/copilot/paths';
 import { CURSOR_PROJECT_MAPPINGS } from '@providers/cursor/paths';
 import { parseCursorRuleToCanonical } from '@providers/cursor/rule-transform';
 import { afterEach, describe, expect, it } from 'vitest';
@@ -187,5 +188,51 @@ Prefer composition over inheritance.
     expect(nextManifest.entries[0]?.contentHash).toBe(
       await computeContentHash(providerPath, true),
     );
+  });
+
+  it('adopts copilot rule strays using the shared canonical filename mapping', async () => {
+    const scopeRoot = await mkdtemp(join(tmpdir(), 'oat-adopt-stray-'));
+    tempDirs.push(scopeRoot);
+    await mkdir(join(scopeRoot, '.github', 'instructions'), {
+      recursive: true,
+    });
+
+    await writeFile(
+      join(scopeRoot, '.github', 'instructions', 'frontend.instructions.md'),
+      `---
+description: Frontend rule
+applyTo: src/**/*.tsx
+---
+
+# Frontend
+
+Keep components focused.
+`,
+      'utf8',
+    );
+
+    const mapping = COPILOT_PROJECT_MAPPINGS.find(
+      (entry) => entry.contentType === 'rule',
+    );
+    expect(mapping).toBeDefined();
+
+    await adoptStrayToCanonical(
+      scopeRoot,
+      {
+        provider: 'copilot',
+        report: {
+          providerPath: '.github/instructions/frontend.instructions.md',
+        },
+        mapping: mapping!,
+      },
+      createEmptyManifest(),
+    );
+
+    const canonical = await readFile(
+      join(scopeRoot, '.agents', 'rules', 'frontend.md'),
+      'utf8',
+    );
+    expect(canonical).toContain('description: Frontend rule');
+    expect(canonical).toContain('activation: glob');
   });
 });

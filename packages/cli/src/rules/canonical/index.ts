@@ -4,6 +4,7 @@ export {
   parseMarkdownFrontmatter,
   stripTrailingOatMarker,
 } from './parse';
+export { canonicalRuleNameForProviderEntry } from './provider-filenames';
 export {
   appendGeneratedMarker,
   renderCanonicalRuleMarkdown,

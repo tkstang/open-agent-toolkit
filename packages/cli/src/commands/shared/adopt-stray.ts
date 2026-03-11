@@ -17,6 +17,7 @@ import { addEntry } from '@manifest/manager';
 import type { Manifest, ManifestEntry } from '@manifest/manifest.types';
 import { importCanonicalAgentFromCodexRole } from '@providers/codex/codec/import-from-codex';
 import type { PathMapping } from '@providers/shared/adapter.types';
+import { canonicalRuleNameForProviderEntry } from '@rules/canonical';
 
 interface StrayAdoptionCandidate {
   provider: string;
@@ -131,23 +132,6 @@ export async function adoptStrayToCanonical<
   return addEntry(manifest, manifestEntry);
 }
 
-function canonicalRuleEntryName(
-  providerEntryName: string,
-  mapping: Pick<PathMapping, 'providerExtension'>,
-): string {
-  const providerExtension = mapping.providerExtension;
-  if (providerExtension && providerEntryName.endsWith(providerExtension)) {
-    return `${providerEntryName.slice(0, -providerExtension.length)}.md`;
-  }
-  if (providerEntryName.endsWith('.instructions.md')) {
-    return `${providerEntryName.slice(0, -'.instructions.md'.length)}.md`;
-  }
-  if (providerEntryName.endsWith('.mdc')) {
-    return `${providerEntryName.slice(0, -'.mdc'.length)}.md`;
-  }
-  return providerEntryName;
-}
-
 async function adoptRuleStrayToCanonical<
   TCandidate extends StrayAdoptionCandidate,
 >(
@@ -158,7 +142,7 @@ async function adoptRuleStrayToCanonical<
 ): Promise<Manifest> {
   const providerAbsolutePath = resolve(scopeRoot, stray.report.providerPath);
   const providerContent = await readFile(providerAbsolutePath, 'utf8');
-  const canonicalEntryName = canonicalRuleEntryName(
+  const canonicalEntryName = canonicalRuleNameForProviderEntry(
     basename(stray.report.providerPath),
     stray.mapping,
   );

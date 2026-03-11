@@ -300,4 +300,30 @@ describe('detectStrays', () => {
       state: { status: 'stray' },
     });
   });
+
+  it('does not flag copilot instruction files when the canonical markdown exists', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'oat-strays-'));
+    tempDirs.push(root);
+    const providerDir = join(root, '.github', 'instructions');
+    await seedProviderFile(providerDir, 'react-components.instructions.md');
+
+    const canonicalEntries: CanonicalEntry[] = [
+      {
+        name: 'react-components.md',
+        type: 'rule',
+        canonicalPath: join(root, '.agents', 'rules', 'react-components.md'),
+        isFile: true,
+      },
+    ];
+
+    const reports = await detectStrays(
+      'copilot',
+      providerDir,
+      createEmptyManifest(),
+      canonicalEntries,
+      createRuleMapping('.github/instructions', '.instructions.md'),
+    );
+
+    expect(reports).toEqual([]);
+  });
 });

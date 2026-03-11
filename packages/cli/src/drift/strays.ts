@@ -6,6 +6,7 @@ import { CliError } from '@errors/index';
 import { toPosixPath } from '@fs/paths';
 import type { Manifest } from '@manifest/manifest.types';
 import type { PathMapping } from '@providers/shared/adapter.types';
+import { canonicalRuleNameForProviderEntry } from '@rules/canonical';
 
 import type { DriftReport } from './drift.types';
 
@@ -87,25 +88,6 @@ function isManagedRuleFile(
     name.endsWith('.mdc') ||
     name.endsWith('.instructions.md')
   );
-}
-
-function canonicalRuleNameForProviderEntry(
-  name: string,
-  mapping?: Pick<PathMapping, 'contentType' | 'providerExtension'>,
-): string {
-  const providerExtension =
-    mapping?.contentType === 'rule' ? mapping.providerExtension : undefined;
-
-  if (providerExtension && name.endsWith(providerExtension)) {
-    return `${name.slice(0, -providerExtension.length)}.md`;
-  }
-  if (name.endsWith('.instructions.md')) {
-    return `${name.slice(0, -'.instructions.md'.length)}.md`;
-  }
-  if (name.endsWith('.mdc')) {
-    return `${name.slice(0, -'.mdc'.length)}.md`;
-  }
-  return name;
 }
 
 async function readProviderEntries(resolvedProviderDir: string) {
