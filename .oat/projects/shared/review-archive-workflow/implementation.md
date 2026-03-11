@@ -35,7 +35,7 @@ oat_generated: false
 
 ## Phase 1: Review Lifecycle Archiving
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-11
 
 ### Task p01-t01: Update review receive workflows to archive consumed artifacts
