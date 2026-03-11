@@ -97,6 +97,8 @@ function createHarness(options: HarnessOptions = {}): {
   uninstallHook: ReturnType<typeof vi.fn>;
   runGuidedSetup: ReturnType<typeof vi.fn>;
   runToolPacks: ReturnType<typeof vi.fn>;
+  addLocalPaths: ReturnType<typeof vi.fn>;
+  applyGitignore: ReturnType<typeof vi.fn>;
 } {
   const capture = createLoggerCapture();
   const scopeRoots = {
@@ -128,6 +130,18 @@ function createHarness(options: HarnessOptions = {}): {
   const dirExistsFn = vi.fn(async () => options.oatDirExists ?? true);
   const runGuidedSetup = vi.fn(async () => undefined);
   const runToolPacks = vi.fn(async () => undefined);
+  const addLocalPathsFn = vi.fn(
+    async (_root: string, paths: string[]) =>
+      ({
+        added: paths,
+        alreadyPresent: [] as string[],
+        rejected: [] as Array<{ path: string; reason: string }>,
+        all: paths,
+      }) as { added: string[]; all: string[] },
+  );
+  const applyGitignoreFn = vi.fn(async () => ({
+    action: 'updated' as const,
+  }));
   const saveSyncConfig = vi.fn(async (_path: string, config: SyncConfig) => {
     return config;
   });
@@ -202,6 +216,10 @@ function createHarness(options: HarnessOptions = {}): {
     })),
     dirExists: dirExistsFn,
     runToolPacks,
+    readOatConfig: vi.fn(async () => ({ version: 1 })),
+    resolveLocalPaths: vi.fn(() => [] as string[]),
+    addLocalPaths: addLocalPathsFn,
+    applyGitignore: applyGitignoreFn,
   };
 
   if (!options.useDefaultGuidedSetup) {
@@ -234,6 +252,8 @@ function createHarness(options: HarnessOptions = {}): {
     uninstallHook,
     runGuidedSetup,
     runToolPacks,
+    addLocalPaths: addLocalPathsFn,
+    applyGitignore: applyGitignoreFn,
   };
 }
 
@@ -1031,6 +1051,84 @@ config_file = "agents/reviewer.toml"
       });
 
       expect(runToolPacks).not.toHaveBeenCalled();
+    });
+
+    it('local paths multi-select is presented with default choices', async () => {
+      const { command, selectManyWithAbort } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        useDefaultGuidedSetup: true,
+        providerSelectResponses: [['claude']],
+        confirmResponses: [false],
+        selectResponses: [
+          ['.oat/**/analysis', '.oat/**/pr', '.oat/**/reviews', '.oat/ideas'],
+        ],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      const guidedSelectCall = selectManyWithAbort.mock.calls.find(
+        (call: unknown[]) =>
+          typeof call[0] === 'string' &&
+          (call[0] as string).includes('local path'),
+      );
+      expect(guidedSelectCall).toBeDefined();
+      const choices = guidedSelectCall?.[1] as Array<{
+        value: string;
+        checked?: boolean;
+      }>;
+      expect(choices).toHaveLength(4);
+      expect(choices.every((c) => c.checked)).toBe(true);
+    });
+
+    it('selected local paths are added and gitignore is updated', async () => {
+      const {
+        command,
+        addLocalPaths: addLocalPathsMock,
+        applyGitignore,
+      } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        useDefaultGuidedSetup: true,
+        providerSelectResponses: [['claude']],
+        confirmResponses: [false],
+        selectResponses: [['.oat/**/analysis', '.oat/**/reviews']],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(addLocalPathsMock).toHaveBeenCalledWith('/tmp/workspace', [
+        '.oat/**/analysis',
+        '.oat/**/reviews',
+      ]);
+      expect(applyGitignore).toHaveBeenCalledTimes(1);
+    });
+
+    it('user can skip local paths without adding any', async () => {
+      const { command, addLocalPaths: addLocalPathsMock } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        useDefaultGuidedSetup: true,
+        providerSelectResponses: [['claude']],
+        confirmResponses: [false],
+        selectResponses: [[]],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(addLocalPathsMock).not.toHaveBeenCalled();
     });
 
     it('non-interactive mode never enters guided setup', async () => {

@@ -10,6 +10,8 @@ import {
   type ApplyOatCoreResult,
   applyOatCoreGitignore,
 } from '@commands/init/gitignore';
+import { applyGitignore } from '@commands/local/apply';
+import { addLocalPaths } from '@commands/local/manage';
 import {
   adoptStrayToCanonical,
   isAdoptionConflictError,
@@ -35,6 +37,11 @@ import {
   type SyncConfig,
   saveSyncConfig,
 } from '@config/index';
+import {
+  type OatConfig,
+  readOatConfig,
+  resolveLocalPaths,
+} from '@config/oat-config';
 import { type DriftReport, detectStrays } from '@drift/index';
 import {
   type CanonicalEntry,
@@ -161,6 +168,16 @@ interface InitDependencies {
   ) => Promise<ConfigAwareAdaptersResult>;
   applyOatCoreGitignore: (repoRoot: string) => Promise<ApplyOatCoreResult>;
   dirExists: (dirPath: string) => Promise<boolean>;
+  readOatConfig: (repoRoot: string) => Promise<OatConfig>;
+  resolveLocalPaths: (config: OatConfig) => string[];
+  addLocalPaths: (
+    repoRoot: string,
+    paths: string[],
+  ) => Promise<{ added: string[]; all: string[] }>;
+  applyGitignore: (
+    repoRoot: string,
+    localPaths: string[],
+  ) => Promise<{ action: string }>;
   runGuidedSetup: (
     context: CommandContext,
     dependencies: InitDependencies,
@@ -303,6 +320,10 @@ function createDependencies(): InitDependencies {
     getConfigAwareAdapters,
     applyOatCoreGitignore,
     dirExists,
+    readOatConfig,
+    resolveLocalPaths,
+    addLocalPaths,
+    applyGitignore,
     runGuidedSetup: runGuidedSetupImpl,
     runToolPacks: runInitToolsWithDefaults,
   };
@@ -377,6 +398,29 @@ async function maybeHandleHook(
   return installed || shouldInstall;
 }
 
+const LOCAL_PATH_CHOICES: MultiSelectChoice[] = [
+  {
+    label: '.oat/**/analysis — Analysis artifacts',
+    value: '.oat/**/analysis',
+    checked: true,
+  },
+  {
+    label: '.oat/**/pr — PR description files',
+    value: '.oat/**/pr',
+    checked: true,
+  },
+  {
+    label: '.oat/**/reviews — Review artifacts',
+    value: '.oat/**/reviews',
+    checked: true,
+  },
+  {
+    label: '.oat/ideas — Ideas and brainstorms',
+    value: '.oat/ideas',
+    checked: true,
+  },
+];
+
 async function runGuidedSetupImpl(
   context: CommandContext,
   dependencies: InitDependencies,
@@ -390,6 +434,39 @@ async function runGuidedSetupImpl(
     const guidedContext: CommandContext = { ...context, scope: 'project' };
     await dependencies.runToolPacks(guidedContext);
   }
+
+  context.logger.info('[2/4] Local paths (gitignored artifacts)…');
+  const projectRoot = await dependencies.resolveScopeRoot('project', context);
+  const config = await dependencies.readOatConfig(projectRoot);
+  const existingPaths = new Set(dependencies.resolveLocalPaths(config));
+
+  const choices = LOCAL_PATH_CHOICES.map((c) => ({
+    ...c,
+    checked: existingPaths.has(c.value) || c.checked,
+  }));
+
+  const selectedPaths =
+    (await dependencies.selectManyWithAbort(
+      'Select local paths to add',
+      choices,
+      {
+        interactive: context.interactive,
+      },
+    )) ?? [];
+
+  if (selectedPaths.length > 0) {
+    const delta = selectedPaths.filter((p) => !existingPaths.has(p));
+    if (delta.length > 0) {
+      const addResult = await dependencies.addLocalPaths(projectRoot, delta);
+      await dependencies.applyGitignore(projectRoot, addResult.all);
+      context.logger.info(`Added ${addResult.added.length} local path(s).`);
+    } else {
+      context.logger.info('All selected paths already configured.');
+    }
+  }
+  context.logger.info(
+    'Add custom local paths anytime with `oat local add <path>`',
+  );
 }
 
 async function runInitCommand(
