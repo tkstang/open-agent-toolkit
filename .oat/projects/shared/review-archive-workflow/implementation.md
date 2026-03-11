@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t06
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,12 +24,12 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | complete    | 3     | 3/3       |
-| Phase 2 | in_progress | 6     | 5/6       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 3     | 3/3       |
+| Phase 2 | complete | 6     | 6/6       |
 
-**Total:** 8/9 tasks completed
+**Total:** 9/9 tasks completed
 
 ---
 
@@ -146,12 +146,57 @@ oat_generated: false
 
 ### Task p02-t06: (review) Fix stale Phase 1 implementation status bookkeeping
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** `97a75ed3`
 
-**Notes:**
+**Outcome (required):**
 
-- Final review finding `m1` identified Phase 1 status drift in this file; fix after `p02-t05` so final re-review sees consistent bookkeeping.
+- Corrected the Phase 1 status block in `implementation.md` from `in_progress` to `complete`.
+- Brought the phase-level bookkeeping back into sync with the completed task list and Progress Overview table before final re-review.
+
+**Files changed:**
+
+- `.oat/projects/shared/review-archive-workflow/implementation.md` - corrected the stale Phase 1 status entry called out by final review finding `m1`.
+
+**Verification:**
+
+- Run: `rg -n "## Phase 1:|\\*\\*Status:\\*\\* complete" .oat/projects/shared/review-archive-workflow/implementation.md`
+- Result: pass; the Phase 1 section now reports `complete`, consistent with the completed `p01` task entries.
+
+**Notes / Decisions:**
+
+- This was the last outstanding review-fix task, so the project now moves back to the final re-review gate.
+
+---
+
+### Phase Summary
+
+**Outcome:** Phase 2 now covers the archived-review CLI defaults, end-to-end verification, HiLL checkpoint confirmation UX, deferred checkpoint field semantics, and the final bookkeeping fix required by review.
+
+**Key files touched:**
+
+- `.gitignore`
+- `.oat/config.json`
+- `packages/cli/src/commands/init/`
+- `packages/cli/src/commands/local/`
+- `.agents/skills/oat-project-plan/SKILL.md`
+- `.agents/skills/oat-project-plan-writing/SKILL.md`
+- `.agents/skills/oat-project-implement/SKILL.md`
+- `.oat/projects/shared/review-archive-workflow/implementation.md`
+
+**Verification run:**
+
+- `pnpm --filter @oat/cli test -- --runInBand src/commands/init/gitignore.test.ts src/commands/local/status.test.ts src/commands/local/apply.test.ts src/commands/init/guided-setup.test.ts src/commands/init/index.test.ts`
+- `pnpm --filter @oat/cli type-check`
+- `pnpm test`
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm build`
+- `rg` consistency checks for the HiLL checkpoint contract and implementation bookkeeping
+
+**Notable decisions / deviations:**
+
+- Added `p02-t05` and `p02-t06` after review feedback instead of rewriting earlier completed tasks, preserving task history and review traceability.
 
 ---
 
@@ -180,6 +225,8 @@ oat_generated: false
 - **2026-03-11:** Added follow-up task `p02-t05` to leave `oat_plan_hill_phases` unset until implementation confirms the checkpoint choice.
 - **2026-03-11:** Received final code review; converted minor finding `m1` into follow-up task `p02-t06` and explicitly deferred minor findings `m2` and `m3`.
 - **2026-03-11:** Completed `p02-t05`; planning and implementation guidance now leave `oat_plan_hill_phases` unset until implementation confirms the user's checkpoint choice.
+- **2026-03-11:** Completed `p02-t06`; corrected the stale Phase 1 status entry in `implementation.md` and cleared the last outstanding final-review fix task.
+- **2026-03-11:** All implementation tasks are complete; project is awaiting final re-review.
 
 ### Review Received: final
 
@@ -200,7 +247,7 @@ oat_generated: false
 - `m2` Plan file list drift for `p02-t01` deferred. Rationale: the implementation changed the correct files, and the mismatch is traceability cleanup rather than a behavioral defect.
 - `m3` Review metadata omission for `packages/cli/src/commands/init/tools/index.ts` deferred. Rationale: this is a historical review-scoping metadata gap, not a product issue in the shipped implementation.
 
-**Next:** Complete `p02-t05`, then execute `p02-t06` via `oat-project-implement`. After those tasks are complete, update the final review row to `fixes_completed` and re-run `oat-project-review-provide code final`, then `oat-project-review-receive`.
+**Next:** Review-fix tasks are complete. Re-run `oat-project-review-provide code final`, then `oat-project-review-receive` to move the final review from `fixes_completed` to `passed`.
 
 ## Deviations from Plan
 
@@ -225,9 +272,8 @@ Track test execution during implementation.
 - Review artifacts now stay active in tracked `reviews/` directories until they are consumed, then move into local-only `reviews/archived/` history.
 - Project receive, PR, completion, and provider review skills were aligned to that active-versus-archived contract.
 - CLI init defaults, repo config, gitignore handling, and tests now ignore only archived review history instead of all review directories.
-- HiLL checkpoint confirmation was centralized in `oat-project-implement`, with planning now setting defaults silently.
-- A follow-up task is queued to remove the temporary `[]` placeholder and leave checkpoint choice unset until implementation confirmation.
-- A follow-up task is queued to correct the stale Phase 1 status bookkeeping in `implementation.md` before final re-review.
+- HiLL checkpoint confirmation is centralized in `oat-project-implement`, and planning now leaves `oat_plan_hill_phases` unset until implementation confirms the user's checkpoint choice.
+- The stale Phase 1 status bookkeeping called out in final review finding `m1` was corrected before re-review.
 
 **Behavioral changes (user-facing):**
 
@@ -235,6 +281,7 @@ Track test execution during implementation.
 - Archived review history stays local-only by default.
 - Guided init/setup now offers archived review paths as the local-only default.
 - Implementation start now presents phase summaries before asking which checkpoints to use.
+- Planning artifacts no longer imply a checkpoint choice before implementation has actually confirmed it.
 
 **Key files / modules:**
 
@@ -259,7 +306,7 @@ Track test execution during implementation.
 
 **Outstanding follow-up:**
 
-- `p02-t05` will update checkpoint field semantics so planning leaves `oat_plan_hill_phases` unset until implementation confirms the user's choice.
+- None.
 
 **Design deltas (if any):**
 
