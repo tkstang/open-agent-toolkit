@@ -2,7 +2,7 @@
 oat_status: complete
 oat_ready_for: oat-project-implement
 oat_blockers: []
-oat_last_updated: 2026-03-10
+oat_last_updated: 2026-03-11
 oat_phase: plan
 oat_phase_status: complete
 oat_plan_hill_phases: []
@@ -17,289 +17,307 @@ oat_generated: false
 
 > Execute this plan using `oat-project-implement` (sequential) or `oat-project-subagent-implement` (parallel), with phase checkpoints and review gates.
 
-**Goal:** Reorganize OAT documentation around audience-driven navigation (User Guide vs. Developer Guide), elevate provider interop, consolidate scattered docs sections, add visual elements, and break Contributing into focused sub-pages.
+**Goal:** Reorganize OAT documentation around clearer audience-driven navigation, preserve the current Fumadocs docs-app contract, incorporate newly merged command surfaces, and improve discoverability without deleting documentation coverage.
 
-**Architecture:** Content reorganization of `apps/oat-docs/docs/` — moving files into new directory structure, rewriting index pages and nav, updating cross-references, and adding Mermaid diagrams and tabbed content.
+**Architecture:** Reorganize markdown content under `apps/oat-docs/docs/`, regenerate the app-root docs surface at `apps/oat-docs/index.md`, update cross-links and landing pages, and verify the result with Fumadocs-era quality gates instead of MkDocs-specific ones.
 
-**Tech Stack:** Markdown, MkDocs Material (pymdownx.tabbed, superfences/mermaid, admonitions), mkdocs.yml nav config
+**Tech Stack:** Markdown, Fumadocs/Next.js, `@oat/docs-config`, `@oat/docs-theme`, `@oat/docs-transforms` (links, tabs, Mermaid, callouts), existing CLI docs tooling (`oat docs generate-index`, `oat docs nav sync` for MkDocs consumers only)
 
-**Commit Convention:** `docs(pNN-tNN): {description}` - e.g., `docs(p01-t01): scaffold new directory structure`
+**Commit Convention:** `docs(pNN-tNN): {description}` - e.g. `docs(p01-t01): scaffold new audience-driven directory structure`
 
 ## Planning Checklist
 
 - [x] Confirmed HiLL checkpoints with user
 - [x] Set `oat_plan_hill_phases` in frontmatter
+- [x] Rebased the plan against merged repo changes from March 10-11, 2026
+- [x] Added a lightweight `design.md` because the docs runtime and command surface changed after initial planning
 
 ---
 
 ## Phase 1: Directory Structure and File Moves
 
-Establish the new audience-driven directory layout and move existing files into position. No content changes yet — pure structural moves to avoid mixing concerns.
+Establish the new audience-driven layout inside `apps/oat-docs/docs/` and move existing content into its new home with minimal rewriting.
 
 ### Target Directory Structure
 
-```
-docs/
-  index.md                          (rewrite)
-  quickstart.md                     (trim — move workflow detail out)
-  guide/                            (NEW — User Guide)
-    index.md                        (NEW)
-    concepts.md                     (NEW — Core Concepts)
-    getting-started.md              (from cli/bootstrap.md — reframed)
-    provider-sync/                  (ELEVATED from cli/provider-interop/)
-      index.md                      (from cli/provider-interop/index.md — reframed)
-      scope-and-surface.md          (move)
-      commands.md                   (move)
-      providers.md                  (move — add tabs per provider)
-      manifest-and-drift.md         (move)
-      config.md                     (move)
-    tool-packs.md                   (from cli/tool-packs-and-assets.md)
-    documentation/                  (NEW — consolidated)
-      index.md                      (NEW — hub page)
-      quickstart.md                 (from cli/docs-consumer-quickstart.md)
-      commands.md                   (from cli/docs-apps.md)
-      workflows.md                  (from skills/docs-workflows.md)
-    workflow/                       (MERGED — workflow + projects)
-      index.md                      (rewrite — unified intro)
-      lifecycle.md                  (move)
-      artifacts.md                  (from projects/artifacts.md)
-      state-machine.md              (from projects/state-machine.md)
-      hil-checkpoints.md            (move)
-      reviews.md                    (move)
-      pr-flow.md                    (move)
-    skills/                         (consumer-focused)
-      index.md                      (rewrite — add "Key Skills by Use Case")
-    ideas/                          (move)
-      index.md                      (move)
-      lifecycle.md                  (move)
-    cli-reference.md                (NEW — lean command index + global options)
-  contributing/                     (NEW — Developer Guide, broken into sub-pages)
-    index.md                        (NEW — developer onboarding hub)
-    code.md                         (NEW — dev setup, testing, PR process)
-    documentation.md                (from contributing.md — reframed, minus plugin inventory)
-    markdown-features.md            (NEW — extracted plugin/extension reference card)
-    skills.md                       (from skills/execution-contracts.md — reframed as authoring guide)
-    design-principles.md            (from cli/design-principles.md — move)
-    commit-conventions.md           (from reference/commit-conventions.md — move)
-    hooks-and-safety.md             (from cli/provider-interop/hooks-and-safety.md — move)
-  reference/                        (slimmed — shared reference)
-    index.md                        (rewrite)
-    file-locations.md               (stays)
-    directory-structure.md          (from oat-directory-structure.md)
-    docs-index-contract.md          (stays)
-    troubleshooting.md              (stays)
+```text
+apps/oat-docs/docs/
+  index.md
+  quickstart.md
+  guide/
+    index.md
+    concepts.md
+    getting-started.md
+    provider-sync/
+      index.md
+      scope-and-surface.md
+      commands.md
+      providers.md
+      manifest-and-drift.md
+      config.md
+    tool-packs.md
+    documentation/
+      index.md
+      quickstart.md
+      commands.md
+      workflows.md
+    workflow/
+      index.md
+      lifecycle.md
+      artifacts.md
+      state-machine.md
+      hill-checkpoints.md
+      reviews.md
+      pr-flow.md
+      repo-analysis.md
+    skills/
+      index.md
+    ideas/
+      index.md
+      lifecycle.md
+    cli-reference.md
+  contributing/
+    index.md
+    code.md
+    documentation.md
+    markdown-features.md
+    skills.md
+    design-principles.md
+    commit-conventions.md
+    hooks-and-safety.md
+  reference/
+    index.md
+    file-locations.md
+    docs-index-contract.md
+    oat-directory-structure.md
+    troubleshooting.md
 ```
 
 ### Task p01-t01: Scaffold New Directory Structure
 
 **Files:**
 
-- Create: `docs/guide/index.md` (placeholder)
-- Create: `docs/guide/provider-sync/` (directory)
-- Create: `docs/guide/documentation/` (directory)
-- Create: `docs/guide/workflow/` (directory)
-- Create: `docs/guide/skills/` (directory)
-- Create: `docs/guide/ideas/` (directory)
-- Create: `docs/contributing/` (directory)
+- Create: `apps/oat-docs/docs/guide/index.md` (placeholder)
+- Create: `apps/oat-docs/docs/guide/provider-sync/index.md` (placeholder)
+- Create: `apps/oat-docs/docs/guide/documentation/index.md` (placeholder)
+- Create: `apps/oat-docs/docs/guide/workflow/index.md` (placeholder)
+- Create: `apps/oat-docs/docs/guide/skills/index.md` (placeholder)
+- Create: `apps/oat-docs/docs/guide/ideas/index.md` (placeholder)
+- Create: `apps/oat-docs/docs/contributing/index.md` (placeholder)
 
-**Step 1: Create directories and placeholders**
+**Step 1: Create directories and placeholder landing pages**
 
-Create the new directory structure with minimal placeholder `index.md` files that satisfy the `## Contents` contract. These will be properly written in later tasks.
+Create every new directory plus a minimal `index.md` containing frontmatter, a heading, and `## Contents` so the docs contract remains valid throughout the move.
 
 **Step 2: Verify**
 
-Run: `find apps/oat-docs/docs/ -type d | sort` to confirm directory structure matches plan.
+Run:
+
+```bash
+find apps/oat-docs/docs -type d | sort
+```
 
 **Step 3: Commit**
 
 ```bash
-git add apps/oat-docs/docs/guide/ apps/oat-docs/docs/contributing/
+git add apps/oat-docs/docs/guide apps/oat-docs/docs/contributing
 git commit -m "docs(p01-t01): scaffold new audience-driven directory structure"
 ```
 
 ---
 
-### Task p01-t02: Move Provider Interop Files to guide/provider-sync/
+### Task p01-t02: Move Provider Sync Files to `guide/provider-sync/`
 
 **Files:**
 
-- Move: `docs/cli/provider-interop/index.md` → `docs/guide/provider-sync/index.md`
-- Move: `docs/cli/provider-interop/scope-and-surface.md` → `docs/guide/provider-sync/scope-and-surface.md`
-- Move: `docs/cli/provider-interop/commands.md` → `docs/guide/provider-sync/commands.md`
-- Move: `docs/cli/provider-interop/providers.md` → `docs/guide/provider-sync/providers.md`
-- Move: `docs/cli/provider-interop/manifest-and-drift.md` → `docs/guide/provider-sync/manifest-and-drift.md`
-- Move: `docs/cli/provider-interop/config.md` → `docs/guide/provider-sync/config.md`
-- Move: `docs/cli/provider-interop/hooks-and-safety.md` → `docs/contributing/hooks-and-safety.md`
+- Move: `apps/oat-docs/docs/cli/provider-interop/index.md` → `apps/oat-docs/docs/guide/provider-sync/index.md`
+- Move: `apps/oat-docs/docs/cli/provider-interop/scope-and-surface.md` → `apps/oat-docs/docs/guide/provider-sync/scope-and-surface.md`
+- Move: `apps/oat-docs/docs/cli/provider-interop/commands.md` → `apps/oat-docs/docs/guide/provider-sync/commands.md`
+- Move: `apps/oat-docs/docs/cli/provider-interop/providers.md` → `apps/oat-docs/docs/guide/provider-sync/providers.md`
+- Move: `apps/oat-docs/docs/cli/provider-interop/manifest-and-drift.md` → `apps/oat-docs/docs/guide/provider-sync/manifest-and-drift.md`
+- Move: `apps/oat-docs/docs/cli/provider-interop/config.md` → `apps/oat-docs/docs/guide/provider-sync/config.md`
+- Move: `apps/oat-docs/docs/cli/provider-interop/hooks-and-safety.md` → `apps/oat-docs/docs/contributing/hooks-and-safety.md`
 
 **Step 1: Move files**
 
-Use `git mv` for each file to preserve history.
+Use `git mv` so history is preserved.
 
 **Step 2: Verify**
 
-Confirm `docs/cli/provider-interop/` is empty (or removed) and files exist in new locations.
+Confirm the moved files exist in their new locations and note any remaining references to `cli/provider-interop/` for later cleanup.
 
 **Step 3: Commit**
 
 ```bash
-git commit -m "docs(p01-t02): elevate provider interop to guide/provider-sync"
+git commit -m "docs(p01-t02): elevate provider sync docs into the user guide"
 ```
 
 ---
 
-### Task p01-t03: Move Workflow and Projects Files to guide/workflow/
+### Task p01-t03: Move Workflow, Projects, and Review-Analysis Files to `guide/workflow/`
 
 **Files:**
 
-- Move: `docs/workflow/lifecycle.md` → `docs/guide/workflow/lifecycle.md`
-- Move: `docs/workflow/hil-checkpoints.md` → `docs/guide/workflow/hil-checkpoints.md`
-- Move: `docs/workflow/reviews.md` → `docs/guide/workflow/reviews.md`
-- Move: `docs/workflow/pr-flow.md` → `docs/guide/workflow/pr-flow.md`
-- Move: `docs/projects/artifacts.md` → `docs/guide/workflow/artifacts.md`
-- Move: `docs/projects/state-machine.md` → `docs/guide/workflow/state-machine.md`
+- Move: `apps/oat-docs/docs/workflow/lifecycle.md` → `apps/oat-docs/docs/guide/workflow/lifecycle.md`
+- Move: `apps/oat-docs/docs/workflow/hill-checkpoints.md` → `apps/oat-docs/docs/guide/workflow/hill-checkpoints.md`
+- Move: `apps/oat-docs/docs/workflow/reviews.md` → `apps/oat-docs/docs/guide/workflow/reviews.md`
+- Move: `apps/oat-docs/docs/workflow/pr-flow.md` → `apps/oat-docs/docs/guide/workflow/pr-flow.md`
+- Move: `apps/oat-docs/docs/projects/artifacts.md` → `apps/oat-docs/docs/guide/workflow/artifacts.md`
+- Move: `apps/oat-docs/docs/projects/state-machine.md` → `apps/oat-docs/docs/guide/workflow/state-machine.md`
+- Move: `apps/oat-docs/docs/cli/repo-analysis.md` → `apps/oat-docs/docs/guide/workflow/repo-analysis.md`
 
 **Step 1: Move files**
 
-Use `git mv` for each. The old `workflow/index.md` and `projects/index.md` will be superseded by the new `guide/workflow/index.md` written in Phase 2.
+Use `git mv` for each file.
 
-**Step 2: Remove old directories**
+**Step 2: Preserve cleanup sequencing**
 
-Remove `docs/workflow/` and `docs/projects/` (including their index files) once all content has been moved.
+Do not remove the legacy `workflow/`, `projects/`, or `cli/` directories yet. Old-path cleanup happens after Phase 3 confirms repo-wide references are updated.
 
 **Step 3: Verify**
 
-Confirm files in `docs/guide/workflow/` and old directories removed.
+Confirm the workflow section contains lifecycle, project-artifact, and repo-analysis content in one place.
 
 **Step 4: Commit**
 
 ```bash
-git commit -m "docs(p01-t03): merge workflow and projects into guide/workflow"
+git commit -m "docs(p01-t03): merge workflow, projects, and repo analysis docs"
 ```
 
 ---
 
-### Task p01-t04: Move Documentation Files to guide/documentation/
+### Task p01-t04: Move Documentation Files to `guide/documentation/`
 
 **Files:**
 
-- Move: `docs/cli/docs-consumer-quickstart.md` → `docs/guide/documentation/quickstart.md`
-- Move: `docs/cli/docs-apps.md` → `docs/guide/documentation/commands.md`
-- Move: `docs/skills/docs-workflows.md` → `docs/guide/documentation/workflows.md`
+- Move: `apps/oat-docs/docs/cli/docs-consumer-quickstart.md` → `apps/oat-docs/docs/guide/documentation/quickstart.md`
+- Move: `apps/oat-docs/docs/cli/docs-apps.md` → `apps/oat-docs/docs/guide/documentation/commands.md`
+- Move: `apps/oat-docs/docs/skills/docs-workflows.md` → `apps/oat-docs/docs/guide/documentation/workflows.md`
 
 **Step 1: Move files**
 
 Use `git mv`.
 
-**Step 2: Commit**
+**Step 2: Preserve dual-framework scope**
+
+Keep the moved docs-app commands page aligned with current product behavior: Fumadocs is the live app in this repo, but OAT still supports MkDocs init/migration flows.
+
+**Step 3: Commit**
 
 ```bash
-git commit -m "docs(p01-t04): consolidate docs pages into guide/documentation"
+git commit -m "docs(p01-t04): consolidate documentation workflow pages"
 ```
 
 ---
 
-### Task p01-t05: Move Remaining Files to New Locations
+### Task p01-t05: Move Remaining Files to Their Audience-Driven Locations
 
 **Files:**
 
-- Move: `docs/cli/bootstrap.md` → `docs/guide/getting-started.md`
-- Move: `docs/cli/tool-packs-and-assets.md` → `docs/guide/tool-packs.md`
-- Move: `docs/skills/index.md` → `docs/guide/skills/index.md`
-- Move: `docs/skills/execution-contracts.md` → `docs/contributing/skills.md`
-- Move: `docs/ideas/index.md` → `docs/guide/ideas/index.md`
-- Move: `docs/ideas/lifecycle.md` → `docs/guide/ideas/lifecycle.md`
-- Move: `docs/cli/design-principles.md` → `docs/contributing/design-principles.md`
-- Move: `docs/reference/commit-conventions.md` → `docs/contributing/commit-conventions.md`
-- Move: `docs/contributing.md` → `docs/contributing/documentation.md`
-- Move: `docs/cli/diagnostics.md` → keep for cli-reference.md content extraction
-- Move: `docs/cli/local-paths.md` → keep for cli-reference.md content extraction
+- Move: `apps/oat-docs/docs/cli/bootstrap.md` → `apps/oat-docs/docs/guide/getting-started.md`
+- Move: `apps/oat-docs/docs/cli/tool-packs-and-assets.md` → `apps/oat-docs/docs/guide/tool-packs.md`
+- Move: `apps/oat-docs/docs/cli/index.md` → `apps/oat-docs/docs/guide/cli-reference.md`
+- Move: `apps/oat-docs/docs/skills/index.md` → `apps/oat-docs/docs/guide/skills/index.md`
+- Move: `apps/oat-docs/docs/skills/execution-contracts.md` → `apps/oat-docs/docs/contributing/skills.md`
+- Move: `apps/oat-docs/docs/ideas/index.md` → `apps/oat-docs/docs/guide/ideas/index.md`
+- Move: `apps/oat-docs/docs/ideas/lifecycle.md` → `apps/oat-docs/docs/guide/ideas/lifecycle.md`
+- Move: `apps/oat-docs/docs/cli/design-principles.md` → `apps/oat-docs/docs/contributing/design-principles.md`
+- Move: `apps/oat-docs/docs/reference/commit-conventions.md` → `apps/oat-docs/docs/contributing/commit-conventions.md`
+- Move: `apps/oat-docs/docs/contributing.md` → `apps/oat-docs/docs/contributing/documentation.md`
+- Retain temporarily for content extraction and later cleanup: `apps/oat-docs/docs/cli/diagnostics.md`, `apps/oat-docs/docs/cli/local-paths.md`
 
 **Step 1: Move files**
 
-Use `git mv`.
+Use `git mv` and leave `diagnostics.md` and `local-paths.md` in place until `guide/cli-reference.md` absorbs the needed content.
 
-**Step 2: Clean up old empty directories**
+**Step 2: Verify**
 
-Remove `docs/cli/`, `docs/skills/`, `docs/ideas/`, `docs/projects/` once empty.
+Confirm no moved page is stranded without an intended landing page in the new tree.
 
-**Step 3: Verify**
-
-Confirm no orphaned files remain in old directories.
-
-**Step 4: Commit**
+**Step 3: Commit**
 
 ```bash
-git commit -m "docs(p01-t05): move remaining files to audience-driven locations"
+git commit -m "docs(p01-t05): move remaining docs into guide and contributing sections"
 ```
 
 ---
 
-## Phase 2: Index Pages and Navigation
+## Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh
 
-Write all new and rewritten `index.md` files, the new `mkdocs.yml` nav, and any new pages (Core Concepts, CLI Reference, contributing sub-pages).
+Write the new landing pages and reframe section-level docs for the current product surface.
 
-### Task p02-t01: Write Homepage (index.md)
+### Task p02-t01: Rewrite Homepage (`apps/oat-docs/docs/index.md`)
 
 **Files:**
 
-- Modify: `docs/index.md`
+- Modify: `apps/oat-docs/docs/index.md`
 
 **Step 1: Rewrite**
 
-- Keep the OAT introduction and three-capability overview.
-- Update `## Contents` to reflect new structure (guide/, contributing/, reference/).
-- Rewrite `## Choose a usage path` to link to new locations.
+- Keep the high-level OAT introduction and three-capability framing.
+- Update `## Contents` to the new audience-driven structure.
+- Rewrite `## Choose a usage path` for the new guide/contributing/reference split.
 - Remove the redundant `## Navigation` section.
-- Keep `## Source-of-truth hierarchy`.
+- Keep the source-of-truth hierarchy and align wording to the current repo.
 
 **Step 2: Verify**
 
-Confirm all links resolve to files that exist.
+Confirm all homepage links resolve to the new locations.
 
 **Step 3: Commit**
 
 ```bash
-git commit -m "docs(p02-t01): rewrite homepage for audience-driven nav"
+git commit -m "docs(p02-t01): rewrite docs homepage for audience-driven discovery"
 ```
 
 ---
 
-### Task p02-t02: Write User Guide Index (guide/index.md)
+### Task p02-t02: Write User Guide Index
 
 **Files:**
 
-- Modify: `docs/guide/index.md`
+- Modify: `apps/oat-docs/docs/guide/index.md`
 
 **Step 1: Write**
 
-Brief intro positioning this as the user-facing guide. `## Contents` listing all guide sub-sections: Core Concepts, Getting Started, Provider Sync, Tool Packs, Documentation, Workflow & Projects, Skills, Ideas, CLI Reference.
+Position `guide/` as the user-facing hub. `## Contents` should route to:
+
+- Core Concepts
+- Getting Started
+- Provider Sync
+- Tool Packs
+- Documentation
+- Workflow & Projects
+- Skills
+- Ideas
+- CLI Reference
 
 **Step 2: Commit**
 
 ```bash
-git commit -m "docs(p02-t02): write user guide index page"
+git commit -m "docs(p02-t02): write user guide landing page"
 ```
 
 ---
 
-### Task p02-t03: Write Core Concepts Page (guide/concepts.md)
+### Task p02-t03: Write Core Concepts Page
 
 **Files:**
 
-- Create: `docs/guide/concepts.md`
+- Create: `apps/oat-docs/docs/guide/concepts.md`
 
 **Step 1: Write**
 
-Synthesize the key mental model concepts from existing content (not net-new):
+Synthesize the current mental model from existing content:
 
-- **Canonical assets and provider views** — what they are, how the source-of-truth works
-- **Sync and drift** — conceptual explanation of the sync model
-- **Scopes** — project vs. user
-- **Skills** — what a skill is, how they relate to CLI commands
-- **The three usage modes** — interop-only, provider-agnostic tooling, workflow layer
-- **Human-in-the-Loop Lifecycle (HiLL)** — brief conceptual intro
+- canonical assets and provider views
+- sync, drift, and canonical rule adoption
+- project vs user scope
+- skill workflows versus CLI commands
+- the three usage modes
+- quick explanation of the workflow lifecycle
 
-Keep each concept to 3-5 sentences. Link to detailed pages for more.
+Link to deeper pages instead of repeating detailed implementation content.
 
 **Step 2: Commit**
 
@@ -309,218 +327,186 @@ git commit -m "docs(p02-t03): add core concepts page"
 
 ---
 
-### Task p02-t04: Write Contributing Section Index and Sub-Pages
+### Task p02-t04: Write the Contributing Section and Sub-Pages
 
 **Files:**
 
-- Modify: `docs/contributing/index.md`
-- Create: `docs/contributing/code.md`
-- Modify: `docs/contributing/documentation.md` (reframe, remove plugin inventory)
-- Create: `docs/contributing/markdown-features.md` (extracted reference card)
-- Modify: `docs/contributing/skills.md` (reframe as authoring guide)
+- Modify: `apps/oat-docs/docs/contributing/index.md`
+- Create: `apps/oat-docs/docs/contributing/code.md`
+- Modify: `apps/oat-docs/docs/contributing/documentation.md`
+- Create: `apps/oat-docs/docs/contributing/markdown-features.md`
+- Modify: `apps/oat-docs/docs/contributing/skills.md`
 
-**Step 1: Write contributing/index.md**
+**Step 1: Write `contributing/index.md`**
 
-Developer onboarding hub with one-sentence routing to each sub-page.
+Create a contributor hub that routes readers into code, docs, markdown features, and skill authoring.
 
-**Step 2: Write contributing/code.md**
+**Step 2: Write `contributing/code.md`**
 
-New page covering: dev environment setup (`pnpm install`, `pnpm build`), monorepo structure, running tests (`pnpm test`), linting (`pnpm lint`, `pnpm format`), TypeScript conventions, PR expectations.
+Cover repo setup, monorepo structure, quality gates, and PR expectations using current repo commands.
 
-**Step 3: Reframe contributing/documentation.md**
+**Step 3: Reframe `contributing/documentation.md`**
 
-Remove the plugin/extension inventory (moved to markdown-features.md). Keep: nav contract, local workflow, agent guidance.
+Keep the docs contract and local workflow. Move the feature catalog out to `markdown-features.md`.
 
-**Step 4: Write contributing/markdown-features.md**
+**Step 4: Write `contributing/markdown-features.md`**
 
-Extract from old contributing.md: all plugin descriptions and extension docs. Add usage examples for: admonitions/callouts, tabbed content, Mermaid diagrams, code highlighting, collapsible details, emoji, snippets. This becomes the bookmark-able reference card.
+Document supported callouts, tabs, Mermaid, code blocks, and other reusable authoring patterns using the current Fumadocs transform behavior.
 
-**Step 5: Reframe contributing/skills.md**
+**Step 5: Reframe `contributing/skills.md`**
 
-Expand from execution-contracts.md: add practical guidance on skill structure, manifest fields, creating a new skill, testing. Keep frontmatter spec and governance rules.
+Turn the old execution-contract page into a contributor-facing skill-authoring guide while preserving the important runtime contract material.
 
 **Step 6: Commit**
 
 ```bash
-git commit -m "docs(p02-t04): write contributing section with sub-pages"
+git commit -m "docs(p02-t04): build out the contributing guide"
 ```
 
 ---
 
-### Task p02-t05: Write CLI Reference Page (guide/cli-reference.md)
+### Task p02-t05: Rewrite the CLI Reference Page
 
 **Files:**
 
-- Create: `docs/guide/cli-reference.md`
+- Modify: `apps/oat-docs/docs/guide/cli-reference.md`
 
-**Step 1: Write**
+**Step 1: Rewrite**
 
-Lean command reference page. Pull the command tables from current `cli/index.md` (bootstrap commands, tool management, instruction integrity, provider-interop commands, diagnostics, project lifecycle, repo state, internal commands, global options). Organized as a scannable reference — no conceptual content, just commands + purpose + link to detailed page.
+Use the moved `cli/index.md` as the source and keep this page intentionally shallow:
 
-Include content from `cli/diagnostics.md` and `cli/local-paths.md` inline (or as sections) since these are short reference pages that don't warrant their own files in the new structure.
+- command groups and global options
+- bootstrap and tool management
+- instruction integrity
+- provider sync commands
+- workflow/project commands
+- repo state and internal commands
+- `oat repo` command group with a link to detailed workflow/review analysis docs
+
+Absorb the short, reference-style content that currently lives in `apps/oat-docs/docs/cli/diagnostics.md` and `apps/oat-docs/docs/cli/local-paths.md`.
 
 **Step 2: Commit**
 
 ```bash
-git commit -m "docs(p02-t05): add lean CLI reference page"
+git commit -m "docs(p02-t05): rewrite cli reference around the new guide structure"
 ```
 
 ---
 
-### Task p02-t06: Write Section Index Pages
+### Task p02-t06: Rewrite Section Index Pages
 
 **Files:**
 
-- Modify: `docs/guide/provider-sync/index.md` (reframe intro, update Contents links)
-- Modify: `docs/guide/workflow/index.md` (unified intro merging workflow + projects intros)
-- Modify: `docs/guide/documentation/index.md` (hub page linking the three docs sub-pages)
-- Modify: `docs/guide/skills/index.md` (add "Key Skills by Use Case" section)
-- Modify: `docs/guide/ideas/index.md` (minor link updates)
-- Modify: `docs/reference/index.md` (slimmed — remove items that moved to contributing)
+- Modify: `apps/oat-docs/docs/guide/provider-sync/index.md`
+- Modify: `apps/oat-docs/docs/guide/workflow/index.md`
+- Modify: `apps/oat-docs/docs/guide/documentation/index.md`
+- Modify: `apps/oat-docs/docs/guide/skills/index.md`
+- Modify: `apps/oat-docs/docs/guide/ideas/index.md`
+- Modify: `apps/oat-docs/docs/reference/index.md`
 
-**Step 1: Write each index**
+**Step 1: Rewrite each index**
 
-Each must satisfy the `## Contents` contract and link to children correctly.
+Each section must satisfy the `## Contents` contract and reflect the new merged repo state.
 
-For `guide/skills/index.md`: add a new "Key Skills by Use Case" section at the top listing the 5-6 most common skills with one-line descriptions, before the full catalog tables. Add a link to `contributing/skills.md` for skill authoring.
+Specific requirements:
 
-For `guide/workflow/index.md`: merge the intros from `workflow/index.md` and `projects/index.md` into a unified narrative.
+- `guide/provider-sync/index.md`: reflect canonical rule sync/adoption and cross-link to hooks/safety contributor material.
+- `guide/workflow/index.md`: merge workflow and project intros; include `repo-analysis.md` in `## Contents`.
+- `guide/documentation/index.md`: route readers into docs app quickstart, commands, and docs workflows.
+- `guide/skills/index.md`: add a short "Key Skills by Use Case" section before the full catalog.
+- `reference/index.md`: slim it down to durable shared references after contributor material moves out.
 
 **Step 2: Verify**
 
-All `## Contents` links resolve.
+Confirm every `## Contents` link resolves.
 
 **Step 3: Commit**
 
 ```bash
-git commit -m "docs(p02-t06): write section index pages with Contents contract"
+git commit -m "docs(p02-t06): rewrite section landing pages"
 ```
 
 ---
 
-### Task p02-t07: Update mkdocs.yml Navigation
+### Task p02-t07: Refresh the Generated Docs Surface
 
 **Files:**
 
-- Modify: `apps/oat-docs/mkdocs.yml`
+- Regenerate: `apps/oat-docs/index.md`
 
-**Step 1: Write new nav**
+**Step 1: Regenerate**
 
-```yaml
-nav:
-  - Home: index.md
-  - Quickstart: quickstart.md
-  - User Guide:
-      - guide/index.md
-      - Core Concepts: guide/concepts.md
-      - Getting Started: guide/getting-started.md
-      - Provider Sync:
-          - guide/provider-sync/index.md
-          - Scope and Surface: guide/provider-sync/scope-and-surface.md
-          - Commands: guide/provider-sync/commands.md
-          - Providers: guide/provider-sync/providers.md
-          - Manifest and Drift: guide/provider-sync/manifest-and-drift.md
-          - Config: guide/provider-sync/config.md
-      - Tool Packs: guide/tool-packs.md
-      - Documentation:
-          - guide/documentation/index.md
-          - Quickstart: guide/documentation/quickstart.md
-          - Commands: guide/documentation/commands.md
-          - Workflows: guide/documentation/workflows.md
-      - Workflow & Projects:
-          - guide/workflow/index.md
-          - Lifecycle: guide/workflow/lifecycle.md
-          - Artifacts: guide/workflow/artifacts.md
-          - State Machine: guide/workflow/state-machine.md
-          - HiLL Checkpoints: guide/workflow/hil-checkpoints.md
-          - Reviews: guide/workflow/reviews.md
-          - PR Flow: guide/workflow/pr-flow.md
-      - Skills:
-          - guide/skills/index.md
-      - Ideas:
-          - guide/ideas/index.md
-          - Lifecycle: guide/ideas/lifecycle.md
-      - CLI Reference: guide/cli-reference.md
-  - Developer Guide:
-      - contributing/index.md
-      - Contributing Code: contributing/code.md
-      - Contributing Docs: contributing/documentation.md
-      - Markdown Features: contributing/markdown-features.md
-      - Writing Skills: contributing/skills.md
-      - CLI Design Principles: contributing/design-principles.md
-      - Commit Conventions: contributing/commit-conventions.md
-      - Hooks and Safety: contributing/hooks-and-safety.md
-  - Reference:
-      - reference/index.md
-      - File Locations: reference/file-locations.md
-      - Directory Structure: reference/directory-structure.md
-      - Docs Index Contract: reference/docs-index-contract.md
-      - Troubleshooting: reference/troubleshooting.md
+Run:
+
+```bash
+pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md
 ```
 
 **Step 2: Verify**
 
-Verify all referenced files exist on disk.
+Review the generated index and confirm the new guide/contributing/reference layout is discoverable from the app root.
 
 **Step 3: Commit**
 
 ```bash
-git commit -m "docs(p02-t07): update mkdocs.yml nav for audience-driven structure"
+git add apps/oat-docs/index.md
+git commit -m "docs(p02-t07): refresh generated docs surface index"
 ```
 
 ---
 
-## Phase 3: Cross-Reference Updates
+## Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates
 
-Fix all internal links broken by file moves. Update the quickstart to trim workflow detail.
+Update relative links, shared entry pages, and stale-path cleanup criteria.
 
-### Task p03-t01: Audit and Fix Cross-References
+### Task p03-t01: Audit and Fix Cross-References, Then Remove Retired Paths
 
 **Files:**
 
-- Modify: all moved files that contain relative links to other docs pages
+- Modify: moved docs pages with broken relative links
+- Remove only after cleanup passes: retired legacy files/directories under `apps/oat-docs/docs/cli/`, `apps/oat-docs/docs/workflow/`, `apps/oat-docs/docs/projects/`, `apps/oat-docs/docs/skills/`, `apps/oat-docs/docs/ideas/`
 
-**Step 1: Find broken links**
+**Step 1: Find stale references**
 
-Search all `.md` files under `docs/` for markdown links `](...)` and verify each target exists at the referenced path. Pay special attention to:
+Audit markdown links and repo references to old docs paths. Use both local-doc checks and repo-wide searches.
 
-- Relative links in moved files (paths changed)
-- Links from non-moved files pointing to old locations
-- `reference/` pages linking to content now in `contributing/`
+**Step 2: Fix broken links**
 
-**Step 2: Fix each broken link**
+Update relative links in moved pages and any remaining references from non-moved files.
 
-Update to correct relative path from the file's new location.
+**Step 3: Clean up retired paths**
 
-**Step 3: Verify**
+Only after audits come back clean, remove no-longer-needed legacy files and directories.
 
-Re-run the link audit to confirm zero broken internal links.
+**Step 4: Verify**
 
-**Step 4: Commit**
+Re-run the stale-reference audit and confirm no repo docs or project artifacts still point to removed paths.
+
+**Step 5: Commit**
 
 ```bash
-git commit -m "docs(p03-t01): fix cross-references after file moves"
+git commit -m "docs(p03-t01): fix moved-page links and remove retired legacy paths"
 ```
 
 ---
 
-### Task p03-t02: Trim Quickstart Page
+### Task p03-t02: Trim the Shared Quickstart Page
 
 **Files:**
 
-- Modify: `docs/quickstart.md`
+- Modify: `apps/oat-docs/docs/quickstart.md`
 
 **Step 1: Trim**
 
-- Keep Path A (Interop-only) — this is the core quickstart content.
-- Keep Path B (Provider-agnostic tooling) — brief with links to guide/skills/ and guide/documentation/.
-- Trim Path C (Workflow layer) — reduce to a brief overview (5-10 lines) with link to `guide/workflow/lifecycle.md` for the full lane descriptions. The detailed spec-driven/quick/import lane walkthroughs move to the workflow section.
-- Update all links to point to new file locations.
+- Keep Path A (interop-only) as the main quickstart.
+- Keep Path B concise and route readers into the new guide sections.
+- Reduce the workflow lane details and link to the reorganized workflow docs for the full lifecycle material.
+- Update links for the new locations and command surfaces.
 
 **Step 2: Commit**
 
 ```bash
-git commit -m "docs(p03-t02): trim quickstart, link to workflow section for detail"
+git commit -m "docs(p03-t02): trim quickstart and route deeper detail into the guide"
 ```
 
 ---
@@ -529,53 +515,53 @@ git commit -m "docs(p03-t02): trim quickstart, link to workflow section for deta
 
 **Files:**
 
-- Modify: `docs/guide/skills/index.md` — add "Want to create a skill? See [Writing Skills](../../contributing/skills.md)"
-- Modify: `docs/guide/provider-sync/index.md` — add link to `contributing/hooks-and-safety.md` for implementation-level safety details
-- Modify: `docs/contributing/documentation.md` — add link to `guide/documentation/index.md` for user-facing docs overview
-- Modify: `docs/reference/docs-index-contract.md` — add links to both `guide/documentation/` (user) and `contributing/documentation.md` (contributor)
+- Modify: `apps/oat-docs/docs/guide/skills/index.md`
+- Modify: `apps/oat-docs/docs/guide/provider-sync/index.md`
+- Modify: `apps/oat-docs/docs/contributing/documentation.md`
+- Modify: `apps/oat-docs/docs/reference/docs-index-contract.md`
 
 **Step 1: Add cross-links**
 
-Brief callout or note at the bottom of each page linking to the other-audience version.
+Add explicit "if you are trying to..." links between user-guide and contributor-guide pages where audiences overlap.
 
 **Step 2: Commit**
 
 ```bash
-git commit -m "docs(p03-t03): add audience cross-links between user and developer guides"
+git commit -m "docs(p03-t03): add cross-links between user and contributor docs"
 ```
 
 ---
 
-## Phase 4: Visual Elements and Content Enhancement
+## Phase 4: Visual Elements and Content Enhancements
 
-Add Mermaid diagrams and tabbed content to key pages.
+Use the existing Fumadocs markdown transforms to improve comprehension on key pages.
 
 ### Task p04-t01: Add Mermaid Diagrams
 
 **Files:**
 
-- Modify: `docs/guide/workflow/lifecycle.md` — workflow lifecycle flowchart
-- Modify: `docs/guide/workflow/state-machine.md` — state transition diagram
-- Modify: `docs/guide/provider-sync/index.md` — canonical → manifest → provider view sync flow
-- Modify: `docs/guide/concepts.md` — simple architecture overview (three-tier capabilities)
+- Modify: `apps/oat-docs/docs/guide/workflow/lifecycle.md`
+- Modify: `apps/oat-docs/docs/guide/workflow/state-machine.md`
+- Modify: `apps/oat-docs/docs/guide/provider-sync/index.md`
+- Modify: `apps/oat-docs/docs/guide/concepts.md`
 
-**Step 1: Write diagrams**
+**Step 1: Add diagrams**
 
-For each page, add a Mermaid diagram using ` ```mermaid ` fencing. Diagrams should supplement, not replace, the existing prose.
+Create diagrams for:
 
-- **Workflow lifecycle:** flowchart showing discovery → spec → design → plan → implement → review → PR → complete, with quick lane shortcut
-- **State machine:** stateDiagram-v2 showing project states and transitions
-- **Provider sync flow:** flowchart showing canonical assets → sync engine → provider views (fan-out to Claude, Cursor, Codex, Copilot, Gemini)
-- **Architecture overview:** simple block diagram showing the three capability tiers
+- workflow lifecycle
+- workflow state transitions
+- canonical-to-provider sync flow
+- high-level OAT capability stack
 
 **Step 2: Verify**
 
-Confirm Mermaid renders in MkDocs dev server (already configured in `mkdocs.yml` superfences).
+Confirm the diagrams render through the current Fumadocs build path.
 
 **Step 3: Commit**
 
 ```bash
-git commit -m "docs(p04-t01): add Mermaid diagrams for key flows"
+git commit -m "docs(p04-t01): add mermaid diagrams for core OAT flows"
 ```
 
 ---
@@ -584,111 +570,117 @@ git commit -m "docs(p04-t01): add Mermaid diagrams for key flows"
 
 **Files:**
 
-- Modify: `docs/guide/provider-sync/providers.md` — tab per provider
-- Modify: `docs/guide/skills/index.md` — tab per skill family
-- Modify: `docs/contributing/markdown-features.md` — tabbed examples showing syntax + rendered output
+- Modify: `apps/oat-docs/docs/guide/provider-sync/providers.md`
+- Modify: `apps/oat-docs/docs/guide/skills/index.md`
+- Modify: `apps/oat-docs/docs/contributing/markdown-features.md`
 
 **Step 1: Add tabs**
 
-Use `pymdownx.tabbed` syntax:
+Use the repo's existing tab transform syntax for:
 
-```markdown
-=== "Claude Code"
-
-    Provider-specific content...
-
-=== "Cursor"
-
-    Provider-specific content...
-```
-
-For providers.md: each tab shows the provider's directory layout, supported features, and any quirks.
-For skills index: tabs for Lifecycle, Ideas, Review/PR, Documentation, Utility families.
-For markdown-features.md: tabs showing raw syntax vs. rendered output for each feature.
+- provider-specific behavior
+- skill-family browsing
+- syntax-vs-rendered markdown examples
 
 **Step 2: Verify**
 
-Confirm tabs render correctly in MkDocs dev server.
+Confirm tab rendering in the current docs build.
 
 **Step 3: Commit**
 
 ```bash
-git commit -m "docs(p04-t02): add tabbed content for providers, skills, and markdown features"
+git commit -m "docs(p04-t02): add tabbed content to key docs pages"
 ```
 
 ---
 
 ## Phase 5: Final Verification
 
-### Task p05-t01: Full Link Audit and Nav Sync
+### Task p05-t01: Final Link Audit and Surface Verification
 
 **Files:**
 
-- Verify: all `docs/**/*.md` files
-- Verify: `apps/oat-docs/mkdocs.yml`
+- Verify: all `apps/oat-docs/docs/**/*.md`
+- Verify: `apps/oat-docs/index.md`
 
 **Step 1: Link audit**
 
-Scan every markdown file for internal links and verify targets exist. Check that no file references old paths.
+Scan all markdown files for internal links and confirm targets exist.
 
-**Step 2: Nav sync**
+**Step 2: Stale-path audit**
 
-Verify every file in the nav exists and every `.md` file in `docs/` is reachable from the nav.
+Search the repo for references to retired docs paths and confirm cleanup is complete.
 
-**Step 3: Contents contract**
+**Step 3: Contents contract check**
 
-Verify every `index.md` has a `## Contents` section with links to its children.
+Verify every `index.md` in the docs tree contains a valid `## Contents` section.
 
-**Step 4: Commit (if fixes needed)**
+**Step 4: Generated surface check**
+
+Confirm `apps/oat-docs/index.md` reflects the final docs tree.
+
+**Step 5: Commit (if needed)**
 
 ```bash
-git commit -m "docs(p05-t01): final link audit and nav verification fixes"
+git commit -m "docs(p05-t01): fix final link and discovery-surface issues"
 ```
 
 ---
 
-### Task p05-t02: Build Verification
+### Task p05-t02: Run Docs Quality Gates
 
-**Step 1: Build docs**
-
-Run MkDocs build to verify no errors:
+**Step 1: Refresh generated index**
 
 ```bash
-cd apps/oat-docs && mkdocs build --strict 2>&1
+pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md
 ```
 
-**Step 2: Fix any build errors**
-
-Address any warnings or errors from strict build.
-
-**Step 3: Final commit (if fixes needed)**
+**Step 2: Run markdown quality checks**
 
 ```bash
-git commit -m "docs(p05-t02): fix build errors from strict mkdocs build"
+pnpm --filter oat-docs docs:format:check
+pnpm --filter oat-docs docs:lint
+```
+
+**Step 3: Run the docs build**
+
+```bash
+pnpm --filter oat-docs build
+```
+
+**Step 4: Fix any failures**
+
+Address formatting, lint, link, or build issues before considering the docs reorganization ready for review.
+
+**Step 5: Final commit (if needed)**
+
+```bash
+git commit -m "docs(p05-t02): fix docs quality gate failures"
 ```
 
 ---
 
 ## Reviews
 
-| Scope | Type     | Status   | Date       | Artifact                                     |
-| ----- | -------- | -------- | ---------- | -------------------------------------------- |
-| plan  | artifact | received | 2026-03-10 | `reviews/artifact-plan-review-2026-03-10.md` |
-| p01   | code     | pending  | -          | -                                            |
-| p02   | code     | pending  | -          | -                                            |
-| p03   | code     | pending  | -          | -                                            |
-| p04   | code     | pending  | -          | -                                            |
-| p05   | code     | pending  | -          | -                                            |
-| final | code     | pending  | -          | -                                            |
+| Scope  | Type     | Status          | Date       | Artifact                                     |
+| ------ | -------- | --------------- | ---------- | -------------------------------------------- |
+| design | artifact | pending         | -          | -                                            |
+| plan   | artifact | fixes_completed | 2026-03-11 | `reviews/artifact-plan-review-2026-03-10.md` |
+| p01    | code     | pending         | -          | -                                            |
+| p02    | code     | pending         | -          | -                                            |
+| p03    | code     | pending         | -          | -                                            |
+| p04    | code     | pending         | -          | -                                            |
+| p05    | code     | pending         | -          | -                                            |
+| final  | code     | pending         | -          | -                                            |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
 **Meaning:**
 
-- `received`: review artifact exists (not yet converted into fix tasks)
-- `fixes_added`: fix tasks were added to the plan (work queued)
-- `fixes_completed`: fix tasks implemented, awaiting re-review
-- `passed`: re-review run and recorded as passing (no Critical/Important)
+- `received`: review artifact exists but findings have not yet been converted into plan or code updates
+- `fixes_added`: follow-up work has been added to the plan
+- `fixes_completed`: the artifact or implementation has been updated and is ready for re-review
+- `passed`: re-review found no blocking issues
 
 ---
 
@@ -696,18 +688,20 @@ git commit -m "docs(p05-t02): fix build errors from strict mkdocs build"
 
 **Summary:**
 
-- Phase 1: 5 tasks - Directory structure and file moves
-- Phase 2: 7 tasks - Index pages, new pages, and navigation
-- Phase 3: 3 tasks - Cross-reference fixes and content trimming
+- Phase 1: 5 tasks - directory structure and file moves
+- Phase 2: 7 tasks - landing pages, guide rewrites, and generated surface refresh
+- Phase 3: 3 tasks - cross-reference cleanup and shared entry-point updates
 - Phase 4: 2 tasks - Mermaid diagrams and tabbed content
-- Phase 5: 2 tasks - Final verification and build
+- Phase 5: 2 tasks - final verification and docs quality gates
 
 **Total: 19 tasks**
 
-Ready for code review and merge.
+Ready for implementation against the current docs app.
 
 ---
 
 ## References
 
 - Discovery: `discovery.md`
+- Design: `design.md`
+- Plan review: `reviews/artifact-plan-review-2026-03-10.md`

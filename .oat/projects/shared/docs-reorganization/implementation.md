@@ -2,7 +2,7 @@
 oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
-oat_last_updated: 2026-03-10
+oat_last_updated: 2026-03-11
 oat_current_task_id: p01-t01
 oat_generated: false
 ---
@@ -10,11 +10,12 @@ oat_generated: false
 # Implementation: docs-reorganization
 
 **Started:** 2026-03-10
-**Last Updated:** 2026-03-10
+**Last Updated:** 2026-03-11
 
 > This document is used to resume interrupted implementation sessions.
 >
 > Conventions:
+>
 > - `oat_current_task_id` always points at the **next plan task to do** (not the last completed task).
 > - When all plan tasks are complete, set `oat_current_task_id: null`.
 > - Reviews are **not** plan tasks. Track review status in `plan.md` under `## Reviews` (e.g., `| final | code | passed | ... |`).
@@ -23,13 +24,13 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase | Status | Tasks | Completed |
-|-------|--------|-------|-----------|
-| Phase 1: Directory Structure and File Moves | pending | 5 | 0/5 |
-| Phase 2: Index Pages and Navigation | pending | 7 | 0/7 |
-| Phase 3: Cross-Reference Updates | pending | 3 | 0/3 |
-| Phase 4: Visual Elements and Content Enhancement | pending | 2 | 0/2 |
-| Phase 5: Final Verification | pending | 2 | 0/2 |
+| Phase                                                              | Status  | Tasks | Completed |
+| ------------------------------------------------------------------ | ------- | ----- | --------- |
+| Phase 1: Directory Structure and File Moves                        | pending | 5     | 0/5       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | pending | 7     | 0/7       |
+| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending | 3     | 0/3       |
+| Phase 4: Visual Elements and Content Enhancements                  | pending | 2     | 0/2       |
+| Phase 5: Final Verification                                        | pending | 2     | 0/2       |
 
 **Total:** 0/19 tasks completed
 
@@ -54,7 +55,7 @@ oat_generated: false
 
 ---
 
-### Task p01-t03: Move Workflow and Projects Files to guide/workflow/
+### Task p01-t03: Move Workflow, Projects, and Review-Analysis Files to guide/workflow/
 
 **Status:** pending
 **Commit:** -
@@ -75,12 +76,12 @@ oat_generated: false
 
 ---
 
-## Phase 2: Index Pages and Navigation
+## Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh
 
 **Status:** pending
 **Started:** -
 
-### Task p02-t01: Write Homepage (index.md)
+### Task p02-t01: Rewrite Homepage (apps/oat-docs/docs/index.md)
 
 **Status:** pending
 **Commit:** -
@@ -122,19 +123,19 @@ oat_generated: false
 
 ---
 
-### Task p02-t07: Update mkdocs.yml Navigation
+### Task p02-t07: Refresh the Generated Docs Surface
 
 **Status:** pending
 **Commit:** -
 
 ---
 
-## Phase 3: Cross-Reference Updates
+## Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates
 
 **Status:** pending
 **Started:** -
 
-### Task p03-t01: Audit and Fix Cross-References
+### Task p03-t01: Audit and Fix Cross-References, Then Remove Retired Paths
 
 **Status:** pending
 **Commit:** -
@@ -155,7 +156,7 @@ oat_generated: false
 
 ---
 
-## Phase 4: Visual Elements and Content Enhancement
+## Phase 4: Visual Elements and Content Enhancements
 
 **Status:** pending
 **Started:** -
@@ -179,14 +180,14 @@ oat_generated: false
 **Status:** pending
 **Started:** -
 
-### Task p05-t01: Full Link Audit and Nav Sync
+### Task p05-t01: Final Link Audit and Surface Verification
 
 **Status:** pending
 **Commit:** -
 
 ---
 
-### Task p05-t02: Build Verification
+### Task p05-t02: Run Docs Quality Gates
 
 **Status:** pending
 **Commit:** -
@@ -208,6 +209,8 @@ oat_generated: false
 
 Chronological log of implementation progress.
 
+- 2026-03-11: Rebased project artifacts against post-plan merged work. Added lightweight `design.md` and refreshed `discovery.md` and `plan.md` for the current Fumadocs docs app. No implementation tasks completed yet; next task remains `p01-t01`.
+
 ---
 
 ## Deviations from Plan
@@ -215,36 +218,41 @@ Chronological log of implementation progress.
 Document any deviations from the original plan.
 
 | Task | Planned | Actual | Reason |
-|------|---------|--------|--------|
-| - | - | - | - |
+| ---- | ------- | ------ | ------ |
+| -    | -       | -      | -      |
 
 ## Test Results
 
 Track test execution during implementation.
 
 | Phase | Tests Run | Passed | Failed | Coverage |
-|-------|-----------|--------|--------|----------|
-| 1 | - | - | - | N/A |
-| 2 | - | - | - | N/A |
-| 3 | - | - | - | N/A |
-| 4 | - | - | - | N/A |
-| 5 | - | - | - | N/A |
+| ----- | --------- | ------ | ------ | -------- |
+| 1     | -         | -      | -      | N/A      |
+| 2     | -         | -      | -      | N/A      |
+| 3     | -         | -      | -      | N/A      |
+| 4     | -         | -      | -      | N/A      |
+| 5     | -         | -      | -      | N/A      |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
+
 - {capability 1}
 
 **Behavioral changes (user-facing):**
+
 - {bullet}
 
 **Key files / modules:**
+
 - `{path}` - {purpose}
 
 **Verification performed:**
+
 - {tests/lint/typecheck/build/manual steps}
 
 **Design deltas (if any):**
+
 - {what changed vs design.md and why}
 
 ## References

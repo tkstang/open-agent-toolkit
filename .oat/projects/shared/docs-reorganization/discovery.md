@@ -2,7 +2,7 @@
 oat_status: complete
 oat_ready_for: plan
 oat_blockers: []
-oat_last_updated: 2026-03-10
+oat_last_updated: 2026-03-11
 oat_generated: false
 ---
 
@@ -12,117 +12,127 @@ oat_generated: false
 
 Discovery is for requirements and decisions, not implementation details.
 
-- Prefer outcomes and constraints over concrete deliverables (no specific scripts, file paths, or function names).
-- If an implementation detail comes up, capture it as an **Open Question** for design (or a constraint), not as a deliverable list.
+- Prefer outcomes and constraints over concrete deliverables.
+- Capture implementation-sensitive questions as design concerns unless they are already resolved by current repo state.
 
 ## Initial Request
 
-User identified that OAT documentation coverage is strong but organization needs improvement. The docs site is being evaluated for a migration from MkDocs to Fumadocs. The request is to analyze all documentation for organizational and readability improvements, then execute those improvements.
+User identified that OAT documentation coverage is strong but organization needs improvement. A quick-mode project and implementation plan were drafted on March 10, 2026. Since then, several major PRs merged, including the completed Fumadocs migration for `apps/oat-docs`, guided `oat init` setup, canonical rule sync/adoption updates, new `oat repo pr-comments` commands, and workflow-doc refinements. The request is to reopen the project, review those merged changes and related project artifacts, and fold the current repo reality back into discovery, design, and plan before implementation starts.
 
 ## Clarifying Questions
 
 ### Question 1: Audience Separation
 
 **Q:** Should docs distinguish between consumer-facing (users of OAT) and internal/developer-facing content?
-**A:** Yes — there is clear opportunity to separate consumer docs from internal reference. Cross-linking across sections should be used to reduce duplication.
-**Decision:** The nav structure should have explicit "User Guide" and "Developer Guide" groupings so the audience is signaled by the navigation itself.
+**A:** Yes. Consumer docs and contributor docs should be visibly separated, with cross-links instead of duplicated content.
+**Decision:** The navigation should make the audience split explicit via a user-facing `guide/` section and a contributor-facing `contributing/` section.
 
 ### Question 2: Contributing Section Granularity
 
 **Q:** Should the Contributing section be a single page or broken into focused sub-pages?
-**A:** Break it out into separate pages — a markdown features reference card, contributing to docs, contributing to code, writing skills. Each serves a different contributor entry point.
-**Decision:** Contributing becomes a multi-page section with ~5 sub-pages organized by contributor task type.
+**A:** Break it out into focused pages.
+**Decision:** Contributing becomes a multi-page developer guide with separate routing for code, docs, markdown features, and skill authoring.
+
+### Question 3: Re-baseline Against Merged Work
+
+**Q:** Should the project be revised against the merged work that landed after the original plan was written?
+**A:** Yes.
+**Decision:** The reorganization must target the current docs app and current command surface, not the March 10 snapshot.
 
 ## Solution Space
 
-### Approach 1: Audience-Driven Restructure _(Recommended)_
+### Approach 1: Audience-Driven Restructure on Current Docs Architecture _(Recommended)_
 
-**Description:** Reorganize the entire nav around two primary audiences (User Guide, Developer Guide) plus a shared Reference section. Elevate provider interop to a top-level user-facing section. Merge Projects into Workflow. Consolidate scattered docs-related pages. Break Contributing into sub-pages.
+**Description:** Reorganize the docs tree around user and contributor journeys while preserving the current Fumadocs app contract, generated docs surface index, and cross-links into durable reference material. Incorporate newly merged command surfaces into the revised information architecture instead of treating them as follow-up cleanup.
 
-**When this is the right choice:** When the docs are feature-complete but the information architecture doesn't match how users navigate. This is that situation — content exists but is hard to find.
+**When this is the right choice:** When documentation coverage is already broad, but the navigation and page grouping no longer match how users discover the current product.
 
-**Tradeoffs:** Requires updating all cross-references and potentially restructuring directories. More upfront work than incremental fixes.
+**Tradeoffs:** Requires a more deliberate move plan, repo-wide stale-link cleanup, and a design pass to account for the post-migration docs pipeline.
 
-### Approach 2: Incremental Navigation Fixes
+### Approach 2: Minimal Navigation Cleanup
 
-**Description:** Keep the current section structure but reorder pages within sections, add cross-links, and improve index pages. Fix the most confusing navigation issues (CLI ordering, provider interop depth) without a full restructure.
+**Description:** Keep the existing top-level sections and only adjust ordering, index pages, and a few cross-links.
 
-**When this is the right choice:** When the structure is mostly right and only needs minor tuning. Less disruption.
+**When this is the right choice:** When repo structure is basically correct and only a few pages are misplaced.
 
-**Tradeoffs:** Doesn't solve the fundamental audience-mixing problem. Users still navigate past contributor docs to find user content.
+**Tradeoffs:** It would not address audience mixing, would leave the new merged docs surfaces scattered across old sections, and would preserve the pre-migration mental model the repo has already moved beyond.
 
 ### Chosen Direction
 
-**Approach:** Audience-Driven Restructure
-**Rationale:** The core issue isn't page ordering — it's that consumer and contributor content are interleaved. Incremental fixes don't address that. A restructure also aligns with the MkDocs → Fumadocs migration as a natural point to reorganize.
+**Approach:** Audience-Driven Restructure on Current Docs Architecture
+**Rationale:** The problem is now bigger than page order. The repo has a new docs runtime, newly expanded CLI surfaces, and updated workflow docs. The right move is to reorganize around user intent while explicitly honoring the current `apps/oat-docs` architecture and generated-docs contract.
 **User validated:** Yes
 
 ## Key Decisions
 
-1. **Audience separation:** Nav structure uses explicit "User Guide" and "Developer Guide" groupings.
-2. **Provider Interop elevation:** Promoted from `cli/provider-interop/` to a top-level section under User Guide, reflecting its importance as a core OAT capability.
-3. **Workflow + Projects merge:** Combined into a single "Workflow & Projects" section since they describe the same system from different angles.
-4. **Docs consolidation:** Four scattered docs-related pages converge into a single "Documentation" section under User Guide.
-5. **Core Concepts section:** New section between Quickstart and feature sections to establish the mental model (canonical assets, provider views, drift, scopes, skills, usage modes).
-6. **Contributing decomposition:** Broken into sub-pages: index, code, documentation, markdown-features, skills, design-principles.
-7. **Visual elements:** Add Mermaid diagrams for key flows. Use tabbed content for multi-variant content (provider-specific setup, workflow lanes, skill families).
-8. **Cross-linking over duplication:** Where content serves both audiences, keep it in the primary location and cross-link from the other.
+1. **Audience split stays primary:** User-facing docs live under `guide/`; contributor-facing docs live under `contributing/`; durable shared material stays in `reference/`.
+2. **Provider sync is still elevated:** Provider interop remains a top-level user-guide topic and must explicitly incorporate canonical rule sync/adoption changes from PR #62.
+3. **Workflow and projects merge into one guide section:** The merged section should absorb both lifecycle docs and project artifact/state docs.
+4. **Repository analysis belongs with workflow/review docs:** The new `oat repo pr-comments ...` material supports review and PR learning loops on merged work and should be placed intentionally within the workflow-oriented user guide.
+5. **Documentation docs must reflect both frameworks:** The live app is Fumadocs, but the product still supports MkDocs scaffolding and migration flows. Reorganized docs cannot pretend OAT is Fumadocs-only.
+6. **Generated docs surface is part of the contract:** `apps/oat-docs/index.md` is generated output and must be refreshed from the docs tree instead of manually curated.
+7. **Old-path cleanup replaces redirect work:** There is no live docs site requiring redirects yet. The requirement is repo-wide stale-reference cleanup before old paths are removed.
+8. **Quick mode needs a lightweight design pass:** The merged docs/runtime changes introduced enough architectural nuance that the project should not go straight from discovery to implementation anymore.
 
 ## Constraints
 
-- No content deletion — this is a reorganization, not a reduction.
-- All existing URLs/anchors should have redirects or be discoverable from the new structure.
-- Must work in both MkDocs (current) and Fumadocs (target). Tabs are supported in both (MkDocs natively, Fumadocs via existing transform in `@oat/docs-transforms`).
-- The `index.md` + `## Contents` navigation contract must be maintained in all new/moved index files.
-- Mermaid diagrams must use syntax supported by both MkDocs `superfences` and Fumadocs rendering.
+- No content deletion. This is an information-architecture reorganization, not a scope reduction.
+- The active docs app is `apps/oat-docs`, a Fumadocs/Next.js app using `source.config.ts`, `@oat/docs-config`, `@oat/docs-theme`, and `@oat/docs-transforms`. `apps/oat-docs/mkdocs.yml` is not part of the current app.
+- OAT still ships docs commands for both Fumadocs and MkDocs (`oat docs init`, `oat docs migrate`, `oat docs nav sync`), so the documentation must preserve those product-level paths.
+- Every documentation directory must maintain the `index.md` + `## Contents` contract.
+- Mermaid diagrams and tabbed content must remain compatible with the Fumadocs transform pipeline already in the repo.
+- Old directories can be removed only after repo-wide searches confirm no stale links or references remain.
 
 ## Success Criteria
 
-- Every doc page has a clear primary audience (consumer or contributor).
-- A new user can find "how do I sync skills to Cursor?" within 2 nav clicks from the homepage.
-- A contributor can find "how do I add a CLI command?" within 2 nav clicks from the homepage.
-- Provider Interop is accessible as a top-level section, not buried under CLI.
-- No duplicated content — cross-links connect related content across audience sections.
-- Key flows (workflow lifecycle, state machine, provider sync) have Mermaid diagrams.
-- Multi-variant content (providers, workflow lanes) uses tabbed presentation.
+- Every moved or rewritten page has a clear primary audience: user, contributor, or shared reference.
+- Homepage and quickstart route users to the right path within two clicks: provider sync, workflow/projects, docs app setup, or contributing guidance.
+- Guided `oat init`, canonical rule sync/adoption, and `oat repo pr-comments` command surfaces are placed in sections that match their purpose.
+- `apps/oat-docs/index.md` is regenerated from the new tree and reflects the reorganized sections.
+- No stale references remain to retired legacy paths after cleanup.
+- The reorganized docs pass the Fumadocs build and markdown quality gates used by the repo.
 
 ## Out of Scope
 
-- Fumadocs migration itself (that's a separate effort; this reorganization should work in both systems).
-- Writing new conceptual content from scratch (Core Concepts section will synthesize existing content, not create net-new explanations).
-- Changing the docs tooling contract (`index.md` + `## Contents` pattern stays as-is).
-- CLI or skill code changes — this is docs-only.
+- Changing the runtime behavior of the docs app or CLI commands.
+- Rewriting OAT concepts from scratch beyond what is needed to synthesize existing content into clearer landing pages.
+- Introducing a redirect system for a live docs deployment.
+- Non-docs code changes outside what is necessary for docs verification commands already present in the repo.
 
 ## Deferred Ideas
 
-- Interactive provider comparison table — could be useful but requires custom components. Revisit after Fumadocs migration.
-- Search improvements / algolia integration — separate concern from organization.
-- API reference auto-generation from CLI help text — good idea but separate project.
+- Interactive provider comparison or workflow chooser components in the docs UI.
+- Search UX changes beyond what falls out of the existing generated index and Fumadocs search support.
+- Automatic reference generation from CLI help output.
 
 ## Open Questions
 
-- **Redirect strategy:** When pages move to new paths, what's the redirect mechanism in MkDocs vs. Fumadocs?
-- **Tab syntax portability:** Confirm that the `pymdownx.tabbed` syntax and the Fumadocs tab transform produce compatible authoring patterns, or identify what adapter work is needed.
-- **Mermaid rendering parity:** Verify Mermaid works identically in both MkDocs superfences and Fumadocs.
+- **Cleanup sequencing:** Whether old section stubs are useful for intermediate commits, or whether the move can go straight to full stale-path cleanup once repo-wide audits pass.
+- **CLI detail balance:** How much command detail should remain on the topical pages versus the new `guide/cli-reference.md`.
 
 ## Assumptions
 
-- The MkDocs → Fumadocs migration will happen but is not a prerequisite for this reorganization.
-- Existing cross-references within docs pages are the ones visible in markdown link syntax (no dynamic resolution).
-- The `oat docs nav sync` command can regenerate navigation from updated `index.md` files after restructuring.
+- `apps/oat-docs` remains the canonical docs app throughout this project.
+- `pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md` remains the canonical way to refresh the app-root docs index.
+- The merged docs pages in `apps/oat-docs/docs/**` are the correct baseline for reorganizing current content.
 
 ## Risks
 
-- **Broken cross-references:** Moving pages changes paths, breaking existing links within docs.
+- **Stale relative links after moves:** Moving pages will break links unless relative paths are updated carefully.
   - **Likelihood:** High
   - **Impact:** Medium
-  - **Mitigation:** Systematic link audit after each move. Use `oat docs analyze` to detect drift.
+  - **Mitigation:** Use repo-wide stale-path searches plus per-file link checks before deleting legacy directories.
 
-- **Navigation regression:** Restructuring could make some content harder to find if the new groupings don't match user expectations.
-  - **Likelihood:** Low
+- **Generated surface drift:** The docs tree could move successfully while `apps/oat-docs/index.md` stays out of date.
+  - **Likelihood:** Medium
   - **Impact:** Medium
-  - **Mitigation:** The audience-based split is well-understood. Validate with the homepage "Choose a usage path" routing.
+  - **Mitigation:** Treat generated-index refresh as a first-class plan task and final verification step.
+
+- **Audience split could hide command docs:** If CLI detail is moved too aggressively, contributors may lose obvious entry points.
+  - **Likelihood:** Medium
+  - **Impact:** Medium
+  - **Mitigation:** Keep a shallow CLI reference page in the user guide and cross-link deeply into topical pages.
 
 ## Next Steps
 
-Proceed directly to `plan.md` — scope is clear and no architecture decisions remain. This is a content reorganization with well-defined moves.
+This quick-mode project should now use the optional lightweight design path before implementation. `design.md` should lock the current docs-app architecture, generated-index flow, and cleanup strategy, then `plan.md` should execute against that rebased design. Once those artifacts are aligned, the project is ready for `oat-project-implement`.
