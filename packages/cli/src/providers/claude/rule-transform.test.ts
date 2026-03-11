@@ -27,7 +27,10 @@ Use named exports.`;
     expect(rendered).toContain(
       '<!-- OAT-managed: do not edit directly. Source: .agents/rules/react-components.md -->',
     );
-    expect(parseClaudeRuleToCanonical(rendered)).toBe(`---
+    const roundTripped = parseClaudeRuleToCanonical(rendered);
+
+    expect(roundTripped).not.toContain('description:');
+    expect(roundTripped).toBe(`---
 globs:
   - src/components/**/*.tsx
 activation: glob
