@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p03-t03
+oat_current_task_id: p04-t01
 oat_generated: false
 ---
 
@@ -28,11 +28,11 @@ oat_generated: false
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
 | Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed   | 7     | 7/7       |
-| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | in_progress | 3     | 2/3       |
-| Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
+| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | completed   | 3     | 3/3       |
+| Phase 4: Visual Elements and Content Enhancements                  | in_progress | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 14/19 tasks completed
+**Total:** 15/19 tasks completed
 
 ---
 
@@ -527,19 +527,43 @@ oat_generated: false
 
 ### Task p03-t03: Add Audience Cross-Links
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** ab68bf8a
+
+**Outcome (required):**
+
+- Added explicit audience handoff sections between user-guide and contributor-guide docs where readers commonly cross boundaries.
+- Clarified when to stay in the user guide versus when to switch into contributor or reference material.
+- Preserved the `## Contents` contract while adding the cross-links as freeform prose below the machine-readable navigation blocks.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/skills/index.md` - added user vs contributor handoff guidance
+- `apps/oat-docs/docs/guide/provider-sync/index.md` - added user vs contributor handoff guidance
+- `apps/oat-docs/docs/contributing/documentation.md` - added routing back to user-guide and reference docs
+- `apps/oat-docs/docs/reference/docs-index-contract.md` - added routing into user-guide and contributor docs
+
+**Verification:**
+
+- Run: `sed -n '1,240p'` across the four touched pages
+- Result: pass
+- Run: `rg -n "If You Are Trying To|Documentation User Guide|Hooks and Safety|Writing Skills|Docs Workflows|Docs Index Contract"` across the four touched pages
+- Result: pass
+
+**Notes / Decisions:**
+
+- Kept the audience handoffs short and directive so they improve routing without turning the pages into duplicated mini-indexes.
 
 ---
 
 ## Phase 4: Visual Elements and Content Enhancements
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-12
 
 ### Task p04-t01: Add Mermaid Diagrams
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
