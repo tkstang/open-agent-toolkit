@@ -23,7 +23,7 @@ describe('claudeAdapter', () => {
     expect(claudeAdapter.displayName).toBe('Claude Code');
   });
 
-  it('project mappings: skills → .claude/skills, agents → .claude/agents', () => {
+  it('project mappings include rules under .claude/rules', () => {
     expect(claudeAdapter.projectMappings).toEqual([
       {
         contentType: 'skill',
@@ -35,6 +35,12 @@ describe('claudeAdapter', () => {
         contentType: 'agent',
         canonicalDir: '.agents/agents',
         providerDir: '.claude/agents',
+        nativeRead: false,
+      },
+      {
+        contentType: 'rule',
+        canonicalDir: '.agents/rules',
+        providerDir: '.claude/rules',
         nativeRead: false,
       },
     ]);

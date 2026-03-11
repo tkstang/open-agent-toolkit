@@ -5,6 +5,9 @@ export interface PathMapping {
   canonicalDir: string;
   providerDir: string;
   nativeRead: boolean;
+  providerExtension?: string;
+  transformCanonical?: (canonicalContent: string) => string;
+  parseToCanonical?: (providerContent: string) => string;
 }
 
 export interface ProviderAdapter {

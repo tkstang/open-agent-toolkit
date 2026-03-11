@@ -13,6 +13,12 @@ export const CURSOR_PROJECT_MAPPINGS: PathMapping[] = [
     providerDir: '.cursor/agents',
     nativeRead: false,
   },
+  {
+    contentType: 'rule',
+    canonicalDir: '.agents/rules',
+    providerDir: '.cursor/rules',
+    nativeRead: false,
+  },
 ];
 
 export const CURSOR_USER_MAPPINGS: PathMapping[] = [

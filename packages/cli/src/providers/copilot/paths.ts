@@ -13,6 +13,12 @@ export const COPILOT_PROJECT_MAPPINGS: PathMapping[] = [
     providerDir: '.github/agents',
     nativeRead: false,
   },
+  {
+    contentType: 'rule',
+    canonicalDir: '.agents/rules',
+    providerDir: '.github/instructions',
+    nativeRead: false,
+  },
 ];
 
 export const COPILOT_USER_MAPPINGS: PathMapping[] = [

@@ -23,7 +23,7 @@ describe('copilotAdapter', () => {
     expect(copilotAdapter.displayName).toBe('GitHub Copilot');
   });
 
-  it('project mappings: skills → .github/skills, agents → .github/agents', () => {
+  it('project mappings include rules under .github/instructions', () => {
     expect(copilotAdapter.projectMappings).toEqual([
       {
         contentType: 'skill',
@@ -35,6 +35,12 @@ describe('copilotAdapter', () => {
         contentType: 'agent',
         canonicalDir: '.agents/agents',
         providerDir: '.github/agents',
+        nativeRead: false,
+      },
+      {
+        contentType: 'rule',
+        canonicalDir: '.agents/rules',
+        providerDir: '.github/instructions',
         nativeRead: false,
       },
     ]);
@@ -102,6 +108,16 @@ describe('copilotAdapter', () => {
     const root = await mkdtemp(join(tmpdir(), 'oat-copilot-'));
     tempDirs.push(root);
     await mkdir(join(root, '.github', 'skills'), { recursive: true });
+
+    const detected = await copilotAdapter.detect(root);
+
+    expect(detected).toBe(true);
+  });
+
+  it('detect returns true when .github/instructions/ exists', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'oat-copilot-'));
+    tempDirs.push(root);
+    await mkdir(join(root, '.github', 'instructions'), { recursive: true });
 
     const detected = await copilotAdapter.detect(root);
 

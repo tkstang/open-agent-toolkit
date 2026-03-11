@@ -13,6 +13,12 @@ export const CLAUDE_PROJECT_MAPPINGS: PathMapping[] = [
     providerDir: '.claude/agents',
     nativeRead: false,
   },
+  {
+    contentType: 'rule',
+    canonicalDir: '.agents/rules',
+    providerDir: '.claude/rules',
+    nativeRead: false,
+  },
 ];
 
 export const CLAUDE_USER_MAPPINGS: PathMapping[] = [
