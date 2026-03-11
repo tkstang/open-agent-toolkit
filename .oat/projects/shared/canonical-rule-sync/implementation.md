@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t01
+oat_current_task_id: p02-t02
 oat_generated: false
 ---
 
@@ -27,9 +27,9 @@ oat_generated: false
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | completed   | 3     | 3/3       |
-| Phase 2 | in_progress | 3     | 0/3       |
+| Phase 2 | in_progress | 3     | 1/3       |
 
-**Total:** 3/6 tasks completed
+**Total:** 4/6 tasks completed
 
 ---
 
@@ -201,8 +201,33 @@ oat_generated: false
 
 ### Task p02-t01: Add rule stray detection and adoption flow
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 420775e1
+
+**Outcome (required when completed):**
+
+- Added stray detection for rule files in Claude, Cursor, and Copilot provider directories, including `.mdc` and `.instructions.md` extensions.
+- Taught rule stray suppression to map provider filenames back to canonical `.md` filenames before comparing against canonical entries.
+- Implemented rule adoption that parses provider-native rule files back to canonical markdown and keeps the provider copy managed as a transformed file.
+- Threaded rule-aware stray detection through init/status flows so adoption candidates carry the mapping metadata needed for extension-aware handling.
+
+**Files changed:**
+
+- `packages/cli/src/drift/strays.ts` - recognized rule directories, extensions, scope roots, and canonical filename conversion
+- `packages/cli/src/drift/strays.test.ts` - covered Cursor and Copilot rule stray detection
+- `packages/cli/src/commands/shared/adopt-stray.ts` - added transformed rule adoption with canonical writeback and managed provider copy updates
+- `packages/cli/src/commands/shared/adopt-stray.test.ts` - covered Cursor rule adoption into `.agents/rules/*.md`
+- `packages/cli/src/commands/status/index.ts` - passed mapping metadata into stray detection for rule-aware adoption candidates
+- `packages/cli/src/commands/init/index.ts` - passed mapping metadata into stray detection during init adoption
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli lint`
+- Result: Passed
+- Run: `pnpm --filter @oat/cli type-check`
+- Result: Passed
 
 ---
 
@@ -324,6 +349,37 @@ Chronological log of implementation progress.
 - None - resolved
 
 **Session End:** 04:59 UTC
+
+---
+
+### 2026-03-11
+
+**Session Start:** 04:59 UTC
+
+- [x] p02-t01: Add rule stray detection and adoption flow - 420775e1
+- [ ] p02-t02: Update rule authoring workflow and sync integration tests - pending
+
+**What changed (high level):**
+
+- Added rule stray detection for provider rule files across Claude, Cursor, and Copilot directories.
+- Implemented provider-to-canonical rule adoption with extension-aware filename normalization.
+- Updated init/status adoption flows to carry mapping metadata needed for transformed rule handling.
+
+**Decisions:**
+
+- Rule adoption now writes canonical markdown and immediately normalizes the provider copy as a managed transformed file instead of deleting it and waiting for a later sync.
+- Stray suppression for rules is keyed on canonicalized filenames so `.mdc` and `.instructions.md` provider files correctly match `.md` canonical entries.
+
+**Follow-ups / TODO:**
+
+- Update the instruction-authoring skill and sync integration coverage in `p02-t02`.
+- Run final project-level verification and manual smoke coverage in `p02-t03`.
+
+**Blockers:**
+
+- None - resolved
+
+**Session End:** 05:06 UTC
 
 ---
 
