@@ -349,15 +349,70 @@ git add packages/cli/src/commands/init/
 git commit -m "fix(p01-t07): enrich guided setup summary with provider and path detail"
 ```
 
+### Task p01-t08: (review) Use configured providers and scoped local-path counts in summary
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/index.ts`
+- Modify: `packages/cli/src/commands/init/index.test.ts`
+- Modify: `packages/cli/src/commands/init/guided-setup.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: The guided summary populates `Providers` from `adapter.detect()` (all detectable providers) instead of from the sync config (user-enabled providers). The `Local paths` existing-count uses `resolveLocalPaths(config)` which includes all stored local paths (including custom ones), not just the guided choice set that was already present.
+Location: `packages/cli/src/commands/init/index.ts:505`
+
+**Step 2: Fix provider line**
+
+In `runGuidedSetupImpl`, replace the `adapter.detect()` loop with config-aware detection:
+
+- Load sync config via `dependencies.loadSyncConfig(join(projectRoot, '.oat', 'sync', 'config.json'))`
+- Call `dependencies.getConfigAwareAdapters(adapters, projectRoot, syncConfig)`
+- Use `resolution.activeAdapters` display names for the summary
+
+**Step 3: Fix local paths existing count**
+
+Change `existingCount` from `existingPaths.size` (all config local paths) to the count of existing paths that are in the guided choice set:
+
+```typescript
+const guidedPathValues = new Set(LOCAL_PATH_CHOICES.map((c) => c.value));
+const existingGuidedCount = [...existingPaths].filter((p) =>
+  guidedPathValues.has(p),
+).length;
+```
+
+**Step 4: Add test coverage**
+
+In `index.test.ts`:
+
+- Add test: detectable provider that user disabled → should NOT appear in summary Providers line
+- Add test: config has custom local paths beyond the guided set → existing count should only reflect guided paths
+
+In `guided-setup.test.ts`:
+
+- Verify provider summary uses config-aware adapters, not raw detection
+
+**Step 5: Verify**
+
+Run: `pnpm --filter @oat/cli test && pnpm lint && pnpm type-check`
+Expected: All pass
+
+**Step 6: Commit**
+
+```bash
+git add packages/cli/src/commands/init/
+git commit -m "fix(p01-t08): use configured providers and scoped path counts in summary"
+```
+
 ---
 
 ## Reviews
 
-| Scope | Type     | Status   | Date       | Artifact                                   |
-| ----- | -------- | -------- | ---------- | ------------------------------------------ |
-| plan  | artifact | passed   | 2026-03-10 | reviews/artifact-plan-review-2026-03-10.md |
-| p01   | code     | pending  | -          | -                                          |
-| final | code     | received | 2026-03-10 | reviews/final-review-2026-03-10-v2.md      |
+| Scope | Type     | Status      | Date       | Artifact                                   |
+| ----- | -------- | ----------- | ---------- | ------------------------------------------ |
+| plan  | artifact | passed      | 2026-03-10 | reviews/artifact-plan-review-2026-03-10.md |
+| p01   | code     | pending     | -          | -                                          |
+| final | code     | fixes_added | 2026-03-11 | reviews/final-review-2026-03-10-v2.md      |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -374,9 +429,9 @@ git commit -m "fix(p01-t07): enrich guided setup summary with provider and path 
 
 **Summary:**
 
-- Phase 1: 7 tasks — Add `--setup` flag, tool packs step, local paths multi-select, provider sync + summary, integration tests, (review) fix provider sync, (review) enrich summary
+- Phase 1: 8 tasks — Add `--setup` flag, tool packs step, local paths multi-select, provider sync + summary, integration tests, (review) fix provider sync, (review) enrich summary, (review) use configured state in summary
 
-**Total: 7 tasks**
+**Total: 8 tasks**
 
 Ready for code review and merge.
 

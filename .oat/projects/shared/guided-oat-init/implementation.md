@@ -1,10 +1,10 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
-oat_last_updated: 2026-03-10
-oat_project_state_updated: '2026-03-10T22:45:00Z'
-oat_current_task_id: null
+oat_last_updated: 2026-03-11
+oat_project_state_updated: '2026-03-11T00:00:00Z'
+oat_current_task_id: p01-t08
 oat_generated: false
 ---
 
@@ -25,11 +25,11 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status   | Tasks | Completed |
-| ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 7     | 7/7       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | in_progress | 8     | 7/8       |
 
-**Total:** 7/7 tasks completed
+**Total:** 7/8 tasks completed
 
 ---
 
@@ -248,7 +248,34 @@ oat_generated: false
 
 - `m1`: OAT tracking artifact status inconsistency — deferred with rationale: purely bookkeeping in `.oat/` project files, no user-facing impact; will be normalized during artifact updates in this review cycle.
 
-**Next:** Fix tasks complete. Request re-review via `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`.
+**Next:** Fix tasks complete (t06, t07). Re-review performed (v2).
+
+### Review Received: final (re-review v2)
+
+**Date:** 2026-03-11
+**Review artifact:** reviews/final-review-2026-03-10-v2.md
+
+**Prior findings disposition:**
+
+- C1 (provider sync dev script): Resolved
+- I1 (summary missing fields): Partially resolved — fields added but values use detected/global state
+- m1 (tracking artifacts): Resolved
+
+**Findings:**
+
+- Critical: 0
+- Important: 1
+- Medium: 0
+- Minor: 0
+
+**New tasks added:** p01-t08
+
+**Next:** Execute fix task via the `oat-project-implement` skill.
+
+After the fix task is complete:
+
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ---
 
