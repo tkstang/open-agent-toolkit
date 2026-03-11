@@ -4,7 +4,7 @@ oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-10
 oat_project_state_updated: '2026-03-10T21:48:00Z'
-oat_current_task_id: p01-t06
+oat_current_task_id: p01-t07
 oat_generated: false
 ---
 
@@ -27,9 +27,9 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 7     | 5/7       |
+| Phase 1 | in_progress | 7     | 6/7       |
 
-**Total:** 5/7 tasks completed
+**Total:** 6/7 tasks completed
 
 ---
 
@@ -188,6 +188,25 @@ oat_generated: false
 - Result: 911/911 pass
 - Run: `pnpm lint && pnpm type-check`
 - Result: pass
+
+### Task p01-t06: (review) Fix provider sync to use installed CLI binary
+
+**Status:** completed
+**Commit:** 7efca1ea
+
+**Outcome:**
+
+- Changed default `runProviderSync` from `pnpm run cli -- sync --scope project` to `oat sync --scope project`
+- This ensures provider sync works in any repo, not just the OAT monorepo workspace
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/index.ts` - Fixed execSync command string
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: 911/911 pass
 
 ### Review Received: final
 
