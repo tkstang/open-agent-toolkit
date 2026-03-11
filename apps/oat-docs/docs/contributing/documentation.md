@@ -1,11 +1,11 @@
 ---
 title: Contributing to OAT Docs
-description: 'Authoring conventions for OAT docs: frontmatter, index.md navigation contracts, and Markdown features.'
+description: 'Docs authoring contract for OAT: navigation, local workflow, and contributor guidance.'
 ---
 
 # Contributing to OAT Docs
 
-Documentation should ship with the code it explains. This docs app is scaffolded to give contributors and agents a shared contract for navigation, Markdown features, and local tooling.
+Documentation should ship with the code it explains. This page covers the core docs contract and local workflow; the syntax reference now lives in [Markdown Features](markdown-features.md).
 
 ## Navigation contract
 
@@ -33,115 +33,25 @@ Documentation should ship with the code it explains. This docs app is scaffolded
    pnpm --filter oat-docs docs:format
    ```
 
-## Supported Markdown features
+## Authoring Expectations
 
-### Frontmatter
+- Keep docs aligned with the current repo behavior and current command surface.
+- Prefer cross-links over duplicated conceptual content.
+- When you add, remove, or rename docs pages, refresh the generated docs surface:
 
-Every page should have `title` and `description` fields in YAML frontmatter. The `title` is used for sidebar navigation and page headings.
+  ```bash
+  pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md
+  ```
 
-**Syntax:**
-
-```yaml
----
-title: Page Title
-description: A short summary of the page.
----
-```
-
-### Callouts
-
-GitHub-style callout blocks are supported.
-
-**Syntax:**
-
-```text
-> [!NOTE]
-> Useful supporting context.
-
-> [!WARNING]
-> Important caution for the reader.
-```
-
-**Rendered:**
-
-> [!NOTE]
-> Useful supporting context.
-
-> [!WARNING]
-> Important caution for the reader.
-
-### Mermaid diagrams
-
-Fenced code blocks with `mermaid` language are rendered as diagrams.
-
-**Syntax:**
-
-````text
-```mermaid
-flowchart LR
-  A[Read index.md] --> B[Generate nav]
-```
-````
-
-**Rendered:**
-
-```mermaid
-flowchart LR
-  A[Read index.md] --> B[Generate nav]
-```
-
-### Tabs
-
-Tab groups use MkDocs-style tab markers. Each `=== "Title"` followed by an indented code block creates a tab.
-
-**Syntax:**
-
-```text
-=== "pnpm"
-
-    pnpm install
-
-=== "npm"
-
-    npm install
-```
-
-**Rendered:**
-
-=== "pnpm"
-
-    pnpm install
-
-=== "npm"
-
-    npm install
-
-=== "yarn"
-
-    yarn install
-
-### Code blocks
-
-Standard fenced code blocks with syntax highlighting are supported for all common languages. Add a `title` to the meta string to display a filename header.
-
-**Syntax:**
-
-````text
-```typescript title="src/example.ts"
-const greeting = 'hello world';
-console.log(greeting);
-```
-````
-
-**Rendered:**
-
-```typescript title="src/example.ts"
-const greeting = 'hello world';
-console.log(greeting);
-```
+- Use [Markdown Features](markdown-features.md) for supported syntax and examples.
 
 ## Agent guidance
 
 - Treat `index.md` plus its `## Contents` section as the local discovery source of truth.
 - Prefer linking to source files and commands explicitly when documenting behavior.
-- Run `pnpm exec oat docs generate-index` to regenerate the docs surface index after adding or removing pages.
+- Regenerate the docs surface index after adding or removing pages.
+
+## Related Guides
+
+- [Markdown Features](markdown-features.md)
+- [Documentation User Guide](../guide/documentation/index.md)
