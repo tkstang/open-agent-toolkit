@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t02
+oat_current_task_id: p01-t03
 oat_generated: false
 ---
 
@@ -26,10 +26,10 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 3     | 1/3       |
+| Phase 1 | in_progress | 3     | 2/3       |
 | Phase 2 | pending     | 4     | 0/4       |
 
-**Total:** 1/7 tasks completed
+**Total:** 2/7 tasks completed
 
 ---
 
@@ -51,8 +51,8 @@ oat_generated: false
 
 ### Task p01-t02: Add residual-review archive guards to project PR and completion flows
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** `chore(p01-t02): archive residual project reviews`
 
 **Notes:**
 
@@ -62,7 +62,7 @@ oat_generated: false
 
 ### Task p01-t03: Align review-provider and review-path documentation with the new contract
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 **Notes:**
@@ -124,6 +124,7 @@ oat_generated: false
 - **2026-03-11:** Imported external plan into canonical OAT artifacts. No implementation work started yet.
 - **2026-03-11:** Began implementation with `p01-t01`; updating receive workflows to archive consumed review artifacts and keep lifecycle references truthful.
 - **2026-03-11:** Completed `p01-t01`; receive skills now select only active review artifacts, archive consumed reviews, and point lifecycle references at archived paths.
+- **2026-03-11:** Completed `p01-t02`; PR and completion skills now archive stray active reviews before continuing and only treat `reviews/archived/` as local-only by default.
 
 ## Deviations from Plan
 
@@ -135,10 +136,10 @@ oat_generated: false
 
 Track test execution during implementation.
 
-| Phase | Tests Run                                             | Passed | Failed | Coverage |
-| ----- | ----------------------------------------------------- | ------ | ------ | -------- |
-| 1     | `rg` consistency checks on receive skill instructions | yes    | 0      | n/a      |
-| 2     | -                                                     | -      | -      | -        |
+| Phase | Tests Run                                                           | Passed | Failed | Coverage |
+| ----- | ------------------------------------------------------------------- | ------ | ------ | -------- |
+| 1     | `rg` consistency checks on receive/PR/completion skill instructions | yes    | 0      | n/a      |
+| 2     | -                                                                   | -      | -      | -        |
 
 ## Final Summary (for PR/docs)
 
@@ -157,6 +158,7 @@ Track test execution during implementation.
 **Verification performed:**
 
 - `rg` consistency checks on updated receive-skill archive guidance
+- `rg` consistency checks on progress/final PR and completion archive preflights
 
 **Design deltas (if any):**
 
