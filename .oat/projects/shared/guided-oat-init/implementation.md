@@ -1,10 +1,10 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-10
-oat_project_state_updated: '2026-03-10T21:48:00Z'
-oat_current_task_id: p01-t07
+oat_project_state_updated: '2026-03-10T22:45:00Z'
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -25,17 +25,17 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 7     | 6/7       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 7     | 7/7       |
 
-**Total:** 6/7 tasks completed
+**Total:** 7/7 tasks completed
 
 ---
 
 ## Phase 1: Guided Setup Flow
 
-**Status:** in_progress (review fixes)
+**Status:** complete
 **Started:** 2026-03-10
 
 ### Phase Summary
@@ -208,6 +208,28 @@ oat_generated: false
 - Run: `pnpm --filter @oat/cli test`
 - Result: 911/911 pass
 
+### Task p01-t07: (review) Enrich guided setup summary with provider list and local path counts
+
+**Status:** completed
+**Commit:** 253b9463
+
+**Outcome:**
+
+- Added provider detection at start of guided setup; summary now shows `Providers: Claude Code` (or `none detected`)
+- Local paths summary now shows `N added, M existing` instead of `N configured`
+- Updated test assertions in both unit and integration tests to verify enriched summary fields
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/index.ts` - Added provider detection, tracked added/existing counts, enriched summary output
+- `packages/cli/src/commands/init/index.test.ts` - Updated summary assertion tests
+- `packages/cli/src/commands/init/guided-setup.test.ts` - Updated integration test assertions
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test && pnpm type-check`
+- Result: 911/911 pass, type-check clean
+
 ### Review Received: final
 
 **Date:** 2026-03-10
@@ -226,12 +248,7 @@ oat_generated: false
 
 - `m1`: OAT tracking artifact status inconsistency — deferred with rationale: purely bookkeeping in `.oat/` project files, no user-facing impact; will be normalized during artifact updates in this review cycle.
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
-
-After the fix tasks are complete:
-
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+**Next:** Fix tasks complete. Request re-review via `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`.
 
 ---
 
@@ -274,13 +291,15 @@ Track test execution during implementation.
 
 - Interactive guided setup flow for `oat init`, activated by `--setup` flag or fresh repo detection
 - 4-step guided flow: tool packs → local paths → provider sync → summary
+- Provider sync uses the installed `oat` binary (not dev-only `pnpm run cli`)
+- Summary shows detected providers, added/existing local path counts, and step status
 
 **Behavioral changes (user-facing):**
 
 - `oat init --setup` enters guided setup on any repo
 - Fresh `oat init` (no `.oat/` dir) prompts for guided setup automatically
 - Each guided step is independently skippable
-- Summary output shows configuration results and suggested next steps
+- Summary output shows: detected providers, tool packs status, local paths (added vs existing), provider sync status, and next steps
 - Non-interactive mode is never affected
 
 **Key files / modules:**
@@ -297,6 +316,7 @@ Track test execution during implementation.
 **Design deltas (if any):**
 
 - No design.md (quick mode) — implementation follows discovery.md decisions
+- Review fixes: changed provider sync from `pnpm run cli` to `oat` binary; enriched summary output with provider list and local path counts
 
 ## References
 

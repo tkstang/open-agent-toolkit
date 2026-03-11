@@ -353,11 +353,11 @@ git commit -m "fix(p01-t07): enrich guided setup summary with provider and path 
 
 ## Reviews
 
-| Scope | Type     | Status      | Date       | Artifact                                   |
-| ----- | -------- | ----------- | ---------- | ------------------------------------------ |
-| plan  | artifact | passed      | 2026-03-10 | reviews/artifact-plan-review-2026-03-10.md |
-| p01   | code     | pending     | -          | -                                          |
-| final | code     | fixes_added | 2026-03-10 | reviews/final-review-2026-03-10.md         |
+| Scope | Type     | Status          | Date       | Artifact                                   |
+| ----- | -------- | --------------- | ---------- | ------------------------------------------ |
+| plan  | artifact | passed          | 2026-03-10 | reviews/artifact-plan-review-2026-03-10.md |
+| p01   | code     | pending         | -          | -                                          |
+| final | code     | fixes_completed | 2026-03-10 | reviews/final-review-2026-03-10.md         |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
