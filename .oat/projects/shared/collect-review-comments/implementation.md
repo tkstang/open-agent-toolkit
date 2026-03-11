@@ -1,5 +1,5 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
@@ -26,9 +26,9 @@ oat_generated: false
 
 | Phase   | Status   | Tasks | Completed |
 | ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 4     | 4/4       |
+| Phase 1 | complete | 7     | 7/7       |
 
-**Total:** 4/4 tasks completed
+**Total:** 7/7 tasks completed
 
 ---
 
@@ -89,6 +89,55 @@ oat_generated: false
 **Status:** complete
 **Commit:** d766175
 
+### Task p01-t05: (review) Fix default repo resolution and nested pagination
+
+**Status:** complete
+**Commit:** 18cf5c5f
+
+**Outcome:**
+
+- Added `resolveCurrentRepo()` to `CollectDependencies` — parses `owner/name` from git remote URL (SSH + HTTPS)
+- When `--repo` is omitted, repo is resolved from `git remote get-url origin` before any GraphQL queries
+- `repo` qualifier is now always present in the search query — prevents cross-repo leakage
+- `owner`/`name` are always available for nested review-comment pagination — no more silent truncation
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli type-check` — passed
+- Run: `pnpm build` — passed
+
+### Task p01-t06: (review) Fix monthly chunking to use merge date and reverse-chronological order
+
+**Status:** complete
+**Commit:** f24a06f3
+
+**Outcome:**
+
+- Changed grouping key from `createdAt.slice(0, 7)` to `prMergedAt.slice(0, 7)` — comments now group by PR merge month
+- Changed sort order from ascending to descending — output files are now reverse-chronological
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli type-check` — passed
+
+### Task p01-t07: (review) Extend noise filtering to match discovery contract
+
+**Status:** complete
+**Commit:** 7fded065
+
+**Outcome:**
+
+- Extended GraphQL queries to include `__typename` on author field for both search and pagination queries
+- Added three-layer bot detection: API `__typename === 'Bot'`, `[bot]` suffix, known-service login set (14 services)
+- Expanded trivial-comment patterns: `looks good`, `ship it`, emoji-only, `nice`, `great`, `thanks`, etc.
+- Added word-count threshold (<5 words) with code-reference escape hatch (backticks, file paths, line numbers)
+- Updated `GraphQLReviewComment` type to include `__typename` on author
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli type-check` — passed
+- Run: `pnpm build` — passed (5 tasks successful)
+
 ---
 
 ## Orchestration Runs
@@ -105,6 +154,8 @@ oat_generated: false
 ## Implementation Log
 
 - **2026-03-11:** All 4 tasks implemented in a single commit (d766175). Built all files, verified type-check/lint/build pass, pushed to feature branch.
+- **2026-03-11:** Final code review received — 3 fix tasks added (p01-t05, p01-t06, p01-t07).
+- **2026-03-11:** All 3 review fix tasks completed (18cf5c5f, f24a06f3, 7fded065). Type-check + build pass.
 
 ---
 
@@ -153,8 +204,27 @@ Track test execution during implementation.
 **Design deltas (if any):**
 
 - GraphQL API chosen over REST (pivot from discovery's original REST recommendation)
-- Bot detection simplified to `[bot]` suffix; configurable list deferred
-- Trivial comment detection simplified to regex patterns; length threshold deferred
+- Bot detection: three-layer approach (API type, `[bot]` suffix, known-service set) — matches discovery contract
+- Trivial comment detection: phrase patterns + word-count threshold with code-reference escape — matches discovery contract
+- Monthly chunking uses PR merge date (not comment creation date) — matches discovery constraint
+
+### Review Received: final
+
+**Date:** 2026-03-11
+**Review artifact:** reviews/code-review-final-2026-03-11.md
+
+**Findings:**
+
+- Critical: 0
+- Important: 1
+- Medium: 2
+- Minor: 0
+
+**New tasks added:** p01-t05, p01-t06, p01-t07
+
+**Fix tasks completed:** p01-t05 (18cf5c5f), p01-t06 (f24a06f3), p01-t07 (7fded065)
+
+**Next:** Request re-review via `oat-project-review-provide code final`, then `oat-project-review-receive` to reach `passed`.
 
 ## References
 
