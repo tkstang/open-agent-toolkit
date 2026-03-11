@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t03
+oat_current_task_id: p02-t04
 oat_generated: false
 ---
 
@@ -27,12 +27,12 @@ oat_generated: false
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 2/7       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | in_progress | 7     | 3/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 7/19 tasks completed
+**Total:** 8/19 tasks completed
 
 ---
 
@@ -298,14 +298,35 @@ oat_generated: false
 
 ### Task p02-t03: Write Core Concepts Page (guide/concepts.md)
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** 76a0f3bf
+
+**Outcome (required):**
+
+- Replaced the staged concepts placeholder with a real mental-model page for canonical assets, drift, scopes, skills, usage modes, and the workflow layer.
+- Linked each concept to the moved docs sections that now hold the detailed behavior.
+- Kept the page intentionally conceptual so the later visual-enhancement phase can layer diagrams onto stable prose.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/concepts.md` - expanded the placeholder into the real concepts page
+
+**Verification:**
+
+- Run: `sed -n '1,260p' apps/oat-docs/docs/guide/concepts.md`
+- Result: pass
+- Run: link existence checks for the referenced guide, contributing, quickstart, and reference pages
+- Result: pass
+
+**Notes / Decisions:**
+
+- Deferred diagrams intentionally to `p04-t01`, matching the plan’s separation between prose structure and visual enhancement.
 
 ---
 
 ### Task p02-t04: Write Contributing Section Index and Sub-Pages
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
