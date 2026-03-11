@@ -829,6 +829,37 @@ Chronological log of implementation progress.
 
 ---
 
+### Review Passed: final (re-review)
+
+**Date:** 2026-03-11
+**Review artifact:** reviews/final-review-2026-03-11-v2.md
+
+**Findings:**
+
+- Critical: 0
+- Important: 0
+- Medium: 0
+- Minor: 0
+
+**Disposition map:**
+
+- Prior Important findings: resolved
+- Prior Medium findings: resolved
+- Prior Minor findings: resolved
+- New findings: none
+
+**Deferred Findings (Medium):**
+
+- None
+
+**Deferred Findings (Minor):**
+
+- None
+
+**Next:** Final review passed. Ready for PR via `oat-project-pr-final`.
+
+---
+
 ### 2026-03-11
 
 **Session Start:** 05:39 UTC
@@ -865,18 +896,13 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Request final re-review for the completed review-fix set.
+- Final review passed; generate the final PR description.
 
 **Blockers:**
 
 - None - resolved
 
 **Session End:** 05:55 UTC
-
-After the fix tasks are complete:
-
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ---
 
