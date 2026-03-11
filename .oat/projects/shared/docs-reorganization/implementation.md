@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t04
+oat_current_task_id: p01-t05
 oat_generated: false
 ---
 
@@ -26,13 +26,13 @@ oat_generated: false
 
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
-| Phase 1: Directory Structure and File Moves                        | in_progress | 5     | 3/5       |
+| Phase 1: Directory Structure and File Moves                        | in_progress | 5     | 4/5       |
 | Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | pending     | 7     | 0/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 3/19 tasks completed
+**Total:** 4/19 tasks completed
 
 ---
 
@@ -146,8 +146,33 @@ oat_generated: false
 
 ### Task p01-t04: Move Documentation Files to guide/documentation/
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 923724a8
+
+**Outcome (required):**
+
+- Moved the docs-app quickstart, command reference, and docs workflow pages into `guide/documentation/`.
+- Preserved the dual-framework docs-command surface by moving the existing docs-app commands page intact for later rewrite.
+- Left the remaining `cli/` and `skills/` section roots in place for later moves and cleanup.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/documentation/quickstart.md` - moved docs consumer quickstart
+- `apps/oat-docs/docs/guide/documentation/commands.md` - moved docs command surface
+- `apps/oat-docs/docs/guide/documentation/workflows.md` - moved docs workflow guide
+
+**Verification:**
+
+- Run: `find apps/oat-docs/docs/guide/documentation -maxdepth 1 -type f | sort`
+- Result: pass
+- Run: `find apps/oat-docs/docs/cli -maxdepth 1 -type f | sort`
+- Result: pass
+- Run: `find apps/oat-docs/docs/skills -maxdepth 1 -type f | sort`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The moved docs command page still describes both Fumadocs and MkDocs support, which matches the rebased plan and current product behavior.
 
 ---
 
