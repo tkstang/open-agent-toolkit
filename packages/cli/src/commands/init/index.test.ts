@@ -41,6 +41,7 @@ interface HarnessOptions {
   configAwareActiveAdapterNames?: string[];
   loadedSyncConfig?: SyncConfig;
   oatDirExists?: boolean;
+  useDefaultGuidedSetup?: boolean;
 }
 
 interface RunInitArgs {
@@ -95,6 +96,7 @@ function createHarness(options: HarnessOptions = {}): {
   installHook: ReturnType<typeof vi.fn>;
   uninstallHook: ReturnType<typeof vi.fn>;
   runGuidedSetup: ReturnType<typeof vi.fn>;
+  runToolPacks: ReturnType<typeof vi.fn>;
 } {
   const capture = createLoggerCapture();
   const scopeRoots = {
@@ -125,6 +127,7 @@ function createHarness(options: HarnessOptions = {}): {
   const uninstallHook = vi.fn(async () => undefined);
   const dirExistsFn = vi.fn(async () => options.oatDirExists ?? true);
   const runGuidedSetup = vi.fn(async () => undefined);
+  const runToolPacks = vi.fn(async () => undefined);
   const saveSyncConfig = vi.fn(async (_path: string, config: SyncConfig) => {
     return config;
   });
@@ -198,8 +201,12 @@ function createHarness(options: HarnessOptions = {}): {
       entries: [],
     })),
     dirExists: dirExistsFn,
-    runGuidedSetup,
+    runToolPacks,
   };
+
+  if (!options.useDefaultGuidedSetup) {
+    dependencyOverrides.runGuidedSetup = runGuidedSetup;
+  }
 
   if (!options.useDefaultAdopt) {
     dependencyOverrides.adoptStray = adoptStray;
@@ -226,6 +233,7 @@ function createHarness(options: HarnessOptions = {}): {
     installHook,
     uninstallHook,
     runGuidedSetup,
+    runToolPacks,
   };
 }
 
@@ -987,6 +995,42 @@ config_file = "agents/reviewer.toml"
       });
 
       expect(runGuidedSetup).not.toHaveBeenCalled();
+    });
+
+    it('guided setup calls tool packs installation when user confirms', async () => {
+      const { command, runToolPacks } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        useDefaultGuidedSetup: true,
+        providerSelectResponses: [['claude']],
+        confirmResponses: [true],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(runToolPacks).toHaveBeenCalledTimes(1);
+    });
+
+    it('guided setup skips tool packs when user declines', async () => {
+      const { command, runToolPacks } = createHarness({
+        interactive: true,
+        hookInstalled: true,
+        oatDirExists: true,
+        useDefaultGuidedSetup: true,
+        providerSelectResponses: [['claude']],
+        confirmResponses: [false],
+      });
+
+      await runInitCommand(command, {
+        globalArgs: ['--scope', 'project'],
+        commandArgs: ['--setup'],
+      });
+
+      expect(runToolPacks).not.toHaveBeenCalled();
     });
 
     it('non-interactive mode never enters guided setup', async () => {

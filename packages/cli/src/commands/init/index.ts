@@ -71,7 +71,7 @@ import {
 import type { ConcreteScope, Scope } from '@shared/types';
 import { Command } from 'commander';
 
-import { createInitToolsCommand } from './tools';
+import { createInitToolsCommand, runInitToolsWithDefaults } from './tools';
 
 const ADOPT_REMEDIATION =
   'Run "oat init" interactively to adopt stray entries.';
@@ -161,7 +161,11 @@ interface InitDependencies {
   ) => Promise<ConfigAwareAdaptersResult>;
   applyOatCoreGitignore: (repoRoot: string) => Promise<ApplyOatCoreResult>;
   dirExists: (dirPath: string) => Promise<boolean>;
-  runGuidedSetup: (context: CommandContext) => Promise<void>;
+  runGuidedSetup: (
+    context: CommandContext,
+    dependencies: InitDependencies,
+  ) => Promise<void>;
+  runToolPacks: (context: CommandContext) => Promise<void>;
 }
 
 interface InitScopeSummary {
@@ -299,9 +303,8 @@ function createDependencies(): InitDependencies {
     getConfigAwareAdapters,
     applyOatCoreGitignore,
     dirExists,
-    async runGuidedSetup() {
-      // Stub — guided setup steps implemented in subsequent tasks
-    },
+    runGuidedSetup: runGuidedSetupImpl,
+    runToolPacks: runInitToolsWithDefaults,
   };
 }
 
@@ -372,6 +375,21 @@ async function maybeHandleHook(
   }
 
   return installed || shouldInstall;
+}
+
+async function runGuidedSetupImpl(
+  context: CommandContext,
+  dependencies: InitDependencies,
+): Promise<void> {
+  context.logger.info('[1/4] Tool packs…');
+  const installTools = await dependencies.confirmAction(
+    'Install tool packs (skills for workflows, ideas, utilities)?',
+    { interactive: context.interactive },
+  );
+  if (installTools) {
+    const guidedContext: CommandContext = { ...context, scope: 'project' };
+    await dependencies.runToolPacks(guidedContext);
+  }
 }
 
 async function runInitCommand(
@@ -594,7 +612,7 @@ async function runInitCommand(
       );
     }
     if (shouldRunSetup) {
-      await dependencies.runGuidedSetup(context);
+      await dependencies.runGuidedSetup(context, dependencies);
     }
   }
 }
