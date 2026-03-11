@@ -162,6 +162,24 @@ oat_generated: false
 
 ---
 
+### Task p02-t05: Leave HiLL checkpoints unset until implementation confirms them
+
+**Files:**
+
+- Modify: `.agents/skills/oat-project-plan/SKILL.md`
+- Modify: `.agents/skills/oat-project-plan-writing/SKILL.md`
+- Modify: `.agents/skills/oat-project-implement/SKILL.md`
+
+**Steps:**
+
+1. Update the planning contract so `plan.md` may leave `oat_plan_hill_phases` unset when checkpoint selection is intentionally deferred to implementation start.
+2. Adjust `oat-project-plan` so it does not seed `[]` as a placeholder when the checkpoint choice has not actually been confirmed yet.
+3. Update `oat-project-implement` so a missing `oat_plan_hill_phases` value is treated as the normal "unconfirmed, ask now" state on first run instead of as invalid drift.
+4. Verify resumed runs still behave correctly after implementation writes the confirmed checkpoint value into `plan.md`.
+5. Commit with `chore(p02-t05): defer hill checkpoint field until confirmation`.
+
+---
+
 ## Reviews
 
 | Scope  | Type     | Status  | Date | Artifact |
@@ -188,9 +206,9 @@ oat_generated: false
 **Summary:**
 
 - Phase 1: 3 tasks - archive consumed reviews and align review workflow contracts
-- Phase 2: 4 tasks - update init/gitignore defaults, verify the new policy, and improve checkpoint confirmation UX
+- Phase 2: 5 tasks - update init/gitignore defaults, verify the new policy, improve checkpoint confirmation UX, and defer checkpoint field writes until confirmation
 
-**Total: 7 tasks**
+**Total: 8 tasks**
 
 Ready for implementation.
 

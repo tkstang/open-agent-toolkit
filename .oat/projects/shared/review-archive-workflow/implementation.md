@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: null
+oat_current_task_id: p02-t05
 oat_generated: false
 ---
 
@@ -24,18 +24,18 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status   | Tasks | Completed |
-| ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 3     | 3/3       |
-| Phase 2 | complete | 4     | 4/4       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | complete    | 3     | 3/3       |
+| Phase 2 | in_progress | 5     | 4/5       |
 
-**Total:** 7/7 tasks completed
+**Total:** 7/8 tasks completed
 
 ---
 
 ## Phase 1: Review Lifecycle Archiving
 
-**Status:** complete
+**Status:** in_progress
 **Started:** 2026-03-11
 
 ### Task p01-t01: Update review receive workflows to archive consumed artifacts
@@ -116,6 +116,17 @@ oat_generated: false
 
 ---
 
+### Task p02-t05: Leave HiLL checkpoints unset until implementation confirms them
+
+**Status:** in_progress
+**Commit:** -
+
+**Notes:**
+
+- Replace the temporary `[]` placeholder with an actually-unconfirmed state so planning artifacts do not imply a checkpoint choice has already been made.
+
+---
+
 ## Orchestration Runs
 
 > This section is used by `oat-project-subagent-implement` to log parallel execution runs.
@@ -138,12 +149,13 @@ oat_generated: false
 - **2026-03-11:** Completed `p02-t02`; CLI test fixtures now cover archived review local paths without treating active review directories as gitignored by default.
 - **2026-03-11:** Completed `p02-t04`; planning now sets default HiLL frontmatter silently, and implementation start owns the single checkpoint confirmation prompt with phase summaries and simple examples.
 - **2026-03-11:** Completed `p02-t03`; targeted CLI verification passed, workspace `pnpm test` passed, and sequential workspace `lint`, `type-check`, and `build` exited successfully.
+- **2026-03-11:** Added follow-up task `p02-t05` to leave `oat_plan_hill_phases` unset until implementation confirms the checkpoint choice.
 
 ## Deviations from Plan
 
-| Task | Planned | Actual | Reason |
-| ---- | ------- | ------ | ------ |
-| -    | -       | -      | -      |
+| Task    | Planned                         | Actual                                                     | Reason                                                                    |
+| ------- | ------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------- |
+| p02-t05 | No follow-up task after p02-t04 | Added follow-up task to stop seeding `[]` as a placeholder | User review identified cleaner semantics for unconfirmed checkpoint state |
 
 ## Test Results
 
@@ -162,6 +174,7 @@ Track test execution during implementation.
 - Project receive, PR, completion, and provider review skills were aligned to that active-versus-archived contract.
 - CLI init defaults, repo config, gitignore handling, and tests now ignore only archived review history instead of all review directories.
 - HiLL checkpoint confirmation was centralized in `oat-project-implement`, with planning now setting defaults silently.
+- A follow-up task is queued to remove the temporary `[]` placeholder and leave checkpoint choice unset until implementation confirmation.
 
 **Behavioral changes (user-facing):**
 
@@ -190,6 +203,10 @@ Track test execution during implementation.
 - `pnpm lint`
 - `pnpm type-check`
 - `pnpm build`
+
+**Outstanding follow-up:**
+
+- `p02-t05` will update checkpoint field semantics so planning leaves `oat_plan_hill_phases` unset until implementation confirms the user's choice.
 
 **Design deltas (if any):**
 
