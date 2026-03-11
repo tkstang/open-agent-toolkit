@@ -227,11 +227,12 @@ oat_generated: false
 - **2026-03-11:** Completed `p02-t05`; planning and implementation guidance now leave `oat_plan_hill_phases` unset until implementation confirms the user's checkpoint choice.
 - **2026-03-11:** Completed `p02-t06`; corrected the stale Phase 1 status entry in `implementation.md` and cleared the last outstanding final-review fix task.
 - **2026-03-11:** All implementation tasks are complete; project is awaiting final re-review.
+- **2026-03-11:** Final re-review passed with no findings; project is ready for PR creation.
 
 ### Review Received: final
 
 **Date:** 2026-03-11
-**Review artifact:** `reviews/archived/final-review-2026-03-11.md`
+**Initial review artifact:** `reviews/archived/final-review-2026-03-11.md`
 
 **Findings:**
 
@@ -247,7 +248,14 @@ oat_generated: false
 - `m2` Plan file list drift for `p02-t01` deferred. Rationale: the implementation changed the correct files, and the mismatch is traceability cleanup rather than a behavioral defect.
 - `m3` Review metadata omission for `packages/cli/src/commands/init/tools/index.ts` deferred. Rationale: this is a historical review-scoping metadata gap, not a product issue in the shipped implementation.
 
-**Next:** Review-fix tasks are complete. Re-run `oat-project-review-provide code final`, then `oat-project-review-receive` to move the final review from `fixes_completed` to `passed`.
+**Re-review result:** passed
+
+- **Date:** 2026-03-11
+- **Artifact:** `reviews/archived/final-review-2026-03-11-v2.md`
+- **Findings:** Critical 0, Important 0, Medium 0, Minor 0
+- **Deferred minors re-evaluated:** `m2` and `m3` remain acceptable to defer because they are historical traceability gaps, not current behavioral defects.
+
+**Next:** Final review passed. Proceed to PR creation via `oat-project-pr-final`.
 
 ## Deviations from Plan
 
