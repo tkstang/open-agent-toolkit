@@ -69,6 +69,18 @@ describe('adapter contract', () => {
         assertMappingsValid(adapter.projectMappings, { allowAgent: true });
       });
 
+      it('rule projectMappings declare transform hooks and provider extensions', () => {
+        const ruleMappings = adapter.projectMappings.filter(
+          (mapping) => mapping.contentType === 'rule',
+        );
+
+        for (const mapping of ruleMappings) {
+          expect(mapping.providerExtension).toBeTruthy();
+          expect(mapping.transformCanonical).toEqual(expect.any(Function));
+          expect(mapping.parseToCanonical).toEqual(expect.any(Function));
+        }
+      });
+
       it('userMappings have valid contentType and paths', () => {
         assertMappingsValid(adapter.userMappings, { allowAgent: true });
       });
