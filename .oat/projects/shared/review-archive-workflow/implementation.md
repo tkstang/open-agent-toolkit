@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t01
+oat_current_task_id: p02-t02
 oat_generated: false
 ---
 
@@ -27,9 +27,9 @@ oat_generated: false
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | complete    | 3     | 3/3       |
-| Phase 2 | in_progress | 4     | 0/4       |
+| Phase 2 | in_progress | 4     | 1/4       |
 
-**Total:** 3/7 tasks completed
+**Total:** 4/7 tasks completed
 
 ---
 
@@ -78,14 +78,18 @@ oat_generated: false
 
 ### Task p02-t01: Change init and local-path defaults to ignore only archived reviews
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** `chore(p02-t01): update review archive gitignore defaults`
+
+**Notes:**
+
+- `packages/cli/src/commands/init/index.ts` was updated alongside the planned files so guided setup uses the same archived-review default path as the workflow-install prompt.
 
 ---
 
 ### Task p02-t02: Update tests and cleanup utilities for archived-review behavior
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
@@ -126,6 +130,7 @@ oat_generated: false
 - **2026-03-11:** Completed `p01-t01`; receive skills now select only active review artifacts, archive consumed reviews, and point lifecycle references at archived paths.
 - **2026-03-11:** Completed `p01-t02`; PR and completion skills now archive stray active reviews before continuing and only treat `reviews/archived/` as local-only by default.
 - **2026-03-11:** Completed `p01-t03`; provider-side review instructions and repo reference docs now describe `reviews/` as the active tracked location and `reviews/archived/` as local-only history.
+- **2026-03-11:** Completed `p02-t01`; init defaults, repo config, and managed gitignore entries now ignore only `reviews/archived/` while leaving active review directories tracked.
 
 ## Deviations from Plan
 
@@ -140,7 +145,7 @@ Track test execution during implementation.
 | Phase | Tests Run                                                      | Passed | Failed | Coverage |
 | ----- | -------------------------------------------------------------- | ------ | ------ | -------- |
 | 1     | `rg` consistency checks on review workflow instruction updates | yes    | 0      | n/a      |
-| 2     | -                                                              | -      | -      | -        |
+| 2     | `rg` consistency checks on init/local-path defaults            | yes    | 0      | n/a      |
 
 ## Final Summary (for PR/docs)
 
@@ -161,6 +166,7 @@ Track test execution during implementation.
 - `rg` consistency checks on updated receive-skill archive guidance
 - `rg` consistency checks on progress/final PR and completion archive preflights
 - `rg` consistency checks on provider-side review path documentation
+- `rg` consistency checks on init prompt copy and default local-path values
 
 **Design deltas (if any):**
 
