@@ -330,19 +330,321 @@ git commit -m "test(p02-t03): finalize rule sync verification coverage"
 
 ---
 
+## Phase 3: Review Fixes
+
+### Task p03-t01: (review) Extract shared canonical rule filename normalization
+
+**Files:**
+
+- Modify: `packages/cli/src/drift/strays.ts`
+- Modify: `packages/cli/src/commands/shared/adopt-stray.ts`
+- Create: `packages/cli/src/rules/canonical/provider-filenames.ts`
+- Modify: any affected tests for stray detection/adoption
+
+**Step 1: Understand the issue**
+
+Review finding: duplicate logic maps provider rule filenames back to canonical `.md` names in both stray detection and adoption.
+Location: `packages/cli/src/drift/strays.ts` and `packages/cli/src/commands/shared/adopt-stray.ts`
+
+**Step 2: Implement fix**
+
+Extract a shared helper for provider filename → canonical filename normalization and use it from both call sites so detection and adoption cannot drift.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/drift/strays.test.ts src/commands/shared/adopt-stray.test.ts`
+Expected: Shared normalization behavior is covered and both suites pass
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/drift/strays.ts packages/cli/src/commands/shared/adopt-stray.ts packages/cli/src/rules/canonical/provider-filenames.ts packages/cli/src/drift/strays.test.ts packages/cli/src/commands/shared/adopt-stray.test.ts
+git commit -m "fix(p03-t01): share canonical rule filename normalization"
+```
+
+---
+
+### Task p03-t02: (review) Handle Copilot comma-containing glob limitations
+
+**Files:**
+
+- Modify: `packages/cli/src/providers/copilot/rule-transform.ts`
+- Modify: `packages/cli/src/providers/copilot/rule-transform.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: comma-separated `applyTo` round-trips break when a glob itself contains commas.
+Location: `packages/cli/src/providers/copilot/rule-transform.ts`
+
+**Step 2: Implement fix**
+
+Document and/or guard the Copilot limitation for comma-containing globs, and add a test that captures the chosen behavior so the limitation is explicit.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/providers/copilot/rule-transform.test.ts`
+Expected: Copilot transform tests cover the comma-glob behavior and pass
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/providers/copilot/rule-transform.ts packages/cli/src/providers/copilot/rule-transform.test.ts
+git commit -m "fix(p03-t02): document copilot comma-glob handling"
+```
+
+---
+
+### Task p03-t03: (review) Centralize rendered string hashing
+
+**Files:**
+
+- Modify: `packages/cli/src/manifest/hash.ts`
+- Modify: `packages/cli/src/engine/compute-plan.ts`
+- Modify: `packages/cli/src/engine/execute-plan.ts`
+- Modify: any affected hash/engine tests
+
+**Step 1: Understand the issue**
+
+Review finding: rendered-content hashing is duplicated inline in two engine files.
+Location: `packages/cli/src/engine/compute-plan.ts` and `packages/cli/src/engine/execute-plan.ts`
+
+**Step 2: Implement fix**
+
+Add a shared string-hash helper in `@manifest/hash` and use it for rendered-content hashing in both engine paths.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/manifest/hash.test.ts src/engine/compute-plan.test.ts src/engine/execute-plan.test.ts`
+Expected: Hashing remains stable and all targeted tests pass
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/manifest/hash.ts packages/cli/src/engine/compute-plan.ts packages/cli/src/engine/execute-plan.ts packages/cli/src/manifest/hash.test.ts packages/cli/src/engine/compute-plan.test.ts packages/cli/src/engine/execute-plan.test.ts
+git commit -m "fix(p03-t03): centralize rendered string hashing"
+```
+
+---
+
+### Task p03-t04: (review) Reuse canonical activation constants in parsing
+
+**Files:**
+
+- Modify: `packages/cli/src/rules/canonical/parse.ts`
+- Modify: `packages/cli/src/rules/canonical/parse.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `parseActivation` duplicates activation string literals instead of using the canonical constant.
+Location: `packages/cli/src/rules/canonical/parse.ts`
+
+**Step 2: Implement fix**
+
+Refactor activation validation to derive from `RULE_ACTIVATIONS` so the parse layer stays in sync with the canonical type definition.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/rules/canonical/parse.test.ts`
+Expected: Activation parsing still passes with the shared source of truth
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/rules/canonical/parse.ts packages/cli/src/rules/canonical/parse.test.ts
+git commit -m "fix(p03-t04): reuse canonical activation constants"
+```
+
+---
+
+### Task p03-t05: (review) Assert Claude description lossiness explicitly
+
+**Files:**
+
+- Modify: `packages/cli/src/providers/claude/rule-transform.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: the Claude round-trip test does not explicitly assert that `description` is dropped.
+Location: `packages/cli/src/providers/claude/rule-transform.test.ts`
+
+**Step 2: Implement fix**
+
+Add an explicit assertion that Claude round-tripping omits `description` to document the intentional lossy behavior.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/providers/claude/rule-transform.test.ts`
+Expected: Claude transform tests pass with the explicit lossy assertion
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/providers/claude/rule-transform.test.ts
+git commit -m "test(p03-t05): assert claude description lossiness"
+```
+
+---
+
+### Task p03-t06: (review) Add Claude always-activation coverage
+
+**Files:**
+
+- Modify: `packages/cli/src/providers/claude/rule-transform.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Claude tests do not cover the canonical `always` activation mode.
+Location: `packages/cli/src/providers/claude/rule-transform.test.ts`
+
+**Step 2: Implement fix**
+
+Add a test verifying that `always` renders without frontmatter and round-trips to `activation: always`.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/providers/claude/rule-transform.test.ts`
+Expected: Claude transform tests pass with `always` activation coverage
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/providers/claude/rule-transform.test.ts
+git commit -m "test(p03-t06): add claude always activation coverage"
+```
+
+---
+
+### Task p03-t07: (review) Add Copilot always-activation coverage
+
+**Files:**
+
+- Modify: `packages/cli/src/providers/copilot/rule-transform.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Copilot tests do not cover the baseline `always` activation mode.
+Location: `packages/cli/src/providers/copilot/rule-transform.test.ts`
+
+**Step 2: Implement fix**
+
+Add a test verifying that `always` renders without `applyTo` and round-trips correctly.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/providers/copilot/rule-transform.test.ts`
+Expected: Copilot transform tests pass with `always` activation coverage
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/providers/copilot/rule-transform.test.ts
+git commit -m "test(p03-t07): add copilot always activation coverage"
+```
+
+---
+
+### Task p03-t08: (review) Add Copilot manual-degradation coverage
+
+**Files:**
+
+- Modify: `packages/cli/src/providers/copilot/rule-transform.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Copilot tests do not explicitly cover canonical `manual` degrading to `always`.
+Location: `packages/cli/src/providers/copilot/rule-transform.test.ts`
+
+**Step 2: Implement fix**
+
+Add a test documenting the intentional `manual` → `always` degradation for Copilot.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/providers/copilot/rule-transform.test.ts`
+Expected: Copilot transform tests pass with explicit manual-degradation coverage
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/providers/copilot/rule-transform.test.ts
+git commit -m "test(p03-t08): add copilot manual degradation coverage"
+```
+
+---
+
+### Task p03-t09: (review) Clarify directory-marker filename assumptions
+
+**Files:**
+
+- Modify: `packages/cli/src/engine/execute-plan.ts`
+- Modify: any affected execute-plan tests
+
+**Step 1: Understand the issue**
+
+Review finding: `markerFileNameForEntry` implicitly falls back to `SKILL.md` for non-agent directory copies and does not document its rule assumptions.
+Location: `packages/cli/src/engine/execute-plan.ts`
+
+**Step 2: Implement fix**
+
+Add a guard or comment clarifying that the helper only applies to directory-based skill/agent copies and is not used for file-based rules.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/engine/execute-plan.test.ts`
+Expected: Execute-plan tests still pass with the clarified assumptions
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/engine/execute-plan.ts packages/cli/src/engine/execute-plan.test.ts
+git commit -m "fix(p03-t09): clarify directory marker assumptions"
+```
+
+---
+
+### Task p03-t10: (review) Create canonical rules directory during init
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/index.ts`
+- Modify: any affected init tests
+
+**Step 1: Understand the issue**
+
+Review finding: init pre-creates `.agents/skills/` and `.agents/agents/` but not `.agents/rules/`.
+Location: `packages/cli/src/commands/init/index.ts`
+
+**Step 2: Implement fix**
+
+Update init to create `.agents/rules/` for project scope so canonical rule authoring has parity with the other canonical content directories.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/commands/init/index.test.ts`
+Expected: Init tests pass with canonical rules directory creation covered
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/index.ts packages/cli/src/commands/init/index.test.ts
+git commit -m "fix(p03-t10): create canonical rules directory during init"
+```
+
+---
+
 ## Reviews
 
 {Track reviews here after running the oat-project-review-provide and oat-project-review-receive skills.}
 
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
 
-| Scope  | Type     | Status   | Date       | Artifact                           |
-| ------ | -------- | -------- | ---------- | ---------------------------------- |
-| p01    | code     | pending  | -          | -                                  |
-| p02    | code     | pending  | -          | -                                  |
-| final  | code     | received | 2026-03-11 | reviews/final-review-2026-03-11.md |
-| spec   | artifact | pending  | -          | -                                  |
-| design | artifact | pending  | -          | -                                  |
+| Scope  | Type     | Status      | Date       | Artifact                           |
+| ------ | -------- | ----------- | ---------- | ---------------------------------- |
+| p01    | code     | pending     | -          | -                                  |
+| p02    | code     | pending     | -          | -                                  |
+| final  | code     | fixes_added | 2026-03-11 | reviews/final-review-2026-03-11.md |
+| spec   | artifact | pending     | -          | -                                  |
+| design | artifact | pending     | -          | -                                  |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -361,8 +663,9 @@ git commit -m "test(p02-t03): finalize rule sync verification coverage"
 
 - Phase 1: 3 tasks - add rule content types, canonical/provider transforms, and engine/manifest integration
 - Phase 2: 3 tasks - add adoption flow, update authoring workflow, and verify end-to-end coverage
+- Phase 3: 10 tasks - address final review findings and close remaining verification gaps
 
-**Total: 6 tasks**
+**Total: 16 tasks**
 
 Ready for code review and merge.
 
