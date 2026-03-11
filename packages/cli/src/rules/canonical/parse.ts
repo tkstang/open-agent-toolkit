@@ -9,6 +9,7 @@ import type {
   CanonicalRuleFrontmatter,
   RuleActivation,
 } from './types';
+import { RULE_ACTIVATIONS } from './types';
 
 const FRONTMATTER_PATTERN = /^---\n([\s\S]*?)\n---\n?/;
 const OAT_MARKER_PATTERN = new RegExp(
@@ -77,17 +78,14 @@ function parseGlobs(value: unknown, filePath: string): string[] | undefined {
 }
 
 function parseActivation(value: unknown, filePath: string): RuleActivation {
-  if (
-    value === 'always' ||
-    value === 'glob' ||
-    value === 'agent-requested' ||
-    value === 'manual'
-  ) {
+  if (RULE_ACTIVATIONS.includes(value as RuleActivation)) {
     return value;
   }
 
   throw new CliError(
-    `Frontmatter field "activation" in ${filePath} must be one of always, glob, agent-requested, or manual.`,
+    `Frontmatter field "activation" in ${filePath} must be one of ${RULE_ACTIVATIONS.join(
+      ', ',
+    )}.`,
   );
 }
 
