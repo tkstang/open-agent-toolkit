@@ -4,7 +4,7 @@ oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-10
 oat_project_state_updated: '2026-03-10T21:48:00Z'
-oat_current_task_id: p01-t03
+oat_current_task_id: p01-t04
 oat_generated: false
 ---
 
@@ -27,9 +27,9 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 5     | 2/5       |
+| Phase 1 | in_progress | 5     | 3/5       |
 
-**Total:** 2/5 tasks completed
+**Total:** 3/5 tasks completed
 
 ---
 
@@ -110,8 +110,27 @@ oat_generated: false
 
 ### Task p01-t03: Implement guided setup — local paths step
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** b09c5600
+
+**Outcome:**
+
+- Added `readOatConfig`, `resolveLocalPaths`, `addLocalPaths`, `applyGitignore` to `InitDependencies`
+- Local paths multi-select presents 4 choices (analysis, pr, reviews, ideas) all checked by default
+- Pre-existing paths are pre-checked; delta computation avoids re-adding them
+- Paths added via `addLocalPaths`, gitignore updated via `applyGitignore`
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/index.ts` - Added local paths step to runGuidedSetupImpl, new dependencies
+- `packages/cli/src/commands/init/index.test.ts` - 3 new tests for local paths step
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: 904/904 pass
+- Run: `pnpm lint && pnpm type-check`
+- Result: pass
 
 ### Task p01-t04: Implement guided setup — provider sync step and summary
 
