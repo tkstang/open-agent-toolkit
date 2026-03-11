@@ -433,6 +433,15 @@ async function runGuidedSetupImpl(
   context: CommandContext,
   dependencies: InitDependencies,
 ): Promise<void> {
+  const projectRoot = await dependencies.resolveScopeRoot('project', context);
+  const adapters = dependencies.getAdapters();
+  const detectedProviders: string[] = [];
+  for (const adapter of adapters) {
+    if (await adapter.detect(projectRoot)) {
+      detectedProviders.push(adapter.displayName);
+    }
+  }
+
   context.logger.info('[1/4] Tool packs…');
   const installTools = await dependencies.confirmAction(
     'Install tool packs (skills for workflows, ideas, utilities)?',
@@ -444,7 +453,6 @@ async function runGuidedSetupImpl(
   }
 
   context.logger.info('[2/4] Local paths (gitignored artifacts)…');
-  const projectRoot = await dependencies.resolveScopeRoot('project', context);
   const config = await dependencies.readOatConfig(projectRoot);
   const existingPaths = new Set(dependencies.resolveLocalPaths(config));
 
@@ -462,10 +470,14 @@ async function runGuidedSetupImpl(
       },
     )) ?? [];
 
+  let addedCount = 0;
+  const existingCount = existingPaths.size;
+
   if (selectedPaths.length > 0) {
     const delta = selectedPaths.filter((p) => !existingPaths.has(p));
     if (delta.length > 0) {
       const addResult = await dependencies.addLocalPaths(projectRoot, delta);
+      addedCount = addResult.added.length;
       await dependencies.applyGitignore(projectRoot, addResult.all);
       context.logger.info(`Added ${addResult.added.length} local path(s).`);
     } else {
@@ -490,10 +502,13 @@ async function runGuidedSetupImpl(
   context.logger.info('Guided setup complete.');
   context.logger.info('');
   context.logger.info(
+    `  Providers:      ${detectedProviders.length > 0 ? detectedProviders.join(', ') : 'none detected'}`,
+  );
+  context.logger.info(
     `  Tool packs:     ${installTools ? 'installed' : 'skipped'}`,
   );
   context.logger.info(
-    `  Local paths:    ${selectedPaths.length > 0 ? `${selectedPaths.length} configured` : 'skipped'}`,
+    `  Local paths:    ${selectedPaths.length > 0 ? `${addedCount} added, ${existingCount} existing` : 'skipped'}`,
   );
   context.logger.info(
     `  Provider sync:  ${syncProviders ? 'done' : 'skipped'}`,

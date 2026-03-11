@@ -1152,13 +1152,27 @@ config_file = "agents/reviewer.toml"
       expect(
         capture.info.some((msg) => msg.includes('Guided setup complete')),
       ).toBe(true);
-      expect(capture.info.some((msg) => msg.includes('Tool packs'))).toBe(true);
-      expect(capture.info.some((msg) => msg.includes('Local paths'))).toBe(
-        true,
-      );
-      expect(capture.info.some((msg) => msg.includes('Provider sync'))).toBe(
-        true,
-      );
+      expect(
+        capture.info.some(
+          (msg) => msg.includes('Providers') && msg.includes('Claude Code'),
+        ),
+      ).toBe(true);
+      expect(
+        capture.info.some(
+          (msg) => msg.includes('Tool packs') && msg.includes('installed'),
+        ),
+      ).toBe(true);
+      expect(
+        capture.info.some(
+          (msg) =>
+            msg.includes('Local paths') && msg.includes('1 added, 0 existing'),
+        ),
+      ).toBe(true);
+      expect(
+        capture.info.some(
+          (msg) => msg.includes('Provider sync') && msg.includes('skipped'),
+        ),
+      ).toBe(true);
     });
 
     it('skipped steps are reflected in summary', async () => {
@@ -1182,7 +1196,22 @@ config_file = "agents/reviewer.toml"
       ).toBe(true);
       expect(
         capture.info.some(
+          (msg) => msg.includes('Providers') && msg.includes('Claude Code'),
+        ),
+      ).toBe(true);
+      expect(
+        capture.info.some(
           (msg) => msg.includes('Tool packs') && msg.includes('skipped'),
+        ),
+      ).toBe(true);
+      expect(
+        capture.info.some(
+          (msg) => msg.includes('Local paths') && msg.includes('skipped'),
+        ),
+      ).toBe(true);
+      expect(
+        capture.info.some(
+          (msg) => msg.includes('Provider sync') && msg.includes('skipped'),
         ),
       ).toBe(true);
     });

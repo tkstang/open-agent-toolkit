@@ -164,7 +164,18 @@ describe('guided setup integration', () => {
     ).toBe(true);
     expect(
       capture.info.some(
+        (msg) => msg.includes('Providers') && msg.includes('Claude Code'),
+      ),
+    ).toBe(true);
+    expect(
+      capture.info.some(
         (msg) => msg.includes('Tool packs') && msg.includes('installed'),
+      ),
+    ).toBe(true);
+    expect(
+      capture.info.some(
+        (msg) =>
+          msg.includes('Local paths') && msg.includes('4 added, 0 existing'),
       ),
     ).toBe(true);
     expect(
@@ -224,7 +235,18 @@ describe('guided setup integration', () => {
     expect(runProviderSync).not.toHaveBeenCalled();
     expect(
       capture.info.some(
+        (msg) => msg.includes('Providers') && msg.includes('Claude Code'),
+      ),
+    ).toBe(true);
+    expect(
+      capture.info.some(
         (msg) => msg.includes('Tool packs') && msg.includes('skipped'),
+      ),
+    ).toBe(true);
+    expect(
+      capture.info.some(
+        (msg) =>
+          msg.includes('Local paths') && msg.includes('1 added, 0 existing'),
       ),
     ).toBe(true);
     expect(
