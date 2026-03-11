@@ -662,16 +662,16 @@ git commit -m "docs(p05-t02): fix docs quality gate failures"
 
 ## Reviews
 
-| Scope  | Type     | Status          | Date       | Artifact                                     |
-| ------ | -------- | --------------- | ---------- | -------------------------------------------- |
-| design | artifact | pending         | -          | -                                            |
-| plan   | artifact | fixes_completed | 2026-03-11 | `reviews/artifact-plan-review-2026-03-10.md` |
-| p01    | code     | pending         | -          | -                                            |
-| p02    | code     | pending         | -          | -                                            |
-| p03    | code     | pending         | -          | -                                            |
-| p04    | code     | pending         | -          | -                                            |
-| p05    | code     | pending         | -          | -                                            |
-| final  | code     | pending         | -          | -                                            |
+| Scope  | Type     | Status   | Date       | Artifact                                     |
+| ------ | -------- | -------- | ---------- | -------------------------------------------- |
+| design | artifact | pending  | -          | -                                            |
+| plan   | artifact | received | 2026-03-11 | `reviews/artifact-plan-review-2026-03-11.md` |
+| p01    | code     | pending  | -          | -                                            |
+| p02    | code     | pending  | -          | -                                            |
+| p03    | code     | pending  | -          | -                                            |
+| p04    | code     | pending  | -          | -                                            |
+| p05    | code     | pending  | -          | -                                            |
+| final  | code     | pending  | -          | -                                            |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
