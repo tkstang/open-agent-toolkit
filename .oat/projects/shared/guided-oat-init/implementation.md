@@ -1,10 +1,10 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-10
 oat_project_state_updated: '2026-03-10T21:48:00Z'
-oat_current_task_id: p01-t05
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -25,11 +25,11 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 5     | 4/5       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 5     | 5/5       |
 
-**Total:** 4/5 tasks completed
+**Total:** 5/5 tasks completed
 
 ---
 
@@ -38,24 +38,36 @@ oat_generated: false
 **Status:** in_progress
 **Started:** 2026-03-10
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
 
-- {2-5 bullets describing user-visible / behavior-level changes delivered in this phase}
+- `oat init` now supports `--setup` flag to enter guided setup on existing repos
+- Fresh inits (no `.oat/` existed) automatically prompt for guided setup
+- Guided setup walks through: tool packs → local paths → provider sync → summary
+- Each step is skippable; non-interactive mode never enters guided setup
+- Summary output shows installed/skipped status for each step with next-step guidance
 
 **Key files touched:**
 
-- `{path}` - {why}
+- `packages/cli/src/commands/init/index.ts` - Core implementation: --setup flag, freshInit detection, runGuidedSetupImpl
+- `packages/cli/src/commands/init/tools/index.ts` - Exported runInitTools + runInitToolsWithDefaults
+- `packages/cli/src/commands/init/index.test.ts` - 13 new unit tests
+- `packages/cli/src/commands/init/guided-setup.test.ts` - 4 integration tests
+- `packages/cli/src/commands/help-snapshots.test.ts` - Updated snapshot
 
 **Verification:**
 
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `pnpm --filter @oat/cli test`
+- Result: 911/911 pass
+- Run: `pnpm lint && pnpm type-check`
+- Result: pass
 
 **Notes / Decisions:**
 
-- {trade-offs or deviations discovered during implementation}
+- Used dependency injection for `runToolPacks`, `runProviderSync`, and local path functions rather than module mocking
+- `runProviderSync` uses `execSync` (v1 approach per discovery doc) — extracting `runSyncCommand` is a deferred follow-up
+- Changed `runGuidedSetup` to accept `(context, dependencies)` for proper DI with test harness
 
 ### Task p01-t01: Add `--setup` flag and guided entry point
 
@@ -158,8 +170,24 @@ oat_generated: false
 
 ### Task p01-t05: Integration test — full guided flow
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 97101be9
+
+**Outcome:**
+
+- Created dedicated integration test file `guided-setup.test.ts`
+- 4 integration tests: full happy path, --setup on existing repo, partial flow, non-interactive guard
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/guided-setup.test.ts` - New file with 4 integration tests
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: 911/911 pass
+- Run: `pnpm lint && pnpm type-check`
+- Result: pass
 
 ---
 
@@ -194,30 +222,37 @@ Track test execution during implementation.
 
 | Phase | Tests Run | Passed | Failed | Coverage |
 | ----- | --------- | ------ | ------ | -------- |
-| 1     | -         | -      | -      | -        |
+| 1     | 911       | 911    | 0      | -        |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
 
-- {capability 1}
-- {capability 2}
+- Interactive guided setup flow for `oat init`, activated by `--setup` flag or fresh repo detection
+- 4-step guided flow: tool packs → local paths → provider sync → summary
 
 **Behavioral changes (user-facing):**
 
-- {bullet}
+- `oat init --setup` enters guided setup on any repo
+- Fresh `oat init` (no `.oat/` dir) prompts for guided setup automatically
+- Each guided step is independently skippable
+- Summary output shows configuration results and suggested next steps
+- Non-interactive mode is never affected
 
 **Key files / modules:**
 
-- `{path}` - {purpose}
+- `packages/cli/src/commands/init/index.ts` - Core guided setup implementation
+- `packages/cli/src/commands/init/tools/index.ts` - Exported `runInitTools` for programmatic use
 
 **Verification performed:**
 
-- {tests/lint/typecheck/build/manual steps}
+- 911 tests pass (17 new: 13 unit + 4 integration)
+- Lint clean, type-check clean
+- Build successful
 
 **Design deltas (if any):**
 
-- {what changed vs design.md and why}
+- No design.md (quick mode) — implementation follows discovery.md decisions
 
 ## References
 
