@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t08
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,17 +24,17 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 10    | 7/10      |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 10    | 10/10     |
 
-**Total:** 7/10 tasks completed
+**Total:** 10/10 tasks completed
 
 ---
 
 ## Phase 1: Core Commands
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-11
 
 ### Phase Summary
@@ -138,6 +138,49 @@ oat_generated: false
 - Run: `pnpm --filter @oat/cli type-check` — passed
 - Run: `pnpm build` — passed (5 tasks successful)
 
+### Task p01-t08: (review) Update stale root help snapshot
+
+**Status:** complete
+**Commit:** 17d7d26c
+
+**Outcome:**
+
+- Updated root `--help` inline snapshot in `help-snapshots.test.ts` to include the new `repo` command
+- All 955 tests now pass
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test` — 955/955 passed
+
+### Task p01-t09: (review) Fix Markdown fenced code block corruption
+
+**Status:** complete
+**Commit:** c10b5b31
+
+**Outcome:**
+
+- Changed `renderMarkdown()` to use four-backtick fences (``````) instead of triple backticks
+- Review comments containing triple-backtick code blocks or ```suggestion blocks no longer corrupt output
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli type-check` — passed
+
+### Task p01-t10: (review) Fix repo name regex to allow dots
+
+**Status:** complete
+**Commit:** bfc89c89
+
+**Outcome:**
+
+- Updated both SSH and HTTPS regex patterns to allow dots in repo names
+- Pattern now matches `owner/repo.name` and strips trailing `.git` correctly
+- Remotes like `owner/my.project.git` now resolve correctly
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli type-check` — passed
+
 ---
 
 ## Orchestration Runs
@@ -157,6 +200,7 @@ oat_generated: false
 - **2026-03-11:** Final code review received — 3 fix tasks added (p01-t05, p01-t06, p01-t07).
 - **2026-03-11:** All 3 review fix tasks completed (18cf5c5f, f24a06f3, 7fded065). Type-check + build pass.
 - **2026-03-11:** Final re-review received — 3 additional fix tasks added (p01-t08, p01-t09, p01-t10).
+- **2026-03-11:** All 3 re-review fix tasks completed (17d7d26c, c10b5b31, bfc89c89). Tests + type-check + lint + build pass.
 
 ---
 
@@ -241,12 +285,9 @@ Track test execution during implementation.
 
 **New tasks added:** p01-t08, p01-t09, p01-t10
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
+**Fix tasks completed:** p01-t08 (17d7d26c), p01-t09 (c10b5b31), p01-t10 (bfc89c89)
 
-After the fix tasks are complete:
-
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+**Next:** Request re-review via `oat-project-review-provide code final`, then `oat-project-review-receive` to reach `passed`.
 
 ## References
 

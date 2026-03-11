@@ -300,11 +300,11 @@ git commit -m "fix(p01-t10): allow dots in repo name during git remote resolutio
 
 ## Reviews
 
-| Scope | Type     | Status      | Date       | Artifact                                        |
-| ----- | -------- | ----------- | ---------- | ----------------------------------------------- |
-| plan  | artifact | pending     | -          | -                                               |
-| p01   | code     | pending     | -          | -                                               |
-| final | code     | fixes_added | 2026-03-11 | reviews/code-review-final-recheck-2026-03-11.md |
+| Scope | Type     | Status          | Date       | Artifact                                        |
+| ----- | -------- | --------------- | ---------- | ----------------------------------------------- |
+| plan  | artifact | pending         | -          | -                                               |
+| p01   | code     | pending         | -          | -                                               |
+| final | code     | fixes_completed | 2026-03-11 | reviews/code-review-final-recheck-2026-03-11.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
