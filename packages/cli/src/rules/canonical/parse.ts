@@ -77,8 +77,15 @@ function parseGlobs(value: unknown, filePath: string): string[] | undefined {
   );
 }
 
+function isRuleActivation(value: unknown): value is RuleActivation {
+  return (
+    typeof value === 'string' &&
+    RULE_ACTIVATIONS.includes(value as RuleActivation)
+  );
+}
+
 function parseActivation(value: unknown, filePath: string): RuleActivation {
-  if (RULE_ACTIVATIONS.includes(value as RuleActivation)) {
+  if (isRuleActivation(value)) {
     return value;
   }
 
