@@ -4,7 +4,7 @@ oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-10
 oat_project_state_updated: '2026-03-10T21:48:00Z'
-oat_current_task_id: p01-t04
+oat_current_task_id: p01-t05
 oat_generated: false
 ---
 
@@ -27,9 +27,9 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 5     | 3/5       |
+| Phase 1 | in_progress | 5     | 4/5       |
 
-**Total:** 3/5 tasks completed
+**Total:** 4/5 tasks completed
 
 ---
 
@@ -134,8 +134,27 @@ oat_generated: false
 
 ### Task p01-t04: Implement guided setup — provider sync step and summary
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 357266fa
+
+**Outcome:**
+
+- Added `runProviderSync` dependency (shells out via `execSync` for v1)
+- Step 3 asks to sync provider views, step 4 prints setup complete summary
+- Summary shows installed/skipped status for tool packs, local paths, and provider sync
+- Includes "Next steps" guidance
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/index.ts` - Added provider sync step, summary output, runProviderSync dep
+- `packages/cli/src/commands/init/index.test.ts` - 3 new tests for sync step and summary
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test`
+- Result: 907/907 pass
+- Run: `pnpm lint && pnpm type-check`
+- Result: pass
 
 ### Task p01-t05: Integration test — full guided flow
 
