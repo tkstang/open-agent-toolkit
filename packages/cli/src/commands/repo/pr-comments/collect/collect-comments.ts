@@ -299,7 +299,7 @@ function groupByMonth(comments: IndexedComment[]): CollectionChunk[] {
   const groups = new Map<string, IndexedComment[]>();
 
   for (const c of comments) {
-    const month = c.createdAt.slice(0, 7); // YYYY-MM
+    const month = c.prMergedAt.slice(0, 7); // YYYY-MM from PR merge date
     const existing = groups.get(month);
     if (existing) {
       existing.push(c);
@@ -309,7 +309,7 @@ function groupByMonth(comments: IndexedComment[]): CollectionChunk[] {
   }
 
   return [...groups.entries()]
-    .sort(([a], [b]) => a.localeCompare(b))
+    .sort(([a], [b]) => b.localeCompare(a))
     .map(([month, monthComments]) => ({ month, comments: monthComments }));
 }
 
