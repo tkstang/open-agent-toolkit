@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t03
+oat_current_task_id: p01-t04
 oat_generated: false
 ---
 
@@ -26,13 +26,13 @@ oat_generated: false
 
 | Phase                                                              | Status      | Tasks | Completed |
 | ------------------------------------------------------------------ | ----------- | ----- | --------- |
-| Phase 1: Directory Structure and File Moves                        | in_progress | 5     | 2/5       |
+| Phase 1: Directory Structure and File Moves                        | in_progress | 5     | 3/5       |
 | Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | pending     | 7     | 0/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | pending     | 3     | 0/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | pending     | 2     | 0/2       |
 | Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
 
-**Total:** 2/19 tasks completed
+**Total:** 3/19 tasks completed
 
 ---
 
@@ -110,8 +110,37 @@ oat_generated: false
 
 ### Task p01-t03: Move Workflow, Projects, and Review-Analysis Files to guide/workflow/
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** d82d0874
+
+**Outcome (required):**
+
+- Moved workflow lifecycle docs, project artifact docs, and repo-analysis docs into the merged `guide/workflow/` section.
+- Preserved `workflow/index.md` and `projects/index.md` as temporary legacy stubs/source material for the later landing-page rewrite.
+- Kept the old top-level workflow/projects directories partially intact so stale-path cleanup can happen deliberately in Phase 3.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/workflow/lifecycle.md` - moved lifecycle guide
+- `apps/oat-docs/docs/guide/workflow/hill-checkpoints.md` - moved checkpoint guide
+- `apps/oat-docs/docs/guide/workflow/reviews.md` - moved review-flow guide
+- `apps/oat-docs/docs/guide/workflow/pr-flow.md` - moved PR-flow guide
+- `apps/oat-docs/docs/guide/workflow/artifacts.md` - moved project artifact guide
+- `apps/oat-docs/docs/guide/workflow/state-machine.md` - moved project state-machine guide
+- `apps/oat-docs/docs/guide/workflow/repo-analysis.md` - moved repo PR-comment analysis guide
+
+**Verification:**
+
+- Run: `find apps/oat-docs/docs/guide/workflow -maxdepth 1 -type f | sort`
+- Result: pass
+- Run: `test -f apps/oat-docs/docs/workflow/index.md && test -f apps/oat-docs/docs/projects/index.md && echo PASS`
+- Result: pass
+- Run: `find apps/oat-docs/docs/workflow -maxdepth 1 -type f | sort && find apps/oat-docs/docs/projects -maxdepth 1 -type f | sort`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The legacy section index pages are intentionally left in place until `guide/workflow/index.md` absorbs their content in Phase 2.
 
 ---
 
