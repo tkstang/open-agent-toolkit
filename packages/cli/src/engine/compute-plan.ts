@@ -1,9 +1,8 @@
-import { createHash } from 'node:crypto';
 import { access, lstat, readFile, readlink } from 'node:fs/promises';
 import { basename, dirname, join, normalize, resolve } from 'node:path';
 
 import type { SyncConfig } from '@config/sync-config';
-import { computeContentHash } from '@manifest/hash';
+import { computeContentHash, computeStringHash } from '@manifest/hash';
 import { findEntry } from '@manifest/manager';
 import type { Manifest, ManifestEntry } from '@manifest/manifest.types';
 import type { ProviderAdapter } from '@providers/shared/adapter.types';
@@ -220,7 +219,7 @@ async function classifyOperation(
 
   const canonicalHash =
     renderedContent !== undefined
-      ? createHash('sha256').update(renderedContent).digest('hex')
+      ? computeStringHash(renderedContent)
       : await computeContentHash(
           canonicalEntry.canonicalPath,
           canonicalEntry.isFile,

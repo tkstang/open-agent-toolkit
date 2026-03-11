@@ -1,9 +1,8 @@
-import { createHash } from 'node:crypto';
 import { mkdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative, resolve } from 'node:path';
 
 import { copyDirectory, copySingleFile, createSymlink } from '@fs/io';
-import { computeContentHash } from '@manifest/hash';
+import { computeContentHash, computeStringHash } from '@manifest/hash';
 import {
   addEntry,
   findEntry,
@@ -48,7 +47,7 @@ async function toManifestEntry(
   const contentHash =
     strategy === 'copy'
       ? entry.renderedContent !== undefined
-        ? createHash('sha256').update(entry.renderedContent).digest('hex')
+        ? computeStringHash(entry.renderedContent)
         : await computeContentHash(
             resolve(entry.canonical.canonicalPath),
             entry.canonical.isFile,
