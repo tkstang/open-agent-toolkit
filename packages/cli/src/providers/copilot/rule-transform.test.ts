@@ -48,6 +48,23 @@ activation: agent-requested
     );
   });
 
+  it('renders always activation without applyTo and round-trips to always', () => {
+    const canonical = `---
+description: Always apply
+activation: always
+---
+
+# Always Rule`;
+
+    const rendered = transformCanonicalToCopilotRule(
+      canonical,
+      '.agents/rules/always-rule.md',
+    );
+
+    expect(rendered).not.toContain('applyTo:');
+    expect(parseCopilotRuleToCanonical(rendered)).toBe(canonical);
+  });
+
   it('rejects canonical comma-containing globs that Copilot cannot represent', () => {
     const canonical = `---
 description: Brace expansion
