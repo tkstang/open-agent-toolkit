@@ -182,13 +182,13 @@ oat_generated: false
 
 ## Reviews
 
-| Scope  | Type     | Status  | Date | Artifact |
-| ------ | -------- | ------- | ---- | -------- |
-| p01    | code     | pending | -    | -        |
-| p02    | code     | pending | -    | -        |
-| final  | code     | pending | -    | -        |
-| spec   | artifact | pending | -    | -        |
-| design | artifact | pending | -    | -        |
+| Scope  | Type     | Status   | Date       | Artifact                           |
+| ------ | -------- | -------- | ---------- | ---------------------------------- |
+| p01    | code     | pending  | -          | -                                  |
+| p02    | code     | pending  | -          | -                                  |
+| final  | code     | received | 2026-03-11 | reviews/final-review-2026-03-11.md |
+| spec   | artifact | pending  | -          | -                                  |
+| design | artifact | pending  | -          | -                                  |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
