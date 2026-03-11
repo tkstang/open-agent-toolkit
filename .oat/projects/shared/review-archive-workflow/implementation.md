@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p02-t03
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,12 +24,12 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | complete    | 3     | 3/3       |
-| Phase 2 | in_progress | 4     | 3/4       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 3     | 3/3       |
+| Phase 2 | complete | 4     | 4/4       |
 
-**Total:** 6/7 tasks completed
+**Total:** 7/7 tasks completed
 
 ---
 
@@ -73,7 +73,7 @@ oat_generated: false
 
 ## Phase 2: Init Defaults And Verification
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-11
 
 ### Task p02-t01: Change init and local-path defaults to ignore only archived reviews
@@ -100,8 +100,8 @@ oat_generated: false
 
 ### Task p02-t03: Run end-to-end verification for import, receive, and init defaults
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** `chore(p02-t03): verify review archive workflow`
 
 ---
 
@@ -137,6 +137,7 @@ oat_generated: false
 - **2026-03-11:** Completed `p02-t01`; init defaults, repo config, and managed gitignore entries now ignore only `reviews/archived/` while leaving active review directories tracked.
 - **2026-03-11:** Completed `p02-t02`; CLI test fixtures now cover archived review local paths without treating active review directories as gitignored by default.
 - **2026-03-11:** Completed `p02-t04`; planning now sets default HiLL frontmatter silently, and implementation start owns the single checkpoint confirmation prompt with phase summaries and simple examples.
+- **2026-03-11:** Completed `p02-t03`; targeted CLI verification passed, workspace `pnpm test` passed, and sequential workspace `lint`, `type-check`, and `build` exited successfully.
 
 ## Deviations from Plan
 
@@ -148,24 +149,32 @@ oat_generated: false
 
 Track test execution during implementation.
 
-| Phase | Tests Run                                                      | Passed | Failed | Coverage |
-| ----- | -------------------------------------------------------------- | ------ | ------ | -------- |
-| 1     | `rg` consistency checks on review workflow instruction updates | yes    | 0      | n/a      |
-| 2     | `rg` consistency checks on init/local-path defaults            | yes    | 0      | n/a      |
+| Phase | Tests Run                                                                                                                                        | Passed | Failed | Coverage |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------ | ------ | ------ | -------- |
+| 1     | `rg` consistency checks on review workflow instruction updates                                                                                   | yes    | 0      | n/a      |
+| 2     | `pnpm --filter @oat/cli test -- --runInBand ...`, `pnpm --filter @oat/cli type-check`, `pnpm test`, `pnpm lint`, `pnpm type-check`, `pnpm build` | yes    | 0      | n/a      |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
 
-- Pending implementation
+- Review artifacts now stay active in tracked `reviews/` directories until they are consumed, then move into local-only `reviews/archived/` history.
+- Project receive, PR, completion, and provider review skills were aligned to that active-versus-archived contract.
+- CLI init defaults, repo config, gitignore handling, and tests now ignore only archived review history instead of all review directories.
+- HiLL checkpoint confirmation was centralized in `oat-project-implement`, with planning now setting defaults silently.
 
 **Behavioral changes (user-facing):**
 
-- Pending implementation
+- Active review artifacts remain version-controlled until receive/finalization/archive flows consume them.
+- Archived review history stays local-only by default.
+- Guided init/setup now offers archived review paths as the local-only default.
+- Implementation start now presents phase summaries before asking which checkpoints to use.
 
 **Key files / modules:**
 
-- Pending implementation
+- Review workflow skills under `.agents/skills/`
+- CLI init and local-path handling under `packages/cli/src/commands/init/` and `packages/cli/src/commands/local/`
+- Repo defaults in `.oat/config.json` and `.gitignore`
 
 **Verification performed:**
 
@@ -175,6 +184,12 @@ Track test execution during implementation.
 - `rg` consistency checks on init prompt copy and default local-path values
 - `rg` search confirming CLI tests no longer encode the old \`.oat/\*\*/reviews\` default
 - `rg`/diff review confirming HiLL checkpoint confirmation is centralized in implement
+- `pnpm --filter @oat/cli test -- --runInBand src/commands/init/gitignore.test.ts src/commands/local/status.test.ts src/commands/local/apply.test.ts src/commands/init/guided-setup.test.ts src/commands/init/index.test.ts`
+- `pnpm --filter @oat/cli type-check`
+- `pnpm test`
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm build`
 
 **Design deltas (if any):**
 
