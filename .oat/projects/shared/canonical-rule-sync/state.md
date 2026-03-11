@@ -32,7 +32,7 @@ Implementation resumed with review-fix work queued from the final code review
 - **Discovery:** `discovery.md` (complete)
 - **Spec:** Not used in quick mode unless promoted later
 - **Design:** N/A (quick mode)
-- **Plan:** `plan.md` (complete - 2 phases, 6 tasks; pause after `p02`)
+- **Plan:** `plan.md` (complete - 3 phases, 16 tasks; review fixes queued after `p02`)
 - **Implementation:** `implementation.md` (in_progress - `p03-t01` next)
 
 ## Progress
