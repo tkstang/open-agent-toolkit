@@ -1,3 +1,4 @@
+import { CliError } from '@errors/index';
 import { describe, expect, it } from 'vitest';
 
 import {
@@ -44,6 +45,43 @@ activation: agent-requested
     expect(rendered).not.toContain('applyTo:');
     expect(parseCopilotRuleToCanonical(rendered)).toContain(
       'activation: always',
+    );
+  });
+
+  it('rejects canonical comma-containing globs that Copilot cannot represent', () => {
+    const canonical = `---
+description: Brace expansion
+globs:
+  - src/{components,pages}/**/*.tsx
+activation: glob
+---
+
+# Brace Expansion`;
+
+    expect(() =>
+      transformCanonicalToCopilotRule(
+        canonical,
+        '.agents/rules/brace-expansion.md',
+      ),
+    ).toThrowError(
+      new CliError(
+        'Copilot rule applyTo cannot represent globs containing commas: src/{components,pages}/**/*.tsx',
+      ),
+    );
+  });
+
+  it('rejects ambiguous provider applyTo values with comma-containing globs', () => {
+    const provider = `---
+description: Brace expansion
+applyTo: src/{components,pages}/**/*.tsx
+---
+
+# Brace Expansion`;
+
+    expect(() => parseCopilotRuleToCanonical(provider)).toThrowError(
+      new CliError(
+        'Copilot rule applyTo cannot be losslessly parsed when a glob contains commas: src/{components,pages}/**/*.tsx',
+      ),
     );
   });
 });
