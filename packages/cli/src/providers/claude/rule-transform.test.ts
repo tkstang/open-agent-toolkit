@@ -59,4 +59,20 @@ activation: agent-requested
       'activation: always',
     );
   });
+
+  it('renders always activation without frontmatter and round-trips to always', () => {
+    const canonical = `---
+activation: always
+---
+
+# Always Rule`;
+
+    const rendered = transformCanonicalToClaudeRule(
+      canonical,
+      '.agents/rules/always-rule.md',
+    );
+
+    expect(rendered.startsWith('---')).toBe(false);
+    expect(parseClaudeRuleToCanonical(rendered)).toBe(canonical);
+  });
 });
