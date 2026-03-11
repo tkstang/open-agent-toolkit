@@ -41,7 +41,10 @@ export interface GraphQLReviewComment {
   readonly url: string;
   readonly path: string;
   readonly line: number | null;
-  readonly author: { readonly login: string } | null;
+  readonly author: {
+    readonly login: string;
+    readonly __typename: string;
+  } | null;
 }
 
 export interface GraphQLPullRequest {

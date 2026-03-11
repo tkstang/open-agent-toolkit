@@ -15,7 +15,7 @@ query($searchQuery: String!, $first: Int!, $after: String) {
             url
             path
             line
-            author { login }
+            author { login __typename }
           }
           pageInfo {
             hasNextPage
@@ -44,7 +44,7 @@ query($prNumber: Int!, $owner: String!, $name: String!, $first: Int!, $after: St
           url
           path
           line
-          author { login }
+          author { login __typename }
         }
         pageInfo {
           hasNextPage

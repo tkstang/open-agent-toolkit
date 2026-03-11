@@ -22,7 +22,42 @@ import type {
 
 const execFileAsync = promisify(execFile);
 
-const TRIVIAL_BODY_PATTERNS = [/^lgtm$/i, /^nit$/i, /^\+1$/, /^:thumbsup:$/];
+const TRIVIAL_BODY_PATTERNS = [
+  /^lgtm\.?$/i,
+  /^nit\.?$/i,
+  /^\+1$/,
+  /^:thumbsup:$/,
+  /^👍+$/,
+  /^looks good\.?$/i,
+  /^looks good to me\.?$/i,
+  /^ship it\.?$/i,
+  /^:shipit:$/,
+  /^nice!?$/i,
+  /^great!?$/i,
+  /^thanks!?$/i,
+  /^thank you!?$/i,
+];
+
+const KNOWN_BOT_LOGINS = new Set([
+  'coderabbitai',
+  'copilot',
+  'sourcery-ai',
+  'vercel',
+  'supabase',
+  'codacy-production',
+  'sonarcloud',
+  'codecov',
+  'netlify',
+  'linear',
+  'changeset-bot',
+  'renovate',
+  'dependabot',
+  'snyk-bot',
+]);
+
+const TRIVIAL_WORD_THRESHOLD = 5;
+
+const CODE_REFERENCE_PATTERN = /`[^`]+`|[\w/]+\.\w{1,5}:\d+|line \d+/i;
 
 export interface CollectDependencies {
   ghGraphQL: (
@@ -251,6 +286,29 @@ async function collectPrComments(
   return results;
 }
 
+function isBot(comment: GraphQLReviewComment): boolean {
+  const login = comment.author?.login ?? '';
+  // Layer 1: GitHub API author type
+  if (comment.author?.__typename === 'Bot') return true;
+  // Layer 2: Known bot login suffix
+  if (login.endsWith('[bot]')) return true;
+  // Layer 3: Known service logins
+  if (KNOWN_BOT_LOGINS.has(login.toLowerCase())) return true;
+  return false;
+}
+
+function isTrivialComment(body: string): boolean {
+  // Exact pattern matches (emoji-only, known phrases)
+  if (TRIVIAL_BODY_PATTERNS.some((p) => p.test(body))) return true;
+  // Emoji-only comments (Unicode emoji sequences)
+  if (/^\p{Emoji_Presentation}+$/u.test(body)) return true;
+  // Short comments under word threshold — unless they reference code
+  const wordCount = body.split(/\s+/).length;
+  if (wordCount < TRIVIAL_WORD_THRESHOLD && !CODE_REFERENCE_PATTERN.test(body))
+    return true;
+  return false;
+}
+
 function filterComments(
   items: { pr: GraphQLPullRequest; comment: GraphQLReviewComment }[],
   _pr: GraphQLPullRequest,
@@ -263,8 +321,8 @@ function filterComments(
     const body = comment.body.trim();
 
     if (!body) continue;
-    if (ignoreBots && author.endsWith('[bot]')) continue;
-    if (TRIVIAL_BODY_PATTERNS.some((p) => p.test(body))) continue;
+    if (ignoreBots && isBot(comment)) continue;
+    if (isTrivialComment(body)) continue;
 
     results.push({
       id: comment.id,
