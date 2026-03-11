@@ -209,6 +209,7 @@ async function ensureCanonicalDirectories(
   await mkdir(join(scopeRoot, '.agents', 'skills'), { recursive: true });
   if (scope === 'project') {
     await mkdir(join(scopeRoot, '.agents', 'agents'), { recursive: true });
+    await mkdir(join(scopeRoot, '.agents', 'rules'), { recursive: true });
   }
 }
 
