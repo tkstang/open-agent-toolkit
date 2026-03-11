@@ -1,18 +1,30 @@
 ---
-title: Skills Index
-description: 'Catalog of lifecycle, ideas, review, documentation, and utility skills.'
+title: Skills
+description: 'User-facing guide to OAT skill families, recommended entry points, and where contributor-facing skill authoring docs live.'
 ---
 
-# Skills Index
+# Skills
 
-Project skills are stored in `.agents/skills`.
+Use this section when you want to choose the right OAT skill for a task. If you are writing or changing skills, jump to the contributor docs instead.
 
 ## Contents
 
-- [Execution Contracts](execution-contracts.md) - Runtime expectations and conventions for OAT skills.
-- [Docs Workflows](docs-workflows.md) - How the docs CLI helpers and docs skills work together.
+- [Writing Skills](../../contributing/skills.md) - Contributor guide to skill authoring, contracts, and governance.
+- [Docs Workflows](../documentation/workflows.md) - How docs CLI helpers and docs skills work together.
 
-## Lifecycle skills
+## Key Skills by Use Case
+
+- Start a new tracked project: `oat-project-new` or `oat-project-quick-start`
+- Resume an existing project: `oat-project-open` and `oat-project-progress`
+- Execute a ready plan: `oat-project-implement`
+- Import an existing plan: `oat-project-import-plan`
+- Run or receive reviews: `oat-project-review-provide`, `oat-project-review-receive`, or the non-project review variants
+- Work on docs surfaces: `oat-docs-analyze`, `oat-docs-apply`, and `oat-project-document`
+- Capture or refine ideas: `oat-idea-new`, `oat-idea-ideate`, `oat-idea-scratchpad`, `oat-idea-summarize`
+
+## Full Catalog
+
+### Project lifecycle
 
 - `oat-project-new`
 - `oat-project-quick-start`
@@ -24,57 +36,54 @@ Project skills are stored in `.agents/skills`.
 - `oat-project-spec`
 - `oat-project-design`
 - `oat-project-plan`
-- `oat-project-plan-writing` — Shared contract for authoring/mutating `plan.md`; defines format invariants, stable task IDs, and resume guardrails (used by multiple lifecycle skills)
+- `oat-project-plan-writing`
 - `oat-project-implement`
 - `oat-project-subagent-implement`
 - `oat-project-progress`
-- `oat-project-reconcile` — Maps manual/human commits back to planned tasks and reconciles tracking artifacts after user confirmation; works across all workflow modes
+- `oat-project-reconcile`
+- `oat-project-review-provide`
+- `oat-project-review-receive`
+- `oat-project-review-receive-remote`
+- `oat-project-pr-progress`
+- `oat-project-pr-final`
+- `oat-project-document`
 - `oat-project-complete`
 
-## Ideas skills
+### Idea workflow
 
 - `oat-idea-new`
 - `oat-idea-ideate`
 - `oat-idea-scratchpad`
 - `oat-idea-summarize`
 
-## Review and PR skills
+### Docs and instruction maintenance
+
+- `oat-docs-analyze`
+- `oat-docs-apply`
+- `oat-agent-instructions-analyze`
+- `oat-agent-instructions-apply`
+
+### Review, backlog, and repo maintenance
 
 - `oat-review-provide`
 - `oat-review-receive`
 - `oat-review-receive-remote`
-- `oat-project-review-provide`
-- `oat-project-review-receive`
-- `oat-project-review-receive-remote`
-- `oat-project-pr-progress`
-- `oat-project-pr-final`
+- `oat-repo-knowledge-index`
+- `oat-repo-maintainability-review`
+- `review-backlog`
+- `docs-completed-projects-gap-review`
+- `update-repo-reference`
 
-## Documentation skills
-
-- `oat-project-document` — Reads project artifacts and implementation code, identifies documentation surfaces needing updates, presents a delta plan for approval, and applies changes. Integrates with `oat-project-complete` via `oat_docs_updated` state field.
-- `oat-docs-analyze` — Analyze docs structure, coverage, drift, and `index.md` contract conformance
-- `oat-docs-apply` — Apply approved, evidence-backed docs recommendations from a docs analysis artifact
-
-## Utility and maintenance skills
+### Scaffolding and utility
 
 - `oat-worktree-bootstrap`
 - `oat-worktree-bootstrap-auto`
-- `oat-repo-knowledge-index`
 - `create-oat-skill`
 - `create-agnostic-skill`
 - `create-pr-description`
 - `create-ticket`
-- `update-repo-reference`
-- `codex`
-- `review-backlog` — Analyze a backlog document to produce value/effort ratings, dependency mapping, and execution recommendations
-- `docs-completed-projects-gap-review` — Audit documentation for gaps left by completed OAT projects; produces a prioritized fix plan
+- `codex-skill`
 
-## Discovery source
+## Discovery Source
 
-`AGENTS.md` is the host-facing registry and should match skill frontmatter.
-
-## Reference artifacts
-
-- `AGENTS.md`
-- `.agents/skills/*/SKILL.md`
-- `.oat/repo/reference/backlog.md` (naming and skill-family roadmap)
+`AGENTS.md` is the session-facing registry. It should stay aligned with skill frontmatter and the canonical skill directories under `.agents/skills/`.

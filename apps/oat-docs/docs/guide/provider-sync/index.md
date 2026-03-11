@@ -1,27 +1,46 @@
 ---
-title: Provider Interop CLI Docs
-description: 'Provider interoperability overview with scope, command surface, and adapter behavior.'
+title: Provider Sync
+description: 'User guide for adopting OAT across provider surfaces, managing drift, and syncing canonical assets into provider views.'
 ---
 
-# Provider Interop CLI Docs
+# Provider Sync
 
-This section describes provider interoperability behavior in `@oat/cli`.
+Use this section when you want OAT to project a canonical rules-and-skills layout into provider-specific surfaces such as Claude, Cursor, Copilot, Gemini, or Codex.
 
-It is a standalone adoption path and does not require workflow project artifacts.
-
-Shared CLI conventions live in [`../design-principles.md`](../design-principles.md).
+Provider sync is a standalone path. You can adopt it without using tracked OAT projects, and then layer workflow artifacts on top later if you need them.
 
 ## Contents
 
-- [Scope and Surface](scope-and-surface.md) - Scope, principles, and command surface.
-- [Commands](commands.md) - Command-level behavior for provider interop such as `status`, `sync`, and `providers ...`.
-- [Providers](providers.md) - Provider-specific mapping behavior for Claude, Cursor, Copilot, Gemini, and Codex.
-- [Manifest and Drift](manifest-and-drift.md) - Manifest model, drift states, and stray adoption.
-- [Config](config.md) - Sync config model and provider enablement semantics.
-- [Hooks and Safety](hooks-and-safety.md) - Hook behavior and operational safety contracts.
+- [Scope and Surface](scope-and-surface.md) - Canonical assets, provider views, scopes, and the sync surface area.
+- [Commands](commands.md) - `oat status`, `oat sync`, and `oat providers ...` behavior.
+- [Providers](providers.md) - Provider-specific mappings, capabilities, and path conventions.
+- [Manifest and Drift](manifest-and-drift.md) - How OAT tracks synced state, stray files, and adoption decisions.
+- [Config](config.md) - Provider config model, enablement, and scope semantics.
 
-## Related CLI docs (non-interop command families)
+## What This Section Covers
 
-- [`../bootstrap.md`](../bootstrap.md) (`oat init`)
-- [`../tool-packs-and-assets.md`](../tool-packs-and-assets.md) (`oat tools ...`)
-- [`../diagnostics.md`](../diagnostics.md) (`oat doctor`)
+- canonical assets in `.agents/skills`, `.agents/agents`, and `.agents/rules`
+- derived provider views that should be treated as synced outputs unless explicitly adopted
+- drift detection, stray discovery, and adoption decisions when provider files change
+- command behavior for inspecting sync state, configuring providers, and writing synced output
+
+## Typical Flow
+
+1. Run `oat init` to create canonical OAT directories and base config.
+2. Inspect current state with `oat status`.
+3. Enable or adjust providers with `oat providers ...` as needed.
+4. Run `oat sync` to materialize provider views from canonical assets.
+5. Re-run `oat status` after edits to confirm drift, adoption, or sync needs.
+
+## Canonical Rules and Adoption
+
+Recent OAT changes moved more behavior into canonical rules plus explicit adoption flows. In practice that means:
+
+- treat `.agents/` and `.oat/` content as the source of truth
+- use sync and adoption workflows to pull provider-side edits back into canonical form
+- avoid maintaining long-lived, hand-edited provider copies when the canonical source can own the change
+
+## Related Contributor Docs
+
+- [Hooks and Safety](../../contributing/hooks-and-safety.md) - Operational safety guidance for hooks, mutation commands, and synced changes.
+- [Writing Skills](../../contributing/skills.md) - Contributor guidance when sync behavior depends on skill authoring changes.

@@ -1,33 +1,34 @@
 ---
 title: Ideas Workflow
-description: 'Lightweight brainstorming workflow for personal idea capture and exploration.'
+description: 'Guide to lightweight idea capture, brainstorming, and promotion into tracked projects when the work becomes concrete.'
 ---
 
 # Ideas Workflow
 
-The Ideas workflow is a lightweight alternative to the Spec-Driven project lifecycle for personal brainstorming and idea capture. It provides a space to explore ideas conversationally with an agent before deciding whether to promote them to Spec-Driven projects.
+Use the ideas workflow when you need a place to think, sketch, or explore before you are ready to commit to full project artifacts.
 
-Ideas are gitignored and entirely personal — no pressure to finish, no formal gates, no knowledge base dependency.
+Ideas are intentionally lighter than projects: they are usually gitignored, personal, and optimized for brainstorming rather than traceable delivery.
 
 ## Contents
 
-- [Lifecycle](lifecycle.md) - End-to-end idea flow from capture through summarization.
+- [Lifecycle](lifecycle.md) - Capture, ideate, refine, and summarize an idea before promotion or discard.
 
-## Key differences from projects
+## When Ideas Fit Better Than Projects
 
-| Aspect         | Projects                                   | Ideas                                                    |
-| -------------- | ------------------------------------------ | -------------------------------------------------------- |
-| Location       | `.oat/projects/shared/` (tracked)          | `.oat/ideas/` or `~/.oat/ideas/` (gitignored)            |
-| Levels         | Project only                               | Project-level or user-level (global)                     |
-| Phases         | discovery/spec/design/plan/implement       | brainstorm/summarize                                     |
-| State          | Multi-phase with `state.md` and HiLL gates | Two states in frontmatter (`brainstorming`/`summarized`) |
-| Knowledge base | Required                                   | Not required                                             |
-| Purpose        | Structured development                     | Personal ideation                                        |
+- the problem is still fuzzy
+- you want conversational exploration before writing a plan
+- the work may never become a tracked deliverable
+- you want local-only brainstorming that should not be committed yet
 
-## Reference artifacts
+## Key Differences from Projects
 
-- `.agents/skills/oat-idea-new/SKILL.md`
-- `.agents/skills/oat-idea-ideate/SKILL.md`
-- `.agents/skills/oat-idea-scratchpad/SKILL.md`
-- `.agents/skills/oat-idea-summarize/SKILL.md`
-- `.oat/templates/ideas/`
+| Aspect      | Projects                                                      | Ideas                                             |
+| ----------- | ------------------------------------------------------------- | ------------------------------------------------- |
+| Location    | `.oat/projects/shared/` or configured project roots           | `.oat/ideas/` or `~/.oat/ideas/`                  |
+| State model | multi-phase lifecycle with task pointers and reviews          | lightweight brainstorming and summarization state |
+| Output      | tracked requirements, plans, implementation logs, and reviews | scratchpad-style ideation plus optional summary   |
+| Best fit    | committed delivery work                                       | exploratory thinking and early shaping            |
+
+## Promotion Path
+
+When an idea becomes concrete, summarize it and then start a tracked OAT project in quick or spec-driven mode depending on design risk.
