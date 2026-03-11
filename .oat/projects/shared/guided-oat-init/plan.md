@@ -408,11 +408,11 @@ git commit -m "fix(p01-t08): use configured providers and scoped path counts in 
 
 ## Reviews
 
-| Scope | Type     | Status      | Date       | Artifact                                   |
-| ----- | -------- | ----------- | ---------- | ------------------------------------------ |
-| plan  | artifact | passed      | 2026-03-10 | reviews/artifact-plan-review-2026-03-10.md |
-| p01   | code     | pending     | -          | -                                          |
-| final | code     | fixes_added | 2026-03-11 | reviews/final-review-2026-03-10-v2.md      |
+| Scope | Type     | Status          | Date       | Artifact                                   |
+| ----- | -------- | --------------- | ---------- | ------------------------------------------ |
+| plan  | artifact | passed          | 2026-03-10 | reviews/artifact-plan-review-2026-03-10.md |
+| p01   | code     | pending         | -          | -                                          |
+| final | code     | fixes_completed | 2026-03-11 | reviews/final-review-2026-03-10-v2.md      |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -429,7 +429,7 @@ git commit -m "fix(p01-t08): use configured providers and scoped path counts in 
 
 **Summary:**
 
-- Phase 1: 8 tasks — Add `--setup` flag, tool packs step, local paths multi-select, provider sync + summary, integration tests, (review) fix provider sync, (review) enrich summary, (review) use configured state in summary
+- Phase 1: 8 tasks — 5 feature + 3 review fixes
 
 **Total: 8 tasks**
 

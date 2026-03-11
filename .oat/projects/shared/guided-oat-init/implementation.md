@@ -1,10 +1,10 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_project_state_updated: '2026-03-11T00:00:00Z'
-oat_current_task_id: p01-t08
+oat_project_state_updated: '2026-03-11T00:10:00Z'
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -25,11 +25,11 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 8     | 7/8       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 8     | 8/8       |
 
-**Total:** 7/8 tasks completed
+**Total:** 8/8 tasks completed
 
 ---
 
@@ -250,6 +250,27 @@ oat_generated: false
 
 **Next:** Fix tasks complete (t06, t07). Re-review performed (v2).
 
+### Task p01-t08: (review) Use configured providers and scoped local-path counts in summary
+
+**Status:** completed
+**Commit:** 3a5ca531
+
+**Outcome:**
+
+- Replaced `adapter.detect()` with `getConfigAwareAdapters` for provider summary — now shows only user-enabled providers, not all detectable ones
+- Scoped local paths existing count to the guided choice set only (excludes custom paths from config)
+- Added 2 new tests: disabled-but-detectable provider excluded from summary, custom paths excluded from existing count
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/index.ts` - Use config-aware adapters for provider names; scope existing count to guided choices
+- `packages/cli/src/commands/init/index.test.ts` - Added `resolvedLocalPaths` harness option; 2 new tests
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test && pnpm lint && pnpm type-check`
+- Result: 913/913 pass, lint clean, type-check clean
+
 ### Review Received: final (re-review v2)
 
 **Date:** 2026-03-11
@@ -270,12 +291,7 @@ oat_generated: false
 
 **New tasks added:** p01-t08
 
-**Next:** Execute fix task via the `oat-project-implement` skill.
-
-After the fix task is complete:
-
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+**Next:** Fix task complete (t08). Request re-review via `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`.
 
 ---
 
@@ -319,7 +335,7 @@ Track test execution during implementation.
 - Interactive guided setup flow for `oat init`, activated by `--setup` flag or fresh repo detection
 - 4-step guided flow: tool packs → local paths → provider sync → summary
 - Provider sync uses the installed `oat` binary (not dev-only `pnpm run cli`)
-- Summary shows detected providers, added/existing local path counts, and step status
+- Summary shows configured (not just detected) providers, scoped added/existing local path counts, and step status
 
 **Behavioral changes (user-facing):**
 
@@ -336,14 +352,14 @@ Track test execution during implementation.
 
 **Verification performed:**
 
-- 911 tests pass (17 new: 13 unit + 4 integration)
+- 913 tests pass (19 new: 15 unit + 4 integration)
 - Lint clean, type-check clean
 - Build successful
 
 **Design deltas (if any):**
 
 - No design.md (quick mode) — implementation follows discovery.md decisions
-- Review fixes: changed provider sync from `pnpm run cli` to `oat` binary; enriched summary output with provider list and local path counts
+- Review fixes: changed provider sync from `pnpm run cli` to `oat` binary; enriched summary output with provider list and local path counts; switched to config-aware providers and scoped existing path counts to guided choices
 
 ## References
 
