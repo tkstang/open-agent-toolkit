@@ -1,9 +1,9 @@
 ---
-oat_status: complete
-oat_ready_for: oat-project-implement
+oat_status: in_progress
+oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p01-t01
+oat_current_task_id: p01-t02
 oat_generated: false
 ---
 
@@ -24,24 +24,24 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status  | Tasks | Completed |
-| ------- | ------- | ----- | --------- |
-| Phase 1 | pending | 3     | 0/3       |
-| Phase 2 | pending | 3     | 0/3       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | in_progress | 3     | 1/3       |
+| Phase 2 | pending     | 4     | 0/4       |
 
-**Total:** 0/6 tasks completed
+**Total:** 1/7 tasks completed
 
 ---
 
 ## Phase 1: Review Lifecycle Archiving
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-11
 
 ### Task p01-t01: Update review receive workflows to archive consumed artifacts
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** `chore(p01-t01): archive consumed review artifacts`
 
 **Notes:**
 
@@ -51,7 +51,7 @@ oat_generated: false
 
 ### Task p01-t02: Add residual-review archive guards to project PR and completion flows
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 **Notes:**
@@ -97,6 +97,17 @@ oat_generated: false
 
 ---
 
+### Task p02-t04: Centralize HiLL checkpoint confirmation in implementation start
+
+**Status:** pending
+**Commit:** -
+
+**Notes:**
+
+- Planning should stop asking for checkpoints; implementation start should own the question and make final-phase-only selection obvious.
+
+---
+
 ## Orchestration Runs
 
 > This section is used by `oat-project-subagent-implement` to log parallel execution runs.
@@ -111,6 +122,8 @@ oat_generated: false
 ## Implementation Log
 
 - **2026-03-11:** Imported external plan into canonical OAT artifacts. No implementation work started yet.
+- **2026-03-11:** Began implementation with `p01-t01`; updating receive workflows to archive consumed review artifacts and keep lifecycle references truthful.
+- **2026-03-11:** Completed `p01-t01`; receive skills now select only active review artifacts, archive consumed reviews, and point lifecycle references at archived paths.
 
 ## Deviations from Plan
 
@@ -122,10 +135,10 @@ oat_generated: false
 
 Track test execution during implementation.
 
-| Phase | Tests Run | Passed | Failed | Coverage |
-| ----- | --------- | ------ | ------ | -------- |
-| 1     | -         | -      | -      | -        |
-| 2     | -         | -      | -      | -        |
+| Phase | Tests Run                                             | Passed | Failed | Coverage |
+| ----- | ----------------------------------------------------- | ------ | ------ | -------- |
+| 1     | `rg` consistency checks on receive skill instructions | yes    | 0      | n/a      |
+| 2     | -                                                     | -      | -      | -        |
 
 ## Final Summary (for PR/docs)
 
@@ -143,7 +156,7 @@ Track test execution during implementation.
 
 **Verification performed:**
 
-- Imported plan artifacts only; no code changes executed yet
+- `rg` consistency checks on updated receive-skill archive guidance
 
 **Design deltas (if any):**
 

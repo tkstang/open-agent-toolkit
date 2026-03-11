@@ -5,6 +5,7 @@ oat_blockers: []
 oat_last_updated: 2026-03-11
 oat_phase: plan
 oat_phase_status: complete
+oat_plan_hill_phases: ['p02']
 oat_plan_source: imported
 oat_import_reference: references/imported-plan.md
 oat_import_source_path: .oat/repo/reference/external-plans/review-archive-workflow-2026-03-11.md
@@ -26,8 +27,8 @@ oat_generated: false
 
 ## Planning Checklist
 
-- [ ] Confirmed HiLL checkpoints with user
-- [ ] Set `oat_plan_hill_phases` in frontmatter
+- [x] Confirmed HiLL checkpoints with user
+- [x] Set `oat_plan_hill_phases` in frontmatter
 
 ---
 
@@ -143,6 +144,24 @@ oat_generated: false
 
 ---
 
+### Task p02-t04: Centralize HiLL checkpoint confirmation in implementation start
+
+**Files:**
+
+- Modify: `.agents/skills/oat-project-plan/SKILL.md`
+- Modify: `.agents/skills/oat-project-implement/SKILL.md`
+- Modify: `.agents/skills/oat-project-plan-writing/SKILL.md`
+
+**Steps:**
+
+1. Update planning guidance so plan creation sets a default `oat_plan_hill_phases` value without prompting the user during the plan phase.
+2. Move checkpoint confirmation entirely into `oat-project-implement`, where the agent should summarize the phases and ask a simple "every phase or specific checkpoints?" question with a final-phase-only example such as `["p07"]`.
+3. Align the shared plan-writing contract so plan completion no longer depends on checkpoint confirmation happening during planning.
+4. Verify the new flow makes phase count and checkpoint choices obvious at implementation start without duplicating the prompt earlier in the lifecycle.
+5. Commit with `chore(p02-t04): centralize hill checkpoint confirmation`.
+
+---
+
 ## Reviews
 
 | Scope  | Type     | Status  | Date | Artifact |
@@ -169,9 +188,9 @@ oat_generated: false
 **Summary:**
 
 - Phase 1: 3 tasks - archive consumed reviews and align review workflow contracts
-- Phase 2: 3 tasks - update init/gitignore defaults and verify the new policy
+- Phase 2: 4 tasks - update init/gitignore defaults, verify the new policy, and improve checkpoint confirmation UX
 
-**Total: 6 tasks**
+**Total: 7 tasks**
 
 Ready for implementation.
 
