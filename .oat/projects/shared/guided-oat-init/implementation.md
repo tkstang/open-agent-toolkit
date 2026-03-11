@@ -1,10 +1,10 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-10
 oat_project_state_updated: '2026-03-10T21:48:00Z'
-oat_current_task_id: null
+oat_current_task_id: p01-t06
 oat_generated: false
 ---
 
@@ -25,17 +25,17 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status   | Tasks | Completed |
-| ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 5     | 5/5       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | in_progress | 7     | 5/7       |
 
-**Total:** 5/5 tasks completed
+**Total:** 5/7 tasks completed
 
 ---
 
 ## Phase 1: Guided Setup Flow
 
-**Status:** in_progress
+**Status:** in_progress (review fixes)
 **Started:** 2026-03-10
 
 ### Phase Summary
@@ -188,6 +188,31 @@ oat_generated: false
 - Result: 911/911 pass
 - Run: `pnpm lint && pnpm type-check`
 - Result: pass
+
+### Review Received: final
+
+**Date:** 2026-03-10
+**Review artifact:** reviews/final-review-2026-03-10.md
+
+**Findings:**
+
+- Critical: 1
+- Important: 1
+- Medium: 0
+- Minor: 1
+
+**New tasks added:** p01-t06, p01-t07
+
+**Deferred Findings (Minor):**
+
+- `m1`: OAT tracking artifact status inconsistency — deferred with rationale: purely bookkeeping in `.oat/` project files, no user-facing impact; will be normalized during artifact updates in this review cycle.
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ---
 

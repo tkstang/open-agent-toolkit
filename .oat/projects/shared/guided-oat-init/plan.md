@@ -258,13 +258,106 @@ git commit -m "test(p01-t05): add integration tests for guided setup flow"
 
 ---
 
+### Task p01-t06: (review) Fix provider sync to use installed CLI binary
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/index.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `runProviderSync` executes `pnpm run cli -- sync --scope project` which only works inside the OAT monorepo workspace. In normal repos there is no `cli` script, so it fails.
+Location: `packages/cli/src/commands/init/index.ts:331`
+
+**Step 2: Implement fix**
+
+Change the default `runProviderSync` implementation from:
+
+```typescript
+execSync('pnpm run cli -- sync --scope project', {
+  cwd: projectRoot,
+  stdio: 'inherit',
+});
+```
+
+to:
+
+```typescript
+execSync('oat sync --scope project', { cwd: projectRoot, stdio: 'inherit' });
+```
+
+This uses the installed `oat` binary which is the intended v1 approach per discovery.md.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test && pnpm lint && pnpm type-check`
+Expected: All pass (tests mock `runProviderSync` so the change is safe)
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/index.ts
+git commit -m "fix(p01-t06): use installed oat binary for provider sync"
+```
+
+---
+
+### Task p01-t07: (review) Enrich guided setup summary with provider list and local path counts
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/index.ts`
+- Modify: `packages/cli/src/commands/init/index.test.ts`
+- Modify: `packages/cli/src/commands/init/guided-setup.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Plan requires summary to show `Providers: {list or "skipped"}` and `Local paths: {count added, count existing}`. Current implementation only shows `Tool packs: installed/skipped`, `Local paths: N configured/skipped`, `Provider sync: done/skipped`.
+Location: `packages/cli/src/commands/init/index.ts:492`
+
+**Step 2: Implement fix**
+
+In `runGuidedSetupImpl`:
+
+- Track the count of newly added paths vs already-existing paths through the local paths step
+- Add a `Providers` line to the summary using the adapters from the init context (detected providers)
+- Change local paths line from `N configured` to `N added, M existing`
+
+Update summary output to match plan:
+
+```
+  Providers:      Claude Code (or "skipped" if none detected)
+  Tool packs:     installed / skipped
+  Local paths:    N added, M existing (or "skipped")
+  Provider sync:  done / skipped
+```
+
+**Step 3: Update tests**
+
+- Update summary assertions in `index.test.ts` to check for the enriched output fields
+- Update summary assertions in `guided-setup.test.ts` to check for provider and local path detail
+
+**Step 4: Verify**
+
+Run: `pnpm --filter @oat/cli test && pnpm lint && pnpm type-check`
+Expected: All pass
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/init/
+git commit -m "fix(p01-t07): enrich guided setup summary with provider and path detail"
+```
+
+---
+
 ## Reviews
 
-| Scope | Type     | Status   | Date       | Artifact                                   |
-| ----- | -------- | -------- | ---------- | ------------------------------------------ |
-| plan  | artifact | passed   | 2026-03-10 | reviews/artifact-plan-review-2026-03-10.md |
-| p01   | code     | pending  | -          | -                                          |
-| final | code     | received | 2026-03-10 | reviews/final-review-2026-03-10.md         |
+| Scope | Type     | Status      | Date       | Artifact                                   |
+| ----- | -------- | ----------- | ---------- | ------------------------------------------ |
+| plan  | artifact | passed      | 2026-03-10 | reviews/artifact-plan-review-2026-03-10.md |
+| p01   | code     | pending     | -          | -                                          |
+| final | code     | fixes_added | 2026-03-10 | reviews/final-review-2026-03-10.md         |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -281,9 +374,9 @@ git commit -m "test(p01-t05): add integration tests for guided setup flow"
 
 **Summary:**
 
-- Phase 1: 5 tasks — Add `--setup` flag, tool packs step, local paths multi-select, provider sync + summary, integration tests
+- Phase 1: 7 tasks — Add `--setup` flag, tool packs step, local paths multi-select, provider sync + summary, integration tests, (review) fix provider sync, (review) enrich summary
 
-**Total: 5 tasks**
+**Total: 7 tasks**
 
 Ready for code review and merge.
 
