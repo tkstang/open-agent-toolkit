@@ -9,13 +9,13 @@ description: 'CLI commands for provider status, sync, and drift management.'
 
 These command definitions inherit the cross-cutting CLI conventions in:
 
-- [`../design-principles.md`](../design-principles.md)
+- [`../../contributing/design-principles.md`](../../contributing/design-principles.md)
 
 ## Adjacent command docs (outside provider interop scope)
 
-- `oat init` (bootstrap): `../bootstrap.md`
-- `oat tools ...` (tool-pack lifecycle — install, update, remove, list, info): `../tool-packs-and-assets.md`
-- `oat doctor` (cross-cutting diagnostics): `../diagnostics.md`
+- `oat init` (bootstrap): `../getting-started.md`
+- `oat tools ...` (tool-pack lifecycle — install, update, remove, list, info): `../tool-packs.md`
+- `oat doctor` (cross-cutting diagnostics): `../cli-reference.md`
 
 ## `oat status`
 

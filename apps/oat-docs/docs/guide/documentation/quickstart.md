@@ -152,5 +152,5 @@ Important:
 ## Related docs
 
 - [`docs-apps.md`](docs-apps.md)
-- [`../skills/docs-workflows.md`](../skills/docs-workflows.md)
+- [`workflows.md`](workflows.md)
 - [`../reference/docs-index-contract.md`](../reference/docs-index-contract.md)

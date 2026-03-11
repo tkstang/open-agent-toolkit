@@ -120,5 +120,5 @@ For CLI behavior changes:
 ## Related Docs
 
 - CLI docs index: [`index.md`](index.md)
-- Provider-interop commands: [`provider-interop/commands.md`](provider-interop/commands.md)
-- Provider-interop manifest and drift: [`provider-interop/manifest-and-drift.md`](provider-interop/manifest-and-drift.md)
+- Provider sync commands: [`../guide/provider-sync/commands.md`](../guide/provider-sync/commands.md)
+- Provider sync manifest and drift: [`../guide/provider-sync/manifest-and-drift.md`](../guide/provider-sync/manifest-and-drift.md)

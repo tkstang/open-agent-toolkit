@@ -116,10 +116,10 @@ This is also the right path for plan-first ideation that can later be synced/imp
 
 Start here:
 
-- [`skills/index.md`](skills/index.md)
-- [`skills/docs-workflows.md`](skills/docs-workflows.md)
-- [`cli/docs-apps.md`](cli/docs-apps.md)
-- [`cli/docs-consumer-quickstart.md`](cli/docs-consumer-quickstart.md)
+- [`guide/skills/index.md`](guide/skills/index.md)
+- [`guide/documentation/workflows.md`](guide/documentation/workflows.md)
+- [`guide/documentation/commands.md`](guide/documentation/commands.md)
+- [`guide/documentation/quickstart.md`](guide/documentation/quickstart.md)
 - [`reference/index.md`](reference/index.md)
 
 ## Path C: Workflow layer (optional)

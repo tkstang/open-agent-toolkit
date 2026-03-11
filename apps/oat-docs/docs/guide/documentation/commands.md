@@ -154,4 +154,4 @@ when you want the actual docs analysis/apply execution flow.
 
 Related docs:
 
-- [`../skills/docs-workflows.md`](../skills/docs-workflows.md)
+- [`workflows.md`](workflows.md)

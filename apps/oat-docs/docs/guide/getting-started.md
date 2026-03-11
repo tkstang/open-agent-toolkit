@@ -53,7 +53,6 @@ oat init --scope project
 
 Related commands:
 
-- `oat tools ...` (tool-pack install, update, remove, list, info): `tool-packs-and-assets.md`
-- `oat local ...` (local path management): `local-paths.md`
-- `oat status` / `oat sync` (provider interop): `provider-interop/index.md`
-- `oat doctor` (diagnostics): `diagnostics.md`
+- `oat tools ...` (tool-pack install, update, remove, list, info): `tool-packs.md`
+- `oat local ...`, `oat doctor`, and other utility commands: `cli-reference.md`
+- `oat status` / `oat sync` (provider sync): `provider-sync/index.md`
