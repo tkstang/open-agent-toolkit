@@ -11,7 +11,7 @@ oat_execution_mode: single-thread # single-thread | subagent-driven
 oat_workflow_mode: quick # spec-driven | quick | import
 oat_workflow_origin: native # native | imported
 oat_docs_updated: complete # null | skipped | complete — documentation sync status
-oat_project_state_updated: '2026-03-12T19:46:03Z'
+oat_project_state_updated: '2026-03-12T20:02:28Z'
 oat_generated: false
 ---
 
@@ -68,4 +68,4 @@ None
 
 ## Next Milestone
 
-Create PR via `oat-project-pr-final`.
+Run `oat-project-complete`.
