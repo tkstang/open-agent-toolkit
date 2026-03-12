@@ -119,6 +119,6 @@ For CLI behavior changes:
 
 ## Related Docs
 
-- CLI docs index: [`index.md`](index.md)
+- CLI Reference: [`../guide/cli-reference.md`](../guide/cli-reference.md)
 - Provider sync commands: [`../guide/provider-sync/commands.md`](../guide/provider-sync/commands.md)
 - Provider sync manifest and drift: [`../guide/provider-sync/manifest-and-drift.md`](../guide/provider-sync/manifest-and-drift.md)
