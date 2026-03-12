@@ -736,7 +736,7 @@ git commit -m "fix(p05-t04): document markdownlint rule exceptions"
 | p03    | code     | pending         | -          | -                                                     |
 | p04    | code     | pending         | -          | -                                                     |
 | p05    | code     | pending         | -          | -                                                     |
-| final  | code     | fixes_completed | 2026-03-12 | `reviews/archived/final-review-2026-03-11.md`         |
+| final  | code     | received        | 2026-03-12 | `reviews/final-review-2026-03-12.md`                  |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
