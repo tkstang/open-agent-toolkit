@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
-oat_ready_for: oat-project-review-provide
+oat_status: complete
+oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-12
-oat_project_state_updated: '2026-03-12T18:22:03Z'
+oat_project_state_updated: '2026-03-12T19:46:03Z'
 oat_current_task_id: null
 oat_generated: false
 ---
@@ -752,7 +752,7 @@ oat_generated: false
 
 ### Phase 5 Summary
 
-**Outcome:** Final verification passed, the two review-fix tasks were implemented, and the project is now awaiting final re-review.
+**Outcome:** Final verification passed, the two review-fix tasks were implemented, and the final re-review passed.
 
 **Key files touched:**
 
@@ -800,6 +800,7 @@ Chronological log of implementation progress.
 - 2026-03-12: Completed final verification. Added docs-local markdownlint policy, cleared the docs quality gates, and finished implementation at `19/19` tasks complete.
 - 2026-03-12: Received `final-review-2026-03-11.md`. Added review-fix tasks `p05-t03` and `p05-t04`, and deferred minor finding `m2` because Fumadocs-only tab rendering is the intended docs surface.
 - 2026-03-12: Completed review-fix tasks `p05-t03` and `p05-t04`. The implementation is now awaiting final re-review.
+- 2026-03-12: Final re-review passed with no new findings. The accepted informational tab-syntax note remains deferred by design, and the project is ready for PR/finalization.
 
 ### Review Received: final
 
@@ -819,7 +820,25 @@ Chronological log of implementation progress.
 
 - `m2` - Plain-markdown renderers show raw tab syntax in `apps/oat-docs/docs/guide/skills/index.md`. Deferred by explicit user decision because the docs app is the intended rendering target and no behavior is broken inside Fumadocs.
 
-**Next:** Request re-review via `oat-project-review-provide code final`.
+**Next:** Generate the final PR via `oat-project-pr-final`.
+
+### Review Passed: final (re-review)
+
+**Date:** 2026-03-12
+**Review artifact:** `reviews/archived/final-review-2026-03-12.md`
+
+**Result:**
+
+- Critical: 0
+- Important: 0
+- Medium: 0
+- Minor: 0
+
+**Disposition:**
+
+- Prior review fixes `p05-t03` and `p05-t04` were verified as resolved.
+- Informational note `m2` remained accepted as-is because Fumadocs is the intended rendering target.
+- Final review status is now `passed`.
 
 ---
 
