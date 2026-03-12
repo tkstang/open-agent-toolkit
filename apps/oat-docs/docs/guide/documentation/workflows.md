@@ -60,5 +60,5 @@ to open every page.
 
 - [`commands.md`](commands.md)
 - [`quickstart.md`](quickstart.md)
-- [`../reference/docs-index-contract.md`](../reference/docs-index-contract.md)
+- [`../../reference/docs-index-contract.md`](../../reference/docs-index-contract.md)
 - [`../../contributing/skills.md`](../../contributing/skills.md)

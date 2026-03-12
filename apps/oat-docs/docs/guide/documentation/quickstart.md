@@ -151,6 +151,6 @@ Important:
 
 ## Related docs
 
-- [`docs-apps.md`](docs-apps.md)
+- [`commands.md`](commands.md)
 - [`workflows.md`](workflows.md)
-- [`../reference/docs-index-contract.md`](../reference/docs-index-contract.md)
+- [`../../reference/docs-index-contract.md`](../../reference/docs-index-contract.md)

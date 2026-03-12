@@ -11,31 +11,31 @@
 - Guide
   - [User Guide](guide/index.md) — User-facing guide for operating OAT across provider sync, docs tooling, workflow execution, skills, and ideas.
   - Documentation
-    - [Documentation](documentation/index.md) — Guide to OAT documentation app setup, docs commands, and docs analysis/apply workflows.
-    - [Docs App Commands](documentation/commands.md) — Docs scaffolding CLI surface for Fumadocs/MkDocs, migration, index generation, and nav sync.
-    - [Add Docs to a New Repo](documentation/quickstart.md) — Step-by-step guide for adding an OAT-managed docs app to a repository.
-    - [Docs Workflows](documentation/workflows.md) — Docs CLI helpers and skills for analysis and controlled documentation updates.
+    - [Documentation](guide/documentation/index.md) — Guide to OAT documentation app setup, docs commands, and docs analysis/apply workflows.
+    - [Docs App Commands](guide/documentation/commands.md) — Docs scaffolding CLI surface for Fumadocs/MkDocs, migration, index generation, and nav sync.
+    - [Add Docs to a New Repo](guide/documentation/quickstart.md) — Step-by-step guide for adding an OAT-managed docs app to a repository.
+    - [Docs Workflows](guide/documentation/workflows.md) — Docs CLI helpers and skills for analysis and controlled documentation updates.
   - Ideas
-    - [Ideas Workflow](ideas/index.md) — Guide to lightweight idea capture, brainstorming, and promotion into tracked projects when the work becomes concrete.
-    - [Ideas Lifecycle](ideas/lifecycle.md) — Ideas directory structure, state model, scratchpad flow, and promotion to projects.
+    - [Ideas Workflow](guide/ideas/index.md) — Guide to lightweight idea capture, brainstorming, and promotion into tracked projects when the work becomes concrete.
+    - [Ideas Lifecycle](guide/ideas/lifecycle.md) — Ideas directory structure, state model, scratchpad flow, and promotion to projects.
   - Provider Sync
-    - [Provider Sync](provider-sync/index.md) — User guide for adopting OAT across provider surfaces, managing drift, and syncing canonical assets into provider views.
-    - [Provider Interop Commands](provider-sync/commands.md) — CLI commands for provider status, sync, and drift management.
-    - [Sync Config (`.oat/sync/config.json`)](provider-sync/config.md) — Configuration schema and behavior for provider sync in .oat/sync/config.json.
-    - [Manifest and Drift](provider-sync/manifest-and-drift.md) — Manifest tracking, drift states, and stray adoption for canonical-to-provider reconciliation.
-    - [Providers](provider-sync/providers.md) — Provider-specific path mappings for Claude, Cursor, Copilot, Gemini, and Codex adapters.
-    - [Provider Interop CLI Scope and Surface](provider-sync/scope-and-surface.md) — Scope boundaries and design principles for canonical-to-provider asset management.
+    - [Provider Sync](guide/provider-sync/index.md) — User guide for adopting OAT across provider surfaces, managing drift, and syncing canonical assets into provider views.
+    - [Provider Interop Commands](guide/provider-sync/commands.md) — CLI commands for provider status, sync, and drift management.
+    - [Sync Config (`.oat/sync/config.json`)](guide/provider-sync/config.md) — Configuration schema and behavior for provider sync in .oat/sync/config.json.
+    - [Manifest and Drift](guide/provider-sync/manifest-and-drift.md) — Manifest tracking, drift states, and stray adoption for canonical-to-provider reconciliation.
+    - [Providers](guide/provider-sync/providers.md) — Provider-specific path mappings for Claude, Cursor, Copilot, Gemini, and Codex adapters.
+    - [Provider Interop CLI Scope and Surface](guide/provider-sync/scope-and-surface.md) — Scope boundaries and design principles for canonical-to-provider asset management.
   - Skills
-    - [Skills](skills/index.md) — User-facing guide to OAT skill families, recommended entry points, and where contributor-facing skill authoring docs live.
+    - [Skills](guide/skills/index.md) — User-facing guide to OAT skill families, recommended entry points, and where contributor-facing skill authoring docs live.
   - Workflow
-    - [Workflow & Projects](workflow/index.md) — Guide to OAT lifecycle execution, project artifacts, reviews, PR flow, and repo-analysis helpers.
-    - [Project Artifacts](workflow/artifacts.md) — Project artifact contracts: state.md, spec.md, design.md, plan.md, and implementation.md.
-    - [Human-in-the-Loop Lifecycle (HiLL) Checkpoints](workflow/hill-checkpoints.md) — Checkpoint configuration and behavior for pauseable, human-in-the-loop lifecycle execution.
-    - [Lifecycle](workflow/lifecycle.md) — End-to-end phase flow from discovery through completion: spec-driven, quick, and import paths.
-    - [PR Flow](workflow/pr-flow.md) — PR generation inputs, outputs, artifact expectations, and frontmatter handling.
-    - [Repository Analysis](workflow/repo-analysis.md) — Repository-level analysis commands for collecting and triaging PR review comments.
-    - [Reviews](workflow/reviews.md) — Review request/receive loop, status progression, severity policy, and quality gates.
-    - [State Machine](workflow/state-machine.md) — Workflow and review state transitions across lifecycle phases and checkpoints.
+    - [Workflow & Projects](guide/workflow/index.md) — Guide to OAT lifecycle execution, project artifacts, reviews, PR flow, and repo-analysis helpers.
+    - [Project Artifacts](guide/workflow/artifacts.md) — Project artifact contracts: state.md, spec.md, design.md, plan.md, and implementation.md.
+    - [Human-in-the-Loop Lifecycle (HiLL) Checkpoints](guide/workflow/hill-checkpoints.md) — Checkpoint configuration and behavior for pauseable, human-in-the-loop lifecycle execution.
+    - [Lifecycle](guide/workflow/lifecycle.md) — End-to-end phase flow from discovery through completion: spec-driven, quick, and import paths.
+    - [PR Flow](guide/workflow/pr-flow.md) — PR generation inputs, outputs, artifact expectations, and frontmatter handling.
+    - [Repository Analysis](guide/workflow/repo-analysis.md) — Repository-level analysis commands for collecting and triaging PR review comments.
+    - [Reviews](guide/workflow/reviews.md) — Review request/receive loop, status progression, severity policy, and quality gates.
+    - [State Machine](guide/workflow/state-machine.md) — Workflow and review state transitions across lifecycle phases and checkpoints.
   - [CLI Reference](guide/cli-reference.md) — Scannable reference for the current OAT CLI surface, with links to the deeper guide pages for each command family.
   - [Core Concepts](guide/concepts.md) — Mental model for canonical assets, provider views, scopes, skills, and the optional workflow layer.
   - [CLI Bootstrap](guide/getting-started.md) — Foundational setup via oat init for canonical directories, provider adoption, and configuration.

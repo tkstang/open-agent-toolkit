@@ -139,7 +139,7 @@ oat docs nav sync --target-dir apps/oat-docs
 
 Related reference:
 
-- [`../reference/docs-index-contract.md`](../reference/docs-index-contract.md)
+- [`../../reference/docs-index-contract.md`](../../reference/docs-index-contract.md)
 
 ## `oat docs analyze` and `oat docs apply`
 
