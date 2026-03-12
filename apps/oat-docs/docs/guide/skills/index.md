@@ -30,65 +30,65 @@ Use this section when you want to choose the right OAT skill for a task. If you 
 
 ## Full Catalog
 
-### Project lifecycle
+=== "Project lifecycle"
 
-- `oat-project-new`
-- `oat-project-quick-start`
-- `oat-project-import-plan`
-- `oat-project-promote-spec-driven`
-- `oat-project-open`
-- `oat-project-clear-active`
-- `oat-project-discover`
-- `oat-project-spec`
-- `oat-project-design`
-- `oat-project-plan`
-- `oat-project-plan-writing`
-- `oat-project-implement`
-- `oat-project-subagent-implement`
-- `oat-project-progress`
-- `oat-project-reconcile`
-- `oat-project-review-provide`
-- `oat-project-review-receive`
-- `oat-project-review-receive-remote`
-- `oat-project-pr-progress`
-- `oat-project-pr-final`
-- `oat-project-document`
-- `oat-project-complete`
+    - `oat-project-new`
+    - `oat-project-quick-start`
+    - `oat-project-import-plan`
+    - `oat-project-promote-spec-driven`
+    - `oat-project-open`
+    - `oat-project-clear-active`
+    - `oat-project-discover`
+    - `oat-project-spec`
+    - `oat-project-design`
+    - `oat-project-plan`
+    - `oat-project-plan-writing`
+    - `oat-project-implement`
+    - `oat-project-subagent-implement`
+    - `oat-project-progress`
+    - `oat-project-reconcile`
+    - `oat-project-review-provide`
+    - `oat-project-review-receive`
+    - `oat-project-review-receive-remote`
+    - `oat-project-pr-progress`
+    - `oat-project-pr-final`
+    - `oat-project-document`
+    - `oat-project-complete`
 
-### Idea workflow
+=== "Ideas"
 
-- `oat-idea-new`
-- `oat-idea-ideate`
-- `oat-idea-scratchpad`
-- `oat-idea-summarize`
+    - `oat-idea-new`
+    - `oat-idea-ideate`
+    - `oat-idea-scratchpad`
+    - `oat-idea-summarize`
 
-### Docs and instruction maintenance
+=== "Docs and instructions"
 
-- `oat-docs-analyze`
-- `oat-docs-apply`
-- `oat-agent-instructions-analyze`
-- `oat-agent-instructions-apply`
+    - `oat-docs-analyze`
+    - `oat-docs-apply`
+    - `oat-agent-instructions-analyze`
+    - `oat-agent-instructions-apply`
 
-### Review, backlog, and repo maintenance
+=== "Review and maintenance"
 
-- `oat-review-provide`
-- `oat-review-receive`
-- `oat-review-receive-remote`
-- `oat-repo-knowledge-index`
-- `oat-repo-maintainability-review`
-- `review-backlog`
-- `docs-completed-projects-gap-review`
-- `update-repo-reference`
+    - `oat-review-provide`
+    - `oat-review-receive`
+    - `oat-review-receive-remote`
+    - `oat-repo-knowledge-index`
+    - `oat-repo-maintainability-review`
+    - `review-backlog`
+    - `docs-completed-projects-gap-review`
+    - `update-repo-reference`
 
-### Scaffolding and utility
+=== "Scaffolding and utility"
 
-- `oat-worktree-bootstrap`
-- `oat-worktree-bootstrap-auto`
-- `create-oat-skill`
-- `create-agnostic-skill`
-- `create-pr-description`
-- `create-ticket`
-- `codex-skill`
+    - `oat-worktree-bootstrap`
+    - `oat-worktree-bootstrap-auto`
+    - `create-oat-skill`
+    - `create-agnostic-skill`
+    - `create-pr-description`
+    - `create-ticket`
+    - `codex-skill`
 
 ## Discovery Source
 

@@ -11,92 +11,102 @@ This page is the syntax reference for the markdown patterns supported by the cur
 
 Every page should include `title` and `description` in YAML frontmatter.
 
-```yaml
----
-title: Page Title
-description: A short summary of the page.
----
-```
+=== "Syntax"
+
+    ```yaml
+    ---
+    title: Page Title
+    description: A short summary of the page.
+    ---
+    ```
 
 ## Callouts
 
 GitHub-style blockquote callouts are supported.
 
-```text
-> [!NOTE]
-> Useful supporting context.
+=== "Syntax"
 
-> [!WARNING]
-> Important caution for the reader.
-```
+    ```text
+    > [!NOTE]
+    > Useful supporting context.
 
-Rendered example:
+    > [!WARNING]
+    > Important caution for the reader.
+    ```
 
-> [!NOTE]
-> Useful supporting context.
+=== "Rendered"
 
-> [!WARNING]
-> Important caution for the reader.
+    > [!NOTE]
+    > Useful supporting context.
+
+    > [!WARNING]
+    > Important caution for the reader.
 
 ## Mermaid Diagrams
 
 Fenced code blocks with `mermaid` are rendered as diagrams.
 
-````text
-```mermaid
-flowchart LR
-  A[Read docs tree] --> B[Generate index]
-```
-````
+=== "Syntax"
 
-Rendered example:
+    ````text
+    ```mermaid
+    flowchart LR
+      A[Read docs tree] --> B[Generate index]
+    ```
+    ````
 
-```mermaid
-flowchart LR
-  A[Read docs tree] --> B[Generate index]
-```
+=== "Rendered"
+
+    ```mermaid
+    flowchart LR
+      A[Read docs tree] --> B[Generate index]
+    ```
 
 ## Tabs
 
 Tab groups use the existing tab transform syntax:
 
-```text
-=== "pnpm"
+=== "Syntax"
 
-    pnpm install
+    ```text
+    === "pnpm"
 
-=== "npm"
+        pnpm install
 
-    npm install
-```
+    === "npm"
 
-Rendered example:
+        npm install
+    ```
 
-=== "pnpm"
+=== "Rendered"
 
-    pnpm install
+    === "pnpm"
 
-=== "npm"
+        pnpm install
 
-    npm install
+    === "npm"
+
+        npm install
 
 ## Code Blocks
 
 Standard fenced code blocks support syntax highlighting and optional file-title metadata.
 
-````text
-```typescript title="src/example.ts"
-const greeting = 'hello world';
-console.log(greeting);
-```
-````
+=== "Syntax"
 
-Rendered example:
+    ````text
+    ```typescript title="src/example.ts"
+    const greeting = 'hello world';
+    console.log(greeting);
+    ```
+    ````
 
-```typescript title="src/example.ts"
-const greeting = 'hello world';
-console.log(greeting);
-```
+=== "Rendered"
+
+    ```typescript title="src/example.ts"
+    const greeting = 'hello world';
+    console.log(greeting);
+    ```
 
 ## Authoring Reminder
 
