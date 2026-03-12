@@ -179,10 +179,10 @@ git commit -m "chore(p01-t03): move oat-project-capture to in-progress in backlo
 
 ## Reviews
 
-| Scope | Type | Status  | Date | Artifact |
-| ----- | ---- | ------- | ---- | -------- |
-| p01   | code | pending | -    | -        |
-| final | code | pending | -    | -        |
+| Scope | Type | Status   | Date       | Artifact                           |
+| ----- | ---- | -------- | ---------- | ---------------------------------- |
+| p01   | code | pending  | -          | -                                  |
+| final | code | received | 2026-03-12 | reviews/final-review-2026-03-12.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
