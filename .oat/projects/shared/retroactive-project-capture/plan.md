@@ -297,10 +297,10 @@ git commit -m "fix(p01-t07): update backlog status to match project state"
 
 ## Reviews
 
-| Scope | Type | Status      | Date       | Artifact                                    |
-| ----- | ---- | ----------- | ---------- | ------------------------------------------- |
-| p01   | code | pending     | -          | -                                           |
-| final | code | fixes_added | 2026-03-12 | reviews/archived/final-review-2026-03-12.md |
+| Scope | Type | Status   | Date       | Artifact                              |
+| ----- | ---- | -------- | ---------- | ------------------------------------- |
+| p01   | code | pending  | -          | -                                     |
+| final | code | received | 2026-03-12 | reviews/final-review-2026-03-12-v2.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
