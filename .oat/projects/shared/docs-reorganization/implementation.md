@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p05-t01
+oat_current_task_id: p05-t02
 oat_generated: false
 ---
 
@@ -30,9 +30,9 @@ oat_generated: false
 | Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed   | 7     | 7/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | completed   | 3     | 3/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | completed   | 2     | 2/2       |
-| Phase 5: Final Verification                                        | in_progress | 2     | 0/2       |
+| Phase 5: Final Verification                                        | in_progress | 2     | 1/2       |
 
-**Total:** 17/19 tasks completed
+**Total:** 18/19 tasks completed
 
 ---
 
@@ -635,12 +635,45 @@ oat_generated: false
 
 ### Task p05-t01: Final Link Audit and Surface Verification
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** 4eaadbd1
+
+**Outcome (required):**
+
+- Fixed the last live docs links that still pointed at stale or mis-resolved docs paths.
+- Fixed the docs index generator so nested generated links keep their full parent path in the app-root surface.
+- Regenerated `apps/oat-docs/index.md` and verified the final docs surface resolves correctly.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/documentation/quickstart.md` - fixed final related-doc links
+- `apps/oat-docs/docs/guide/documentation/commands.md` - fixed final related reference link
+- `apps/oat-docs/docs/guide/documentation/workflows.md` - fixed final related reference link
+- `apps/oat-docs/index.md` - regenerated after generator fix
+- `packages/cli/src/commands/docs/index-generate/generator.ts` - fixed nested child path prefixing
+- `packages/cli/src/commands/docs/index-generate/generator.test.ts` - added nested-path coverage
+
+**Verification:**
+
+- Run: markdown link audit over all docs markdown plus `apps/oat-docs/index.md`
+- Result: pass
+- Run: stale-path audit over the live docs surface
+- Result: pass
+- Run: contents-contract check across all docs `index.md` files
+- Result: pass
+- Run: `pnpm exec vitest run ./src/commands/docs/index-generate/generator.test.ts ./src/commands/docs/e2e-pipeline.test.ts` in `packages/cli`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The initial link audit surfaced a real generator bug: nested sections under `Guide` were rendered without their `guide/` prefix in `apps/oat-docs/index.md`. Fixing the generator was necessary because manual edits would have been overwritten during the final refresh.
 
 ---
 
 ### Task p05-t02: Run Docs Quality Gates
+
+**Status:** in_progress
+**Commit:** -
 
 **Status:** pending
 **Commit:** -
