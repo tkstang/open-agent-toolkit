@@ -3,8 +3,8 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-12
-oat_project_state_updated: '2026-03-12T01:22:46Z'
-oat_current_task_id: p05-t03
+oat_project_state_updated: '2026-03-12T18:21:00Z'
+oat_current_task_id: p05-t04
 oat_generated: false
 ---
 
@@ -31,9 +31,9 @@ oat_generated: false
 | Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed   | 7     | 7/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | completed   | 3     | 3/3       |
 | Phase 4: Visual Elements and Content Enhancements                  | completed   | 2     | 2/2       |
-| Phase 5: Final Verification                                        | in_progress | 4     | 2/4       |
+| Phase 5: Final Verification                                        | in_progress | 4     | 3/4       |
 
-**Total:** 19/21 tasks completed
+**Total:** 20/21 tasks completed
 
 ---
 
@@ -704,8 +704,26 @@ oat_generated: false
 
 ### Task p05-t03: (review) Fix CLI Reference Link in Design Principles
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 6dcc5ff4
+
+**Outcome (required):**
+
+- Corrected the stale related-doc entry so the label now matches the actual destination in the reorganized docs tree.
+- Removed the last misleading `CLI docs index` wording flagged by final review.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/contributing/design-principles.md` - retargeted the related-doc link to the CLI reference page
+
+**Verification:**
+
+- Run: `rg -n 'CLI docs index|CLI Reference' apps/oat-docs/docs/contributing/design-principles.md`
+- Result: pass (`CLI Reference` only)
+
+**Notes / Decisions:**
+
+- Kept the fix as a narrow copy-and-link correction because the review finding was about stale routing, not page structure.
 
 ---
 
