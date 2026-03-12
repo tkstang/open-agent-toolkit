@@ -295,12 +295,75 @@ git commit -m "fix(p01-t07): update backlog status to match project state"
 
 ---
 
+### Task p01-t08: (review) Update project bookkeeping to reflect completed fixes
+
+**Files:**
+
+- Modify: `.oat/projects/shared/retroactive-project-capture/implementation.md`
+- Modify: `.oat/projects/shared/retroactive-project-capture/state.md`
+- Modify: `.oat/projects/shared/retroactive-project-capture/plan.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Fix tasks p01-t04 through p01-t07 were implemented in commit `450c1257` but project artifacts weren't advanced to completed state. Plan still says `fixes_added`, implementation shows `3/7` and `oat_current_task_id: p01-t04`, state says `in_progress` while body says "Ready for review."
+Location: `plan.md:303`, `implementation.md:2,21`, `state.md:9,22`
+
+**Step 2: Implement fix**
+
+- Mark p01-t04 through p01-t07 as completed in implementation.md with commit `450c1257`
+- Update Progress Overview to `7/7` (then `9/9` after these review fixes)
+- Set `oat_current_task_id: null`, `oat_status: complete`
+- Update state.md frontmatter: `oat_phase_status: complete`, `oat_current_task: null`
+- Make state.md body consistent with frontmatter
+- Update plan.md review row to `fixes_completed`
+
+**Step 3: Verify**
+
+Confirm all artifact frontmatter values are internally consistent.
+
+**Step 4: Commit**
+
+```bash
+git add .oat/projects/shared/retroactive-project-capture/
+git commit -m "fix(p01-t08): update project bookkeeping to reflect completed fixes"
+```
+
+---
+
+### Task p01-t09: (review) Replace non-canonical p01-t03-dev task ID
+
+**Files:**
+
+- Modify: `.oat/projects/shared/retroactive-project-capture/implementation.md`
+
+**Step 1: Understand the issue**
+
+Review finding: `p01-t03-dev` breaks the `pNN-tNN` canonical task ID pattern. Downstream tooling may skip it.
+Location: `implementation.md:107`
+
+**Step 2: Implement fix**
+
+Remove the `### Task p01-t03-dev` heading. Fold the validation fix work into p01-t03's Notes section as additional context, since both are about backlog/validation bookkeeping in the same commit. The deviation is already recorded in the Deviations table.
+
+**Step 3: Verify**
+
+Confirm no `p01-t03-dev` headings remain and deviations table still records the extra work.
+
+**Step 4: Commit**
+
+```bash
+git add .oat/projects/shared/retroactive-project-capture/implementation.md
+git commit -m "fix(p01-t09): replace non-canonical task ID with deviation note"
+```
+
+---
+
 ## Reviews
 
-| Scope | Type | Status   | Date       | Artifact                              |
-| ----- | ---- | -------- | ---------- | ------------------------------------- |
-| p01   | code | pending  | -          | -                                     |
-| final | code | received | 2026-03-12 | reviews/final-review-2026-03-12-v2.md |
+| Scope | Type | Status          | Date       | Artifact                                       |
+| ----- | ---- | --------------- | ---------- | ---------------------------------------------- |
+| p01   | code | pending         | -          | -                                              |
+| final | code | fixes_completed | 2026-03-12 | reviews/archived/final-review-2026-03-12-v2.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -317,9 +380,9 @@ git commit -m "fix(p01-t07): update backlog status to match project state"
 
 **Summary:**
 
-- Phase 1: 7 tasks - Skill creation, CLI registration, backlog update, and review fixes
+- Phase 1: 9 tasks - Skill creation, CLI registration, backlog update, and review fixes (2 rounds)
 
-**Total: 7 tasks**
+**Total: 9 tasks**
 
 Ready for code review and merge.
 
