@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-11
-oat_current_task_id: p04-t02
+oat_current_task_id: p05-t01
 oat_generated: false
 ---
 
@@ -29,10 +29,10 @@ oat_generated: false
 | Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
 | Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed   | 7     | 7/7       |
 | Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | completed   | 3     | 3/3       |
-| Phase 4: Visual Elements and Content Enhancements                  | in_progress | 2     | 1/2       |
-| Phase 5: Final Verification                                        | pending     | 2     | 0/2       |
+| Phase 4: Visual Elements and Content Enhancements                  | completed   | 2     | 2/2       |
+| Phase 5: Final Verification                                        | in_progress | 2     | 0/2       |
 
-**Total:** 16/19 tasks completed
+**Total:** 17/19 tasks completed
 
 ---
 
@@ -600,19 +600,42 @@ oat_generated: false
 
 ### Task p04-t02: Add Tabbed Content
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** 71b603b2
+
+**Outcome (required):**
+
+- Added tabbed browsing for provider-specific behavior, skill-family browsing, and syntax-vs-rendered markdown examples.
+- Reused the repo's existing tab transform syntax instead of introducing a new docs pattern.
+- Verified the updated pages through the current Fumadocs build path.
+
+**Files changed:**
+
+- `apps/oat-docs/docs/guide/provider-sync/providers.md` - converted provider mappings into provider tabs
+- `apps/oat-docs/docs/guide/skills/index.md` - converted the full catalog into skill-family tabs
+- `apps/oat-docs/docs/contributing/markdown-features.md` - converted examples into syntax-vs-rendered tabs
+
+**Verification:**
+
+- Run: `sed -n '1,260p'` across the three touched pages
+- Result: pass
+- Run: `pnpm --filter oat-docs build`
+- Result: pass
+
+**Notes / Decisions:**
+
+- Left the surrounding prose outside the tab groups so the pages still scan well in plain markdown and keep the tabs focused on comparison-heavy content.
 
 ---
 
 ## Phase 5: Final Verification
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-12
 
 ### Task p05-t01: Final Link Audit and Surface Verification
 
-**Status:** pending
+**Status:** in_progress
 **Commit:** -
 
 ---
