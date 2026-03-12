@@ -669,7 +669,7 @@ git commit -m "docs(p05-t02): fix docs quality gate failures"
 | p03    | code     | pending         | -          | -                                                     |
 | p04    | code     | pending         | -          | -                                                     |
 | p05    | code     | pending         | -          | -                                                     |
-| final  | code     | pending         | -          | -                                                     |
+| final  | code     | received        | 2026-03-11 | `reviews/final-review-2026-03-11.md`                  |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
