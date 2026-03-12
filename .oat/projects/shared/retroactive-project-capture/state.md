@@ -10,7 +10,7 @@ oat_phase_status: in_progress
 oat_execution_mode: single-thread
 oat_workflow_mode: quick
 oat_workflow_origin: captured
-oat_docs_updated: null
+oat_docs_updated: complete
 oat_project_created: '2026-03-12T02:09:37.038Z'
 oat_project_completed: null
 oat_project_state_updated: '2026-03-12T09:15:00.000Z'
