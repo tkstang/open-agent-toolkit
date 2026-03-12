@@ -658,6 +658,73 @@ git commit -m "docs(p05-t02): fix docs quality gate failures"
 
 ---
 
+### Task p05-t03: (review) Fix CLI Reference Link in Design Principles
+
+**Files:**
+
+- Modify: `apps/oat-docs/docs/contributing/design-principles.md`
+
+**Step 1: Understand the issue**
+
+Review finding: The "Related Docs" section still says `CLI docs index: [index.md](index.md)`, which now resolves to the contributing landing page after the move into `contributing/`.
+Location: `apps/oat-docs/docs/contributing/design-principles.md:122`
+
+**Step 2: Implement fix**
+
+Update the related-doc entry so both the label and target match the reorganized docs structure:
+
+- change `CLI docs index: [\`index.md\`](index.md)`
+- to `CLI Reference: [\`../guide/cli-reference.md\`](../guide/cli-reference.md)`
+
+**Step 3: Verify**
+
+Run: `rg -n 'CLI docs index|CLI Reference' apps/oat-docs/docs/contributing/design-principles.md`
+Expected: only the corrected `CLI Reference` entry remains
+
+**Step 4: Commit**
+
+```bash
+git add apps/oat-docs/docs/contributing/design-principles.md
+git commit -m "fix(p05-t03): correct CLI reference link in design principles"
+```
+
+---
+
+### Task p05-t04: (review) Add Rationale Comments to Markdownlint Config
+
+**Files:**
+
+- Modify: `apps/oat-docs/.markdownlint.jsonc`
+
+**Step 1: Understand the issue**
+
+Review finding: The markdownlint config disables rules without explaining why those rules are turned off for this docs surface.
+Location: `apps/oat-docs/.markdownlint.jsonc:1`
+
+**Step 2: Implement fix**
+
+Add brief inline JSONC comments for each disabled rule so future contributors can see why the docs app intentionally allows:
+
+- long narrative lines
+- repeated subsection labels under different parents
+- frontmatter title plus H1
+- heading punctuation used in docs examples
+- indented code blocks needed by tab syntax
+
+**Step 3: Verify**
+
+Run: `pnpm --filter oat-docs docs:lint`
+Expected: pass
+
+**Step 4: Commit**
+
+```bash
+git add apps/oat-docs/.markdownlint.jsonc
+git commit -m "fix(p05-t04): document markdownlint rule exceptions"
+```
+
+---
+
 ## Reviews
 
 | Scope  | Type     | Status          | Date       | Artifact                                              |
@@ -669,7 +736,7 @@ git commit -m "docs(p05-t02): fix docs quality gate failures"
 | p03    | code     | pending         | -          | -                                                     |
 | p04    | code     | pending         | -          | -                                                     |
 | p05    | code     | pending         | -          | -                                                     |
-| final  | code     | received        | 2026-03-11 | `reviews/final-review-2026-03-11.md`                  |
+| final  | code     | fixes_added     | 2026-03-12 | `reviews/archived/final-review-2026-03-11.md`         |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -690,9 +757,9 @@ git commit -m "docs(p05-t02): fix docs quality gate failures"
 - Phase 2: 7 tasks - landing pages, guide rewrites, and generated surface refresh
 - Phase 3: 3 tasks - cross-reference cleanup and shared entry-point updates
 - Phase 4: 2 tasks - Mermaid diagrams and tabbed content
-- Phase 5: 2 tasks - final verification and docs quality gates
+- Phase 5: 4 tasks - final verification, docs quality gates, and final review fixes
 
-**Total: 19 tasks**
+**Total: 21 tasks**
 
 Ready for implementation against the current docs app.
 

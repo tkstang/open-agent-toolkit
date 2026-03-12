@@ -1,10 +1,10 @@
 ---
-oat_status: complete
-oat_ready_for: oat-project-review-provide
+oat_status: in_progress
+oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-12
-oat_project_state_updated: '2026-03-12T00:24:13Z'
-oat_current_task_id: null
+oat_project_state_updated: '2026-03-12T01:22:46Z'
+oat_current_task_id: p05-t03
 oat_generated: false
 ---
 
@@ -25,15 +25,15 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase                                                              | Status    | Tasks | Completed |
-| ------------------------------------------------------------------ | --------- | ----- | --------- |
-| Phase 1: Directory Structure and File Moves                        | completed | 5     | 5/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed | 7     | 7/7       |
-| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | completed | 3     | 3/3       |
-| Phase 4: Visual Elements and Content Enhancements                  | completed | 2     | 2/2       |
-| Phase 5: Final Verification                                        | completed | 2     | 2/2       |
+| Phase                                                              | Status      | Tasks | Completed |
+| ------------------------------------------------------------------ | ----------- | ----- | --------- |
+| Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed   | 7     | 7/7       |
+| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | completed   | 3     | 3/3       |
+| Phase 4: Visual Elements and Content Enhancements                  | completed   | 2     | 2/2       |
+| Phase 5: Final Verification                                        | in_progress | 4     | 2/4       |
 
-**Total:** 19/19 tasks completed
+**Total:** 19/21 tasks completed
 
 ---
 
@@ -559,7 +559,7 @@ oat_generated: false
 
 ## Phase 4: Visual Elements and Content Enhancements
 
-**Status:** completed
+**Status:** in_progress
 **Started:** 2026-03-12
 
 ### Task p04-t01: Add Mermaid Diagrams
@@ -702,9 +702,21 @@ oat_generated: false
 - The docs app had no markdownlint configuration before this task, so default markdownlint rules were failing the current frontmatter/H1, long-line, and tab-authoring patterns across the whole docs surface.
 - `next build` still emits a non-blocking `MODULE_TYPELESS_PACKAGE_JSON` warning for `apps/oat-docs/next.config.js`; this did not affect the build result or the docs reorganization.
 
+### Task p05-t03: (review) Fix CLI Reference Link in Design Principles
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p05-t04: (review) Add Rationale Comments to Markdownlint Config
+
+**Status:** pending
+**Commit:** -
+
 ### Phase 5 Summary
 
-**Outcome:** Final link, index-generation, formatting, lint, and build verification all passed for the reorganized docs surface.
+**Outcome:** Final verification passed, and the final code review queued two bounded follow-up tasks before the review can be marked `passed`.
 
 **Key files touched:**
 
@@ -748,6 +760,32 @@ Chronological log of implementation progress.
 - 2026-03-11: Rebased project artifacts against post-plan merged work. Added lightweight `design.md` and refreshed `discovery.md` and `plan.md` for the current Fumadocs docs app. No implementation tasks completed yet; next task remains `p01-t01`.
 - 2026-03-11: Received `artifact-plan-review-2026-03-11.md` for the rebased plan. Applied the approved artifact-only edits to resolve placeholder overwrite conflicts and make legacy workflow/project index handling explicit. No implementation tasks were added.
 - 2026-03-12: Completed final verification. Added docs-local markdownlint policy, cleared the docs quality gates, and finished implementation at `19/19` tasks complete.
+- 2026-03-12: Received `final-review-2026-03-11.md`. Added review-fix tasks `p05-t03` and `p05-t04`, and deferred minor finding `m2` because Fumadocs-only tab rendering is the intended docs surface.
+
+### Review Received: final
+
+**Date:** 2026-03-12
+**Review artifact:** `reviews/archived/final-review-2026-03-11.md`
+
+**Findings:**
+
+- Critical: 0
+- Important: 1
+- Medium: 0
+- Minor: 2
+
+**New tasks added:** `p05-t03`, `p05-t04`
+
+**Deferred Findings:**
+
+- `m2` - Plain-markdown renderers show raw tab syntax in `apps/oat-docs/docs/guide/skills/index.md`. Deferred by explicit user decision because the docs app is the intended rendering target and no behavior is broken inside Fumadocs.
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ---
 
