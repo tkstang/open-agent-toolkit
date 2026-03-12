@@ -1,16 +1,17 @@
 ---
-oat_status: in_progress
-oat_ready_for: null
+oat_status: complete
+oat_ready_for: oat-project-review-provide
 oat_blockers: []
-oat_last_updated: 2026-03-11
-oat_current_task_id: p05-t02
+oat_last_updated: 2026-03-12
+oat_project_state_updated: '2026-03-12T00:24:13Z'
+oat_current_task_id: null
 oat_generated: false
 ---
 
 # Implementation: docs-reorganization
 
 **Started:** 2026-03-10
-**Last Updated:** 2026-03-11
+**Last Updated:** 2026-03-12
 
 > This document is used to resume interrupted implementation sessions.
 >
@@ -24,15 +25,15 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase                                                              | Status      | Tasks | Completed |
-| ------------------------------------------------------------------ | ----------- | ----- | --------- |
-| Phase 1: Directory Structure and File Moves                        | completed   | 5     | 5/5       |
-| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed   | 7     | 7/7       |
-| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | completed   | 3     | 3/3       |
-| Phase 4: Visual Elements and Content Enhancements                  | completed   | 2     | 2/2       |
-| Phase 5: Final Verification                                        | in_progress | 2     | 1/2       |
+| Phase                                                              | Status    | Tasks | Completed |
+| ------------------------------------------------------------------ | --------- | ----- | --------- |
+| Phase 1: Directory Structure and File Moves                        | completed | 5     | 5/5       |
+| Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh | completed | 7     | 7/7       |
+| Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates    | completed | 3     | 3/3       |
+| Phase 4: Visual Elements and Content Enhancements                  | completed | 2     | 2/2       |
+| Phase 5: Final Verification                                        | completed | 2     | 2/2       |
 
-**Total:** 18/19 tasks completed
+**Total:** 19/19 tasks completed
 
 ---
 
@@ -236,7 +237,7 @@ oat_generated: false
 
 ## Phase 2: Landing Pages, Guide Pages, and Generated Surface Refresh
 
-**Status:** in_progress
+**Status:** completed
 **Started:** -
 
 ### Task p02-t01: Rewrite Homepage (apps/oat-docs/docs/index.md)
@@ -451,7 +452,7 @@ oat_generated: false
 
 ## Phase 3: Cross-Reference Cleanup and Shared Entry-Point Updates
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-11
 
 ### Task p03-t01: Audit and Fix Cross-References, Then Remove Retired Paths
@@ -558,7 +559,7 @@ oat_generated: false
 
 ## Phase 4: Visual Elements and Content Enhancements
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-12
 
 ### Task p04-t01: Add Mermaid Diagrams
@@ -630,7 +631,7 @@ oat_generated: false
 
 ## Phase 5: Final Verification
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-12
 
 ### Task p05-t01: Final Link Audit and Surface Verification
@@ -672,11 +673,60 @@ oat_generated: false
 
 ### Task p05-t02: Run Docs Quality Gates
 
-**Status:** in_progress
-**Commit:** -
+**Status:** completed
+**Commit:** 64bd00a7
 
-**Status:** pending
-**Commit:** -
+**Outcome (required):**
+
+- Added a local markdownlint policy for the docs app so the quality gate matches the repo's actual Fumadocs authoring conventions.
+- Re-ran the full docs verification path after the final surface refresh and cleared formatting, lint, and build checks.
+- Closed implementation with the docs reorganization in a review-ready state.
+
+**Files changed:**
+
+- `apps/oat-docs/.markdownlint.jsonc` - added docs-lint policy aligned with frontmatter-plus-H1 pages, long narrative lines, tab syntax, and repeated subsection labels under separate command sections
+
+**Verification:**
+
+- Run: `pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md`
+- Result: pass
+- Run: `pnpm --filter oat-docs docs:format:check`
+- Result: pass
+- Run: `pnpm --filter oat-docs docs:lint`
+- Result: pass
+- Run: `pnpm --filter oat-docs build`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The docs app had no markdownlint configuration before this task, so default markdownlint rules were failing the current frontmatter/H1, long-line, and tab-authoring patterns across the whole docs surface.
+- `next build` still emits a non-blocking `MODULE_TYPELESS_PACKAGE_JSON` warning for `apps/oat-docs/next.config.js`; this did not affect the build result or the docs reorganization.
+
+### Phase 5 Summary
+
+**Outcome:** Final link, index-generation, formatting, lint, and build verification all passed for the reorganized docs surface.
+
+**Key files touched:**
+
+- `packages/cli/src/commands/docs/index-generate/generator.ts`
+- `packages/cli/src/commands/docs/index-generate/generator.test.ts`
+- `apps/oat-docs/index.md`
+- `apps/oat-docs/.markdownlint.jsonc`
+
+**Verification run:**
+
+- link audit
+- stale-path audit
+- contents-contract check
+- targeted docs-generator vitest coverage
+- docs index generation
+- docs format check
+- docs lint
+- docs build
+
+**Notable decisions/deviations:**
+
+- Added a docs-local markdownlint config during final verification because the repo previously had no config and default rules were incompatible with established docs conventions.
 
 ---
 
@@ -697,6 +747,7 @@ Chronological log of implementation progress.
 
 - 2026-03-11: Rebased project artifacts against post-plan merged work. Added lightweight `design.md` and refreshed `discovery.md` and `plan.md` for the current Fumadocs docs app. No implementation tasks completed yet; next task remains `p01-t01`.
 - 2026-03-11: Received `artifact-plan-review-2026-03-11.md` for the rebased plan. Applied the approved artifact-only edits to resolve placeholder overwrite conflicts and make legacy workflow/project index handling explicit. No implementation tasks were added.
+- 2026-03-12: Completed final verification. Added docs-local markdownlint policy, cleared the docs quality gates, and finished implementation at `19/19` tasks complete.
 
 ---
 
@@ -712,35 +763,48 @@ Document any deviations from the original plan.
 
 Track test execution during implementation.
 
-| Phase | Tests Run | Passed | Failed | Coverage |
-| ----- | --------- | ------ | ------ | -------- |
-| 1     | -         | -      | -      | N/A      |
-| 2     | -         | -      | -      | N/A      |
-| 3     | -         | -      | -      | N/A      |
-| 4     | -         | -      | -      | N/A      |
-| 5     | -         | -      | -      | N/A      |
+| Phase | Tests Run                                                                                                                                      | Passed | Failed | Coverage |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------ | ------ | -------- |
+| 1     | -                                                                                                                                              | -      | -      | N/A      |
+| 2     | -                                                                                                                                              | -      | -      | N/A      |
+| 3     | -                                                                                                                                              | -      | -      | N/A      |
+| 4     | -                                                                                                                                              | -      | -      | N/A      |
+| 5     | link/stale-path audits; contents-contract check; targeted docs-generator vitest; docs generate-index; docs format check; docs lint; docs build | pass   | 0      | N/A      |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
 
-- {capability 1}
+- Reorganized the docs app into audience-driven `guide/`, `contributing/`, and `reference/` surfaces with refreshed landing pages, cross-links, diagrams, tabs, and generated discovery entry points.
+- Fixed nested-path generation in the docs index generator so `apps/oat-docs/index.md` reflects the actual docs tree without broken child links.
 
 **Behavioral changes (user-facing):**
 
-- {bullet}
+- Users now enter the docs through role-appropriate landing pages instead of the older mixed navigation structure.
+- Provider sync, workflow, documentation tooling, skills, and ideas content now live under stable guide sections with explicit cross-links into contributor/reference material.
+- The generated root docs surface now preserves parent path segments for nested guide pages.
 
 **Key files / modules:**
 
-- `{path}` - {purpose}
+- `apps/oat-docs/docs/**` - reorganized docs surface, rewritten landing pages, and navigation/cross-link updates
+- `apps/oat-docs/.markdownlint.jsonc` - docs lint policy aligned with the current docs authoring model
+- `packages/cli/src/commands/docs/index-generate/generator.ts` - fixed recursive nested-path generation
+- `packages/cli/src/commands/docs/index-generate/generator.test.ts` - regression coverage for nested generated links
 
 **Verification performed:**
 
-- {tests/lint/typecheck/build/manual steps}
+- markdown link audit over docs markdown plus generated root index
+- stale-path audit for retired docs locations
+- `index.md` contents-contract verification across the docs tree
+- `pnpm exec vitest run ./src/commands/docs/index-generate/generator.test.ts ./src/commands/docs/e2e-pipeline.test.ts` in `packages/cli`
+- `pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md`
+- `pnpm --filter oat-docs docs:format:check`
+- `pnpm --filter oat-docs docs:lint`
+- `pnpm --filter oat-docs build`
 
 **Design deltas (if any):**
 
-- {what changed vs design.md and why}
+- Added a docs-local markdownlint config during final verification because the docs app had no existing markdownlint configuration and the default rules were incompatible with the established frontmatter/H1, long-line, duplicate-subheading, and tabbed-example conventions.
 
 ## References
 
