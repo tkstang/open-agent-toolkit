@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-12
-oat_current_task_id: null
+oat_current_task_id: p01-t04
 oat_generated: true
 ---
 
@@ -16,11 +16,11 @@ oat_generated: true
 
 ## Progress Overview
 
-| Phase   | Status   | Tasks | Completed |
-| ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 3     | 3/3       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | in_progress | 7     | 3/7       |
 
-**Total:** 3/3 tasks completed
+**Total:** 3/7 tasks completed
 
 ---
 
@@ -89,7 +89,22 @@ oat_generated: true
 
 ---
 
-### Task p01-t03: Sibling Skill Validation Fixes
+### Task p01-t03: Update backlog to reflect in-progress status
+
+**Status:** completed
+**Commit:** e2807d5a
+
+**Outcome:**
+
+- Moved `oat-project-capture` backlog entry from Inbox to In Progress with project link
+
+**Files changed:**
+
+- `.oat/repo/reference/backlog.md` - Status update
+
+---
+
+### Task p01-t03-dev: Sibling Skill Validation Fixes (deviation)
 
 **Status:** completed
 **Commit:** e2807d5a
@@ -107,7 +122,8 @@ oat_generated: true
 
 **Notes / Decisions:**
 
-- These were pre-existing validation failures unrelated to the capture skill, bundled in this PR for convenience
+- Pre-existing validation failures unrelated to the capture skill, bundled in this PR for convenience
+- Not in original plan — recorded as deviation
 
 ---
 
@@ -138,11 +154,34 @@ oat_generated: true
 
 ---
 
+### Review Received: final
+
+**Date:** 2026-03-12
+**Review artifact:** reviews/archived/final-review-2026-03-12.md
+
+**Findings:**
+
+- Critical: 0
+- Important: 2
+- Medium: 1
+- Minor: 1
+
+**New tasks added:** p01-t04, p01-t05, p01-t06, p01-t07
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+
+---
+
 ## Deviations from Plan
 
-| Task    | Planned              | Actual                 | Reason                                      |
-| ------- | -------------------- | ---------------------- | ------------------------------------------- |
-| p01-t03 | Not in original plan | Added validation fixes | Pre-existing failures found during CI check |
+| Task        | Planned     | Actual                         | Reason                                      |
+| ----------- | ----------- | ------------------------------ | ------------------------------------------- |
+| p01-t03-dev | Not in plan | Sibling skill validation fixes | Pre-existing failures found during CI check |
 
 ## Test Results
 

@@ -4,7 +4,7 @@ version: 1.0.0
 description: Use when work happened outside the OAT project workflow and needs retroactive project tracking. Creates a full project from an existing branch and conversation context.
 disable-model-invocation: true
 user-invocable: true
-allowed-tools: Read, Write, Bash(git:*), Glob, Grep, AskUserQuestion
+allowed-tools: Read, Write, Bash, Glob, Grep, AskUserQuestion
 ---
 
 # Capture Untracked Work
@@ -41,7 +41,7 @@ Don't use when:
 **BLOCKED Activities:**
 
 - No new implementation code
-- No plan generation (the work is already done)
+- No retroactive plan authoring (the work is already done; the scaffold-created `plan.md` template is acceptable)
 - No spec or design artifacts (capture is retroactive, not forward-looking)
 
 **ALLOWED Activities:**
@@ -55,7 +55,7 @@ Don't use when:
 If you catch yourself:
 
 - Writing implementation code → STOP and return to artifact population
-- Generating a `plan.md` → STOP (capture doesn't need a plan)
+- Authoring plan content in `plan.md` → STOP (the scaffold template is fine, but don't write retroactive plan tasks)
 - Expanding into spec/design authoring → STOP (capture is retroactive)
 
 **Recovery:**
@@ -303,4 +303,4 @@ I did some work on the auth flow in a mobile session. Can you create a project f
 - ✅ User confirmed discovery content before finalizing
 - ✅ Lifecycle state set based on user's choice (review-ready or in-progress)
 - ✅ Dashboard refreshed and next actions suggested
-- ✅ No plan.md generated (work is already done)
+- ✅ No retroactive plan content authored (scaffold template `plan.md` is acceptable)

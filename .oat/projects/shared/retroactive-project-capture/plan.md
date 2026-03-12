@@ -177,12 +177,130 @@ git commit -m "chore(p01-t03): move oat-project-capture to in-progress in backlo
 
 ---
 
+### Task p01-t04: (review) Fix allowed-tools to include oat commands
+
+**Files:**
+
+- Modify: `.agents/skills/oat-project-capture/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: The skill's `allowed-tools` frontmatter limits Bash to `git:*`, but the skill runs `oat project new` and `oat state refresh`. Hosts honoring the contract would block those commands.
+Location: `.agents/skills/oat-project-capture/SKILL.md:7`
+
+**Step 2: Implement fix**
+
+Update the `allowed-tools` frontmatter to include `Bash(oat:*)` alongside `Bash(git:*)`, or use a broader pattern that covers the skill's actual command usage. Check how other workflow skills (e.g., `oat-project-complete`) declare their tool access.
+
+**Step 3: Verify**
+
+Run: `pnpm oat:validate-skills`
+Expected: All skills pass validation
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-capture/SKILL.md
+git commit -m "fix(p01-t04): broaden allowed-tools to include oat commands"
+```
+
+---
+
+### Task p01-t05: (review) Fix implementation.md task ID mapping
+
+**Files:**
+
+- Modify: `.oat/projects/shared/retroactive-project-capture/implementation.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Plan defines `p01-t03` as the backlog move, but `implementation.md` records `p01-t03` as validation fixes, breaking plan-to-implementation traceability.
+Location: `implementation.md:92`
+
+**Step 2: Implement fix**
+
+Reassign task IDs in `implementation.md` so:
+
+- `p01-t03` = backlog update (matching plan)
+- `p01-t04` (or a deviation entry) = validation fixes
+
+Update the Deviations from Plan table accordingly.
+
+**Step 3: Verify**
+
+Confirm task IDs in implementation.md match plan.md task definitions.
+
+**Step 4: Commit**
+
+```bash
+git add .oat/projects/shared/retroactive-project-capture/implementation.md
+git commit -m "fix(p01-t05): align implementation task IDs with plan"
+```
+
+---
+
+### Task p01-t06: (review) Clarify plan.md contract around scaffold-created plan.md
+
+**Files:**
+
+- Modify: `.agents/skills/oat-project-capture/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Skill says capture must not generate `plan.md`, but `oat project new --mode quick` unconditionally creates one. The success criterion is unattainable as written.
+Location: `.agents/skills/oat-project-capture/SKILL.md:44,58,147`
+
+**Step 2: Implement fix**
+
+Relax the wording in the Mode Assertion and Self-Correction Protocol to clarify the distinction: the skill doesn't _author_ a plan, but the scaffold template that `oat project new` creates is acceptable (it's a blank template, not retroactive plan generation). Update the success criterion to match.
+
+**Step 3: Verify**
+
+Read the updated sections and confirm internal consistency.
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-project-capture/SKILL.md
+git commit -m "fix(p01-t06): clarify plan.md contract for scaffold templates"
+```
+
+---
+
+### Task p01-t07: (review) Update backlog status to match project state
+
+**Files:**
+
+- Modify: `.oat/repo/reference/backlog.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Backlog says "Implementation in progress" but the project state is `complete`, "Ready for review or PR."
+Location: `.oat/repo/reference/backlog.md:155`
+
+**Step 2: Implement fix**
+
+Update the backlog entry to reflect that implementation is complete and awaiting review/PR.
+
+**Step 3: Verify**
+
+Read backlog.md and confirm status matches project state.
+
+**Step 4: Commit**
+
+```bash
+git add .oat/repo/reference/backlog.md
+git commit -m "fix(p01-t07): update backlog status to match project state"
+```
+
+---
+
 ## Reviews
 
-| Scope | Type | Status   | Date       | Artifact                           |
-| ----- | ---- | -------- | ---------- | ---------------------------------- |
-| p01   | code | pending  | -          | -                                  |
-| final | code | received | 2026-03-12 | reviews/final-review-2026-03-12.md |
+| Scope | Type | Status      | Date       | Artifact                                    |
+| ----- | ---- | ----------- | ---------- | ------------------------------------------- |
+| p01   | code | pending     | -          | -                                           |
+| final | code | fixes_added | 2026-03-12 | reviews/archived/final-review-2026-03-12.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -199,9 +317,9 @@ git commit -m "chore(p01-t03): move oat-project-capture to in-progress in backlo
 
 **Summary:**
 
-- Phase 1: 3 tasks - Skill creation, CLI registration, and backlog update
+- Phase 1: 7 tasks - Skill creation, CLI registration, backlog update, and review fixes
 
-**Total: 3 tasks**
+**Total: 7 tasks**
 
 Ready for code review and merge.
 
