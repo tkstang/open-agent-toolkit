@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-13
-oat_current_task_id: p01-t02
+oat_current_task_id: p01-t03
 oat_generated: false
 ---
 
@@ -26,9 +26,9 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 3     | 1/3       |
+| Phase 1 | in_progress | 3     | 2/3       |
 
-**Total:** 1/3 tasks completed
+**Total:** 2/3 tasks completed
 
 ---
 
@@ -83,13 +83,24 @@ oat_generated: false
 
 ### Task p01-t02: Add Criterion 14 to Quality Checklist
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** bf3e86e
 
-**Notes:**
+**Outcome:**
 
-- Modify `.agents/skills/oat-agent-instructions-analyze/references/quality-checklist.md`
-- Add criterion for doc reference quality
+- Quality checklist now has Criterion 14 (Available Documentation Is Referenced) that checks instruction files reference relevant docs
+- Criterion references the documentation inventory from Step 2
+- Covers scoped file doc relevance, stale doc references, and content duplication flagging
+
+**Files changed:**
+
+- `.agents/skills/oat-agent-instructions-analyze/references/quality-checklist.md` - Added criterion 14
+
+**Verification:**
+
+- Confirmed criterion follows same structure as 1-13
+- Confirmed numbering is sequential
+- Scoring section still applies correctly with 14 criteria
 
 ---
 
