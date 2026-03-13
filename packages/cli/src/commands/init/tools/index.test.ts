@@ -443,6 +443,8 @@ describe('buildToolPacksSectionBody', () => {
     expect(body).toContain('**ideas**');
     expect(body).toContain('**workflows**');
     expect(body).toContain('**utility**');
+    expect(body).toContain('### Workflow Execution Continuation');
+    expect(body).toContain('configured HiLL checkpoint has been reached');
     expect(body).not.toContain('user scope');
   });
 
@@ -454,6 +456,7 @@ describe('buildToolPacksSectionBody', () => {
     expect(body).toContain('**workflows**');
     expect(body).not.toContain('**ideas**');
     expect(body).not.toContain('**utility**');
+    expect(body).toContain('### Workflow Execution Continuation');
   });
 
   it('marks user-scoped packs and adds user skills directory note', () => {
@@ -470,6 +473,17 @@ describe('buildToolPacksSectionBody', () => {
     expect(body).toContain('_(user scope)_');
     expect(body).toContain('`~/.agents/skills/`');
     expect(body).toContain('**workflows**');
+    expect(body).toContain('### Workflow Execution Continuation');
     expect(body).not.toMatch(/\*\*workflows\*\*.*user scope/);
+  });
+
+  it('omits workflow continuation guidance when workflows pack is not selected', () => {
+    const body = buildToolPacksSectionBody([
+      { pack: 'ideas', scope: 'project' },
+      { pack: 'utility', scope: 'project' },
+    ]);
+
+    expect(body).not.toContain('### Workflow Execution Continuation');
+    expect(body).not.toContain('configured HiLL checkpoint');
   });
 });

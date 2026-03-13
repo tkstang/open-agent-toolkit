@@ -117,6 +117,16 @@ If the user declines all workflows, confirm once:
 
 For multi-session or complex development tasks, use the structured agent project workflow:
 
+### Execution Continuation
+
+When executing an implementation or review workflow, do not stop at task boundaries, phase boundaries, or other clean checkpoints unless:
+
+- the configured HiLL checkpoint has been reached,
+- a real blocker exists,
+- or explicit user input is required.
+
+Status summaries, completed bookkeeping, and "clean boundary" pauses are not completion criteria. After updating tracking artifacts, continue execution until one of the allowed stop conditions applies.
+
 ### Project Structure
 
 Projects live in `.oat/projects/<scope>/<project>/` with:
