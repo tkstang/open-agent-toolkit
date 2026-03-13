@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-13
-oat_current_task_id: p01-t01
+oat_current_task_id: p01-t02
 oat_generated: false
 ---
 
@@ -24,18 +24,18 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status  | Tasks | Completed |
-| ------- | ------- | ----- | --------- |
-| Phase 1 | pending | 3     | 0/3       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | in_progress | 3     | 1/3       |
 
-**Total:** 0/3 tasks completed
+**Total:** 1/3 tasks completed
 
 ---
 
 ## Phase 1: Add Documentation Discovery to Analyze Skill
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-13
 
 ### Phase Summary (fill when phase is complete)
 
@@ -58,13 +58,26 @@ oat_generated: false
 
 ### Task p01-t01: Insert Doc Discovery Step in SKILL.md
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** aa45258
 
-**Notes:**
+**Outcome:**
 
-- Modify `.agents/skills/oat-agent-instructions-analyze/SKILL.md`
-- Insert new Step 2, renumber all subsequent steps, update step count 9→10
+- Agent-instructions-analyze now has a Step 2 (Discover Documentation Surfaces) that scans for docs directories, READMEs, knowledge base, and standalone docs
+- Steps renumbered from 9 to 10 total; all cross-references updated
+- Quality evaluation (Step 3) now integrates doc inventory for Criteria 12 and 14
+- Coverage gaps (Step 4) now populates Link Targets from doc inventory
+- Version bumped to 1.4.0
+
+**Files changed:**
+
+- `.agents/skills/oat-agent-instructions-analyze/SKILL.md` - Added Step 2, renumbered steps, added doc inventory integration guidance
+
+**Verification:**
+
+- Read full file, confirmed step numbering sequential 0-9 (10 steps)
+- Confirmed progress indicators match step headers
+- Confirmed cross-references (Step 5, Step 7 in delta mode note) are correct
 
 ---
 
