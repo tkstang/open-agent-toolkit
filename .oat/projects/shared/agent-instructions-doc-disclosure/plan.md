@@ -165,10 +165,10 @@ git commit -m "feat(p01-t03): add doc inventory section to analysis artifact tem
 
 ## Reviews
 
-| Scope | Type | Status          | Date       | Artifact                           |
-| ----- | ---- | --------------- | ---------- | ---------------------------------- |
-| p01   | code | pending         | -          | -                                  |
-| final | code | fixes_completed | 2026-03-13 | reviews/final-review-2026-03-13.md |
+| Scope | Type | Status  | Date       | Artifact                           |
+| ----- | ---- | ------- | ---------- | ---------------------------------- |
+| p01   | code | pending | -          | -                                  |
+| final | code | passed  | 2026-03-13 | reviews/final-review-2026-03-13.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
