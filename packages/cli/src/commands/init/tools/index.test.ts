@@ -444,6 +444,9 @@ describe('buildToolPacksSectionBody', () => {
     expect(body).toContain('**workflows**');
     expect(body).toContain('**utility**');
     expect(body).toContain('### Workflow Execution Continuation');
+    expect(body).toContain(
+      'This guidance applies only to OAT project lifecycle execution',
+    );
     expect(body).toContain('configured HiLL checkpoint has been reached');
     expect(body).not.toContain('user scope');
   });
@@ -457,6 +460,7 @@ describe('buildToolPacksSectionBody', () => {
     expect(body).not.toContain('**ideas**');
     expect(body).not.toContain('**utility**');
     expect(body).toContain('### Workflow Execution Continuation');
+    expect(body).toContain('It does not apply to non-OAT tasks');
   });
 
   it('marks user-scoped packs and adds user skills directory note', () => {
@@ -474,6 +478,7 @@ describe('buildToolPacksSectionBody', () => {
     expect(body).toContain('`~/.agents/skills/`');
     expect(body).toContain('**workflows**');
     expect(body).toContain('### Workflow Execution Continuation');
+    expect(body).toContain('oat-project-subagent-implement');
     expect(body).not.toMatch(/\*\*workflows\*\*.*user scope/);
   });
 
