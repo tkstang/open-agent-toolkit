@@ -195,9 +195,9 @@ Build a Documentation Inventory for the analysis artifact. Each entry records:
 
 This inventory is used by:
 
-- **Step 4 (Evaluate Quality):** When checking Criterion 12 (Progressive Disclosure) and Criterion 14 (Available Documentation Is Referenced), use the inventory to identify whether instruction files reference available docs and whether content is duplicated that could use `link_only`.
-- **Step 5 (Coverage Gaps):** When recommending new AGENTS.md files, populate the `Link Targets` field with docs from this inventory that are topically relevant to the directory scope. Prefer scope-specific docs over project-wide docs.
-- **Step 9 (Write Artifact):** Include the full Documentation Inventory table in the artifact. Use inventory paths as link targets in the Progressive Disclosure Decisions table.
+- **Step 3 (Evaluate Quality):** When checking Criterion 12 (Progressive Disclosure) and Criterion 14 (Available Documentation Is Referenced), use the inventory to identify whether instruction files reference available docs and whether content is duplicated that could use `link_only`.
+- **Step 4 (Coverage Gaps):** When recommending new AGENTS.md files, populate the `Link Targets` field with docs from this inventory that are topically relevant to the directory scope. Prefer scope-specific docs over project-wide docs.
+- **Step 8 (Write Artifact):** Include the full Documentation Inventory table in the artifact. Use inventory paths as link targets in the Progressive Disclosure Decisions table.
 
 ### Step 3: Evaluate Quality
 
