@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-13
-oat_current_task_id: p01-t03
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,37 +24,44 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 3     | 2/3       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 3     | 3/3       |
 
-**Total:** 2/3 tasks completed
+**Total:** 3/3 tasks completed
 
 ---
 
 ## Phase 1: Add Documentation Discovery to Analyze Skill
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-13
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
 
-- {2-5 bullets describing user-visible / behavior-level changes delivered in this phase}
+- `oat-agent-instructions-analyze` now discovers documentation surfaces (docs dirs, READMEs, knowledge base, standalone docs) as a new Step 2
+- Quality evaluation uses the doc inventory to check instruction files reference available docs (Criterion 14)
+- Coverage gap recommendations get concrete link targets from the doc inventory
+- Analysis artifact includes a Documentation Inventory table for apply skill consumption
+- Works with or without OAT docs configuration — scans broadly
 
 **Key files touched:**
 
-- `{path}` - {why}
+- `.agents/skills/oat-agent-instructions-analyze/SKILL.md` - New Step 2, renumbered steps, doc inventory integration
+- `.agents/skills/oat-agent-instructions-analyze/references/quality-checklist.md` - Criterion 14
+- `.agents/skills/oat-agent-instructions-analyze/references/analysis-artifact-template.md` - Documentation Inventory section
 
 **Verification:**
 
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Manual read of all three files, confirmed cross-references and consistency
+- No code tests (skill definitions only)
 
 **Notes / Decisions:**
 
-- {trade-offs or deviations discovered during implementation}
+- Knowledge base staleness check uses ≤20 files changed AND ≤7 days thresholds (matches existing state generation logic)
+- No changes needed to apply skill — it already handles `link_only` with targets
 
 ### Task p01-t01: Insert Doc Discovery Step in SKILL.md
 
@@ -106,13 +113,23 @@ oat_generated: false
 
 ### Task p01-t03: Add Documentation Inventory to Artifact Template
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 87f3f2a
 
-**Notes:**
+**Outcome:**
 
-- Modify `.agents/skills/oat-agent-instructions-analyze/references/analysis-artifact-template.md`
-- Add Documentation Inventory section between Summary and Instruction File Inventory
+- Analysis artifact template now includes a Documentation Inventory section
+- Placed between Summary and Instruction File Inventory (correct position)
+- Table columns match SKILL.md Step 2 output: Type, Path, Topics/Scope, Current?, Notes
+
+**Files changed:**
+
+- `.agents/skills/oat-agent-instructions-analyze/references/analysis-artifact-template.md` - Added Documentation Inventory section
+
+**Verification:**
+
+- Confirmed section placement: Summary → Documentation Inventory → Instruction File Inventory
+- Confirmed table columns match Step 2 description in SKILL.md
 
 ---
 
@@ -153,23 +170,31 @@ Track test execution during implementation.
 
 **What shipped:**
 
-- {to be filled}
+- Documentation discovery step in `oat-agent-instructions-analyze` (v1.4.0)
+- Quality Criterion 14: Available Documentation Is Referenced
+- Documentation Inventory section in analysis artifact template
 
 **Behavioral changes (user-facing):**
 
-- {to be filled}
+- Running `oat-agent-instructions-analyze` now discovers docs surfaces and produces concrete link targets for `link_only` disclosure decisions
+- Analysis artifacts include a Documentation Inventory table
+- Quality evaluation checks whether instruction files reference available project documentation
 
 **Key files / modules:**
 
-- `{path}` - {purpose}
+- `.agents/skills/oat-agent-instructions-analyze/SKILL.md` - Core skill with new Step 2
+- `.agents/skills/oat-agent-instructions-analyze/references/quality-checklist.md` - Criterion 14
+- `.agents/skills/oat-agent-instructions-analyze/references/analysis-artifact-template.md` - Doc Inventory section
 
 **Verification performed:**
 
-- {to be filled}
+- Manual consistency checks across all three files
+- Step numbering verified sequential (0-9, 10 steps)
+- Cross-references verified (delta mode note, quality step, coverage gaps step)
 
 **Design deltas (if any):**
 
-- None expected
+- None
 
 ## References
 

@@ -1,6 +1,6 @@
 ---
-oat_current_task: p01-t03
-oat_last_commit: bf3e86e
+oat_current_task: null
+oat_last_commit: 87f3f2a
 oat_blockers: []
 oat_hill_checkpoints: []
 oat_hill_completed: []
@@ -13,19 +13,19 @@ oat_workflow_origin: imported
 oat_docs_updated: null
 oat_project_created: '2026-03-13T13:06:19.394Z'
 oat_project_completed: null
-oat_project_state_updated: '2026-03-13T13:10:00Z'
+oat_project_state_updated: '2026-03-13T13:18:00Z'
 oat_generated: false
 ---
 
 # Project State: agent-instructions-doc-disclosure
 
-**Status:** Plan Complete
+**Status:** Implementation Tasks Complete
 **Started:** 2026-03-13
 **Last Updated:** 2026-03-13
 
 ## Current Phase
 
-Plan - Imported and normalized, ready for implementation
+Implementation - Tasks complete; awaiting final review.
 
 ## Artifacts
 
@@ -33,13 +33,14 @@ Plan - Imported and normalized, ready for implementation
 - **Spec:** Not applicable (imported)
 - **Design:** Not applicable (imported)
 - **Plan:** `plan.md` (complete)
-- **Implementation:** `implementation.md` (not started)
+- **Implementation:** `implementation.md` (complete)
 
 ## Progress
 
 - ✓ Plan imported from external source
 - ✓ Plan normalized to OAT task structure (1 phase, 3 tasks)
-- ⧗ Ready for implementation
+- ✓ Implementation tasks complete (3/3)
+- ⧗ Awaiting final review
 
 ## Blockers
 
@@ -47,4 +48,4 @@ None
 
 ## Next Milestone
 
-Run `oat-project-implement` to execute the plan.
+Final review, then PR.
