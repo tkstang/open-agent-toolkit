@@ -130,9 +130,9 @@ Expected: Push trigger includes paths for all four docs directories
 
 ## Reviews
 
-| Scope | Type | Status      | Date       | Artifact                                    |
-| ----- | ---- | ----------- | ---------- | ------------------------------------------- |
-| final | code | fixes_added | 2026-03-13 | reviews/archived/final-review-2026-03-13.md |
+| Scope | Type | Status | Date       | Artifact                              |
+| ----- | ---- | ------ | ---------- | ------------------------------------- |
+| final | code | passed | 2026-03-13 | reviews/final-review-2026-03-13-v2.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
