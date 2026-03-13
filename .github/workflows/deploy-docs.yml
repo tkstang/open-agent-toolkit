@@ -1,0 +1,75 @@
+name: Deploy Docs
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Check for docs changes
+        uses: tj-actions/changed-files@v46
+        id: doc_changes
+        with:
+          files: |
+            apps/oat-docs/**
+            packages/docs-config/**
+            packages/docs-theme/**
+            packages/docs-transforms/**
+
+      - name: Should deploy
+        id: should_deploy
+        run: |
+          echo "deploy=${{ (github.event_name == 'workflow_dispatch' || steps.doc_changes.outputs.any_modified == 'true') && 'true' || 'false' }}" >> $GITHUB_OUTPUT
+
+      - name: Setup pnpm
+        if: steps.should_deploy.outputs.deploy == 'true'
+        uses: pnpm/action-setup@v4
+
+      - name: Setup Node.js
+        if: steps.should_deploy.outputs.deploy == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'pnpm'
+
+      - name: Install dependencies
+        if: steps.should_deploy.outputs.deploy == 'true'
+        run: pnpm install --frozen-lockfile
+
+      - name: Build docs
+        if: steps.should_deploy.outputs.deploy == 'true'
+        run: pnpm build:docs
+
+      - name: Setup Pages
+        if: steps.should_deploy.outputs.deploy == 'true'
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        if: steps.should_deploy.outputs.deploy == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: apps/oat-docs/out
+
+      - name: Deploy to GitHub Pages
+        if: steps.should_deploy.outputs.deploy == 'true'
+        id: deployment
+        uses: actions/deploy-pages@v4
