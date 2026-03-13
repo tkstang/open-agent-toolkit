@@ -26,9 +26,9 @@ oat_generated: false
 
 | Phase   | Status   | Tasks | Completed |
 | ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 3     | 3/3       |
+| Phase 1 | complete | 4     | 4/4       |
 
-**Total:** 3/3 tasks completed
+**Total:** 4/4 tasks completed
 
 ---
 
@@ -131,6 +131,24 @@ oat_generated: false
 - Confirmed section placement: Summary → Documentation Inventory → Instruction File Inventory
 - Confirmed table columns match Step 2 description in SKILL.md
 
+### Task p01-t04 (review): Fix Step 2 Cross-References in SKILL.md
+
+**Status:** completed
+**Commit:** ae9004c
+
+**Outcome:**
+
+- Fixed incorrect step cross-references in Step 2's "This inventory is used by" block
+- Changed Step 4→3 (Evaluate Quality), Step 5→4 (Coverage Gaps), Step 9→8 (Write Artifact)
+
+**Files changed:**
+
+- `.agents/skills/oat-agent-instructions-analyze/SKILL.md` - Fixed cross-references at lines 198-200
+
+**Verification:**
+
+- Grep confirmed cross-references now match actual step headings (Step 3, Step 4, Step 8)
+
 ---
 
 ## Orchestration Runs
@@ -191,6 +209,7 @@ Track test execution during implementation.
 - Manual consistency checks across all three files
 - Step numbering verified sequential (0-9, 10 steps)
 - Cross-references verified (delta mode note, quality step, coverage gaps step)
+- Review fix: Step 2 cross-references corrected (Step 4/5/9 → Step 3/4/8)
 
 **Design deltas (if any):**
 

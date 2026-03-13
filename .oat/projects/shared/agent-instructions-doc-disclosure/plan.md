@@ -165,10 +165,10 @@ git commit -m "feat(p01-t03): add doc inventory section to analysis artifact tem
 
 ## Reviews
 
-| Scope | Type | Status   | Date       | Artifact                           |
-| ----- | ---- | -------- | ---------- | ---------------------------------- |
-| p01   | code | pending  | -          | -                                  |
-| final | code | received | 2026-03-13 | reviews/final-review-2026-03-13.md |
+| Scope | Type | Status          | Date       | Artifact                           |
+| ----- | ---- | --------------- | ---------- | ---------------------------------- |
+| p01   | code | pending         | -          | -                                  |
+| final | code | fixes_completed | 2026-03-13 | reviews/final-review-2026-03-13.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -181,13 +181,40 @@ git commit -m "feat(p01-t03): add doc inventory section to analysis artifact tem
 
 ---
 
+### Task p01-t04 (review): Fix Step 2 Cross-References in SKILL.md
+
+**Files:**
+
+- Modify: `.agents/skills/oat-agent-instructions-analyze/SKILL.md`
+
+**Step 1: Implement**
+
+Fix the "This inventory is used by" block in Step 2 (lines ~198-200):
+
+- Change `**Step 4 (Evaluate Quality):**` → `**Step 3 (Evaluate Quality):**`
+- Change `**Step 5 (Coverage Gaps):**` → `**Step 4 (Coverage Gaps):**`
+- Change `**Step 9 (Write Artifact):**` → `**Step 8 (Write Artifact):**`
+
+**Step 2: Verify**
+
+Confirm all step cross-references in Step 2 now match actual step headings.
+
+**Step 3: Commit**
+
+```bash
+git add .agents/skills/oat-agent-instructions-analyze/SKILL.md
+git commit -m "fix(p01-t04): correct step cross-references in doc discovery step"
+```
+
+---
+
 ## Implementation Complete
 
 **Summary:**
 
-- Phase 1: 3 tasks - Add doc discovery step, quality criterion, and artifact template section
+- Phase 1: 4 tasks - Add doc discovery step, quality criterion, artifact template section, fix cross-references
 
-**Total: 3 tasks**
+**Total: 4 tasks**
 
 Ready for code review and merge.
 
