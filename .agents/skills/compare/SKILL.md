@@ -182,7 +182,7 @@ Write artifact using the `comparative` extended schema from `.agents/skills/deep
   ```
 
 - Model-tagged filename: `{topic}-{model-id}.md` (e.g., `express-vs-koa-opus-4-6.md`)
-- Output target: specified path or current directory
+- Output target: current directory
 
 ---
 
