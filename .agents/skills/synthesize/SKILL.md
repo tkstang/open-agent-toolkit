@@ -96,7 +96,7 @@ The prompt should ask: _"Please provide a directory path or file paths to the ar
 
 **Directory mode:**
 
-Scan the directory for `.md` files. For each file, read its YAML frontmatter and filter by the presence of the `skill` key. Only files with valid artifact frontmatter are included.
+Scan the directory for `.md` files. For each file, read its YAML frontmatter and filter by the presence of all five required artifact keys (`skill`, `schema`, `topic`, `model`, `generated_at`). Only files with the complete artifact frontmatter contract are included.
 
 Artifact frontmatter contract keys used for auto-detection:
 
@@ -119,7 +119,7 @@ Report discovered artifacts:
 If no artifacts are found, inform the user and stop:
 
 ```
-  → No artifacts with skill frontmatter found in {directory}. Nothing to synthesize.
+  → No artifacts with valid artifact frontmatter found in {directory}. Nothing to synthesize.
 ```
 
 **Explicit mode:**
