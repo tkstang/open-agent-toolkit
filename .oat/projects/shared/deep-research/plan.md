@@ -129,13 +129,14 @@ git commit -m "feat(p01-t02): {description}"
 
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
 
-| Scope  | Type     | Status   | Date       | Artifact                                     |
-| ------ | -------- | -------- | ---------- | -------------------------------------------- |
-| p01    | code     | pending  | -          | -                                            |
-| p02    | code     | pending  | -          | -                                            |
-| final  | code     | pending  | -          | -                                            |
-| spec   | artifact | pending  | -          | -                                            |
-| design | artifact | received | 2026-03-13 | reviews/artifact-design-review-2026-03-13.md |
+| Scope     | Type     | Status   | Date       | Artifact                                        |
+| --------- | -------- | -------- | ---------- | ----------------------------------------------- |
+| p01       | code     | pending  | -          | -                                               |
+| p02       | code     | pending  | -          | -                                               |
+| final     | code     | pending  | -          | -                                               |
+| discovery | artifact | received | 2026-03-14 | reviews/artifact-discovery-review-2026-03-14.md |
+| spec      | artifact | pending  | -          | -                                               |
+| design    | artifact | received | 2026-03-14 | reviews/artifact-design-review-2026-03-14.md    |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
