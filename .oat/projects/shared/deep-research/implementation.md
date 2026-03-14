@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-14
-oat_current_task_id: null
+oat_current_task_id: p05-t01
 oat_generated: false
 ---
 
@@ -21,13 +21,14 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase                            | Tasks | Completed | Status       |
-| -------------------------------- | ----- | --------- | ------------ |
-| Phase 1: Foundation              | 2     | 2         | complete     |
-| Phase 2: Independent Skills      | 2     | 2         | complete     |
-| Phase 3: Orchestrator Skills     | 2     | 2         | complete     |
-| Phase 4: Synthesis + Integration | 2     | 2         | complete     |
-| **Total**                        | **8** | **8**     | **complete** |
+| Phase                            | Tasks  | Completed | Status          |
+| -------------------------------- | ------ | --------- | --------------- |
+| Phase 1: Foundation              | 2      | 2         | complete        |
+| Phase 2: Independent Skills      | 2      | 2         | complete        |
+| Phase 3: Orchestrator Skills     | 2      | 2         | complete        |
+| Phase 4: Synthesis + Integration | 2      | 2         | complete        |
+| Phase 5: Review Fixes (final)    | 3      | 0         | pending         |
+| **Total**                        | **11** | **8**     | **in_progress** |
 
 ## Task Log
 
@@ -90,6 +91,27 @@ oat_generated: false
 - `oat sync --scope all` propagated all 5 skills + skeptical-evaluator agent
 - Claude, Cursor, Codex provider views created
 - Commit: `735b1374`
+
+### Review Received: final
+
+**Date:** 2026-03-14
+**Review artifact:** reviews/archived/final-review-2026-03-14.md
+
+**Findings:**
+
+- Critical: 0
+- Important: 2
+- Medium: 1
+- Minor: 0
+
+**New tasks added:** p05-t01, p05-t02, p05-t03
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ## Orchestration Runs
 

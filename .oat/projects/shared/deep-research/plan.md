@@ -413,17 +413,107 @@ git commit -m "feat(p04-t02): sync provider views for all research and verificat
 
 ---
 
+## Phase 5: Review Fixes (final)
+
+Fix tasks generated from final code review.
+
+### Task p05-t01: (review) Remove /skeptic from /synthesize artifact source references
+
+**Files:**
+
+- Modify: `.agents/skills/synthesize/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: /skeptic is inline-only and never writes artifacts. /synthesize incorrectly lists it as a supported artifact source in the description (line 4), body text (line 12), and "When to Use" section (lines 17-18).
+
+**Step 2: Implement fix**
+
+- Line 4 (frontmatter description): Change to reference only `/deep-research`, `/analyze`, and `/compare`
+- Line 12 (body description): Same — remove `/skeptic` reference
+- Lines 17-18 ("When to Use"): Remove `/skeptic` from the list of combinable skills
+
+**Step 3: Verify**
+
+Run: `grep -n 'skeptic' .agents/skills/synthesize/SKILL.md`
+Expected: No remaining references to /skeptic as an artifact source
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/synthesize/SKILL.md
+git commit -m "fix(p05-t01): remove /skeptic from /synthesize artifact source references"
+```
+
+---
+
+### Task p05-t02: (review) Fix /synthesize explicit-file mode frontmatter requirement
+
+**Files:**
+
+- Modify: `.agents/skills/synthesize/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Step 2 (line 127) says "warn (but continue) if a file lacks oat_skill frontmatter — treat it as unstructured input." But Steps 3-6 require `oat_schema`, `oat_skill`, `oat_model`, `oat_generated_at` for classification, provenance, and output. The unstructured input path is never actually supported.
+
+**Step 2: Implement fix**
+
+Change line 127 from "Warn (but continue) if a file lacks `oat_skill` frontmatter -- treat it as unstructured input." to: "Warn and **skip** files that lack `oat_skill` frontmatter — artifact frontmatter is required for both discovery modes."
+
+**Step 3: Verify**
+
+Run: `grep -n 'unstructured' .agents/skills/synthesize/SKILL.md`
+Expected: No remaining references to "unstructured input"
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/synthesize/SKILL.md
+git commit -m "fix(p05-t02): require frontmatter in /synthesize explicit-file mode"
+```
+
+---
+
+### Task p05-t03: (review) Remove promised output path from /compare --save
+
+**Files:**
+
+- Modify: `.agents/skills/compare/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Line 185 says "Output target: specified path or current directory" but no `--output` argument exists. The "specified path" promise is unimplemented.
+
+**Step 2: Implement fix**
+
+Change line 185 from "Output target: specified path or current directory" to "Output target: current directory"
+
+**Step 3: Verify**
+
+Run: `grep -n 'specified path' .agents/skills/compare/SKILL.md`
+Expected: No remaining references to "specified path"
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/compare/SKILL.md
+git commit -m "fix(p05-t03): remove unimplemented output path from /compare --save"
+```
+
+---
+
 ## Reviews
 
-| Scope     | Type     | Status   | Date       | Artifact                                                 |
-| --------- | -------- | -------- | ---------- | -------------------------------------------------------- |
-| p01       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p02       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p03       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p04       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| final     | code     | received | 2026-03-14 | reviews/final-review-2026-03-14.md                       |
-| discovery | artifact | passed   | 2026-03-14 | reviews/archived/artifact-discovery-review-2026-03-14.md |
-| design    | artifact | passed   | 2026-03-14 | reviews/archived/artifact-design-review-2026-03-14.md    |
+| Scope     | Type     | Status      | Date       | Artifact                                                 |
+| --------- | -------- | ----------- | ---------- | -------------------------------------------------------- |
+| p01       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p02       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p03       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p04       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| final     | code     | fixes_added | 2026-03-14 | reviews/archived/final-review-2026-03-14.md              |
+| discovery | artifact | passed      | 2026-03-14 | reviews/archived/artifact-discovery-review-2026-03-14.md |
+| design    | artifact | passed      | 2026-03-14 | reviews/archived/artifact-design-review-2026-03-14.md    |
 
 ---
 
@@ -435,8 +525,9 @@ git commit -m "feat(p04-t02): sync provider views for all research and verificat
 - Phase 2: 2 tasks — Independent skills (/skeptic update + /compare)
 - Phase 3: 2 tasks — Orchestrator skills (/deep-research + /analyze)
 - Phase 4: 2 tasks — Synthesis + integration (/synthesize + sync)
+- Phase 5: 3 tasks — Review fixes (final)
 
-**Total: 8 tasks**
+**Total: 11 tasks**
 
 Ready for code review and merge.
 
