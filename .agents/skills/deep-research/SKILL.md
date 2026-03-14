@@ -255,15 +255,15 @@ Write the structured research artifact using:
 
   ```yaml
   ---
-  oat_skill: deep-research
-  oat_schema: { selected schema type }
-  oat_topic: '{topic}'
-  oat_model: { self-detected model identifier }
-  oat_generated_at: { today's date }
+  skill: deep-research
+  schema: { selected schema type }
+  topic: '{topic}'
+  model: { self-detected model identifier }
+  generated_at: { today's date }
   ---
   ```
 
-  Plus optional keys when applicable: `oat_context`, `oat_depth`, `oat_focus`
+  Plus optional keys when applicable: `context`, `depth`, `focus`
 
 - Model-tagged filename: `{topic-slug}-{model-id}.md` (e.g., `event-driven-architecture-opus-4-6.md`)
 
