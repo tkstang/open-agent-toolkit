@@ -124,7 +124,7 @@ If no artifacts are found, inform the user and stop:
 
 **Explicit mode:**
 
-Read specified file paths directly. Validate that each file exists and contains artifact frontmatter. Warn (but continue) if a file lacks `oat_skill` frontmatter -- treat it as unstructured input.
+Read specified file paths directly. Validate that each file exists and contains artifact frontmatter. Warn and **skip** files that lack `oat_skill` frontmatter — artifact frontmatter is required for both discovery modes.
 
 If fewer than 2 valid artifacts are found, ask the user to confirm they want to proceed (synthesis of a single artifact produces limited value).
 
