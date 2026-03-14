@@ -245,16 +245,16 @@ Artifact frontmatter contract:
 
 ```yaml
 ---
-oat_skill: analyze
-oat_schema: analysis
-oat_topic: '{descriptive topic from target}'
-oat_model: { self-detected model identifier }
-oat_generated_at: { today's date }
-oat_input_type: { classified input type }
+skill: analyze
+schema: analysis
+topic: '{descriptive topic from target}'
+model: { self-detected model identifier }
+generated_at: { today's date }
+input_type: { classified input type }
 ---
 ```
 
-Plus optional: `oat_context` (if --context was provided)
+Plus optional: `context` (if --context was provided)
 
 Model-tagged filename: `{topic-slug}-analysis-{model-id}.md`
 
@@ -279,7 +279,7 @@ Output is always an artifact file -- never inline-only.
 ### Analyze a spec document
 
 ```
-/analyze .oat/projects/shared/my-project/spec.md
+/analyze docs/spec.md
 ```
 
 ### Analyze an idea
