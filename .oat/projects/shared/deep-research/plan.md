@@ -503,17 +503,77 @@ git commit -m "fix(p05-t03): remove unimplemented output path from /compare --sa
 
 ---
 
+## Phase 6: Review Fixes (final re-review)
+
+Fix tasks generated from final re-review (cycle 2).
+
+### Task p06-t01: (review) Enforce full artifact metadata contract in /synthesize explicit-file mode
+
+**Files:**
+
+- Modify: `.agents/skills/synthesize/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Line 127 only checks for `skill` key presence, but Steps 3-4 require all 5 keys (`skill`, `schema`, `topic`, `model`, `generated_at`). A partially populated artifact can pass discovery and then fail downstream.
+
+**Step 2: Implement fix**
+
+Update line 127 to require all 5 artifact frontmatter contract keys, not just `skill`. Change the skip logic to: "Warn and **skip** files that lack any of the required artifact frontmatter keys (`skill`, `schema`, `topic`, `model`, `generated_at`) — all five are required for both discovery modes."
+
+**Step 3: Verify**
+
+Run: `grep -A2 'skip.*frontmatter' .agents/skills/synthesize/SKILL.md`
+Expected: References all 5 required keys
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/synthesize/SKILL.md
+git commit -m "fix(p06-t01): enforce full artifact metadata contract in /synthesize explicit-file mode"
+```
+
+---
+
+### Task p06-t02: (review) Fix /synthesize intro to not overstate skill coverage
+
+**Files:**
+
+- Modify: `.agents/skills/synthesize/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: Line 12 says "consuming outputs from all other skills" which implicitly includes /skeptic even though /skeptic is inline-only.
+
+**Step 2: Implement fix**
+
+Change "consuming outputs from all other skills" to "consuming outputs from these artifact-producing skills" on line 12.
+
+**Step 3: Verify**
+
+Run: `grep -n 'all other skills' .agents/skills/synthesize/SKILL.md`
+Expected: No matches
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/synthesize/SKILL.md
+git commit -m "fix(p06-t02): fix /synthesize intro to not overstate skill coverage"
+```
+
+---
+
 ## Reviews
 
-| Scope     | Type     | Status   | Date       | Artifact                                                 |
-| --------- | -------- | -------- | ---------- | -------------------------------------------------------- |
-| p01       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p02       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p03       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p04       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| final     | code     | received | 2026-03-14 | reviews/final-review-2026-03-14-v2.md                    |
-| discovery | artifact | passed   | 2026-03-14 | reviews/archived/artifact-discovery-review-2026-03-14.md |
-| design    | artifact | passed   | 2026-03-14 | reviews/archived/artifact-design-review-2026-03-14.md    |
+| Scope     | Type     | Status      | Date       | Artifact                                                 |
+| --------- | -------- | ----------- | ---------- | -------------------------------------------------------- |
+| p01       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p02       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p03       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p04       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| final     | code     | fixes_added | 2026-03-14 | reviews/archived/final-review-2026-03-14-v2.md           |
+| discovery | artifact | passed      | 2026-03-14 | reviews/archived/artifact-discovery-review-2026-03-14.md |
+| design    | artifact | passed      | 2026-03-14 | reviews/archived/artifact-design-review-2026-03-14.md    |
 
 ---
 
@@ -526,8 +586,9 @@ git commit -m "fix(p05-t03): remove unimplemented output path from /compare --sa
 - Phase 3: 2 tasks — Orchestrator skills (/deep-research + /analyze)
 - Phase 4: 2 tasks — Synthesis + integration (/synthesize + sync)
 - Phase 5: 3 tasks — Review fixes (final)
+- Phase 6: 2 tasks — Review fixes (final re-review)
 
-**Total: 11 tasks**
+**Total: 13 tasks**
 
 Ready for code review and merge.
 
