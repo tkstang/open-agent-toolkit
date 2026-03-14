@@ -11,21 +11,21 @@ generated artifact. Extended schemas inherit this contract automatically.
 
 ```yaml
 ---
-oat_skill: deep-research | compare | analyze # which skill produced the artifact
-oat_schema: technical | comparative | conceptual | architectural | analysis # schema used
-oat_topic: 'human-readable topic' # research/analysis topic
-oat_model: opus-4-6 # model identifier slug
-oat_generated_at: 2026-03-14 # ISO date of generation
+skill: deep-research | compare | analyze # which skill produced the artifact
+schema: technical | comparative | conceptual | architectural | analysis # schema used
+topic: 'human-readable topic' # research/analysis topic
+model: opus-4-6 # model identifier slug
+generated_at: 2026-03-14 # ISO date of generation
 ---
 ```
 
 ## Optional Keys
 
 ```yaml
-oat_context: docs/security-policy.md # --context path provided by user
-oat_depth: standard # research depth (for /deep-research)
-oat_focus: security # focus angle (for /deep-research)
-oat_input_type: code # classified input type (for /analyze)
+context: docs/security-policy.md # --context path provided by user
+depth: standard # research depth (for /deep-research)
+focus: security # focus angle (for /deep-research)
+input_type: code # classified input type (for /analyze)
 ```
 
 ---

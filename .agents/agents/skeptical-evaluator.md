@@ -98,7 +98,7 @@ Return inline findings to the orchestrator in this structure:
 {Confidence estimate: X%}
 ```
 
-**Why inline, not to disk:** Unlike oat-reviewer which writes review artifacts to disk, the skeptical-evaluator returns findings to the /skeptic orchestrator. The orchestrator synthesizes the final verdict from the evaluator's findings. /skeptic's output is always inline — there is no artifact to write.
+**Why inline, not to disk:** Unlike dedicated review agents which write review artifacts to disk, the skeptical-evaluator returns findings to the /skeptic orchestrator. The orchestrator synthesizes the final verdict from the evaluator's findings. /skeptic's output is always inline — there is no artifact to write.
 
 ## Critical Rules
 

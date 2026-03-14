@@ -113,7 +113,7 @@ Classify the claim type to determine evidence priority:
 **Detection logic:**
 
 - **Execution Tier 1 — Sub-agent dispatch (preferred):**
-  - **Claude Code**: `Agent` tool is available → dispatch with `subagent_type: "skeptical-evaluator"`, resolved from `.agents/agents/skeptical-evaluator.md` (synced to `.claude/agents/` via OAT sync)
+  - **Claude Code**: `Agent` tool is available → dispatch with `subagent_type: "skeptical-evaluator"`, resolved from `.agents/agents/skeptical-evaluator.md` (synced to `.claude/agents/`)
   - **Cursor**: invoke via `/skeptical-evaluator` or natural mention, resolved from `.cursor/agents/skeptical-evaluator.md` (synced from `.agents/agents/`)
   - **Codex multi-agent**: verify `[features] multi_agent = true` is enabled in active Codex config. Codex may also auto-select and spawn agents without explicit role pinning.
 
