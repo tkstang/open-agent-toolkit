@@ -1,7 +1,7 @@
 ---
 name: synthesize
 version: 0.1.0
-description: Merge multiple analysis artifacts into a single coherent report with provenance tracking. Reads existing artifacts from /deep-research, /analyze, /compare, and /skeptic.
+description: Merge multiple analysis artifacts into a single coherent report with provenance tracking. Reads existing artifacts from /deep-research, /analyze, and /compare.
 argument-hint: '[directory | file1 file2 ...] [--inline]'
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash, AskUserQuestion
@@ -9,13 +9,13 @@ allowed-tools: Read, Glob, Grep, Bash, AskUserQuestion
 
 # /synthesize
 
-Merges multiple analysis artifacts (from /deep-research, /analyze, /compare, /skeptic) into a single coherent report with provenance tracking. Sits at the end of the pipeline -- consuming outputs from all other skills. Reads existing artifacts only; does not perform new research or dispatch sub-agents.
+Merges multiple analysis artifacts (from /deep-research, /analyze, and /compare) into a single coherent report with provenance tracking. Sits at the end of the pipeline -- consuming outputs from all other skills. Reads existing artifacts only; does not perform new research or dispatch sub-agents.
 
 ## When to Use
 
 Use when:
 
-- Combining findings from multiple /deep-research, /analyze, /compare, or /skeptic runs
+- Combining findings from multiple /deep-research, /analyze, or /compare runs
 - Producing a single unified report from a directory of research artifacts
 - Identifying agreements and contradictions across independent analyses
 - Building a provenance-tracked synthesis for decision-making
