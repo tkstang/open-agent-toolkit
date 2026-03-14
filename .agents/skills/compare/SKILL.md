@@ -173,11 +173,11 @@ Write artifact using the `comparative` extended schema from `.agents/skills/deep
 
   ```yaml
   ---
-  oat_skill: compare
-  oat_schema: comparative
-  oat_topic: '{item1} vs {item2} [vs ...]'
-  oat_model: { self-detected model identifier }
-  oat_generated_at: { today's date }
+  skill: compare
+  schema: comparative
+  topic: '{item1} vs {item2} [vs ...]'
+  model: { self-detected model identifier }
+  generated_at: { today's date }
   ---
   ```
 
