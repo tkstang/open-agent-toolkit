@@ -565,15 +565,15 @@ git commit -m "fix(p06-t02): fix /synthesize intro to not overstate skill covera
 
 ## Reviews
 
-| Scope     | Type     | Status      | Date       | Artifact                                                 |
-| --------- | -------- | ----------- | ---------- | -------------------------------------------------------- |
-| p01       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p02       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p03       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p04       | code     | passed      | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| final     | code     | fixes_added | 2026-03-14 | reviews/archived/final-review-2026-03-14-v2.md           |
-| discovery | artifact | passed      | 2026-03-14 | reviews/archived/artifact-discovery-review-2026-03-14.md |
-| design    | artifact | passed      | 2026-03-14 | reviews/archived/artifact-design-review-2026-03-14.md    |
+| Scope     | Type     | Status          | Date       | Artifact                                                 |
+| --------- | -------- | --------------- | ---------- | -------------------------------------------------------- |
+| p01       | code     | passed          | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p02       | code     | passed          | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p03       | code     | passed          | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p04       | code     | passed          | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| final     | code     | fixes_completed | 2026-03-14 | reviews/archived/final-review-2026-03-14-v2.md           |
+| discovery | artifact | passed          | 2026-03-14 | reviews/archived/artifact-discovery-review-2026-03-14.md |
+| design    | artifact | passed          | 2026-03-14 | reviews/archived/artifact-design-review-2026-03-14.md    |
 
 ---
 

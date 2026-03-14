@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-14
-oat_current_task_id: p06-t01
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -21,15 +21,15 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase                             | Tasks  | Completed | Status          |
-| --------------------------------- | ------ | --------- | --------------- |
-| Phase 1: Foundation               | 2      | 2         | complete        |
-| Phase 2: Independent Skills       | 2      | 2         | complete        |
-| Phase 3: Orchestrator Skills      | 2      | 2         | complete        |
-| Phase 4: Synthesis + Integration  | 2      | 2         | complete        |
-| Phase 5: Review Fixes (final)     | 3      | 3         | complete        |
-| Phase 6: Review Fixes (re-review) | 2      | 0         | pending         |
-| **Total**                         | **13** | **11**    | **in_progress** |
+| Phase                             | Tasks  | Completed | Status       |
+| --------------------------------- | ------ | --------- | ------------ |
+| Phase 1: Foundation               | 2      | 2         | complete     |
+| Phase 2: Independent Skills       | 2      | 2         | complete     |
+| Phase 3: Orchestrator Skills      | 2      | 2         | complete     |
+| Phase 4: Synthesis + Integration  | 2      | 2         | complete     |
+| Phase 5: Review Fixes (final)     | 3      | 3         | complete     |
+| Phase 6: Review Fixes (re-review) | 2      | 2         | complete     |
+| **Total**                         | **13** | **13**    | **complete** |
 
 ## Task Log
 
@@ -125,7 +125,9 @@ oat_generated: false
 
 **New tasks added:** p06-t01, p06-t02
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
+**Fix tasks completed:** Both fixes implemented (commit c15cd561). Also committed previously uncommitted design.md + discovery.md artifact review fixes (commit f48cc99f).
+
+**Next:** Request re-review via `oat-project-review-provide code final` scoped to fix tasks, then `oat-project-review-receive` to reach `passed`.
 
 ## Orchestration Runs
 
