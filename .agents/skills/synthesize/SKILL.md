@@ -96,35 +96,35 @@ The prompt should ask: _"Please provide a directory path or file paths to the ar
 
 **Directory mode:**
 
-Scan the directory for `.md` files. For each file, read its YAML frontmatter and filter by the presence of the `oat_skill` key. Only files with valid artifact frontmatter are included.
+Scan the directory for `.md` files. For each file, read its YAML frontmatter and filter by the presence of the `skill` key. Only files with valid artifact frontmatter are included.
 
 Artifact frontmatter contract keys used for auto-detection:
 
-| Key                | Purpose                                      |
-| ------------------ | -------------------------------------------- |
-| `oat_skill`        | Which skill produced the artifact (required) |
-| `oat_schema`       | Schema type used (required)                  |
-| `oat_topic`        | Human-readable topic (required)              |
-| `oat_model`        | Model identifier slug (required)             |
-| `oat_generated_at` | ISO date of generation (required)            |
+| Key            | Purpose                                      |
+| -------------- | -------------------------------------------- |
+| `skill`        | Which skill produced the artifact (required) |
+| `schema`       | Schema type used (required)                  |
+| `topic`        | Human-readable topic (required)              |
+| `model`        | Model identifier slug (required)             |
+| `generated_at` | ISO date of generation (required)            |
 
 Report discovered artifacts:
 
 ```
   → Found N artifacts:
-    - {filename} (skill: {oat_skill}, schema: {oat_schema}, topic: {oat_topic})
+    - {filename} (skill: {skill}, schema: {schema}, topic: {topic})
     - ...
 ```
 
 If no artifacts are found, inform the user and stop:
 
 ```
-  → No artifacts with oat_skill frontmatter found in {directory}. Nothing to synthesize.
+  → No artifacts with skill frontmatter found in {directory}. Nothing to synthesize.
 ```
 
 **Explicit mode:**
 
-Read specified file paths directly. Validate that each file exists and contains artifact frontmatter. Warn and **skip** files that lack `oat_skill` frontmatter — artifact frontmatter is required for both discovery modes.
+Read specified file paths directly. Validate that each file exists and contains artifact frontmatter. Warn and **skip** files that lack `skill` frontmatter — artifact frontmatter is required for both discovery modes.
 
 If fewer than 2 valid artifacts are found, ask the user to confirm they want to proceed (synthesis of a single artifact produces limited value).
 
@@ -134,7 +134,7 @@ If fewer than 2 valid artifacts are found, ask the user to confirm they want to 
 
 `[3/6] Classifying inputs and selecting output schema...`
 
-Examine the `oat_schema` values across all discovered artifacts:
+Examine the `schema` values across all discovered artifacts:
 
 | Input Mix   | Output Schema                   | Behavior                                                                       |
 | ----------- | ------------------------------- | ------------------------------------------------------------------------------ |
@@ -144,7 +144,7 @@ Examine the `oat_schema` values across all discovered artifacts:
 Log the classification:
 
 ```
-  → Input schemas: {list of unique oat_schema values}
+  → Input schemas: {list of unique schema values}
   → Output schema: {selected schema}
 ```
 
@@ -169,7 +169,7 @@ The output artifact includes all fields from the input schema (for homogeneous i
 For each source artifact:
 
 1. **Extract findings**: Read the Findings section (or equivalent per schema type). Capture conclusions, recommendations, key data points, and any verdict or scoring.
-2. **Track provenance**: Record the source file path, `oat_skill`, `oat_model`, `oat_generated_at`, and `oat_schema` for attribution.
+2. **Track provenance**: Record the source file path, `skill`, `model`, `generated_at`, and `schema` for attribution.
 
 Print progress per artifact:
 
@@ -228,12 +228,12 @@ Write synthesis document with the following structure:
 
    ```yaml
    ---
-   oat_skill: synthesize
-   oat_schema: synthesis
-   oat_topic: '{descriptive topic derived from input artifacts}'
-   oat_model: { self-detected model identifier }
-   oat_generated_at: { today's date }
-   oat_source_count: { number of input artifacts }
+   skill: synthesize
+   schema: synthesis
+   topic: '{descriptive topic derived from input artifacts}'
+   model: { self-detected model identifier }
+   generated_at: { today's date }
+   source_count: { number of input artifacts }
    ---
    ```
 
@@ -310,7 +310,7 @@ Merge the deep-research and analyze outputs I just generated.
 
 **No artifacts found in directory:**
 
-- Verify the directory contains `.md` files with `oat_skill` frontmatter.
+- Verify the directory contains `.md` files with `skill` frontmatter.
 - Files without artifact frontmatter are not auto-detected in directory mode.
 - Try explicit file paths instead.
 
