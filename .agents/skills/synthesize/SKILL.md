@@ -9,7 +9,7 @@ allowed-tools: Read, Glob, Grep, Bash, AskUserQuestion
 
 # /synthesize
 
-Merges multiple analysis artifacts (from /deep-research, /analyze, and /compare) into a single coherent report with provenance tracking. Sits at the end of the pipeline -- consuming outputs from all other skills. Reads existing artifacts only; does not perform new research or dispatch sub-agents.
+Merges multiple analysis artifacts (from /deep-research, /analyze, and /compare) into a single coherent report with provenance tracking. Sits at the end of the pipeline -- consuming outputs from these artifact-producing skills. Reads existing artifacts only; does not perform new research or dispatch sub-agents.
 
 ## When to Use
 
@@ -124,7 +124,7 @@ If no artifacts are found, inform the user and stop:
 
 **Explicit mode:**
 
-Read specified file paths directly. Validate that each file exists and contains artifact frontmatter. Warn and **skip** files that lack `skill` frontmatter — artifact frontmatter is required for both discovery modes.
+Read specified file paths directly. Validate that each file exists and contains artifact frontmatter. Warn and **skip** files that lack any of the required artifact frontmatter keys (`skill`, `schema`, `topic`, `model`, `generated_at`) — all five are required for both discovery modes.
 
 If fewer than 2 valid artifacts are found, ask the user to confirm they want to proceed (synthesis of a single artifact produces limited value).
 
