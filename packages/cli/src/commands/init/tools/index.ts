@@ -36,6 +36,13 @@ import {
   type InstallIdeasOptions,
   type InstallIdeasResult,
 } from './ideas/install-ideas';
+import { createInitToolsResearchCommand } from './research';
+import {
+  installResearch as defaultInstallResearch,
+  type InstallResearchOptions,
+  type InstallResearchResult,
+  RESEARCH_SKILLS,
+} from './research/install-research';
 import { createInitToolsUtilityCommand } from './utility';
 import {
   installUtility as defaultInstallUtility,
@@ -51,7 +58,7 @@ import {
 } from './workflows/install-workflows';
 
 type InstallScope = 'project' | 'user';
-export type ToolPack = 'ideas' | 'workflows' | 'utility';
+export type ToolPack = 'ideas' | 'workflows' | 'utility' | 'research';
 
 interface InitToolsDependencies {
   buildCommandContext: (options: GlobalOptions) => CommandContext;
@@ -75,6 +82,9 @@ interface InitToolsDependencies {
   installUtility: (
     options: InstallUtilityOptions,
   ) => Promise<InstallUtilityResult>;
+  installResearch: (
+    options: InstallResearchOptions,
+  ) => Promise<InstallResearchResult>;
   copyDirWithStatus: (
     source: string,
     destination: string,
@@ -113,6 +123,7 @@ const PACK_CHOICES: MultiSelectChoice<ToolPack>[] = [
   { label: 'Ideas [project|user]', value: 'ideas', checked: true },
   { label: 'Workflows [project]', value: 'workflows', checked: true },
   { label: 'Utility [project|user]', value: 'utility', checked: true },
+  { label: 'Research [project|user]', value: 'research', checked: true },
 ];
 
 const DEFAULT_DEPENDENCIES: InitToolsDependencies = {
@@ -125,6 +136,7 @@ const DEFAULT_DEPENDENCIES: InitToolsDependencies = {
   installIdeas: defaultInstallIdeas,
   installWorkflows: defaultInstallWorkflows,
   installUtility: defaultInstallUtility,
+  installResearch: defaultInstallResearch,
   copyDirWithStatus,
   addLocalPaths,
   applyGitignore,
@@ -135,7 +147,11 @@ const DEFAULT_DEPENDENCIES: InitToolsDependencies = {
 };
 
 function isUserEligibleSelection(selections: ToolPack[]): boolean {
-  return selections.includes('ideas') || selections.includes('utility');
+  return (
+    selections.includes('ideas') ||
+    selections.includes('utility') ||
+    selections.includes('research')
+  );
 }
 
 async function resolveUserEligibleScope(
@@ -231,6 +247,7 @@ const PACK_DESCRIPTIONS: Record<ToolPack, string> = {
     'Project lifecycle (create, discover, plan, implement, review, complete)',
   ideas: 'Idea capture and refinement',
   utility: 'Standalone utilities (reviews, docs analysis, agent instructions)',
+  research: 'Research, analysis, verification, and synthesis',
 };
 
 interface PackScopeInfo {
@@ -253,7 +270,7 @@ export function buildToolPacksSectionBody(packs: PackScopeInfo[]): string {
 
   if (userPacks.length > 0) {
     lines.push(
-      '- **User-scoped skills:** `~/.agents/skills/` (ideas and utility packs installed at user scope)',
+      '- **User-scoped skills:** `~/.agents/skills/` (ideas, utility, and research packs installed at user scope)',
     );
   }
 
@@ -289,7 +306,7 @@ export async function runInitTools(
           PACK_CHOICES,
           { interactive: context.interactive },
         )) ?? [])
-      : ['ideas', 'workflows', 'utility'];
+      : ['ideas', 'workflows', 'utility', 'research'];
 
     if (selectedPacks.length === 0) {
       if (!context.json) {
@@ -400,6 +417,17 @@ export async function runInitTools(
       }
     }
 
+    if (selectedPacks.includes('research')) {
+      const researchResult = await dependencies.installResearch({
+        assetsRoot,
+        targetRoot: userEligibleRoot,
+        skills: [...RESEARCH_SKILLS],
+      });
+      for (const skill of researchResult.outdatedSkills) {
+        outdatedSkills.push({ ...skill, targetRoot: userEligibleRoot });
+      }
+    }
+
     if (outdatedSkills.length > 0) {
       reportOutdatedSkills(context, outdatedSkills);
 
@@ -487,10 +515,11 @@ export function createInitToolsCommand(
   };
 
   return new Command('tools')
-    .description('Install OAT tool packs (ideas, workflows, utility)')
+    .description('Install OAT tool packs (ideas, workflows, utility, research)')
     .addCommand(createInitToolsIdeasCommand())
     .addCommand(createInitToolsWorkflowsCommand())
     .addCommand(createInitToolsUtilityCommand())
+    .addCommand(createInitToolsResearchCommand())
     .action(async (_options: unknown, command: Command) => {
       const context = dependencies.buildCommandContext(
         readGlobalOptions(command),
