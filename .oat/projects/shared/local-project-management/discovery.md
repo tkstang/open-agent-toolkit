@@ -176,6 +176,7 @@ This project covers:
 10. **CLI support** — Commands or scripts for backlog index regeneration (managed section pattern), backlog item ID generation (short hash)
 11. **`associated_issues` in project state.md** — Add the field to project `state.md` template frontmatter
 12. **Existing backlog migration** — Decompose current flat backlog items into individual files in the new structure
+13. **`project-management` skill pack** — New skill pack following the existing pack pattern (alongside `workflows`, `ideas`, `utility`). Includes all `oat-pjm-*` skills, associated templates (`backlog-item.md`, `roadmap.md`), and CLI scripts (index regeneration, ID generation). Requires: manifest entry in `skill-manifest.ts`, installer module, `bundle-assets.sh` integration, `PackName` type update, pack description/metadata, and bundle consistency test coverage
 
 ## Key Decisions
 
@@ -201,6 +202,7 @@ This project covers:
 20. **`scope_estimate` field on backlog items:** T-shirt sizing (XS / S / M / L / XL / XXL) for effort estimation. The `oat-pjm-add-backlog-item` skill has the agent provide an initial estimate and asks the user for confirmation, disagreement, or adjustment.
 21. **Skill renames:** Existing skills get refactored into the `oat-pjm-*` namespace: `update-repo-reference` → `oat-pjm-update-repo-reference`; `review-backlog` → `oat-pjm-review-backlog`. New skill: `oat-pjm-add-backlog-item`.
 22. **`oat-pjm-review-backlog` analyzes the full backlog:** Reviews `completed.md`, `index.md`, and individual backlog items. Presents the user with an analysis including quick wins, high-value items, scope estimates, and recommendations for what to work on next. Based on existing `review-backlog` skill with updates for the new file-per-item structure.
+23. **`project-management` is a new skill pack:** All `oat-pjm-*` skills are distributed as a `project-management` pack, following the same pattern as `workflows`, `ideas`, and `utility` packs. This means: a `PROJECT_MANAGEMENT_SKILLS` constant in `skill-manifest.ts`, a dedicated installer (`install-project-management.ts`), `bundle-assets.sh` entries, `PackName` type extended to include `'project-management'`, pack description in `PACK_DESCRIPTIONS`, and bundle consistency test coverage. The pack includes skills, templates (backlog-item, roadmap), and CLI scripts. Scope: project only (like workflows).
 
 ## Constraints
 
@@ -209,7 +211,7 @@ This project covers:
 - Backlog items should be cheap to create — minimal required fields
 - Generated index section uses existing `<!-- OAT ... -->` / `<!-- END OAT ... -->` managed-section pattern
 - All `oat-pjm-*` skills must conform to `create-oat-skill` conventions: mode assertion, progress banners (`OAT ▸ ...`), project-root resolution (if project-scoped), semver frontmatter (`version: 1.0.0`), success criteria section
-- Skills must be registered for CLI distribution via `bundle-assets.sh` + skill manifest (workflows category)
+- Skills must be distributed as a dedicated `project-management` skill pack, following the established pack pattern: manifest constant, installer, bundle-assets.sh, PackName type, consistency tests
 
 ## Success Criteria
 
@@ -221,6 +223,7 @@ This project covers:
 - `deferred-phases.md` is retired, relevant items migrated
 - Roadmap is migrated to Now/Next/Later structure
 - `associated_issues` field is in state.md template
+- `project-management` skill pack is installable via `oat tools install` and passes bundle consistency tests
 
 ## Out of Scope
 
