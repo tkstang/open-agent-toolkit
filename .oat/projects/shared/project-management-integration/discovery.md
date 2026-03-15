@@ -214,6 +214,7 @@ A `backlog-item.md` template in `.oat/templates/` enables consistent scaffolding
 10. **Completed items: summary + archived files:** Closed backlog items get a summary entry in `completed.md` and their full item file moved from `items/` to `archived/`.
 11. **`deferred-phases.md` retired:** Legacy document merged/migrated — still-relevant phases (staleness/knowledge drift, memory system) become backlog items; the rest is done or dropped.
 12. **Backlog item template:** `.oat/templates/backlog-item.md` provides consistent scaffolding for new items, matching the project template pattern.
+13. **Completed log ordering:** `completed.md` entries ordered by ISO 8601 UTC timestamp — uses `oat_project_completed` from project `state.md` if the item was resolved via a project, otherwise the current UTC timestamp at close time. Newest first. Unique timestamps avoid merge conflicts.
 
 ## Constraints
 
