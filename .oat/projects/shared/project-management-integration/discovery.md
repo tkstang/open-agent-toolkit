@@ -220,6 +220,8 @@ A `backlog-item.md` template in `.oat/templates/` enables consistent scaffolding
 14. **Backlog item IDs are short hashes:** IDs use a `bl-` prefix + 4-char hash (e.g., `bl-a3f2`), generated from filename + creation timestamp. Avoids worktree conflicts (no shared counter). Filenames remain human-readable (`staleness-knowledge-drift.md`). All references use the hash ID; display always pairs it with the title (`bl-a3f2: Staleness + knowledge drift`).
 15. **Backlog index is hybrid (generated + curated):** `index.md` has a CLI-generated section (managed markers, auto-populated from item frontmatter) and a curated section (brief narrative summaries maintained by the agent via `oat-pjm-add-backlog-item` skill). Generated section uses the existing `<!-- OAT ... -->` / `<!-- END OAT ... -->` managed-section pattern.
 16. **`oat-pjm-add-backlog-item` skill orchestrates creation:** Creates item file from template, runs CLI to regenerate the generated index section, then guides the agent to update the curated section with a brief overview.
+17. **Roadmap uses Now / Next / Later horizons:** Primary structure is time-based horizons (Now = active/committed, Next = planned, Later = directional intent). Optional theme groupings within each horizon. Entries reference backlog items by ID and projects by name — detail lives in those artifacts, not the roadmap.
+18. **Template-guided structure for roadmap and backlog:** `.oat/templates/roadmap.md` and `.oat/templates/backlog-item.md` define the canonical structure. Actual files reference their template at the top (e.g., `<!-- Structure guidance: .oat/templates/roadmap.md -->`) so agents follow the pattern consistently.
 
 ## Constraints
 
@@ -259,7 +261,6 @@ A `backlog-item.md` template in `.oat/templates/` enables consistent scaffolding
 
 ## Open Questions
 
-- **Roadmap structure:** What sections should the roadmap file have? Time-based horizons (Now / Next / Later)? Theme-based groupings? Both?
 - **Project `associated_issues` location:** Should this field live in `state.md` frontmatter, or in a separate project-level config? State.md is already the project's metadata hub.
 
 ## Assumptions
