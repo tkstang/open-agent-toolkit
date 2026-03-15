@@ -1,4 +1,5 @@
 import { execFile } from 'node:child_process';
+import { join } from 'node:path';
 
 import { buildCommandContext } from '@app/command-context';
 import {
@@ -96,6 +97,19 @@ export function createToolsUpdateCommand(
         dryRun,
         dependencies,
       );
+
+      // Refresh ~/.oat/docs/ when updating the core pack (D3 requirement)
+      if (target.kind === 'pack' && target.pack === 'core' && !dryRun) {
+        const assetsRoot = await dependencies.resolveAssetsRoot();
+        const userRoot = await dependencies.resolveScopeRoot(
+          'user',
+          context.cwd,
+          context.home,
+        );
+        const docsSource = join(assetsRoot, 'docs');
+        const docsDestination = join(userRoot, '.oat', 'docs');
+        await dependencies.copyDirWithStatus(docsSource, docsDestination, true);
+      }
 
       if (result.notInstalled.length > 0) {
         if (context.json) {
