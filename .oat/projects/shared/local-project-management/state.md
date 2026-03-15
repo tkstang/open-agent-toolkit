@@ -1,6 +1,6 @@
 ---
-oat_current_task: p02-t03
-oat_last_commit: 2a600879a6645981b8f169580eb533f75e39ae61
+oat_current_task: p03-t01
+oat_last_commit: 0e3d1764a0d2e27f8e6de3d01c70268f01f17d0d
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p02-t03
+Implementation - Executing p03-t01
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Wire CLI entry points for backlog tooling, starting with `p02-t03`
+Create the first project-management skill, starting with `p03-t01`

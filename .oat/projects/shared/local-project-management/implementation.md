@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p02-t03
+oat_current_task_id: p03-t01
 oat_generated: false
 ---
 
@@ -27,12 +27,12 @@ oat_generated: false
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | complete    | 4     | 4/4       |
-| Phase 2 | in_progress | 3     | 2/3       |
-| Phase 3 | pending     | 3     | 0/3       |
+| Phase 2 | complete    | 3     | 3/3       |
+| Phase 3 | in_progress | 3     | 0/3       |
 | Phase 4 | pending     | 5     | 0/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 6/19 tasks completed
+**Total:** 7/19 tasks completed
 
 ---
 
@@ -172,8 +172,32 @@ oat_generated: false
 
 ## Phase 2: CLI Support
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-15
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+
+- Added deterministic backlog item ID generation for file-backed entries.
+- Added a managed backlog index regeneration implementation that scans item files and rewrites only the generated table block.
+- Exposed both capabilities through a top-level `oat backlog` command group for direct CLI use.
+
+**Key files touched:**
+
+- `packages/cli/src/commands/backlog/shared/generate-id.ts` - deterministic ID helper
+- `packages/cli/src/commands/backlog/regenerate-index.ts` - managed index regeneration logic
+- `packages/cli/src/commands/backlog/index.ts` - CLI command group and subcommands
+- `packages/cli/src/commands/index.ts` - top-level command registration
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/shared/generate-id.test.ts`; `pnpm --filter @oat/cli test -- src/commands/backlog/regenerate-index.test.ts`; `pnpm run cli -- backlog regenerate-index --help`; `pnpm run cli -- backlog generate-id test-item`; `pnpm type-check`
+- Result: Pass; helper tests, regeneration tests, command help/output, and type-check all succeeded
+
+**Notes / Decisions:**
+
+- Package-scoped Vitest commands are the reliable path-level test entrypoint in this repo; root-level `pnpm test <path>` is reserved for Turbo task names.
 
 ### Task p02-t01: Implement backlog item ID generation utility
 
@@ -229,15 +253,30 @@ oat_generated: false
 
 ### Task p02-t03: Wire backlog CLI commands
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 0e3d1764a0d2e27f8e6de3d01c70268f01f17d0d
+
+**Outcome (required when completed):**
+
+- Added a top-level `oat backlog` command with `generate-id` and `regenerate-index` subcommands.
+- Wired command output through the shared command context so normal text and JSON modes follow existing CLI conventions.
+
+**Files changed:**
+
+- `packages/cli/src/commands/backlog/index.ts` - added the command group and subcommand actions
+- `packages/cli/src/commands/index.ts` - registered the new top-level `backlog` command
+
+**Verification:**
+
+- Run: `pnpm run cli -- backlog regenerate-index --help`; `pnpm run cli -- backlog generate-id test-item`; `pnpm type-check`
+- Result: Pass; help renders correctly, ID generation prints a `bl-XXXX` value, and the CLI type-check remains clean
 
 ---
 
 ## Phase 3: Agent Skills
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-15
 
 ### Task p03-t01: Create `oat-pjm-add-backlog-item` skill
 
@@ -358,7 +397,8 @@ Chronological log of implementation progress.
 - [x] p01-t04: Add `associated_issues` to state.md template - c0990633ec60cda5f39c94153527fca9a6959b72
 - [x] p02-t01: Implement backlog item ID generation utility - 7708871b7c4ecaf6bd6cde83f8af20bf387f40a0
 - [x] p02-t02: Implement backlog index regeneration command - 2a600879a6645981b8f169580eb533f75e39ae61
-- [ ] p02-t03: Wire backlog CLI commands - pending
+- [x] p02-t03: Wire backlog CLI commands - 0e3d1764a0d2e27f8e6de3d01c70268f01f17d0d
+- [ ] p03-t01: Create `oat-pjm-add-backlog-item` skill - pending
 
 **What changed (high level):**
 
