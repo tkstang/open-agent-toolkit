@@ -858,6 +858,49 @@ git commit -m "feat(p08-t06): standardize output destination with user prompt an
 
 ---
 
+### Task p08-t07: Per-pack scope selection in interactive install flow
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/tools/index.ts`
+- Modify: `packages/cli/src/commands/init/tools/index.test.ts`
+
+**Step 1: Update interactive install flow**
+
+Currently, when multiple user-eligible packs are selected, a single scope prompt applies to all of them. Change this so that during interactive `oat tools install` (bare command with multi-pack selection), users can choose per pack whether to install at user level or project level for packs that support both scopes.
+
+Implementation approach:
+
+- After pack selection, if user-eligible packs are present and scope is `all` (interactive), present per-pack scope choices instead of a single scope prompt
+- For packs that are project-only (e.g., `workflows`), skip the prompt — always project scope
+- For user-eligible packs (`ideas`, `utility`, `research`), ask individually or provide a grouped prompt
+- Keep the existing single-scope behavior when `--scope project` or `--scope user` is explicitly passed
+
+**Step 2: Update tests**
+
+Update `index.test.ts` to cover:
+
+- Per-pack scope selection in interactive mode
+- Explicit `--scope` still overrides per-pack selection
+- Non-interactive mode still defaults all to project
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test`
+Expected: All tests pass
+
+Run: `pnpm --filter @oat/cli type-check`
+Expected: No type errors
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/index.ts packages/cli/src/commands/init/tools/index.test.ts
+git commit -m "feat(p08-t07): per-pack scope selection in interactive install flow"
+```
+
+---
+
 ## Reviews
 
 | Scope     | Type     | Status | Date       | Artifact                                                 |
@@ -883,9 +926,9 @@ git commit -m "feat(p08-t06): standardize output destination with user prompt an
 - Phase 5: 3 tasks — Review fixes (final)
 - Phase 6: 2 tasks — Review fixes (final re-review)
 - Phase 7: 1 task — Review fixes (final re-review cycle 3)
-- Phase 8: 6 tasks — Research tool pack + output destination standardization
+- Phase 8: 7 tasks — Research tool pack, output destination standardization, per-pack scope selection
 
-**Total: 20 tasks**
+**Total: 21 tasks**
 
 Ready for code review and merge.
 

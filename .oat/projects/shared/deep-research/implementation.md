@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p08-t05
+oat_current_task_id: p08-t07
 oat_generated: false
 ---
 
@@ -30,8 +30,8 @@ oat_generated: false
 | Phase 5: Review Fixes (final)     | 3      | 3         | complete    |
 | Phase 6: Review Fixes (re-review) | 2      | 2         | complete    |
 | Phase 7: Review Fixes (cycle 3)   | 1      | 1         | complete    |
-| Phase 8: Research Tool Pack       | 6      | 4         | in_progress |
-| **Total**                         | **20** | **18**    | **partial** |
+| Phase 8: Research Tool Pack       | 7      | 6         | in_progress |
+| **Total**                         | **21** | **20**    | **partial** |
 
 ## Task Log
 
@@ -181,6 +181,21 @@ oat_generated: false
 - Updated bundle-consistency, scan-tools, remove-skills, and init/tools tests
 - Updated help snapshots
 - Commit: `a23abf76`
+
+**p08-t05: Update documentation** — complete
+
+- Added `research` pack to tool-packs.md and cli-reference.md
+- Docs build verified
+- Commit: `82cab4c5`
+
+**p08-t06: Standardize output destination across artifact-producing skills** — complete
+
+- Replaced Obsidian vault detection in /deep-research with OAT-aware 3-tier resolution + user prompt
+- Added output destination resolution step to /analyze (new Step 9, renumbered to 10 steps)
+- Added output destination resolution to /compare --save
+- Updated /synthesize with input-directory heuristic + OAT-aware fallback + user prompt
+- Updated .oat/repo/README.md with research/ directory and expanded analysis/ description
+- Commit: `c744d5b7`
 
 ## Orchestration Runs
 
