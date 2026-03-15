@@ -12,8 +12,10 @@ SKILLS=(
   create-agnostic-skill
   oat-agent-instructions-analyze
   oat-agent-instructions-apply
+  oat-docs
   oat-docs-analyze
   oat-docs-apply
+  oat-doctor
   oat-repo-maintainability-review
   oat-idea-ideate
   oat-idea-new
