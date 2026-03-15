@@ -794,16 +794,22 @@ All artifact-producing skills should follow the same output destination pattern:
    - If the user confirms the default (empty response or "yes"), use the suggested path.
    - If the user provides a path, use that instead.
 
-**Skill-specific OAT-aware defaults** (when `.oat/` exists at repo root):
+**Skill-specific defaults** (resolution priority: repo OAT > user OAT > current directory):
 
-| Skill             | OAT default                 | Non-OAT default   |
-| ----------------- | --------------------------- | ----------------- |
-| `/deep-research`  | `.oat/repo/research/`       | current directory |
-| `/analyze`        | `.oat/repo/analysis/`       | current directory |
-| `/compare --save` | `.oat/repo/analysis/`       | current directory |
-| `/synthesize`     | input artifacts directory\* | current directory |
+| Skill             | Repo `.oat/` exists         | User `~/.oat/` exists (no repo) | No OAT                      |
+| ----------------- | --------------------------- | ------------------------------- | --------------------------- |
+| `/deep-research`  | `.oat/repo/research/`       | `~/.oat/research/`              | current directory           |
+| `/analyze`        | `.oat/repo/analysis/`       | `~/.oat/analysis/`              | current directory           |
+| `/compare --save` | `.oat/repo/analysis/`       | `~/.oat/analysis/`              | current directory           |
+| `/synthesize`     | input artifacts directory\* | input artifacts directory\*     | input artifacts directory\* |
 
-\* If all input artifacts came from the same directory, suggest that directory. Otherwise, fall back to OAT detection (`.oat/repo/analysis/`) or current directory.
+\* If all input artifacts came from the same directory, suggest that directory. Otherwise, fall back to OAT detection (repo `.oat/repo/analysis/` or user `~/.oat/analysis/`) or current directory.
+
+Detection order:
+
+1. Check for `.oat/` at repo root (project-level OAT)
+2. Check for `~/.oat/` (user-level OAT)
+3. Fall back to current directory
 
 **Step 2: Update /deep-research**
 
