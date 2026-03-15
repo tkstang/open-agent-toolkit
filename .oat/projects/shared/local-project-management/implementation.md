@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p04-t05
+oat_current_task_id: p05-t01
 oat_generated: false
 ---
 
@@ -29,10 +29,10 @@ oat_generated: false
 | Phase 1 | complete    | 4     | 4/4       |
 | Phase 2 | complete    | 3     | 3/3       |
 | Phase 3 | complete    | 3     | 3/3       |
-| Phase 4 | in_progress | 5     | 4/5       |
-| Phase 5 | pending     | 4     | 0/4       |
+| Phase 4 | complete    | 5     | 5/5       |
+| Phase 5 | in_progress | 4     | 0/4       |
 
-**Total:** 14/19 tasks completed
+**Total:** 15/19 tasks completed
 
 ---
 
@@ -384,8 +384,34 @@ oat_generated: false
 
 ## Phase 4: Skill Pack Infrastructure
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-15
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+
+- Added a dedicated `project-management` tool pack to the CLI install/update/remove surface, including a direct installer command.
+- Wired the pack into the shared manifest, pack typing, init-tools selection flow, and bundle process so the new `oat-pjm-*` skills ship with the CLI assets.
+- Closed the remaining asset drift by extending bundle consistency coverage and updating CLI help snapshots to reflect the new pack.
+
+**Key files touched:**
+
+- `packages/cli/src/commands/init/tools/shared/skill-manifest.ts` - added project-management pack manifests
+- `packages/cli/src/commands/init/tools/index.ts` - registered pack selection, descriptions, and install dispatch
+- `packages/cli/src/commands/init/tools/project-management/install-project-management.ts` - added project-management installer
+- `packages/cli/src/commands/init/tools/project-management/index.ts` - added direct install subcommand
+- `packages/cli/scripts/bundle-assets.sh` - bundled PM skills and templates
+- `packages/cli/src/commands/init/tools/shared/bundle-consistency.test.ts` - guarded pack/bundle drift
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/init/tools/project-management/install-project-management.test.ts src/commands/init/tools/shared/bundle-consistency.test.ts src/commands/init/tools/index.test.ts src/commands/help-snapshots.test.ts`; `pnpm build`
+- Result: Pass; installer, pack registration, bundle consistency, and help output all pass and the workspace build succeeds
+
+**Notes / Decisions:**
+
+- `project-management` remains project-scoped in interactive selection, but non-interactive full installs include it by default so the bundle and installer stay aligned.
 
 ### Task p04-t01: Add `PROJECT_MANAGEMENT_SKILLS` to skill manifest
 
@@ -496,15 +522,38 @@ oat_generated: false
 
 ### Task p04-t05: Update `bundle-assets.sh` and verify consistency
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 30ed804216e2f98906f0cf37125d43d1cd6af30d
+
+**Outcome (required when completed):**
+
+- Added the three `oat-pjm-*` skills plus the backlog/roadmap templates to the CLI asset bundler so the new pack ships with built assets.
+- Extended bundle consistency coverage to treat project-management as a first-class pack and refreshed init-tools/help snapshots to match the new command surface.
+- Verified the full CLI build path succeeds after bundling, which also kept the tracked bundled `state.md` template in sync with the source template.
+
+**Files changed:**
+
+- `packages/cli/scripts/bundle-assets.sh` - bundled project-management skills and templates
+- `packages/cli/src/commands/init/tools/shared/bundle-consistency.test.ts` - added project-management bundle coverage
+- `packages/cli/src/commands/init/tools/index.test.ts` - updated init-tools harness expectations for the new pack
+- `packages/cli/src/commands/help-snapshots.test.ts` - refreshed help snapshots for init/tools install output
+- `packages/cli/assets/templates/state.md` - synced bundled state template output
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/init/tools/shared/bundle-consistency.test.ts src/commands/init/tools/index.test.ts src/commands/help-snapshots.test.ts`; `pnpm build`
+- Result: Pass; targeted bundle/install/help tests pass and the workspace build completes successfully
+
+**Notes / Decisions:**
+
+- The init-tools test harness needed a project-management installer mock to let non-interactive install flows reach the AGENTS/help assertions introduced earlier in phase 4.
 
 ---
 
 ## Phase 5: Migration
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-15
 
 ### Task p05-t01: Migrate existing backlog items to file-per-item
 
@@ -567,13 +616,14 @@ Chronological log of implementation progress.
 - [x] p04-t02: Extend `PackName` type and pack resolution - 792a96544bc51011847bd071bec361f952ddbfbe
 - [x] p04-t03: Create installer module - cb55b0473963c0f6090e496aac3fa9e49cfd419d
 - [x] p04-t04: Register pack in init tools and descriptions - 94ba3f0867233f16b1bc5c99e37ed7405d39d881
-- [ ] p04-t05: Update `bundle-assets.sh` and verify consistency - pending
+- [x] p04-t05: Update `bundle-assets.sh` and verify consistency - 30ed804216e2f98906f0cf37125d43d1cd6af30d
 
 **What changed (high level):**
 
 - Confirmed final-only plan checkpoint: `["p05"]`
 - Moved project tracking from planning into implementation kickoff
 - Initialized implementation task map for all 19 planned tasks
+- Completed phase 4, wiring the `project-management` pack through install, help, and bundle verification paths
 
 **Decisions:**
 
@@ -581,7 +631,7 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Execute tasks strictly in plan order, starting with template creation
+- Start phase 5 by migrating the current flat backlog entries into file-per-item records
 
 **Blockers:**
 
