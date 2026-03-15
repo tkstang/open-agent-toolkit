@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p05-t02
+oat_current_task_id: p05-t03
 oat_generated: false
 ---
 
@@ -30,9 +30,9 @@ oat_generated: false
 | Phase 2 | complete    | 3     | 3/3       |
 | Phase 3 | complete    | 3     | 3/3       |
 | Phase 4 | complete    | 5     | 5/5       |
-| Phase 5 | in_progress | 4     | 1/4       |
+| Phase 5 | in_progress | 4     | 2/4       |
 
-**Total:** 16/19 tasks completed
+**Total:** 17/19 tasks completed
 
 ---
 
@@ -591,8 +591,34 @@ oat_generated: false
 
 ### Task p05-t02: Migrate completed backlog to new structure
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 1433636e75a9052504fb7b7048929f9b42e56400
+
+**Outcome (required when completed):**
+
+- Migrated the legacy completed backlog archive into the new summary-oriented `backlog/completed.md` format with 50 completed entries ordered by completion date.
+- Created 5 file-backed archived items under `backlog/archived/` for the most recent completed work that still benefits from rich context.
+- Added a migration pointer to the legacy `backlog-completed.md` file so readers are redirected to the new summary and archived record locations.
+
+**Files changed:**
+
+- `.oat/repo/reference/backlog/completed.md` - added 50 summary archive entries and migration note
+- `.oat/repo/reference/backlog/archived/research-analysis-verification-synthesis-skill-suite.md` - archived recent research-suite completion
+- `.oat/repo/reference/backlog/archived/retroactive-project-capture-skill.md` - archived recent project-capture completion
+- `.oat/repo/reference/backlog/archived/guided-setup-flow-documentation-detection.md` - archived recent guided-setup completion
+- `.oat/repo/reference/backlog/archived/agents-docs-init-surface-info.md` - archived recent docs-init AGENTS update
+- `.oat/repo/reference/backlog/archived/project-state-timestamps.md` - archived recent project-state timestamp work
+- `.oat/repo/reference/backlog-completed.md` - added migration pointer to the new completed backlog surfaces
+
+**Verification:**
+
+- Run: `grep -c '^- 20' .oat/repo/reference/backlog/completed.md`; `find .oat/repo/reference/backlog/archived -name "*.md" | wc -l`; `wc -l .oat/repo/reference/backlog/completed.md`
+- Result: Pass; the new summary archive contains 50 completed-item lines and the archived directory contains 5 file-backed records
+
+**Notes / Decisions:**
+
+- The legacy completed backlog contains 50 real entries rather than the 31 expected by the plan, so the migration preserved the full archive instead of truncating it.
+- One legacy entry (`Update AGENTS.md with workflow system details during oat tools init`) lacked an explicit `Completed:` field, so its summary date was inferred as `2026-03-10` from surrounding archive order.
 
 ---
 
@@ -645,6 +671,7 @@ Chronological log of implementation progress.
 - [x] p04-t04: Register pack in init tools and descriptions - 94ba3f0867233f16b1bc5c99e37ed7405d39d881
 - [x] p04-t05: Update `bundle-assets.sh` and verify consistency - 30ed804216e2f98906f0cf37125d43d1cd6af30d
 - [x] p05-t01: Migrate existing backlog items to file-per-item - a34147dd397ae3dd3474f93a47303d65db265472
+- [x] p05-t02: Migrate completed backlog to new structure - 1433636e75a9052504fb7b7048929f9b42e56400
 
 **What changed (high level):**
 
@@ -653,6 +680,7 @@ Chronological log of implementation progress.
 - Initialized implementation task map for all 19 planned tasks
 - Completed phase 4, wiring the `project-management` pack through install, help, and bundle verification paths
 - Started phase 5 by migrating the live backlog into file-backed item records and regenerating the managed index
+- Migrated the completed backlog archive into summary and archived-item surfaces with explicit redirect pointers
 
 **Decisions:**
 
@@ -661,7 +689,7 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Migrate completed backlog summaries and recent archived item files in `p05-t02`
+- Restructure `.oat/repo/reference/roadmap.md` into Now / Next / Later horizons in `p05-t03`
 
 **Blockers:**
 
@@ -675,9 +703,10 @@ Chronological log of implementation progress.
 
 Document any deviations from the original plan.
 
-| Task    | Planned                                          | Actual                          | Reason                                                                                                                        |
-| ------- | ------------------------------------------------ | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| p05-t01 | Migrate 8 active backlog items from `backlog.md` | Migrated 7 active backlog items | `oat-project-capture` was already moved to `backlog-completed.md`, so `backlog.md` contained 7 live entries at execution time |
+| Task    | Planned                                          | Actual                              | Reason                                                                                                                                      |
+| ------- | ------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
+| p05-t01 | Migrate 8 active backlog items from `backlog.md` | Migrated 7 active backlog items     | `oat-project-capture` was already moved to `backlog-completed.md`, so `backlog.md` contained 7 live entries at execution time               |
+| p05-t02 | Migrate 31 completed backlog items               | Migrated 50 completed backlog items | `backlog-completed.md` currently contains 50 real completed entries, so the migration preserved the full archive rather than a stale subset |
 
 ## Test Results
 
