@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p03-t03
+oat_current_task_id: p04-t01
 oat_generated: false
 ---
 
@@ -28,11 +28,11 @@ oat_generated: false
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | complete    | 4     | 4/4       |
 | Phase 2 | complete    | 3     | 3/3       |
-| Phase 3 | in_progress | 3     | 2/3       |
-| Phase 4 | pending     | 5     | 0/5       |
+| Phase 3 | complete    | 3     | 3/3       |
+| Phase 4 | in_progress | 5     | 0/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 9/19 tasks completed
+**Total:** 10/19 tasks completed
 
 ---
 
@@ -275,8 +275,34 @@ oat_generated: false
 
 ## Phase 3: Agent Skills
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-15
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+
+- Added a dedicated backlog-item creation skill for the new file-backed backlog flow.
+- Introduced namespaced project-management variants of the repo-reference update and backlog review skills.
+- Added deprecation pointers to the legacy `update-repo-reference` and `review-backlog` entry points.
+
+**Key files touched:**
+
+- `.agents/skills/oat-pjm-add-backlog-item/SKILL.md` - new backlog capture workflow
+- `.agents/skills/oat-pjm-update-repo-reference/SKILL.md` - new repo-reference sync workflow
+- `.agents/skills/oat-pjm-review-backlog/SKILL.md` - new backlog review workflow
+- `.agents/skills/oat-pjm-review-backlog/references/backlog-review-template.md` - copied review document template
+- `.agents/skills/update-repo-reference/SKILL.md` - deprecation note
+- `.agents/skills/review-backlog/SKILL.md` - deprecation note
+
+**Verification:**
+
+- Run: `cat .agents/skills/oat-pjm-add-backlog-item/SKILL.md | head -10`; `grep "version:" .agents/skills/oat-pjm-update-repo-reference/SKILL.md`; `grep "version:" .agents/skills/oat-pjm-review-backlog/SKILL.md`
+- Result: Pass; all new skills exist and declare the expected frontmatter/version metadata
+
+**Notes / Decisions:**
+
+- The new namespaced skills are written against the post-migration backlog structure even though phase 5 will perform the content migration later in this run.
 
 ### Task p03-t01: Create `oat-pjm-add-backlog-item` skill
 
@@ -331,15 +357,35 @@ oat_generated: false
 
 ### Task p03-t03: Refactor `review-backlog` to `oat-pjm-review-backlog`
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 4d5dd2a93731a9b46505ff0cdb4027792b09da9b
+
+**Outcome (required when completed):**
+
+- Added a namespaced backlog review skill that catalogs `backlog/items/*.md` files instead of parsing a flat backlog markdown document.
+- Copied the existing review template into the new skill namespace and added a deprecation note to the legacy `review-backlog` skill.
+
+**Files changed:**
+
+- `.agents/skills/oat-pjm-review-backlog/SKILL.md` - new file-backed backlog review workflow
+- `.agents/skills/oat-pjm-review-backlog/references/backlog-review-template.md` - copied review template
+- `.agents/skills/review-backlog/SKILL.md` - added deprecation pointer
+
+**Verification:**
+
+- Run: `grep "version:" .agents/skills/oat-pjm-review-backlog/SKILL.md`
+- Result: Pass; the new namespaced skill declares `version: 1.0.0`
+
+**Notes / Decisions:**
+
+- Preserved the existing report template structure so downstream review artifacts keep the same seven-section shape while the inputs shift to the new backlog model.
 
 ---
 
 ## Phase 4: Skill Pack Infrastructure
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-15
 
 ### Task p04-t01: Add `PROJECT_MANAGEMENT_SKILLS` to skill manifest
 
@@ -437,7 +483,8 @@ Chronological log of implementation progress.
 - [x] p02-t03: Wire backlog CLI commands - 0e3d1764a0d2e27f8e6de3d01c70268f01f17d0d
 - [x] p03-t01: Create `oat-pjm-add-backlog-item` skill - fa340e54c7046a77752bbb4bbed6d943332f49d7
 - [x] p03-t02: Refactor `update-repo-reference` to `oat-pjm-update-repo-reference` - e37b14700cce6fe39e6bcb0bf33f488cb3eb17d5
-- [ ] p03-t03: Refactor `review-backlog` to `oat-pjm-review-backlog` - pending
+- [x] p03-t03: Refactor `review-backlog` to `oat-pjm-review-backlog` - 4d5dd2a93731a9b46505ff0cdb4027792b09da9b
+- [ ] p04-t01: Add `PROJECT_MANAGEMENT_SKILLS` to skill manifest - pending
 
 **What changed (high level):**
 

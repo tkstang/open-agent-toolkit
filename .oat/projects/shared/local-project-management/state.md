@@ -1,6 +1,6 @@
 ---
-oat_current_task: p03-t03
-oat_last_commit: e37b14700cce6fe39e6bcb0bf33f488cb3eb17d5
+oat_current_task: p04-t01
+oat_last_commit: 4d5dd2a93731a9b46505ff0cdb4027792b09da9b
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p03-t03
+Implementation - Executing p04-t01
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Refactor backlog review skill into the project-management namespace, starting with `p03-t03`
+Register project-management skills in the CLI manifest, starting with `p04-t01`
