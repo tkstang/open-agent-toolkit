@@ -577,7 +577,9 @@ export function createInitToolsCommand(
   };
 
   return new Command('tools')
-    .description('Install OAT tool packs (core, ideas, workflows, utility, research)')
+    .description(
+      'Install OAT tool packs (core, ideas, workflows, utility, research)',
+    )
     .addCommand(createInitToolsCoreCommand())
     .addCommand(createInitToolsIdeasCommand())
     .addCommand(createInitToolsWorkflowsCommand())
