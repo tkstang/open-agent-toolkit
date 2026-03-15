@@ -235,11 +235,21 @@ If no competing options emerged, skip this step.
 
 `[9/10] Resolving output target…`
 
-Priority order:
+**If an explicit output path was provided in `$ARGUMENTS`**, use it directly — no prompt.
 
-1. Obsidian vault (if configured via MCP -- check for obsidian MCP tools)
-2. Output path specified in `$ARGUMENTS`
-3. Default: current directory or downloads
+**Otherwise**, determine a default suggestion using OAT-aware detection:
+
+1. Check for `.oat/` at repo root (project-level OAT) → suggest `.oat/repo/research/`
+2. Check for `~/.oat/` (user-level OAT) → suggest `~/.oat/research/`
+3. Fall back to current directory
+
+Then ask the user via `AskUserQuestion` (Claude Code), structured user-input tooling (Codex), or equivalent:
+
+> "Where would you like to write the artifact? (default: {suggested path})"
+
+- If the user confirms (empty response or "yes"), use the suggested path.
+- If the user provides a different path, use that instead.
+- Create the target directory if it does not exist.
 
 ---
 
@@ -335,5 +345,6 @@ Reference schemas live in: `references/schema-base.md` and `references/schema-{t
 - /compare conditionally dispatched when competing options emerge
 - Findings aggregated into coherent artifact
 - Artifact written with correct schema, frontmatter contract, and model-tagged filename
+- Output destination resolved via OAT-aware detection and user prompt (unless explicit path given)
 - `--depth`, `--focus`, and `--context` correctly influence research scope and priorities
 - Output is always an artifact (never inline-only)

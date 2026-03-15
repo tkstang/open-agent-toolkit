@@ -182,7 +182,24 @@ Write artifact using the `comparative` extended schema from `.agents/skills/deep
   ```
 
 - Model-tagged filename: `{topic}-{model-id}.md` (e.g., `express-vs-koa-opus-4-6.md`)
-- Output target: current directory
+
+**Output destination resolution** (only when `--save` is specified):
+
+If an explicit output path was provided in `$ARGUMENTS`, use it directly — no prompt.
+
+Otherwise, determine a default suggestion using OAT-aware detection:
+
+1. Check for `.oat/` at repo root (project-level OAT) → suggest `.oat/repo/analysis/`
+2. Check for `~/.oat/` (user-level OAT) → suggest `~/.oat/analysis/`
+3. Fall back to current directory
+
+Then ask the user via `AskUserQuestion` (Claude Code), structured user-input tooling (Codex), or equivalent:
+
+> "Where would you like to write the comparison? (default: {suggested path})"
+
+- If the user confirms (empty response or "yes"), use the suggested path.
+- If the user provides a different path, use that instead.
+- Create the target directory if it does not exist.
 
 ---
 

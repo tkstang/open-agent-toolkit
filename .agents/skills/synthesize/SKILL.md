@@ -254,7 +254,23 @@ Write synthesis document with the following structure:
 
 3. **Model-tagged filename:** `{topic-slug}-synthesis-{model-id}.md` (e.g., `event-driven-architecture-synthesis-opus-4-6.md`)
 
-4. **Output location:** Current directory or the same directory as the input artifacts.
+4. **Output destination resolution:**
+
+   If an explicit output path was provided in `$ARGUMENTS`, use it directly — no prompt.
+
+   Otherwise, determine a default suggestion:
+   - If all input artifacts came from the same directory, suggest that directory.
+   - Otherwise, use OAT-aware detection:
+     1. Check for `.oat/` at repo root (project-level OAT) → suggest `.oat/repo/analysis/`
+     2. Check for `~/.oat/` (user-level OAT) → suggest `~/.oat/analysis/`
+     3. Fall back to current directory
+
+   Then ask the user via `AskUserQuestion` (Claude Code), structured user-input tooling (Codex), or equivalent:
+
+   > "Where would you like to write the synthesis? (default: {suggested path})"
+   - If the user confirms (empty response or "yes"), use the suggested path.
+   - If the user provides a different path, use that instead.
+   - Create the target directory if it does not exist.
 
 **Inline output (`--inline` flag):**
 
@@ -340,5 +356,6 @@ Merge the deep-research and analyze outputs I just generated.
 - Contradictions flagged with lean direction and marked as lean not fact
 - Unique insights preserved and attributed
 - Artifact written with synthesis schema, frontmatter contract, provenance table, and model-tagged filename (default mode)
+- Output destination resolved via input-directory heuristic, OAT-aware detection, and user prompt (unless explicit path given)
 - Inline summary produced when `--inline` is specified (no file written)
 - Input artifacts not modified

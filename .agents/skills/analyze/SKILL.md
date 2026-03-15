@@ -223,7 +223,7 @@ If no comparables surfaced, skip this step.
 
 ### Step 8: Cross-angle synthesis
 
-`[8/9] Cross-angle synthesis…`
+`[8/10] Cross-angle synthesis…`
 
 - Identify patterns that emerged across multiple angles
 - Surface the most important findings regardless of which angle found them
@@ -232,9 +232,31 @@ If no comparables surfaced, skip this step.
 
 ---
 
-### Step 9: Write artifact
+### Step 9: Resolve output destination
 
-`[9/9] Writing artifact…`
+`[9/10] Resolving output destination…`
+
+**If an explicit output path was provided in `$ARGUMENTS`**, use it directly — no prompt.
+
+**Otherwise**, determine a default suggestion using OAT-aware detection:
+
+1. Check for `.oat/` at repo root (project-level OAT) → suggest `.oat/repo/analysis/`
+2. Check for `~/.oat/` (user-level OAT) → suggest `~/.oat/analysis/`
+3. Fall back to current directory
+
+Then ask the user via `AskUserQuestion` (Claude Code), structured user-input tooling (Codex), or equivalent:
+
+> "Where would you like to write the analysis? (default: {suggested path})"
+
+- If the user confirms (empty response or "yes"), use the suggested path.
+- If the user provides a different path, use that instead.
+- Create the target directory if it does not exist.
+
+---
+
+### Step 10: Write artifact
+
+`[10/10] Writing artifact…`
 
 Write the structured analysis artifact using:
 
@@ -332,4 +354,5 @@ Output is always an artifact file -- never inline-only.
 - Cross-angle synthesis identifies patterns across angles
 - Prioritized recommendations produced with effort/impact
 - Artifact written with analysis schema, frontmatter contract, and model-tagged filename
+- Output destination resolved via OAT-aware detection and user prompt (unless explicit path given)
 - Output is always an artifact (never inline-only)
