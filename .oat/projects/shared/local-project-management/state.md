@@ -1,6 +1,6 @@
 ---
-oat_current_task: p01-t04
-oat_last_commit: 1cdb035030eafe0a261ae4e736cdf2658b265670
+oat_current_task: p02-t01
+oat_last_commit: c0990633ec60cda5f39c94153527fca9a6959b72
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p01-t04
+Implementation - Executing p02-t01
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Complete Phase 1 templates and scaffold work, continuing with `p01-t04`
+Implement CLI support for backlog ID generation, starting with `p02-t01`

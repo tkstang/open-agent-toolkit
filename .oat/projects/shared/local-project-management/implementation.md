@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p01-t04
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -26,39 +26,45 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 4     | 3/4       |
-| Phase 2 | pending     | 3     | 0/3       |
+| Phase 1 | complete    | 4     | 4/4       |
+| Phase 2 | in_progress | 3     | 0/3       |
 | Phase 3 | pending     | 3     | 0/3       |
 | Phase 4 | pending     | 5     | 0/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 3/19 tasks completed
+**Total:** 4/19 tasks completed
 
 ---
 
 ## Phase 1: Templates and Directory Structure
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-15
 
 ### Phase Summary (fill when phase is complete)
 
 **Outcome (what changed):**
 
-- Pending
+- Added reusable templates for backlog items and roadmap horizons.
+- Created the new file-backed backlog directory structure with managed index markers.
+- Extended project state templates with issue-link tracking for backlog/project/Jira/Linear references.
 
 **Key files touched:**
 
-- Pending
+- `.oat/templates/backlog-item.md` - new backlog item template
+- `.oat/templates/roadmap.md` - roadmap horizon template
+- `.oat/repo/reference/backlog/index.md` - managed backlog index scaffold
+- `.oat/repo/reference/backlog/completed.md` - completed backlog summary scaffold
+- `.oat/templates/state.md` - added `associated_issues` field
 
 **Verification:**
 
-- Run: `Pending`
-- Result: Pending
+- Run: `cat .oat/templates/backlog-item.md | head -20`; `cat .oat/templates/roadmap.md`; `find .oat/repo/reference/backlog -type f | sort`; `grep "associated_issues" .oat/templates/state.md`
+- Result: Pass; all phase-1 files and template updates match the planned structure
 
 **Notes / Decisions:**
 
-- None yet
+- The new backlog tree is additive in phase 1; legacy flat backlog files stay in place until the migration phase.
 
 ### Task p01-t01: Create backlog item template
 
@@ -141,19 +147,33 @@ oat_generated: false
 
 ### Task p01-t04: Add `associated_issues` to state.md template
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** c0990633ec60cda5f39c94153527fca9a6959b72
 
-**Notes:**
+**Outcome (required when completed):**
 
-- Will extend `.oat/templates/state.md`
+- Added an `associated_issues` field to the shared project state template so OAT projects can link backlog items and external trackers.
+- Defined the supported reference shape inline to keep future project scaffolds self-documenting.
+
+**Files changed:**
+
+- `.oat/templates/state.md` - added `associated_issues` frontmatter guidance
+
+**Verification:**
+
+- Run: `grep "associated_issues" .oat/templates/state.md`
+- Result: Pass; the field is present in the template frontmatter
+
+**Notes / Decisions:**
+
+- Kept the field adjacent to blocker tracking because both are top-level project coordination metadata.
 
 ---
 
 ## Phase 2: CLI Support
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-15
 
 ### Task p02-t01: Implement backlog item ID generation utility
 
@@ -297,7 +317,8 @@ Chronological log of implementation progress.
 - [x] p01-t01: Create backlog item template - 48c08748dd9e64541e2d999839170bc803332514
 - [x] p01-t02: Create roadmap template - 12d48e59ea1ccba0105d37b87bd1bc55204ba70b
 - [x] p01-t03: Create backlog directory structure - 1cdb035030eafe0a261ae4e736cdf2658b265670
-- [ ] p01-t04: Add `associated_issues` to state.md template - pending
+- [x] p01-t04: Add `associated_issues` to state.md template - c0990633ec60cda5f39c94153527fca9a6959b72
+- [ ] p02-t01: Implement backlog item ID generation utility - pending
 
 **What changed (high level):**
 
