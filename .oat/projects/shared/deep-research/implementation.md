@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p08-t07
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -21,17 +21,17 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase                             | Tasks  | Completed | Status      |
-| --------------------------------- | ------ | --------- | ----------- |
-| Phase 1: Foundation               | 2      | 2         | complete    |
-| Phase 2: Independent Skills       | 2      | 2         | complete    |
-| Phase 3: Orchestrator Skills      | 2      | 2         | complete    |
-| Phase 4: Synthesis + Integration  | 2      | 2         | complete    |
-| Phase 5: Review Fixes (final)     | 3      | 3         | complete    |
-| Phase 6: Review Fixes (re-review) | 2      | 2         | complete    |
-| Phase 7: Review Fixes (cycle 3)   | 1      | 1         | complete    |
-| Phase 8: Research Tool Pack       | 7      | 6         | in_progress |
-| **Total**                         | **21** | **20**    | **partial** |
+| Phase                             | Tasks  | Completed | Status       |
+| --------------------------------- | ------ | --------- | ------------ |
+| Phase 1: Foundation               | 2      | 2         | complete     |
+| Phase 2: Independent Skills       | 2      | 2         | complete     |
+| Phase 3: Orchestrator Skills      | 2      | 2         | complete     |
+| Phase 4: Synthesis + Integration  | 2      | 2         | complete     |
+| Phase 5: Review Fixes (final)     | 3      | 3         | complete     |
+| Phase 6: Review Fixes (re-review) | 2      | 2         | complete     |
+| Phase 7: Review Fixes (cycle 3)   | 1      | 1         | complete     |
+| Phase 8: Research Tool Pack       | 7      | 7         | complete     |
+| **Total**                         | **21** | **21**    | **complete** |
 
 ## Task Log
 
@@ -196,6 +196,15 @@ oat_generated: false
 - Updated /synthesize with input-directory heuristic + OAT-aware fallback + user prompt
 - Updated .oat/repo/README.md with research/ directory and expanded analysis/ description
 - Commit: `c744d5b7`
+
+**p08-t07: Per-pack scope selection in interactive install flow** — complete
+
+- Replaced single user/project scope prompt with per-pack multi-select via `resolvePackScopes`
+- Added `PackScopeMap` type and `USER_ELIGIBLE_PACKS` set
+- Updated all pack installation blocks to use `packRoot(pack)` helper
+- Removed unused `isUserEligibleSelection` function
+- Added mixed per-pack scope test, updated scope conflicts test
+- Commit: `96e59538`
 
 ## Orchestration Runs
 
