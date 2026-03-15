@@ -77,7 +77,7 @@ describe('help output snapshots', () => {
         -h, --help  display help for command
 
       Commands:
-        tools       Install OAT tool packs (ideas, workflows, utility, research)
+        tools       Install OAT tool packs (core, ideas, workflows, utility, research)
       "
     `);
   });
@@ -573,8 +573,8 @@ describe('help output snapshots', () => {
         info <name>              Show details for an installed tool
         update [options] [name]  Update installed tools to bundled versions
         remove [options] [name]  Remove installed tools
-        install [options]        Install OAT tool packs (ideas, workflows, utility,
-                                 research)
+        install [options]        Install OAT tool packs (core, ideas, workflows,
+                                 utility, research)
         help [command]           display help for command
       "
     `);
@@ -620,13 +620,14 @@ describe('help output snapshots', () => {
     expect(help).toMatchInlineSnapshot(`
       "Usage: oat tools install [options] [command]
 
-      Install OAT tool packs (ideas, workflows, utility, research)
+      Install OAT tool packs (core, ideas, workflows, utility, research)
 
       Options:
         --no-sync            Skip auto-sync after install
         -h, --help           display help for command
 
       Commands:
+        core [options]       Install OAT core skills (diagnostics, docs)
         ideas [options]      Install OAT ideas skills, templates, and idea workflow
                              files
         workflows [options]  Install OAT workflows skills, agents, templates, and
