@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p05-t03
+oat_current_task_id: p05-t04
 oat_generated: false
 ---
 
@@ -30,9 +30,9 @@ oat_generated: false
 | Phase 2 | complete    | 3     | 3/3       |
 | Phase 3 | complete    | 3     | 3/3       |
 | Phase 4 | complete    | 5     | 5/5       |
-| Phase 5 | in_progress | 4     | 2/4       |
+| Phase 5 | in_progress | 4     | 3/4       |
 
-**Total:** 17/19 tasks completed
+**Total:** 18/19 tasks completed
 
 ---
 
@@ -624,8 +624,27 @@ oat_generated: false
 
 ### Task p05-t03: Migrate roadmap to Now/Next/Later structure
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 68048c2666e1d80d9dd4a13e0ac15314f131a3d3
+
+**Outcome (required when completed):**
+
+- Added the canonical Now / Next / Later horizon structure to the roadmap while preserving the existing status summary table and detailed phase writeups.
+- Threaded migrated backlog IDs into the horizon summaries where the roadmap already maps cleanly to active backlog work.
+- Added an explicit template-structure reference so the roadmap now aligns with the new roadmap template introduced earlier in this project.
+
+**Files changed:**
+
+- `.oat/repo/reference/roadmap.md` - added horizon sections, backlog-ID references, and template guidance comment
+
+**Verification:**
+
+- Run: `grep "^## Now\|^## Next\|^## Later" .oat/repo/reference/roadmap.md`
+- Result: Pass; the roadmap now exposes the required Now / Next / Later headings
+
+**Notes / Decisions:**
+
+- Kept the existing status summary and detailed phase sections as backward-reference material instead of deleting them, which preserves historical roadmap context while still meeting the new horizon contract.
 
 ---
 
@@ -672,6 +691,7 @@ Chronological log of implementation progress.
 - [x] p04-t05: Update `bundle-assets.sh` and verify consistency - 30ed804216e2f98906f0cf37125d43d1cd6af30d
 - [x] p05-t01: Migrate existing backlog items to file-per-item - a34147dd397ae3dd3474f93a47303d65db265472
 - [x] p05-t02: Migrate completed backlog to new structure - 1433636e75a9052504fb7b7048929f9b42e56400
+- [x] p05-t03: Migrate roadmap to Now/Next/Later structure - 68048c2666e1d80d9dd4a13e0ac15314f131a3d3
 
 **What changed (high level):**
 
@@ -681,6 +701,7 @@ Chronological log of implementation progress.
 - Completed phase 4, wiring the `project-management` pack through install, help, and bundle verification paths
 - Started phase 5 by migrating the live backlog into file-backed item records and regenerating the managed index
 - Migrated the completed backlog archive into summary and archived-item surfaces with explicit redirect pointers
+- Reframed the roadmap around Now / Next / Later horizons while preserving detailed phase history for reference
 
 **Decisions:**
 
@@ -689,7 +710,7 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Restructure `.oat/repo/reference/roadmap.md` into Now / Next / Later horizons in `p05-t03`
+- Retire `deferred-phases.md` by migrating any remaining backlog-worthy items and regenerating the backlog index in `p05-t04`
 
 **Blockers:**
 

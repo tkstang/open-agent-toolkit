@@ -1,6 +1,6 @@
 ---
-oat_current_task: p05-t03
-oat_last_commit: 1433636e75a9052504fb7b7048929f9b42e56400
+oat_current_task: p05-t04
+oat_last_commit: 68048c2666e1d80d9dd4a13e0ac15314f131a3d3
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -13,7 +13,7 @@ oat_workflow_origin: native # native | imported
 oat_docs_updated: null # null | skipped | complete — documentation sync status
 oat_project_created: '2026-03-15T20:13:02.209Z' # ISO 8601 UTC timestamp — set once at project creation
 oat_project_completed: null # ISO 8601 UTC timestamp — set when project is completed/archived
-oat_project_state_updated: '2026-03-15T22:58:14Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
+oat_project_state_updated: '2026-03-15T22:59:28Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
 oat_generated: false
 ---
 
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p05-t03
+Implementation - Executing p05-t04
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Migrate the roadmap into Now / Next / Later horizons, starting with `p05-t03`
+Retire `deferred-phases.md` and migrate any remaining backlog-worthy items, starting with `p05-t04`
