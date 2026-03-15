@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p05-t01
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -30,9 +30,9 @@ oat_generated: false
 | Phase 2 | complete | 7     | 7/7       |
 | Phase 3 | complete | 3     | 3/3       |
 | Phase 4 | complete | 3     | 3/3       |
-| Phase 5 | pending  | 1     | 0/1       |
+| Phase 5 | complete | 1     | 1/1       |
 
-**Total:** 16/17 tasks completed
+**Total:** 17/17 tasks completed
 
 ---
 
@@ -317,6 +317,49 @@ oat_generated: false
 
 ---
 
+## Phase 5: Review Fixes v2 (final re-review)
+
+**Status:** complete
+**Started:** 2026-03-15
+
+### Phase Summary
+
+**Outcome (what changed):**
+
+- Fixed core pack scope accounting: `resolvePackScopes()` now overrides core to `'user'` scope
+- AGENTS.md section now correctly marks core as user-scoped
+- Success output now includes `oat sync --scope user` when only core is selected
+- Added regression tests for scope accounting
+
+**Key files touched:**
+
+- `packages/cli/src/commands/init/tools/index.ts` - core scope override in resolvePackScopes
+- `packages/cli/src/commands/init/tools/index.test.ts` - regression tests
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test && pnpm --filter @oat/cli type-check`
+- Result: All passed (1018/1018 tests), clean type-check
+
+### Task p05-t01: (review) Fix core pack scope accounting in oat init tools
+
+**Status:** completed
+**Commit:** e782001
+
+**Outcome:**
+
+- `resolvePackScopes()` now overrides core to always resolve as `'user'` scope
+- `buildToolPacksSectionBody` correctly marks core as user-scoped in AGENTS output
+- `reportSuccess` includes user sync instruction when core is selected
+- Two regression tests added (unit + integration)
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/tools/index.ts` - added core scope override after non-user-eligible loop
+- `packages/cli/src/commands/init/tools/index.test.ts` - added `buildToolPacksSectionBody` core test + integration test
+
+---
+
 ## Review Received: final
 
 **Date:** 2026-03-15
@@ -452,6 +495,18 @@ Chronological log of implementation progress.
 
 - p04-t01 resolved as part of rebase conflict resolution (combined core + research)
 
+### 2026-03-15 (Session 4)
+
+**Session Start:** resumed from p05-t01
+
+- [x] p05-t01: Fix core pack scope accounting - e782001
+
+**What changed (high level):**
+
+- `resolvePackScopes()` now correctly marks core as user-scoped
+- AGENTS output and sync guidance now correct for core pack
+- 2 regression tests added (1018 total tests passing)
+
 ---
 
 ## Deviations from Plan
@@ -474,6 +529,7 @@ Track test execution during implementation.
 | 2     | 983       | 983    | 0      | -        |
 | 3     | 983       | 983    | 0      | -        |
 | 4     | 1016      | 1016   | 0      | -        |
+| 5     | 1018      | 1018   | 0      | -        |
 
 ## Final Summary (for PR/docs)
 
