@@ -6,7 +6,7 @@ REPO_ROOT="$(cd "${SCRIPT_DIR}/../../.." && pwd)"
 ASSETS="${OAT_ASSETS_DIR:-${REPO_ROOT}/packages/cli/assets}"
 
 rm -rf "${ASSETS}"
-mkdir -p "${ASSETS}/skills" "${ASSETS}/agents" "${ASSETS}/templates" "${ASSETS}/scripts"
+mkdir -p "${ASSETS}/skills" "${ASSETS}/agents" "${ASSETS}/templates" "${ASSETS}/scripts" "${ASSETS}/docs"
 
 SKILLS=(
   create-agnostic-skill
@@ -71,6 +71,9 @@ done
 cp -R "${REPO_ROOT}/.oat/templates/ideas" "${ASSETS}/templates/"
 cp -R "${REPO_ROOT}/.oat/templates/docs-app-mkdocs" "${ASSETS}/templates/"
 cp -R "${REPO_ROOT}/.oat/templates/docs-app-fuma" "${ASSETS}/templates/"
+
+# Bundle OAT documentation for core pack (oat-docs skill)
+cp -R "${REPO_ROOT}/apps/oat-docs/docs/." "${ASSETS}/docs/"
 
 for script in generate-oat-state.sh generate-thin-index.sh; do
   SOURCE_SCRIPT="${REPO_ROOT}/.oat/scripts/${script}"
