@@ -903,15 +903,15 @@ git commit -m "feat(p08-t07): per-pack scope selection in interactive install fl
 
 ## Reviews
 
-| Scope     | Type     | Status | Date       | Artifact                                                 |
-| --------- | -------- | ------ | ---------- | -------------------------------------------------------- |
-| p01       | code     | passed | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p02       | code     | passed | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p03       | code     | passed | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p04       | code     | passed | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| final     | code     | passed | 2026-03-14 | reviews/archived/final-review-2026-03-14-v3.md           |
-| discovery | artifact | passed | 2026-03-14 | reviews/archived/artifact-discovery-review-2026-03-14.md |
-| design    | artifact | passed | 2026-03-14 | reviews/archived/artifact-design-review-2026-03-14.md    |
+| Scope     | Type     | Status   | Date       | Artifact                                                 |
+| --------- | -------- | -------- | ---------- | -------------------------------------------------------- |
+| p01       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p02       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p03       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p04       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| final     | code     | received | 2026-03-15 | reviews/final-review-2026-03-15.md                       |
+| discovery | artifact | passed   | 2026-03-14 | reviews/archived/artifact-discovery-review-2026-03-14.md |
+| design    | artifact | passed   | 2026-03-14 | reviews/archived/artifact-design-review-2026-03-14.md    |
 
 ---
 
