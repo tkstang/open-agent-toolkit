@@ -106,6 +106,7 @@ title: Add webhook support
 status: open              # open | in_progress | closed | wont_do
 priority: high            # urgent | high | medium | low | none
 scope: feature            # idea | task | feature | initiative
+scope_estimate: M         # XS | S | M | L | XL | XXL
 labels: [cli, integrations]
 assignee: null
 created: 2026-03-15T14:30:00Z
@@ -125,6 +126,8 @@ Support webhook endpoints for CLI event notifications...
 ```
 
 The `id` is a `bl-` prefix + 4-char hash generated from filename + creation timestamp. The `title` is the human-readable name, always displayed alongside the ID (e.g., `bl-a3f2: Add webhook support`).
+
+The `scope_estimate` is a t-shirt size estimate of effort. The `oat-pjm-add-backlog-item` skill instructs the agent to provide an initial estimate, then asks the user for confirmation/adjustment.
 
 ### Backlog Directory Structure
 
@@ -223,6 +226,10 @@ A `backlog-item.md` template in `.oat/templates/` enables consistent scaffolding
 17. **Roadmap uses Now / Next / Later horizons:** Primary structure is time-based horizons (Now = active/committed, Next = planned, Later = directional intent). Optional theme groupings within each horizon. Entries reference backlog items by ID and projects by name — detail lives in those artifacts, not the roadmap.
 18. **Template-guided structure for roadmap and backlog:** `.oat/templates/roadmap.md` and `.oat/templates/backlog-item.md` define the canonical structure. Actual files reference their template at the top (e.g., `<!-- Structure guidance: .oat/templates/roadmap.md -->`) so agents follow the pattern consistently.
 19. **`associated_issues` lives in project `state.md` frontmatter:** No separate config file — `state.md` is already the project metadata hub, and skills already read/write it.
+20. **`scope_estimate` field on backlog items:** T-shirt sizing (XS / S / M / L / XL / XXL) for effort estimation. The `oat-pjm-add-backlog-item` skill has the agent provide an initial estimate and asks the user for confirmation, disagreement, or adjustment.
+21. **Project split:** This discovery covers two separate projects: (a) **Local project management** — solidifying the local backlog/roadmap/reference system, quick mode, immediate priority; (b) **Remote project management integration** — Jira/Linear integration, spec-driven, deferred to future phase.
+22. **Skill renames:** Existing skills get refactored into the `oat-pjm-*` namespace: `update-repo-reference` → `oat-pjm-update-repo-reference`; `review-backlog` → `oat-pjm-review-backlog`. New skill: `oat-pjm-add-backlog-item`.
+23. **`oat-pjm-review-backlog` analyzes the full backlog:** Reviews `completed.md`, `index.md`, and individual backlog items. Presents the user with an analysis including quick wins, high-value items, scope estimates, and recommendations for what to work on next. Based on existing `review-backlog` skill with updates for the new file-per-item structure.
 
 ## Constraints
 
