@@ -477,14 +477,63 @@ git commit -m "fix(p04-t03): add directory guard to docs copy in bundle-assets.s
 
 ---
 
+## Phase 5: Review Fixes v2 (final re-review)
+
+### Task p05-t01: (review) Fix core pack scope accounting in oat init tools
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/tools/index.ts`
+- Modify: `packages/cli/src/commands/init/tools/index.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `resolvePackScopes()` treats every non-user-eligible pack as project-scoped, which includes `core`. Later, `installCore()` correctly writes to `userRoot`, but `packScopeInfo` and `hasUserScope` still consume the stale `packScopes.core = 'project'` value. This causes `buildToolPacksSectionBody()` to omit the core pack from the user-scoped section and `reportSuccess()` to recommend only `oat sync --scope project` even though core was installed at user scope.
+Location: `packages/cli/src/commands/init/tools/index.ts:158,174,381,528`
+
+**Step 2: Implement fix**
+
+Model `core` as always-`user` in the scope resolution. In `resolvePackScopes()`, before the `!USER_ELIGIBLE_PACKS.has(pack)` loop (or after), override `core` to always resolve to `'user'` scope:
+
+```typescript
+// Core pack is always user-scoped, regardless of user-eligible selection
+if (selections.includes('core')) {
+  scopes.core = 'user';
+}
+```
+
+Ensure the existing `!USER_ELIGIBLE_PACKS.has(pack)` fallback at line 174-177 does not override this (either add `core` to the exclusion, or place the core override after the loop).
+
+**Step 3: Write regression test (RED → GREEN)**
+
+Add test cases to `index.test.ts`:
+
+- Assert that when `core` is selected, `packScopes.core === 'user'` (not `'project'`).
+- Assert `buildToolPacksSectionBody` lists core in the user-scoped section.
+- Assert `reportSuccess` includes `oat sync --scope user` instruction when only `core` is selected.
+
+**Step 4: Verify**
+
+Run: `pnpm --filter @oat/cli test && pnpm --filter @oat/cli type-check`
+Expected: All tests pass, type-check clean
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/index.ts packages/cli/src/commands/init/tools/index.test.ts
+git commit -m "fix(p05-t01): fix core pack scope accounting in oat init tools"
+```
+
+---
+
 ## Reviews
 
-| Scope | Type | Status   | Date       | Artifact                              |
-| ----- | ---- | -------- | ---------- | ------------------------------------- |
-| p01   | code | pending  | -          | -                                     |
-| p02   | code | pending  | -          | -                                     |
-| p03   | code | pending  | -          | -                                     |
-| final | code | received | 2026-03-15 | reviews/final-review-2026-03-15-v2.md |
+| Scope | Type | Status      | Date       | Artifact                                       |
+| ----- | ---- | ----------- | ---------- | ---------------------------------------------- |
+| p01   | code | pending     | -          | -                                              |
+| p02   | code | pending     | -          | -                                              |
+| p03   | code | pending     | -          | -                                              |
+| final | code | fixes_added | 2026-03-15 | reviews/archived/final-review-2026-03-15-v2.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -505,8 +554,9 @@ git commit -m "fix(p04-t03): add directory guard to docs copy in bundle-assets.s
 - Phase 2: 7 tasks — core pack CLI infrastructure (types, manifest, installer, subcommand, orchestrator, scan-tools, bundle, tests)
 - Phase 3: 3 tasks — rewrite skills per create-oat-skill, finalize registration
 - Phase 4: 3 tasks — review fixes (help text, docs update, bundle guard)
+- Phase 5: 1 task — review fixes v2 (core pack scope accounting)
 
-**Total: 16 tasks (13 original + 3 review fixes)**
+**Total: 17 tasks (13 original + 3 review fixes + 1 re-review fix)**
 
 ---
 

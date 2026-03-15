@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: null
+oat_current_task_id: p05-t01
 oat_generated: false
 ---
 
@@ -30,8 +30,9 @@ oat_generated: false
 | Phase 2 | complete | 7     | 7/7       |
 | Phase 3 | complete | 3     | 3/3       |
 | Phase 4 | complete | 3     | 3/3       |
+| Phase 5 | pending  | 1     | 0/1       |
 
-**Total:** 16/16 tasks completed
+**Total:** 16/17 tasks completed
 
 ---
 
@@ -344,6 +345,34 @@ oat_generated: false
 **New tasks added:** p04-t01, p04-t02, p04-t03
 
 **Next:** Fix tasks complete. Request re-review via `oat-project-review-provide code final` scoped to fix task commits only, then `oat-project-review-receive` to reach `passed`.
+
+---
+
+## Review Received: final (v2 re-review)
+
+**Date:** 2026-03-15
+**Review artifact:** reviews/archived/final-review-2026-03-15-v2.md
+
+**Findings:**
+
+- Critical: 0
+- Important: 1
+- Medium: 0
+- Minor: 0
+
+**Disposition:**
+
+- `I1` (core pack scope accounting bug in oat init tools) → converted to p05-t01
+
+**Deferred Findings Disposition (Final Scope):**
+
+- Deferred Medium count: 0 (gate satisfied)
+- Prior deferred minors (m2, m3) explicitly accepted by reviewer as acceptable tradeoffs
+- No new minor findings — minor gate satisfied
+
+**New tasks added:** p05-t01
+
+**Next:** Execute fix task via the `oat-project-implement` skill, then re-review to reach `passed`.
 
 ---
 
