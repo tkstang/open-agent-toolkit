@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p01-t03
+oat_current_task_id: p01-t04
 oat_generated: false
 ---
 
@@ -26,13 +26,13 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 4     | 2/4       |
+| Phase 1 | in_progress | 4     | 3/4       |
 | Phase 2 | pending     | 3     | 0/3       |
 | Phase 3 | pending     | 3     | 0/3       |
 | Phase 4 | pending     | 5     | 0/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 2/19 tasks completed
+**Total:** 3/19 tasks completed
 
 ---
 
@@ -112,12 +112,30 @@ oat_generated: false
 
 ### Task p01-t03: Create backlog directory structure
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 1cdb035030eafe0a261ae4e736cdf2658b265670
 
-**Notes:**
+**Outcome (required when completed):**
 
-- Will scaffold `.oat/repo/reference/backlog/` and index/completed files
+- Added the new `backlog/` reference tree with tracked active and archived item directories.
+- Introduced a managed index section plus a human-curated overview area so CLI regeneration can coexist with hand-authored backlog context.
+- Created a completed backlog summary file to support the later migration from the flat archive document.
+
+**Files changed:**
+
+- `.oat/repo/reference/backlog/index.md` - added curated overview plus managed table markers
+- `.oat/repo/reference/backlog/completed.md` - added completed-summary scaffold
+- `.oat/repo/reference/backlog/items/.gitkeep` - tracked the active item directory
+- `.oat/repo/reference/backlog/archived/.gitkeep` - tracked the archived item directory
+
+**Verification:**
+
+- Run: `find .oat/repo/reference/backlog -type f | sort`
+- Result: Pass; expected files were created under the new backlog tree
+
+**Notes / Decisions:**
+
+- Seeded the managed table with an explicit empty state so the future regeneration command has a stable replacement target.
 
 ---
 
@@ -278,7 +296,8 @@ Chronological log of implementation progress.
 
 - [x] p01-t01: Create backlog item template - 48c08748dd9e64541e2d999839170bc803332514
 - [x] p01-t02: Create roadmap template - 12d48e59ea1ccba0105d37b87bd1bc55204ba70b
-- [ ] p01-t03: Create backlog directory structure - pending
+- [x] p01-t03: Create backlog directory structure - 1cdb035030eafe0a261ae4e736cdf2658b265670
+- [ ] p01-t04: Add `associated_issues` to state.md template - pending
 
 **What changed (high level):**
 

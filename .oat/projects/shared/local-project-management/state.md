@@ -1,6 +1,6 @@
 ---
-oat_current_task: p01-t03
-oat_last_commit: 12d48e59ea1ccba0105d37b87bd1bc55204ba70b
+oat_current_task: p01-t04
+oat_last_commit: 1cdb035030eafe0a261ae4e736cdf2658b265670
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p01-t03
+Implementation - Executing p01-t04
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Complete Phase 1 templates and scaffold work, continuing with `p01-t03`
+Complete Phase 1 templates and scaffold work, continuing with `p01-t04`
