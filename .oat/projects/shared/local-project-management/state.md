@@ -1,6 +1,6 @@
 ---
-oat_current_task: p03-t02
-oat_last_commit: fa340e54c7046a77752bbb4bbed6d943332f49d7
+oat_current_task: p03-t03
+oat_last_commit: e37b14700cce6fe39e6bcb0bf33f488cb3eb17d5
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p03-t02
+Implementation - Executing p03-t03
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Refactor repo-reference skill into the project-management namespace, starting with `p03-t02`
+Refactor backlog review skill into the project-management namespace, starting with `p03-t03`

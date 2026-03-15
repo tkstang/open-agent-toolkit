@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p03-t02
+oat_current_task_id: p03-t03
 oat_generated: false
 ---
 
@@ -28,11 +28,11 @@ oat_generated: false
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | complete    | 4     | 4/4       |
 | Phase 2 | complete    | 3     | 3/3       |
-| Phase 3 | in_progress | 3     | 1/3       |
+| Phase 3 | in_progress | 3     | 2/3       |
 | Phase 4 | pending     | 5     | 0/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 8/19 tasks completed
+**Total:** 9/19 tasks completed
 
 ---
 
@@ -305,8 +305,27 @@ oat_generated: false
 
 ### Task p03-t02: Refactor `update-repo-reference` to `oat-pjm-update-repo-reference`
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** e37b14700cce6fe39e6bcb0bf33f488cb3eb17d5
+
+**Outcome (required when completed):**
+
+- Added a namespaced project-management version of the repo-reference sync skill aligned to the new `backlog/` directory structure.
+- Added a deprecation note to the legacy `update-repo-reference` skill so discovery flows point users at the new namespace.
+
+**Files changed:**
+
+- `.agents/skills/oat-pjm-update-repo-reference/SKILL.md` - new repo-reference sync skill for file-backed backlog assets
+- `.agents/skills/update-repo-reference/SKILL.md` - added a deprecation pointer
+
+**Verification:**
+
+- Run: `grep "version:" .agents/skills/oat-pjm-update-repo-reference/SKILL.md`
+- Result: Pass; the new skill declares `version: 1.0.0`
+
+**Notes / Decisions:**
+
+- Re-authored the namespaced skill around the new backlog contracts instead of cloning every legacy section, which kept the instructions focused on the post-migration structure.
 
 ---
 
@@ -417,7 +436,8 @@ Chronological log of implementation progress.
 - [x] p02-t02: Implement backlog index regeneration command - 2a600879a6645981b8f169580eb533f75e39ae61
 - [x] p02-t03: Wire backlog CLI commands - 0e3d1764a0d2e27f8e6de3d01c70268f01f17d0d
 - [x] p03-t01: Create `oat-pjm-add-backlog-item` skill - fa340e54c7046a77752bbb4bbed6d943332f49d7
-- [ ] p03-t02: Refactor `update-repo-reference` to `oat-pjm-update-repo-reference` - pending
+- [x] p03-t02: Refactor `update-repo-reference` to `oat-pjm-update-repo-reference` - e37b14700cce6fe39e6bcb0bf33f488cb3eb17d5
+- [ ] p03-t03: Refactor `review-backlog` to `oat-pjm-review-backlog` - pending
 
 **What changed (high level):**
 
