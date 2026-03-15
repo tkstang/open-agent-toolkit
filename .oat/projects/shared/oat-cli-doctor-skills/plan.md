@@ -479,12 +479,12 @@ git commit -m "fix(p04-t03): add directory guard to docs copy in bundle-assets.s
 
 ## Reviews
 
-| Scope | Type | Status      | Date       | Artifact                                    |
-| ----- | ---- | ----------- | ---------- | ------------------------------------------- |
-| p01   | code | pending     | -          | -                                           |
-| p02   | code | pending     | -          | -                                           |
-| p03   | code | pending     | -          | -                                           |
-| final | code | fixes_added | 2026-03-15 | reviews/archived/final-review-2026-03-15.md |
+| Scope | Type | Status          | Date       | Artifact                                    |
+| ----- | ---- | --------------- | ---------- | ------------------------------------------- |
+| p01   | code | pending         | -          | -                                           |
+| p02   | code | pending         | -          | -                                           |
+| p03   | code | pending         | -          | -                                           |
+| final | code | fixes_completed | 2026-03-15 | reviews/archived/final-review-2026-03-15.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 

@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
-oat_ready_for: oat-project-implement
+oat_status: complete
+oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p04-t01
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,14 +24,14 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | complete    | 3     | 3/3       |
-| Phase 2 | complete    | 7     | 7/7       |
-| Phase 3 | complete    | 3     | 3/3       |
-| Phase 4 | not_started | 3     | 0/3       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 3     | 3/3       |
+| Phase 2 | complete | 7     | 7/7       |
+| Phase 3 | complete | 3     | 3/3       |
+| Phase 4 | complete | 3     | 3/3       |
 
-**Total:** 13/16 tasks completed
+**Total:** 16/16 tasks completed
 
 ---
 
@@ -243,6 +243,79 @@ oat_generated: false
 
 ---
 
+## Phase 4: Review Fixes (final)
+
+**Status:** complete
+**Started:** 2026-03-15
+
+### Phase Summary
+
+**Outcome (what changed):**
+
+- Help text for `--pack` in remove/update commands now shows `(core|ideas|workflows|utility|research)`
+- `oat tools update --pack core` now refreshes `~/.oat/docs/` alongside skills (D3 requirement)
+- `bundle-assets.sh` docs copy wrapped in directory guard for defensive consistency
+
+**Key files touched:**
+
+- `packages/cli/src/commands/tools/update/index.ts` - docs refresh on core update
+- `packages/cli/scripts/bundle-assets.sh` - directory guard
+- `packages/cli/src/commands/tools/remove/index.ts` - help text (resolved in rebase)
+- `packages/cli/src/commands/help-snapshots.test.ts` - updated snapshots (resolved in rebase)
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test && pnpm --filter @oat/cli type-check && pnpm build`
+- Result: All passed (1016/1016 tests), clean type-check, build success
+
+### Task p04-t01: (review) Fix --pack help text to include 'core'
+
+**Status:** completed
+**Commit:** (resolved during rebase onto main — rebase commits include core in help text)
+
+**Outcome:**
+
+- Help text in remove and update commands now shows `(core|ideas|workflows|utility|research)`
+- Help snapshot tests updated to match
+
+**Notes / Decisions:**
+
+- This was resolved during the rebase onto origin/main (which included PR #75's research pack). The rebase conflict resolution combined both `core` and `research` in all help text.
+
+---
+
+### Task p04-t02: (review) Add docs refresh to oat tools update --pack core
+
+**Status:** completed
+**Commit:** 1f5120d
+
+**Outcome:**
+
+- `oat tools update --pack core` now copies docs from assets/docs/ to ~/.oat/docs/ after updating skills
+- Satisfies discovery requirement D3
+
+**Files changed:**
+
+- `packages/cli/src/commands/tools/update/index.ts` - added docs refresh logic after updateTools when pack is core
+
+---
+
+### Task p04-t03: (review) Add directory guard to bundle-assets.sh docs copy
+
+**Status:** completed
+**Commit:** 1f8f508
+
+**Outcome:**
+
+- Docs copy in bundle-assets.sh now wrapped in `if [ -d ... ]` guard
+- Build won't fail if docs directory is missing (partial clone/stripped archive)
+
+**Files changed:**
+
+- `packages/cli/scripts/bundle-assets.sh` - wrapped cp -R in directory guard
+
+---
+
 ## Review Received: final
 
 **Date:** 2026-03-15
@@ -270,12 +343,7 @@ oat_generated: false
 
 **New tasks added:** p04-t01, p04-t02, p04-t03
 
-**Next:** Execute fix tasks via `oat-project-implement` starting from p04-t01.
-
-After fix tasks are complete:
-
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+**Next:** Fix tasks complete. Request re-review via `oat-project-review-provide code final` scoped to fix task commits only, then `oat-project-review-receive` to reach `passed`.
 
 ---
 
@@ -336,6 +404,25 @@ Chronological log of implementation progress.
 - oat-docs resolves from ~/.oat/docs/ only
 - oat-doctor references core pack and sources config docs from bundle
 
+### 2026-03-15 (Session 3)
+
+**Session Start:** resumed from p04-t01
+
+- [x] p04-t01: Fix help text (resolved in rebase)
+- [x] p04-t02: Add docs refresh on core update - 1f5120d
+- [x] p04-t03: Add bundle-assets.sh guard - 1f8f508
+
+**What changed (high level):**
+
+- Rebased onto origin/main (PR #75 research pack merged)
+- Help text now includes both core and research packs
+- `oat tools update --pack core` refreshes ~/.oat/docs/
+- bundle-assets.sh docs copy has directory guard
+
+**Decisions:**
+
+- p04-t01 resolved as part of rebase conflict resolution (combined core + research)
+
 ---
 
 ## Deviations from Plan
@@ -357,6 +444,7 @@ Track test execution during implementation.
 | 1     | 973       | 973    | 0      | -        |
 | 2     | 983       | 983    | 0      | -        |
 | 3     | 983       | 983    | 0      | -        |
+| 4     | 1016      | 1016   | 0      | -        |
 
 ## Final Summary (for PR/docs)
 
@@ -371,7 +459,7 @@ Track test execution during implementation.
 
 **Behavioral changes (user-facing):**
 
-- `oat init tools` now shows 4 packs (core, ideas, workflows, utility) instead of 3
+- `oat init tools` now shows 5 packs (core, ideas, workflows, utility, research)
 - Core pack is checked by default and always installs to user scope
 - `oat tools list` recognizes core pack skills
 - `oat tools update` and `oat tools remove` accept 'core' as a pack name
@@ -389,14 +477,16 @@ Track test execution during implementation.
 
 **Verification performed:**
 
-- 983/983 tests passing
+- 1016/1016 tests passing (after rebase onto main with research pack)
 - Type-check clean
 - Lint: 0 warnings, 0 errors
 - Bundle consistency test validates CORE_SKILLS alignment
+- Build success with docs bundled
 
 **Design deltas (if any):**
 
 - None — implemented as planned after user feedback incorporated
+- Review fixes: help text, docs refresh on update, bundle guard added
 
 ## References
 
