@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p01-t01
+oat_current_task_id: p01-t02
 oat_generated: false
 ---
 
@@ -26,14 +26,17 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | N     | 0/N       |
-| Phase 2 | pending     | N     | 0/N       |
+| Phase 1 | in_progress | 4     | 1/4       |
+| Phase 2 | pending     | 3     | 0/3       |
+| Phase 3 | pending     | 3     | 0/3       |
+| Phase 4 | pending     | 5     | 0/5       |
+| Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 0/{N} tasks completed
+**Total:** 1/19 tasks completed
 
 ---
 
-## Phase 1: {Phase Name}
+## Phase 1: Templates and Directory Structure
 
 **Status:** in_progress
 **Started:** 2026-03-15
@@ -42,66 +45,198 @@ oat_generated: false
 
 **Outcome (what changed):**
 
-- {2-5 bullets describing user-visible / behavior-level changes delivered in this phase}
+- Pending
 
 **Key files touched:**
 
-- `{path}` - {why}
+- Pending
 
 **Verification:**
 
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `Pending`
+- Result: Pending
 
 **Notes / Decisions:**
 
-- {trade-offs or deviations discovered during implementation}
+- None yet
 
-### Task p01-t01: {Task Name}
+### Task p01-t01: Create backlog item template
 
-**Status:** completed / in_progress / pending / blocked
-**Commit:** {sha} (if completed)
+**Status:** completed
+**Commit:** 48c08748dd9e64541e2d999839170bc803332514
 
 **Outcome (required when completed):**
 
-- {what materially changed (not “did task”, but “system now does X”)}
+- Added a reusable backlog item template with the agreed tracking schema and template markers.
+- New backlog entries now have explicit description and acceptance-criteria sections to standardize item authoring.
 
 **Files changed:**
 
-- `{path}` - {why}
+- `.oat/templates/backlog-item.md` - added the new file-per-item backlog template
 
 **Verification:**
 
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `cat .oat/templates/backlog-item.md | head -20`
+- Result: Pass; frontmatter and body sections render with the expected schema
 
 **Notes / Decisions:**
 
-- {gotchas, trade-offs, design deltas, important context for future sessions}
-
-**Issues Encountered:**
-
-- {Issue and resolution}
+- Used the exact field order from the plan so later migration and CLI parsing work can rely on a stable shape.
 
 ---
 
-### Task p01-t02: {Task Name}
+### Task p01-t02: Create roadmap template
 
 **Status:** pending
 **Commit:** -
 
 **Notes:**
 
-- {Notes will be added during implementation}
+- Will create `.oat/templates/roadmap.md`
 
 ---
 
-## Phase 2: {Phase Name}
+### Task p01-t03: Create backlog directory structure
+
+**Status:** pending
+**Commit:** -
+
+**Notes:**
+
+- Will scaffold `.oat/repo/reference/backlog/` and index/completed files
+
+---
+
+### Task p01-t04: Add `associated_issues` to state.md template
+
+**Status:** pending
+**Commit:** -
+
+**Notes:**
+
+- Will extend `.oat/templates/state.md`
+
+---
+
+## Phase 2: CLI Support
 
 **Status:** pending
 **Started:** -
 
-### Task p02-t01: {Task Name}
+### Task p02-t01: Implement backlog item ID generation utility
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p02-t02: Implement backlog index regeneration command
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p02-t03: Wire backlog CLI commands
+
+**Status:** pending
+**Commit:** -
+
+---
+
+## Phase 3: Agent Skills
+
+**Status:** pending
+**Started:** -
+
+### Task p03-t01: Create `oat-pjm-add-backlog-item` skill
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p03-t02: Refactor `update-repo-reference` to `oat-pjm-update-repo-reference`
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p03-t03: Refactor `review-backlog` to `oat-pjm-review-backlog`
+
+**Status:** pending
+**Commit:** -
+
+---
+
+## Phase 4: Skill Pack Infrastructure
+
+**Status:** pending
+**Started:** -
+
+### Task p04-t01: Add `PROJECT_MANAGEMENT_SKILLS` to skill manifest
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p04-t02: Extend `PackName` type and pack resolution
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p04-t03: Create installer module
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p04-t04: Register pack in init tools and descriptions
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p04-t05: Update `bundle-assets.sh` and verify consistency
+
+**Status:** pending
+**Commit:** -
+
+---
+
+## Phase 5: Migration
+
+**Status:** pending
+**Started:** -
+
+### Task p05-t01: Migrate existing backlog items to file-per-item
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p05-t02: Migrate completed backlog to new structure
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p05-t03: Migrate roadmap to Now/Next/Later structure
+
+**Status:** pending
+**Commit:** -
+
+---
+
+### Task p05-t04: Retire `deferred-phases.md`
 
 **Status:** pending
 **Commit:** -
@@ -125,36 +260,30 @@ Chronological log of implementation progress.
 
 ### 2026-03-15
 
-**Session Start:** {time}
+**Session Start:** 17:25
 
-- [x] p01-t01: {Task name} - {commit sha}
-- [ ] p01-t02: {Task name} - in progress
+- [x] p01-t01: Create backlog item template - 48c08748dd9e64541e2d999839170bc803332514
+- [ ] p01-t02: Create roadmap template - pending
 
 **What changed (high level):**
 
-- {short bullets suitable for PR/docs}
+- Confirmed final-only plan checkpoint: `["p05"]`
+- Moved project tracking from planning into implementation kickoff
+- Initialized implementation task map for all 19 planned tasks
 
 **Decisions:**
 
-- {Decision made and rationale}
+- Pause only after completing `p05`; do not stop at intermediate phases unless blocked
 
 **Follow-ups / TODO:**
 
-- {anything discovered during implementation that should be captured for later}
+- Execute tasks strictly in plan order, starting with template creation
 
 **Blockers:**
 
-- {Blocker description} - {status: resolved/pending}
+- None
 
-**Session End:** {time}
-
----
-
-### 2026-03-15
-
-**Session Start:** {time}
-
-{Continue log...}
+**Session End:** -
 
 ---
 
