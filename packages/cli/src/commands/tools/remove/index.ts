@@ -64,7 +64,7 @@ export function createToolsRemoveCommand(
     .argument('[name]', 'Tool name to remove')
     .option(
       '--pack <pack>',
-      'Remove all tools in a pack (ideas|workflows|utility)',
+      'Remove all tools in a pack (ideas|workflows|utility|research)',
     )
     .option('--all', 'Remove all installed tools')
     .option('--dry-run', 'Preview removals without applying')

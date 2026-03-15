@@ -652,7 +652,7 @@ describe('help output snapshots', () => {
         name           Tool name to remove
 
       Options:
-        --pack <pack>  Remove all tools in a pack (ideas|workflows|utility)
+        --pack <pack>  Remove all tools in a pack (ideas|workflows|utility|research)
         --all          Remove all installed tools
         --dry-run      Preview removals without applying
         --no-sync      Skip auto-sync after removal
@@ -676,7 +676,7 @@ describe('help output snapshots', () => {
         name           Tool name to update
 
       Options:
-        --pack <pack>  Update all tools in a pack (ideas|workflows|utility)
+        --pack <pack>  Update all tools in a pack (ideas|workflows|utility|research)
         --all          Update all outdated tools
         --dry-run      Preview updates without applying
         --no-sync      Skip auto-sync after update

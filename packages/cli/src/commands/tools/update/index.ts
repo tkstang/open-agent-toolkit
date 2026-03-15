@@ -63,7 +63,7 @@ export function createToolsUpdateCommand(
     .argument('[name]', 'Tool name to update')
     .option(
       '--pack <pack>',
-      'Update all tools in a pack (ideas|workflows|utility)',
+      'Update all tools in a pack (ideas|workflows|utility|research)',
     )
     .option('--all', 'Update all outdated tools')
     .option('--dry-run', 'Preview updates without applying')
