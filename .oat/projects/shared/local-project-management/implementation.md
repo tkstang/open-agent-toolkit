@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p05-t01
+oat_current_task_id: p05-t02
 oat_generated: false
 ---
 
@@ -30,9 +30,9 @@ oat_generated: false
 | Phase 2 | complete    | 3     | 3/3       |
 | Phase 3 | complete    | 3     | 3/3       |
 | Phase 4 | complete    | 5     | 5/5       |
-| Phase 5 | in_progress | 4     | 0/4       |
+| Phase 5 | in_progress | 4     | 1/4       |
 
-**Total:** 15/19 tasks completed
+**Total:** 16/19 tasks completed
 
 ---
 
@@ -557,8 +557,35 @@ oat_generated: false
 
 ### Task p05-t01: Migrate existing backlog items to file-per-item
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** a34147dd397ae3dd3474f93a47303d65db265472
+
+**Outcome (required when completed):**
+
+- Migrated the live backlog from the flat `backlog.md` list into seven file-backed item records under `backlog/items/`.
+- Regenerated the managed backlog index table and replaced the placeholder curated overview with summaries tied to the new item IDs.
+- Added a migration pointer to the legacy `backlog.md` file so readers are redirected to the file-backed backlog structure.
+
+**Files changed:**
+
+- `.oat/repo/reference/backlog/items/s3-archival-project-complete.md` - migrated S3 archival inbox item
+- `.oat/repo/reference/backlog/items/backlog-refinement-jira.md` - migrated backlog refinement inbox item
+- `.oat/repo/reference/backlog/items/oat-pjm-workflow.md` - migrated active project-management workflow item and linked it to this project
+- `.oat/repo/reference/backlog/items/codex-prompt-wrapper.md` - migrated Codex wrapper planned item
+- `.oat/repo/reference/backlog/items/pr-review-skill-set.md` - migrated remote review follow-on planned item
+- `.oat/repo/reference/backlog/items/dependency-intelligence.md` - migrated dependency intelligence planned item
+- `.oat/repo/reference/backlog/items/idea-promotion-auto-discovery.md` - migrated idea promotion planned item
+- `.oat/repo/reference/backlog/index.md` - regenerated managed table and curated overview
+- `.oat/repo/reference/backlog.md` - added migration pointer to the new backlog directory
+
+**Verification:**
+
+- Run: `pnpm run cli -- backlog regenerate-index`; `find .oat/repo/reference/backlog/items -name "*.md" | wc -l`; `grep "OAT BACKLOG-INDEX" .oat/repo/reference/backlog/index.md`
+- Result: Pass; the managed index regenerated successfully, marker comments are present, and the live backlog currently resolves to 7 migrated item files
+
+**Notes / Decisions:**
+
+- The plan expected 8 active items, but `backlog.md` currently contains 7 real active entries because `oat-project-capture` has already moved into `backlog-completed.md`; the migration followed the current source-of-truth backlog content.
 
 ---
 
@@ -617,6 +644,7 @@ Chronological log of implementation progress.
 - [x] p04-t03: Create installer module - cb55b0473963c0f6090e496aac3fa9e49cfd419d
 - [x] p04-t04: Register pack in init tools and descriptions - 94ba3f0867233f16b1bc5c99e37ed7405d39d881
 - [x] p04-t05: Update `bundle-assets.sh` and verify consistency - 30ed804216e2f98906f0cf37125d43d1cd6af30d
+- [x] p05-t01: Migrate existing backlog items to file-per-item - a34147dd397ae3dd3474f93a47303d65db265472
 
 **What changed (high level):**
 
@@ -624,14 +652,16 @@ Chronological log of implementation progress.
 - Moved project tracking from planning into implementation kickoff
 - Initialized implementation task map for all 19 planned tasks
 - Completed phase 4, wiring the `project-management` pack through install, help, and bundle verification paths
+- Started phase 5 by migrating the live backlog into file-backed item records and regenerating the managed index
 
 **Decisions:**
 
 - Pause only after completing `p05`; do not stop at intermediate phases unless blocked
+- Treat `backlog.md` as the source of truth when plan assumptions diverge from the current repo state
 
 **Follow-ups / TODO:**
 
-- Start phase 5 by migrating the current flat backlog entries into file-per-item records
+- Migrate completed backlog summaries and recent archived item files in `p05-t02`
 
 **Blockers:**
 
@@ -645,9 +675,9 @@ Chronological log of implementation progress.
 
 Document any deviations from the original plan.
 
-| Task | Planned | Actual | Reason |
-| ---- | ------- | ------ | ------ |
-| -    | -       | -      | -      |
+| Task    | Planned                                          | Actual                          | Reason                                                                                                                        |
+| ------- | ------------------------------------------------ | ------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| p05-t01 | Migrate 8 active backlog items from `backlog.md` | Migrated 7 active backlog items | `oat-project-capture` was already moved to `backlog-completed.md`, so `backlog.md` contained 7 live entries at execution time |
 
 ## Test Results
 
