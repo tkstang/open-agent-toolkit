@@ -507,6 +507,22 @@ describe('createInitToolsCommand', () => {
     expect(body).toContain('`~/.agents/skills/`');
   });
 
+  it('marks core as user-scoped in AGENTS section and includes user sync instruction', async () => {
+    const { command, capture, upsertAgentsMdSection } = createHarness({
+      interactive: true,
+      packSelection: [['core']],
+    });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    const body = upsertAgentsMdSection.mock.calls[0]?.[2] as string;
+    expect(body).toMatch(/\*\*core\*\*.*_\(user scope\)_/);
+    expect(body).toContain('`~/.agents/skills/`');
+    expect(capture.info.join('\n')).toContain(
+      'Also run: oat sync --scope user',
+    );
+  });
+
   it('does not call upsertAgentsMdSection when no packs are selected', async () => {
     const { command, upsertAgentsMdSection } = createHarness({
       interactive: true,
@@ -579,5 +595,16 @@ describe('buildToolPacksSectionBody', () => {
 
     expect(body).not.toContain('### Workflow Execution Continuation');
     expect(body).not.toContain('configured HiLL checkpoint');
+  });
+
+  it('marks core pack as user-scoped in AGENTS section', () => {
+    const body = buildToolPacksSectionBody([
+      { pack: 'core', scope: 'user' },
+      { pack: 'workflows', scope: 'project' },
+    ]);
+
+    expect(body).toMatch(/\*\*core\*\*.*_\(user scope\)_/);
+    expect(body).toContain('`~/.agents/skills/`');
+    expect(body).not.toMatch(/\*\*workflows\*\*.*user scope/);
   });
 });

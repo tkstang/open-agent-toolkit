@@ -177,6 +177,11 @@ async function resolvePackScopes(
     }
   }
 
+  // Core pack is always user-scoped, regardless of user-eligible selection
+  if (selections.includes('core')) {
+    scopes.core = 'user';
+  }
+
   const eligiblePacks = selections.filter((pack) =>
     USER_ELIGIBLE_PACKS.has(pack),
   );
