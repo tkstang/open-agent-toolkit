@@ -774,6 +774,62 @@ git commit -m "docs(p08-t05): add research pack to tool packs and CLI reference 
 
 ---
 
+### Task p08-t06: Standardize output destination across /deep-research, /analyze, and /synthesize
+
+**Files:**
+
+- Modify: `.agents/skills/deep-research/SKILL.md`
+- Modify: `.agents/skills/analyze/SKILL.md`
+- Modify: `.agents/skills/synthesize/SKILL.md`
+
+**Step 1: Define shared output destination resolution**
+
+All three artifact-producing skills should follow the same output destination pattern:
+
+1. **If an explicit path was provided** in `$ARGUMENTS`, use it — no prompt.
+2. **Otherwise, ask the user** via `AskUserQuestion` (or provider equivalent) with a context-aware default suggestion:
+   - Detect OAT repo: check if `.oat/` exists at the repo root. If so, suggest `.oat/repo/research/` as the default destination.
+   - If not an OAT repo: suggest current directory as the default.
+   - The prompt should be: _"Where would you like to write the artifact? (default: {suggested path})"_
+   - If the user confirms the default (empty response or "yes"), use the suggested path.
+   - If the user provides a path, use that instead.
+
+**Step 2: Update /deep-research**
+
+- Remove the Obsidian vault auto-detection from Step 9 (output target resolution). Delete the Obsidian priority entirely.
+- Replace the 3-priority resolution (Obsidian > explicit path > current directory) with the shared pattern above.
+- Remove any Obsidian references from the Troubleshooting section if present.
+- Update the Success Criteria to reflect the new prompt-based resolution.
+
+**Step 3: Update /analyze**
+
+- Add a new step between cross-angle synthesis and the write step: "Resolve output destination"
+- Follow the shared pattern above. Renumber subsequent steps.
+- Update the Arguments section to document the optional trailing output-path argument.
+
+**Step 4: Update /synthesize**
+
+- Update Step 6 (Produce output) to include output destination resolution before writing.
+- For `/synthesize`, the context-aware default has an additional heuristic: if all input artifacts came from the same directory, suggest that directory (not current directory or `.oat/repo/research/`). Otherwise, fall back to the standard OAT-detection logic.
+- The prompt should be: _"Where would you like to write the synthesis? (default: {suggested path})"_
+
+**Step 5: Verify**
+
+Run: `grep -n 'AskUserQuestion\|output.*destination\|\.oat/repo/research' .agents/skills/deep-research/SKILL.md .agents/skills/analyze/SKILL.md .agents/skills/synthesize/SKILL.md`
+Expected: All three skills reference AskUserQuestion and the OAT-aware destination logic
+
+Run: `grep -n 'Obsidian\|obsidian' .agents/skills/deep-research/SKILL.md`
+Expected: No matches
+
+**Step 6: Commit**
+
+```bash
+git add .agents/skills/deep-research/SKILL.md .agents/skills/analyze/SKILL.md .agents/skills/synthesize/SKILL.md
+git commit -m "feat(p08-t06): standardize output destination with user prompt and OAT-aware defaults"
+```
+
+---
+
 ## Reviews
 
 | Scope     | Type     | Status | Date       | Artifact                                                 |
@@ -799,9 +855,9 @@ git commit -m "docs(p08-t05): add research pack to tool packs and CLI reference 
 - Phase 5: 3 tasks — Review fixes (final)
 - Phase 6: 2 tasks — Review fixes (final re-review)
 - Phase 7: 1 task — Review fixes (final re-review cycle 3)
-- Phase 8: 5 tasks — Research tool pack
+- Phase 8: 6 tasks — Research tool pack + output destination standardization
 
-**Total: 19 tasks**
+**Total: 20 tasks**
 
 Ready for code review and merge.
 

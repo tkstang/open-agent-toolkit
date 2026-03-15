@@ -30,8 +30,8 @@ oat_generated: false
 | Phase 5: Review Fixes (final)     | 3      | 3         | complete    |
 | Phase 6: Review Fixes (re-review) | 2      | 2         | complete    |
 | Phase 7: Review Fixes (cycle 3)   | 1      | 1         | complete    |
-| Phase 8: Research Tool Pack       | 5      | 0         | pending     |
-| **Total**                         | **19** | **14**    | **partial** |
+| Phase 8: Research Tool Pack       | 6      | 0         | pending     |
+| **Total**                         | **20** | **14**    | **partial** |
 
 ## Task Log
 

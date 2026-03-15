@@ -51,7 +51,7 @@ All 8 tasks across 4 phases implemented via subagent-driven orchestration.
 - ✓ Phase 3: Orchestrator skills (/deep-research + /analyze created)
 - ✓ Phase 4: Synthesis + integration (/synthesize + provider sync)
 - ✓ Final code review passed (3 cycles, all findings resolved)
-- ⧗ Phase 8: Research tool pack (5 tasks)
+- ⧗ Phase 8: Research tool pack + output destination (6 tasks)
 
 ## Blockers
 
