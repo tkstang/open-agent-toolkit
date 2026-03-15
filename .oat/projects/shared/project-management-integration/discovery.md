@@ -127,15 +127,52 @@ Support webhook endpoints for CLI event notifications...
 ### Backlog Directory Structure
 
 ```
-.oat/backlog/
+.oat/repo/reference/backlog/
   index.md              — prioritized list, categories, status overview
-  items/
+  completed.md          — summary log of closed items
+  items/                — active backlog item files
     improve-cli-help.md
     add-webhook-support.md
     fix-state-refresh-perf.md
+  archived/             — completed item files (moved from items/ on close)
+    update-agents-md.md
+    add-timestamp-frontmatter.md
 ```
 
 The index file provides the board view — groupable by status, priority, label, scope. Can be generated from item files, hand-curated, or both.
+
+### Full `reference/` Directory Structure
+
+The backlog restructuring fits within the broader `.oat/repo/reference/` directory, which also houses other curated reference documents:
+
+```
+.oat/repo/reference/
+  backlog/
+    index.md              — prioritized overview
+    completed.md          — summary log of closed items
+    items/                — active backlog item files
+    archived/             — completed item files
+  roadmap.md              — curated planning narrative
+  decision-record.md      — ADR log (unchanged)
+  current-state.md        — snapshot of implemented state (unchanged)
+  external-plans/         — imported plans from other sources (unchanged)
+```
+
+**Migration notes:**
+
+- `backlog.md` (flat file) → decomposed into `backlog/index.md` + individual `backlog/items/*.md` files
+- `backlog-completed.md` → decomposed into `backlog/completed.md` (summary log) + `backlog/archived/*.md` (full item files)
+- `deferred-phases.md` → removed; still-relevant items migrated to backlog items (staleness/knowledge drift, memory system), remainder is done or dropped
+- `roadmap.md` → stays as-is (already a narrative document)
+
+### Backlog Item Template
+
+A `backlog-item.md` template in `.oat/templates/` enables consistent scaffolding of new backlog items (same pattern as project templates):
+
+```
+.oat/templates/
+  backlog-item.md         — template for new backlog items
+```
 
 ## Clarifying Questions
 
@@ -170,9 +207,13 @@ The index file provides the board view — groupable by status, priority, label,
 3. **Projects are scope-flexible:** An OAT project can be equivalent to a single issue or an epic, depending on the work. The workflow mode (quick vs. spec-driven) reflects this.
 4. **`associated_issues` is the universal link:** Many-to-many, polymorphic references connect local concepts to each other and to remote systems (Jira, Linear). Same format everywhere.
 5. **Roadmap is a narrative document:** A single curated file that references backlog items and projects, not a tracking system with its own items.
-6. **Backlog items are file-per-item with an index:** Individual markdown files in `.oat/backlog/items/`, with an `index.md` for the bird's-eye view.
+6. **Backlog items are file-per-item with an index:** Individual markdown files in `.oat/repo/reference/backlog/items/`, with an `index.md` for the bird's-eye view.
 7. **Scope field for backlog items:** `idea | task | feature | initiative` — a rough granularity signal to help with triage and prioritization.
 8. **Local-first, remote later:** Build the local backlog/roadmap system first. Remote integration (Jira/Linear) layers on top via `associated_issues` references without restructuring.
+9. **Backlog lives in `reference/backlog/`:** The backlog directory structure is part of `.oat/repo/reference/`, alongside other curated reference docs (roadmap, decision record, current state).
+10. **Completed items: summary + archived files:** Closed backlog items get a summary entry in `completed.md` and their full item file moved from `items/` to `archived/`.
+11. **`deferred-phases.md` retired:** Legacy document merged/migrated — still-relevant phases (staleness/knowledge drift, memory system) become backlog items; the rest is done or dropped.
+12. **Backlog item template:** `.oat/templates/backlog-item.md` provides consistent scaffolding for new items, matching the project template pattern.
 
 ## Constraints
 
@@ -216,14 +257,13 @@ The index file provides the board view — groupable by status, priority, label,
 - **Backlog item IDs:** Should IDs be auto-assigned sequential (`bl-001`, `bl-002`) or user-chosen (filename-based like `add-webhook-support`)? Sequential is unambiguous; name-based is more readable.
 - **Roadmap structure:** What sections should the roadmap file have? Time-based horizons (Now / Next / Later)? Theme-based groupings? Both?
 - **Project `associated_issues` location:** Should this field live in `state.md` frontmatter, or in a separate project-level config? State.md is already the project's metadata hub.
-- **Backlog completion flow:** When a backlog item is closed, should it stay in `items/` (with `status: closed`) or move to an archive directory?
 
 ## Assumptions
 
 - The local backlog system is the immediate priority; remote integration is a future phase
 - The agent (Claude/Codex/etc.) will be the primary creator/manager of backlog items, though humans may also edit them directly
 - Backlog items are repository-scoped (not global across repos)
-- The existing `.oat/projects/` structure is unchanged — backlog lives in `.oat/backlog/` as a sibling
+- The existing `.oat/projects/` structure is unchanged — backlog lives in `.oat/repo/reference/backlog/` within the existing reference directory
 
 ## Risks
 
