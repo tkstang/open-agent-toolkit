@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p02-t01
+oat_current_task_id: p02-t02
 oat_generated: false
 ---
 
@@ -27,12 +27,12 @@ oat_generated: false
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | complete    | 4     | 4/4       |
-| Phase 2 | in_progress | 3     | 0/3       |
+| Phase 2 | in_progress | 3     | 1/3       |
 | Phase 3 | pending     | 3     | 0/3       |
 | Phase 4 | pending     | 5     | 0/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 4/19 tasks completed
+**Total:** 5/19 tasks completed
 
 ---
 
@@ -177,8 +177,27 @@ oat_generated: false
 
 ### Task p02-t01: Implement backlog item ID generation utility
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 7708871b7c4ecaf6bd6cde83f8af20bf387f40a0
+
+**Outcome (required when completed):**
+
+- Added a deterministic backlog ID helper that derives stable `bl-XXXX` identifiers from filename and timestamp inputs.
+- Added focused test coverage for ID format, determinism, and input sensitivity so later backlog migration work can reuse the helper safely.
+
+**Files changed:**
+
+- `packages/cli/src/commands/backlog/shared/generate-id.ts` - added the ID generation helper
+- `packages/cli/src/commands/backlog/shared/generate-id.test.ts` - added unit tests for the helper
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/shared/generate-id.test.ts`
+- Result: Pass; helper returns stable 4-hex backlog IDs and the scoped test suite passes
+
+**Notes / Decisions:**
+
+- Used a package-scoped Vitest invocation because the repo-root `pnpm test <path>` form is interpreted by Turbo as a task name rather than a file filter.
 
 ---
 
@@ -318,7 +337,8 @@ Chronological log of implementation progress.
 - [x] p01-t02: Create roadmap template - 12d48e59ea1ccba0105d37b87bd1bc55204ba70b
 - [x] p01-t03: Create backlog directory structure - 1cdb035030eafe0a261ae4e736cdf2658b265670
 - [x] p01-t04: Add `associated_issues` to state.md template - c0990633ec60cda5f39c94153527fca9a6959b72
-- [ ] p02-t01: Implement backlog item ID generation utility - pending
+- [x] p02-t01: Implement backlog item ID generation utility - 7708871b7c4ecaf6bd6cde83f8af20bf387f40a0
+- [ ] p02-t02: Implement backlog index regeneration command - pending
 
 **What changed (high level):**
 
