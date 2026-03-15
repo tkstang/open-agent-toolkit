@@ -1,6 +1,6 @@
 ---
-oat_current_task: p04-t03
-oat_last_commit: 792a96544bc51011847bd071bec361f952ddbfbe
+oat_current_task: p04-t04
+oat_last_commit: cb55b0473963c0f6090e496aac3fa9e49cfd419d
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p04-t03
+Implementation - Executing p04-t04
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Add the project-management pack installer, starting with `p04-t03`
+Register the project-management pack in init tools, starting with `p04-t04`

@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p04-t03
+oat_current_task_id: p04-t04
 oat_generated: false
 ---
 
@@ -29,10 +29,10 @@ oat_generated: false
 | Phase 1 | complete    | 4     | 4/4       |
 | Phase 2 | complete    | 3     | 3/3       |
 | Phase 3 | complete    | 3     | 3/3       |
-| Phase 4 | in_progress | 5     | 2/5       |
+| Phase 4 | in_progress | 5     | 3/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 12/19 tasks completed
+**Total:** 13/19 tasks completed
 
 ---
 
@@ -442,8 +442,29 @@ oat_generated: false
 
 ### Task p04-t03: Create installer module
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** cb55b0473963c0f6090e496aac3fa9e49cfd419d
+
+**Outcome (required when completed):**
+
+- Added a dedicated project-management pack installer that copies all PM skills and templates with the same copy/update/outdated semantics as the other packs.
+- Added installer tests covering initial copy, idempotent rerun, force overwrite, and outdated-version detection.
+- Updated help snapshots to reflect the backlog command and expanded pack option text introduced earlier in this implementation run.
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/tools/project-management/install-project-management.ts` - new installer implementation
+- `packages/cli/src/commands/init/tools/project-management/install-project-management.test.ts` - installer coverage
+- `packages/cli/src/commands/help-snapshots.test.ts` - updated snapshots for new CLI help output
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/init/tools/project-management/install-project-management.test.ts src/commands/help-snapshots.test.ts`
+- Result: Pass; installer behavior and help snapshots both pass
+
+**Notes / Decisions:**
+
+- The snapshot updates were required to keep verification green after the earlier backlog command and pack-option help changes.
 
 ---
 
@@ -525,7 +546,8 @@ Chronological log of implementation progress.
 - [x] p03-t03: Refactor `review-backlog` to `oat-pjm-review-backlog` - 4d5dd2a93731a9b46505ff0cdb4027792b09da9b
 - [x] p04-t01: Add `PROJECT_MANAGEMENT_SKILLS` to skill manifest - 32cb7d92bacb209b5c40cbbd14aec1bca9ac6be8
 - [x] p04-t02: Extend `PackName` type and pack resolution - 792a96544bc51011847bd071bec361f952ddbfbe
-- [ ] p04-t03: Create installer module - pending
+- [x] p04-t03: Create installer module - cb55b0473963c0f6090e496aac3fa9e49cfd419d
+- [ ] p04-t04: Register pack in init tools and descriptions - pending
 
 **What changed (high level):**
 
