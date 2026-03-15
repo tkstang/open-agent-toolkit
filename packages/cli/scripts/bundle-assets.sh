@@ -73,7 +73,9 @@ cp -R "${REPO_ROOT}/.oat/templates/docs-app-mkdocs" "${ASSETS}/templates/"
 cp -R "${REPO_ROOT}/.oat/templates/docs-app-fuma" "${ASSETS}/templates/"
 
 # Bundle OAT documentation for core pack (oat-docs skill)
-cp -R "${REPO_ROOT}/apps/oat-docs/docs/." "${ASSETS}/docs/"
+if [ -d "${REPO_ROOT}/apps/oat-docs/docs" ]; then
+  cp -R "${REPO_ROOT}/apps/oat-docs/docs/." "${ASSETS}/docs/"
+fi
 
 for script in generate-oat-state.sh generate-thin-index.sh; do
   SOURCE_SCRIPT="${REPO_ROOT}/.oat/scripts/${script}"
