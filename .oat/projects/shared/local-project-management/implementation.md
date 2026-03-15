@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p05-t04
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,15 +24,15 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | complete    | 4     | 4/4       |
-| Phase 2 | complete    | 3     | 3/3       |
-| Phase 3 | complete    | 3     | 3/3       |
-| Phase 4 | complete    | 5     | 5/5       |
-| Phase 5 | in_progress | 4     | 3/4       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 4     | 4/4       |
+| Phase 2 | complete | 3     | 3/3       |
+| Phase 3 | complete | 3     | 3/3       |
+| Phase 4 | complete | 5     | 5/5       |
+| Phase 5 | complete | 4     | 4/4       |
 
-**Total:** 18/19 tasks completed
+**Total:** 19/19 tasks completed
 
 ---
 
@@ -552,8 +552,34 @@ oat_generated: false
 
 ## Phase 5: Migration
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-15
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+
+- Migrated the active backlog into file-backed items, generated the new backlog index, and redirected the legacy flat backlog file.
+- Migrated completed backlog history into a summary archive plus five rich archived item files for the newest completed work.
+- Reframed the roadmap into Now / Next / Later horizons and retired `deferred-phases.md` by converting the remaining ideas into backlog items.
+
+**Key files touched:**
+
+- `.oat/repo/reference/backlog/items/*.md` - migrated active and deferred backlog items
+- `.oat/repo/reference/backlog/index.md` - regenerated managed index and curated overview
+- `.oat/repo/reference/backlog/completed.md` - migrated completed-item summary archive
+- `.oat/repo/reference/backlog/archived/*.md` - archived detailed records for recent completed work
+- `.oat/repo/reference/roadmap.md` - added Now / Next / Later horizons
+- `.oat/repo/reference/deferred-phases.md` - removed after migration
+
+**Verification:**
+
+- Run: `pnpm run cli -- backlog regenerate-index`; `find .oat/repo/reference/backlog/items -name "*.md" | wc -l`; `grep -c '^- 20' .oat/repo/reference/backlog/completed.md`; `find .oat/repo/reference/backlog/archived -name "*.md" | wc -l`; `grep "^## Now\|^## Next\|^## Later" .oat/repo/reference/roadmap.md`; `pnpm test`; `pnpm lint`; `pnpm type-check`; `pnpm build`
+- Result: Pass; backlog migrations, roadmap restructuring, and the full workspace verification suite all succeeded
+
+**Notes / Decisions:**
+
+- Phase-5 migration followed the repo’s current source-of-truth files rather than stale counts in the plan, and those deviations are recorded below for traceability.
 
 ### Task p05-t01: Migrate existing backlog items to file-per-item
 
@@ -650,8 +676,30 @@ oat_generated: false
 
 ### Task p05-t04: Retire `deferred-phases.md`
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** bcd87924ec5f9195251a32a88ea8a84d8b24d853
+
+**Outcome (required when completed):**
+
+- Converted the remaining deferred roadmap items into first-class backlog entries for staleness/knowledge-drift and memory/provider-enhancement work.
+- Removed `deferred-phases.md` once its remaining actionable content was captured in the file-backed backlog.
+- Regenerated the backlog index and updated the curated overview so the newly migrated items appear in the current backlog surface.
+
+**Files changed:**
+
+- `.oat/repo/reference/backlog/items/staleness-knowledge-drift.md` - added deferred phase 5 as a backlog item
+- `.oat/repo/reference/backlog/items/memory-system.md` - added deferred phase 10 as a backlog item
+- `.oat/repo/reference/backlog/index.md` - regenerated managed index and refreshed curated overview
+- `.oat/repo/reference/deferred-phases.md` - removed after migration
+
+**Verification:**
+
+- Run: `pnpm run cli -- backlog regenerate-index`; `find .oat/repo/reference/backlog/items -name "*.md" | wc -l`; `test ! -e .oat/repo/reference/deferred-phases.md`
+- Result: Pass; the backlog now contains 9 active item files and the deferred-phases document has been removed
+
+**Notes / Decisions:**
+
+- The roadmap gained IDs for the new deferred work via backlog migration rather than by keeping a separate deferred-phases document in parallel.
 
 ---
 
@@ -692,6 +740,7 @@ Chronological log of implementation progress.
 - [x] p05-t01: Migrate existing backlog items to file-per-item - a34147dd397ae3dd3474f93a47303d65db265472
 - [x] p05-t02: Migrate completed backlog to new structure - 1433636e75a9052504fb7b7048929f9b42e56400
 - [x] p05-t03: Migrate roadmap to Now/Next/Later structure - 68048c2666e1d80d9dd4a13e0ac15314f131a3d3
+- [x] p05-t04: Retire `deferred-phases.md` - bcd87924ec5f9195251a32a88ea8a84d8b24d853
 
 **What changed (high level):**
 
@@ -702,15 +751,17 @@ Chronological log of implementation progress.
 - Started phase 5 by migrating the live backlog into file-backed item records and regenerating the managed index
 - Migrated the completed backlog archive into summary and archived-item surfaces with explicit redirect pointers
 - Reframed the roadmap around Now / Next / Later horizons while preserving detailed phase history for reference
+- Completed the final migration by retiring `deferred-phases.md`, adding backlog records for the remaining deferred ideas, and passing full repo verification
 
 **Decisions:**
 
 - Pause only after completing `p05`; do not stop at intermediate phases unless blocked
 - Treat `backlog.md` as the source of truth when plan assumptions diverge from the current repo state
+- Stop at the `p05` boundary for the required final review gate rather than rolling into PR creation without review
 
 **Follow-ups / TODO:**
 
-- Retire `deferred-phases.md` by migrating any remaining backlog-worthy items and regenerating the backlog index in `p05-t04`
+- Implementation tasks are complete; request final review next
 
 **Blockers:**
 
@@ -733,33 +784,45 @@ Document any deviations from the original plan.
 
 Track test execution during implementation.
 
-| Phase | Tests Run | Passed | Failed | Coverage |
-| ----- | --------- | ------ | ------ | -------- |
-| 1     | -         | -      | -      | -        |
-| 2     | -         | -      | -      | -        |
+| Phase | Tests Run                                                 | Passed | Failed | Coverage |
+| ----- | --------------------------------------------------------- | ------ | ------ | -------- |
+| 1     | -                                                         | -      | -      | -        |
+| 2     | -                                                         | -      | -      | -        |
+| 5     | Backlog migration checks + roadmap heading checks         | Pass   | 0      | -        |
+| final | `pnpm test`; `pnpm lint`; `pnpm type-check`; `pnpm build` | Pass   | 0      | -        |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
 
-- {capability 1}
-- {capability 2}
+- File-backed backlog management with generated index, completed summary archive, archived recent completions, and migrated legacy reference files.
+- CLI/project-management pack support for backlog ID generation, backlog index regeneration, and installable `oat-pjm-*` project-management skills.
+- Roadmap and reference cleanup that converts deferred roadmap work into backlog items and standardizes roadmap horizons.
 
 **Behavioral changes (user-facing):**
 
-- {bullet}
+- `oat backlog generate-id` and `oat backlog regenerate-index` are available from the CLI.
+- `oat init tools` / `oat tools install` now support the `project-management` pack.
+- Backlog and completed-work tracking now live under `.oat/repo/reference/backlog/` instead of the legacy flat markdown files.
 
 **Key files / modules:**
 
-- `{path}` - {purpose}
+- `packages/cli/src/commands/backlog/` - new backlog CLI surface
+- `packages/cli/src/commands/init/tools/` - project-management pack manifest, installer, and registration
+- `.agents/skills/oat-pjm-*/` - new project-management skill family
+- `.oat/repo/reference/backlog/` - migrated backlog, completed archive, and archived-item records
 
 **Verification performed:**
 
-- {tests/lint/typecheck/build/manual steps}
+- Targeted CLI tests for backlog commands, bundle consistency, installer wiring, and help snapshots
+- `pnpm test`
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm build`
 
 **Design deltas (if any):**
 
-- {what changed vs design.md and why}
+- Phase 5 migration used the current repo contents as source of truth where the legacy backlog files had drifted from the counts captured in `plan.md`.
 
 ## References
 
