@@ -202,7 +202,8 @@ describe('createInitToolsCommand', () => {
 
     await runCommand(command);
 
-    expect(selectManyWithAbort).toHaveBeenCalledTimes(1);
+    // First call is pack selection, second is per-pack scope selection
+    expect(selectManyWithAbort).toHaveBeenCalledTimes(2);
     const choices = selectManyWithAbort.mock.calls[0]?.[1] as Array<{
       value: string;
       checked?: boolean;
@@ -242,6 +243,7 @@ describe('createInitToolsCommand', () => {
   it('handles scope conflicts for mixed project-only and user-eligible packs', async () => {
     const {
       command,
+      selectManyWithAbort,
       selectWithAbort,
       installIdeas,
       installWorkflows,
@@ -249,13 +251,21 @@ describe('createInitToolsCommand', () => {
       installResearch,
     } = createHarness({
       interactive: true,
-      packSelection: [['ideas', 'workflows', 'utility', 'research']],
-      scopeSelection: ['user', 'local'],
+      // 1st call: pack selection, 2nd call: which packs go to user scope
+      packSelection: [
+        ['ideas', 'workflows', 'utility', 'research'],
+        ['ideas', 'utility', 'research'],
+      ],
+      // Only the workflows local-paths prompt remains on selectWithAbort
+      scopeSelection: ['local'],
     });
 
     await runCommand(command, [], ['--scope', 'all']);
 
-    expect(selectWithAbort).toHaveBeenCalledTimes(2);
+    // 2 selectManyWithAbort calls: pack selection + per-pack scope
+    expect(selectManyWithAbort).toHaveBeenCalledTimes(2);
+    // 1 selectWithAbort call: workflows local-paths prompt
+    expect(selectWithAbort).toHaveBeenCalledTimes(1);
     expect(installWorkflows).toHaveBeenCalledWith(
       expect.objectContaining({ targetRoot: '/tmp/workspace' }),
     );
@@ -267,6 +277,33 @@ describe('createInitToolsCommand', () => {
     );
     expect(installResearch).toHaveBeenCalledWith(
       expect.objectContaining({ targetRoot: '/tmp/home' }),
+    );
+  });
+
+  it('supports mixed per-pack scope selection', async () => {
+    const {
+      command,
+      selectManyWithAbort,
+      installIdeas,
+      installUtility,
+      installResearch,
+    } = createHarness({
+      interactive: true,
+      // 1st call: pack selection, 2nd call: only ideas goes to user scope
+      packSelection: [['ideas', 'utility', 'research'], ['ideas']],
+    });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    expect(selectManyWithAbort).toHaveBeenCalledTimes(2);
+    expect(installIdeas).toHaveBeenCalledWith(
+      expect.objectContaining({ targetRoot: '/tmp/home' }),
+    );
+    expect(installUtility).toHaveBeenCalledWith(
+      expect.objectContaining({ targetRoot: '/tmp/workspace' }),
+    );
+    expect(installResearch).toHaveBeenCalledWith(
+      expect.objectContaining({ targetRoot: '/tmp/workspace' }),
     );
   });
 
