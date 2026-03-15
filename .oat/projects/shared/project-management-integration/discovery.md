@@ -222,6 +222,7 @@ A `backlog-item.md` template in `.oat/templates/` enables consistent scaffolding
 16. **`oat-pjm-add-backlog-item` skill orchestrates creation:** Creates item file from template, runs CLI to regenerate the generated index section, then guides the agent to update the curated section with a brief overview.
 17. **Roadmap uses Now / Next / Later horizons:** Primary structure is time-based horizons (Now = active/committed, Next = planned, Later = directional intent). Optional theme groupings within each horizon. Entries reference backlog items by ID and projects by name — detail lives in those artifacts, not the roadmap.
 18. **Template-guided structure for roadmap and backlog:** `.oat/templates/roadmap.md` and `.oat/templates/backlog-item.md` define the canonical structure. Actual files reference their template at the top (e.g., `<!-- Structure guidance: .oat/templates/roadmap.md -->`) so agents follow the pattern consistently.
+19. **`associated_issues` lives in project `state.md` frontmatter:** No separate config file — `state.md` is already the project metadata hub, and skills already read/write it.
 
 ## Constraints
 
@@ -261,7 +262,7 @@ A `backlog-item.md` template in `.oat/templates/` enables consistent scaffolding
 
 ## Open Questions
 
-- **Project `associated_issues` location:** Should this field live in `state.md` frontmatter, or in a separate project-level config? State.md is already the project's metadata hub.
+None — all discovery questions resolved. Ready for specification phase.
 
 ## Assumptions
 
