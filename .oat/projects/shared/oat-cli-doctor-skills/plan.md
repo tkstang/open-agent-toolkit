@@ -380,12 +380,12 @@ git commit -m "feat(p03-t03): finalize core pack skill registration"
 
 ## Reviews
 
-| Scope | Type | Status  | Date | Artifact |
-| ----- | ---- | ------- | ---- | -------- |
-| p01   | code | pending | -    | -        |
-| p02   | code | pending | -    | -        |
-| p03   | code | pending | -    | -        |
-| final | code | pending | -    | -        |
+| Scope | Type | Status   | Date       | Artifact                           |
+| ----- | ---- | -------- | ---------- | ---------------------------------- |
+| p01   | code | pending  | -          | -                                  |
+| p02   | code | pending  | -          | -                                  |
+| p03   | code | pending  | -          | -                                  |
+| final | code | received | 2026-03-15 | reviews/final-review-2026-03-15.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
