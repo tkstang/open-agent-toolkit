@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
-oat_last_updated: 2026-03-14
-oat_current_task_id: null
+oat_last_updated: 2026-03-15
+oat_current_task_id: p08-t01
 oat_generated: false
 ---
 
@@ -21,16 +21,17 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase                             | Tasks  | Completed | Status       |
-| --------------------------------- | ------ | --------- | ------------ |
-| Phase 1: Foundation               | 2      | 2         | complete     |
-| Phase 2: Independent Skills       | 2      | 2         | complete     |
-| Phase 3: Orchestrator Skills      | 2      | 2         | complete     |
-| Phase 4: Synthesis + Integration  | 2      | 2         | complete     |
-| Phase 5: Review Fixes (final)     | 3      | 3         | complete     |
-| Phase 6: Review Fixes (re-review) | 2      | 2         | complete     |
-| Phase 7: Review Fixes (cycle 3)   | 1      | 1         | complete     |
-| **Total**                         | **14** | **14**    | **complete** |
+| Phase                             | Tasks  | Completed | Status      |
+| --------------------------------- | ------ | --------- | ----------- |
+| Phase 1: Foundation               | 2      | 2         | complete    |
+| Phase 2: Independent Skills       | 2      | 2         | complete    |
+| Phase 3: Orchestrator Skills      | 2      | 2         | complete    |
+| Phase 4: Synthesis + Integration  | 2      | 2         | complete    |
+| Phase 5: Review Fixes (final)     | 3      | 3         | complete    |
+| Phase 6: Review Fixes (re-review) | 2      | 2         | complete    |
+| Phase 7: Review Fixes (cycle 3)   | 1      | 1         | complete    |
+| Phase 8: Research Tool Pack       | 5      | 0         | pending     |
+| **Total**                         | **19** | **14**    | **partial** |
 
 ## Task Log
 

@@ -563,6 +563,217 @@ git commit -m "fix(p06-t02): fix /synthesize intro to not overstate skill covera
 
 ---
 
+## Phase 8: Research Tool Pack
+
+Register the five research skills and the skeptical-evaluator agent as a new installable `research` tool pack, following the same patterns as the existing `ideas`, `workflows`, and `utility` packs.
+
+### Task p08-t01: Register research pack in skill manifest and types
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/tools/shared/skill-manifest.ts`
+- Modify: `packages/cli/src/commands/tools/shared/types.ts`
+
+**Step 1: Add research skills and agent to skill manifest**
+
+Add after the utility pack section:
+
+```typescript
+// ── Research pack ─────────────────────────────────────────────────
+export const RESEARCH_SKILLS = [
+  'analyze',
+  'compare',
+  'deep-research',
+  'skeptic',
+  'synthesize',
+] as const;
+
+export const RESEARCH_AGENTS = ['skeptical-evaluator.md'] as const;
+```
+
+**Step 2: Update PackName type**
+
+In `types.ts`, add `'research'` to the `PackName` union:
+
+```typescript
+export type PackName = 'ideas' | 'workflows' | 'utility' | 'research';
+```
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli type-check`
+Expected: No type errors
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/shared/skill-manifest.ts packages/cli/src/commands/tools/shared/types.ts
+git commit -m "feat(p08-t01): register research pack in skill manifest and types"
+```
+
+---
+
+### Task p08-t02: Create research pack install module
+
+**Files:**
+
+- Create: `packages/cli/src/commands/init/tools/research/install-research.ts`
+- Create: `packages/cli/src/commands/init/tools/research/index.ts`
+
+**Step 1: Create install-research.ts**
+
+Follow the utility pack pattern (`install-utility.ts`). Re-export `RESEARCH_SKILLS` and `RESEARCH_AGENTS` from skill-manifest. Include `InstallResearchOptions`, `InstallResearchResult`, and `installResearch` function. The installer copies both skills and agents (unlike utility which only copies skills).
+
+**Step 2: Create index.ts (command module)**
+
+Follow the utility pack pattern (`utility/index.ts`). Create `createInitToolsResearchCommand()` returning a Commander command named `'research'`. Research is user-eligible (both project and user scope). Include interactive skill selection, force overwrite option, and scope resolution.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli type-check`
+Expected: No type errors
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/research/
+git commit -m "feat(p08-t02): add research pack install module"
+```
+
+---
+
+### Task p08-t03: Wire research pack into init tools, scan-tools, and remove-skills
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/tools/index.ts`
+- Modify: `packages/cli/src/commands/tools/shared/scan-tools.ts`
+- Modify: `packages/cli/src/commands/remove/skills/remove-skills.ts`
+
+**Step 1: Update init/tools/index.ts**
+
+- Import `createInitToolsResearchCommand`, `installResearch`, types from `./research`
+- Add `'research'` to local `ToolPack` type
+- Add to `PACK_CHOICES`: `{ label: 'Research [project|user]', value: 'research', checked: true }`
+- Add to `PACK_DESCRIPTIONS`: `research: 'Research, analysis, verification, and synthesis'`
+- Update `isUserEligibleSelection` to include `'research'`
+- Add installation block for `selectedPacks.includes('research')` (same pattern as ideas/utility — user-eligible scope)
+- Update non-interactive default: add `'research'` to the fallback array
+- Add to `DEFAULT_DEPENDENCIES`: `installResearch`
+- Add to `InitToolsDependencies` interface: `installResearch` function type
+- Register subcommand: `.addCommand(createInitToolsResearchCommand())`
+- Update command description string to include `research`
+- Update `buildToolPacksSectionBody` to mention research in user-scoped skills line
+
+**Step 2: Update scan-tools.ts**
+
+- Import `RESEARCH_SKILLS` and `RESEARCH_AGENTS` from research install module
+- Add to `resolveSkillPack`: `if ((RESEARCH_SKILLS as readonly string[]).includes(name)) return 'research';`
+- Add to `resolveAgentPack`: `if ((RESEARCH_AGENTS as readonly string[]).includes(filename)) return 'research';`
+
+**Step 3: Update remove-skills.ts**
+
+- Import `RESEARCH_SKILLS` from research install module
+- Add `'research'` to local `PackName` type
+- Add `research: RESEARCH_SKILLS` to `PACK_SKILLS`
+- Add `'research'` to `isPackName` check
+- Update error message to include `research`
+
+**Step 4: Verify**
+
+Run: `pnpm --filter @oat/cli type-check`
+Expected: No type errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/index.ts packages/cli/src/commands/tools/shared/scan-tools.ts packages/cli/src/commands/remove/skills/remove-skills.ts
+git commit -m "feat(p08-t03): wire research pack into init tools, scan-tools, and remove-skills"
+```
+
+---
+
+### Task p08-t04: Update bundle script and tests
+
+**Files:**
+
+- Modify: `packages/cli/scripts/bundle-assets.sh`
+- Modify: `packages/cli/src/commands/init/tools/shared/bundle-consistency.test.ts`
+- Create: `packages/cli/src/commands/init/tools/research/install-research.test.ts`
+- Create: `packages/cli/src/commands/init/tools/research/index.test.ts`
+- Modify: `packages/cli/src/commands/tools/shared/scan-tools.test.ts`
+- Modify: `packages/cli/src/commands/remove/skills/remove-skills.test.ts`
+- Modify: `packages/cli/src/commands/init/tools/index.test.ts`
+
+**Step 1: Add research skills and agent to bundle-assets.sh**
+
+Add to the `SKILLS` array: `analyze`, `compare`, `deep-research`, `skeptic`, `synthesize`
+
+Add to the agents loop: `skeptical-evaluator.md`
+
+**Step 2: Add bundle-consistency test for research pack**
+
+Follow the pattern of the existing workflow/ideas/utility tests. Add a test case that validates `RESEARCH_SKILLS` entries are present in the bash `SKILLS` array, and `RESEARCH_AGENTS` entries are in the agents loop.
+
+**Step 3: Create research pack tests**
+
+- `install-research.test.ts`: Test `installResearch` copies skills and agents correctly
+- `index.test.ts`: Test `createInitToolsResearchCommand` registers correctly
+
+Follow the patterns in `install-utility.test.ts` and `utility/index.test.ts`.
+
+**Step 4: Update existing tests**
+
+- `scan-tools.test.ts`: Add test for research skill/agent pack resolution
+- `remove-skills.test.ts`: Add test for `research` pack name validation
+- `init/tools/index.test.ts`: Update pack selection tests, subcommand registration tests, pack description tests to include `research`
+
+**Step 5: Verify**
+
+Run: `pnpm --filter @oat/cli test`
+Expected: All tests pass
+
+Run: `pnpm --filter @oat/cli type-check`
+Expected: No type errors
+
+**Step 6: Commit**
+
+```bash
+git add packages/cli/scripts/bundle-assets.sh packages/cli/src/commands/init/tools/shared/bundle-consistency.test.ts packages/cli/src/commands/init/tools/research/ packages/cli/src/commands/tools/shared/scan-tools.test.ts packages/cli/src/commands/remove/skills/remove-skills.test.ts packages/cli/src/commands/init/tools/index.test.ts
+git commit -m "feat(p08-t04): update bundle script and tests for research pack"
+```
+
+---
+
+### Task p08-t05: Update documentation
+
+**Files:**
+
+- Modify: `apps/oat-docs/docs/guide/tool-packs.md`
+- Modify: `apps/oat-docs/docs/guide/cli-reference.md`
+
+**Step 1: Update tool-packs.md**
+
+Add `research` pack to the pack list with description, scope info, and included skills.
+
+**Step 2: Update cli-reference.md**
+
+Add `research` to `oat tools install` subcommands and pack references.
+
+**Step 3: Verify**
+
+Run: `pnpm build:docs`
+Expected: Docs build succeeds
+
+**Step 4: Commit**
+
+```bash
+git add apps/oat-docs/docs/guide/tool-packs.md apps/oat-docs/docs/guide/cli-reference.md
+git commit -m "docs(p08-t05): add research pack to tool packs and CLI reference docs"
+```
+
+---
+
 ## Reviews
 
 | Scope     | Type     | Status | Date       | Artifact                                                 |
@@ -588,8 +799,9 @@ git commit -m "fix(p06-t02): fix /synthesize intro to not overstate skill covera
 - Phase 5: 3 tasks — Review fixes (final)
 - Phase 6: 2 tasks — Review fixes (final re-review)
 - Phase 7: 1 task — Review fixes (final re-review cycle 3)
+- Phase 8: 5 tasks — Research tool pack
 
-**Total: 14 tasks**
+**Total: 19 tasks**
 
 Ready for code review and merge.
 
