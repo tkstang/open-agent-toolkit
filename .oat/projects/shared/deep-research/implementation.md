@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p08-t01
+oat_current_task_id: p08-t05
 oat_generated: false
 ---
 
@@ -30,8 +30,8 @@ oat_generated: false
 | Phase 5: Review Fixes (final)     | 3      | 3         | complete    |
 | Phase 6: Review Fixes (re-review) | 2      | 2         | complete    |
 | Phase 7: Review Fixes (cycle 3)   | 1      | 1         | complete    |
-| Phase 8: Research Tool Pack       | 6      | 0         | pending     |
-| **Total**                         | **20** | **14**    | **partial** |
+| Phase 8: Research Tool Pack       | 6      | 4         | in_progress |
+| **Total**                         | **20** | **18**    | **partial** |
 
 ## Task Log
 
@@ -150,6 +150,37 @@ oat_generated: false
 **Status:** Final review passed. All Critical/Important/Medium findings resolved across 3 review cycles.
 
 **Next:** Create PR via `oat-project-pr-final`.
+
+### Phase 8: Research Tool Pack
+
+**p08-t01: Register research pack in skill manifest and types** — complete
+
+- Added `RESEARCH_SKILLS` and `RESEARCH_AGENTS` to skill-manifest.ts
+- Updated `PackName` type in types.ts to include `'research'`
+- Also updated local `VALID_PACKS` arrays in tools/update and tools/remove
+- Commit: `aa7217d1`
+
+**p08-t02: Create research pack install module** — complete
+
+- Created `install-research.ts` with skill and agent copying
+- Created `index.ts` with Commander subcommand, interactive selection, scope resolution
+- Commit: `3c9af4b6`
+
+**p08-t03: Wire research pack into init tools, scan-tools, and remove-skills** — complete
+
+- Updated init/tools/index.ts: imports, ToolPack type, PACK_CHOICES, PACK_DESCRIPTIONS, isUserEligibleSelection, installation block, subcommand registration
+- Updated scan-tools.ts: resolveSkillPack and resolveAgentPack for research
+- Updated remove-skills.ts: PackName, PACK_SKILLS, isPackName for research
+- Commit: `b9aebfeb`
+
+**p08-t04: Update bundle script and tests** — complete
+
+- Added 5 research skills to bundle-assets.sh SKILLS array
+- Added skeptical-evaluator.md to agents loop
+- Created install-research.test.ts and index.test.ts for research pack
+- Updated bundle-consistency, scan-tools, remove-skills, and init/tools tests
+- Updated help snapshots
+- Commit: `a23abf76`
 
 ## Orchestration Runs
 
