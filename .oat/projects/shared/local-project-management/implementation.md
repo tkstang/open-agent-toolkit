@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p04-t04
+oat_current_task_id: p04-t05
 oat_generated: false
 ---
 
@@ -29,10 +29,10 @@ oat_generated: false
 | Phase 1 | complete    | 4     | 4/4       |
 | Phase 2 | complete    | 3     | 3/3       |
 | Phase 3 | complete    | 3     | 3/3       |
-| Phase 4 | in_progress | 5     | 3/5       |
+| Phase 4 | in_progress | 5     | 4/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 13/19 tasks completed
+**Total:** 14/19 tasks completed
 
 ---
 
@@ -470,8 +470,27 @@ oat_generated: false
 
 ### Task p04-t04: Register pack in init tools and descriptions
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 94ba3f0867233f16b1bc5c99e37ed7405d39d881
+
+**Outcome (required when completed):**
+
+- Registered the project-management pack in the interactive init-tools flow and added a dedicated `project-management` install subcommand.
+- Added pack descriptions and installer wiring so both `oat init tools` and `oat tools install` can surface and install the new pack.
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/tools/index.ts` - registered the pack in selection flow, descriptions, and install dispatch
+- `packages/cli/src/commands/init/tools/project-management/index.ts` - added a direct install subcommand
+
+**Verification:**
+
+- Run: `pnpm type-check && pnpm lint && pnpm run cli -- tools install --help`
+- Result: Pass; init/tools wiring compiles cleanly and the project-management pack appears in CLI help
+
+**Notes / Decisions:**
+
+- The pack is project-scoped only, so it is excluded from the user-eligible pack set while still remaining available in the non-interactive full install path.
 
 ---
 
@@ -547,7 +566,8 @@ Chronological log of implementation progress.
 - [x] p04-t01: Add `PROJECT_MANAGEMENT_SKILLS` to skill manifest - 32cb7d92bacb209b5c40cbbd14aec1bca9ac6be8
 - [x] p04-t02: Extend `PackName` type and pack resolution - 792a96544bc51011847bd071bec361f952ddbfbe
 - [x] p04-t03: Create installer module - cb55b0473963c0f6090e496aac3fa9e49cfd419d
-- [ ] p04-t04: Register pack in init tools and descriptions - pending
+- [x] p04-t04: Register pack in init tools and descriptions - 94ba3f0867233f16b1bc5c99e37ed7405d39d881
+- [ ] p04-t05: Update `bundle-assets.sh` and verify consistency - pending
 
 **What changed (high level):**
 

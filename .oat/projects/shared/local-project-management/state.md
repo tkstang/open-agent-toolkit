@@ -1,6 +1,6 @@
 ---
-oat_current_task: p04-t04
-oat_last_commit: cb55b0473963c0f6090e496aac3fa9e49cfd419d
+oat_current_task: p04-t05
+oat_last_commit: 94ba3f0867233f16b1bc5c99e37ed7405d39d881
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p04-t04
+Implementation - Executing p04-t05
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Register the project-management pack in init tools, starting with `p04-t04`
+Bundle project-management assets for distribution, starting with `p04-t05`
