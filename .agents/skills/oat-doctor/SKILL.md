@@ -12,8 +12,6 @@ allowed-tools: Read, Bash, Glob, Grep, AskUserQuestion
 
 Diagnose your OAT setup at both project and user levels. Checks for skill updates, identifies misconfigurations, summarizes what's installed, and recommends corrective actions.
 
-Recommended as a **user-level skill install** so it works regardless of whether you're in a project directory.
-
 ## Prerequisites
 
 - OAT CLI installed and available as `oat` in PATH.
@@ -35,6 +33,7 @@ Recommended as a **user-level skill install** so it works regardless of whether 
 
 - Running `oat` CLI commands with `--json` flag for read-only data gathering.
 - Reading files to inspect configuration state.
+- Reading `~/.oat/docs/` for config key explanations.
 - Presenting diagnostic findings and recommendations to the user.
 
 **Self-Correction Protocol:**
@@ -87,7 +86,7 @@ Read `$ARGUMENTS`:
 TOOLS_JSON=$(oat tools list --json --scope all 2>/dev/null || echo '{"tools":[]}')
 ```
 
-Parse the JSON output. Each tool has: `name`, `type` (skill/agent), `scope` (project/user), `version`, `bundledVersion`, `pack` (ideas/workflows/utility/custom), `status` (current/outdated/newer/not-bundled).
+Parse the JSON output. Each tool has: `name`, `type` (skill/agent), `scope` (project/user), `version`, `bundledVersion`, `pack` (core/ideas/workflows/utility/custom), `status` (current/outdated/newer/not-bundled).
 
 ### Step 2: Check for Outdated Skills
 
@@ -108,6 +107,8 @@ Check for issues:
 - **Stale `activeProject` pointer:** If `activeProject` is set, verify the directory exists. If not, warn.
 - **Stale `activeIdea` pointer:** If `activeIdea` is set, verify the directory exists. If not, warn.
 - **Missing `projects.root`:** If not configured and no default exists, warn.
+
+For config key explanations, read from the bundled docs at `~/.oat/docs/`. Check `reference/file-locations.md` and `guide/cli-reference.md` for authoritative descriptions.
 
 ### Step 4: Check Mode — Report Findings
 
@@ -145,6 +146,10 @@ For summary mode, compare installed skills against the full manifest to identify
 
 **Bundled skill manifest (source of truth):**
 
+Core pack skills:
+
+- oat-docs, oat-doctor
+
 Workflow pack skills:
 
 - oat-project-capture, oat-project-clear-active, oat-project-complete
@@ -165,7 +170,7 @@ Ideas pack skills:
 Utility pack skills:
 
 - create-agnostic-skill, oat-agent-instructions-analyze, oat-agent-instructions-apply
-- oat-docs-analyze, oat-docs-apply, oat-doctor, oat-docs
+- oat-docs-analyze, oat-docs-apply
 - oat-repo-maintainability-review, oat-review-provide
 - oat-review-receive, oat-review-receive-remote
 
@@ -199,9 +204,10 @@ OAT ▸ DOCTOR SUMMARY
 
 | Pack      | Scope   | Skills | Status   |
 | --------- | ------- | ------ | -------- |
+| core      | user    | 2/2    | current  |
 | workflows | project | 26/26  | current  |
 | ideas     | user    | 4/4    | current  |
-| utility   | project | 9/11   | outdated |
+| utility   | project | 9/9    | outdated |
 
 ## Outdated Skills
 
@@ -211,7 +217,7 @@ OAT ▸ DOCTOR SUMMARY
 
 ## Available But Not Installed
 
-- **utility** pack: oat-doctor, oat-docs (2 new skills available)
+- **utility** pack: oat-docs-analyze, oat-docs-apply (2 skills available)
   → Run: oat tools update --scope {scope}
 
 ## Configuration
@@ -225,6 +231,8 @@ OAT ▸ DOCTOR SUMMARY
 | worktrees.root       | (not set)                 | -       |
 
 ### Config Key Explanations
+
+Read config key descriptions from `~/.oat/docs/reference/file-locations.md` and `~/.oat/docs/guide/cli-reference.md`. If docs are not available, use these fallback descriptions:
 
 - **activeProject:** Path to the currently active OAT project. Set automatically by project skills.
 - **activeIdea:** Path to the currently active idea. Set by oat-idea-new.

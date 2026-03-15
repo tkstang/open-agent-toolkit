@@ -1,7 +1,7 @@
 ---
 name: oat-docs
 version: 1.0.0
-description: Use when a user asks questions about OAT workflows, CLI commands, skill authoring, configuration, or project lifecycle. Answers questions by reading locally-available OAT documentation.
+description: Use when a user asks questions about OAT workflows, CLI commands, skill authoring, configuration, or project lifecycle. Answers questions by reading locally-bundled OAT documentation.
 argument-hint: '[question]'
 disable-model-invocation: false
 user-invocable: true
@@ -10,13 +10,11 @@ allowed-tools: Read, Glob, Grep, AskUserQuestion
 
 # OAT Docs
 
-Interactive Q&A skill backed by locally-available OAT documentation. Answers questions about OAT workflows, CLI commands, skill authoring, configuration, and project lifecycle by reading the actual docs.
-
-Recommended as a **user-level skill install** so it works regardless of whether you're in a project directory.
+Interactive Q&A skill backed by locally-bundled OAT documentation at `~/.oat/docs/`. Answers questions about OAT workflows, CLI commands, skill authoring, configuration, and project lifecycle by reading the actual docs.
 
 ## Prerequisites
 
-- OAT documentation available at one of the resolved locations (see Step 1).
+- OAT documentation bundled at `~/.oat/docs/` (installed via `oat init tools` with the core pack).
 
 ## Mode Assertion
 
@@ -29,11 +27,12 @@ Recommended as a **user-level skill install** so it works regardless of whether 
 - No editing documentation files.
 - No creating or modifying any files.
 - No running CLI commands that modify state.
+- No falling back to repository paths, general knowledge, or web searches for OAT docs content.
 
 **ALLOWED Activities:**
 
-- Reading documentation files to answer questions.
-- Searching documentation with Glob and Grep.
+- Reading documentation files under `~/.oat/docs/` to answer questions.
+- Searching documentation with Glob and Grep within `~/.oat/docs/`.
 - Offering to invoke related skills or run demonstration commands (with user confirmation).
 - Asking clarifying questions to refine the user's query.
 
@@ -42,10 +41,11 @@ If you catch yourself:
 
 - Editing docs content → STOP and return to read-only Q&A mode.
 - Running mutating commands → STOP and offer the command as a suggestion instead.
+- Reading docs from a repo path instead of `~/.oat/docs/` → STOP and use the bundled location only.
 
 **Recovery:**
 
-1. Return to read-only documentation lookup.
+1. Return to read-only documentation lookup at `~/.oat/docs/`.
 2. Present information and suggestions, not direct modifications.
 
 ## Progress Indicators (User-Facing)
@@ -67,28 +67,20 @@ Step indicators:
 
 ### Step 1: Resolve Docs Location
 
-Find the OAT documentation using the first matching location:
+Set `DOCS_ROOT` to `~/.oat/docs/`.
 
-1. **Bundled docs (user-level):** `~/.oat/docs/` — present when docs are bundled with the CLI install.
-2. **Repository docs:** `apps/oat-docs/docs/` — present when working inside the OAT repository itself.
-3. **Repository docs (alt):** `docs/` — fallback for repos that keep OAT docs at the root docs directory.
-
-Set `DOCS_ROOT` to the first location that exists and contains markdown files.
-
-If no docs location is found, inform the user:
+Verify the directory exists and contains markdown files. If it does not exist, inform the user:
 
 ```
-OAT documentation not found.
+OAT documentation not found at ~/.oat/docs/.
 
-Expected locations (checked in order):
-  1. ~/.oat/docs/          (bundled with CLI)
-  2. apps/oat-docs/docs/   (OAT repository)
-  3. docs/                 (repository docs)
+To install the bundled docs, run:
+  oat init tools
 
-To get docs bundled locally, update to the latest OAT CLI version.
+Select the "core" pack when prompted (or use: oat init tools core).
 ```
 
-Stop here if no docs are found.
+Stop here if docs are not found. Do NOT fall back to repository paths or other locations.
 
 ### Step 2: Understand the Question
 
@@ -118,8 +110,8 @@ Classify the question into one or more topic areas to guide the search:
 
 Based on the topic classification:
 
-1. **Read the most relevant docs file(s)** — start with the primary match from the topic table.
-2. **Search for specific terms** — if the question mentions specific concepts, commands, or features, use Grep to find mentions across the docs tree.
+1. **Read the most relevant docs file(s)** — start with the primary match from the topic table. All paths are relative to `DOCS_ROOT` (`~/.oat/docs/`).
+2. **Search for specific terms** — if the question mentions specific concepts, commands, or features, use Grep to find mentions across `~/.oat/docs/`.
 3. **Follow cross-references** — if the primary doc references other pages, read those for complete context.
 4. **Check the index** — read the `index.md` of relevant directories to discover additional relevant pages.
 
@@ -130,7 +122,7 @@ Limit reads to the minimum needed to answer the question thoroughly. Prefer dept
 Compose an answer that:
 
 1. **Directly answers the question** — lead with the answer, not background context.
-2. **Cites specific docs** — reference the doc file(s) where the user can read more, using relative paths from the docs root.
+2. **Cites specific docs** — reference the doc file(s) where the user can read more, using relative paths from `~/.oat/docs/`.
 3. **Includes practical examples** — show commands, config snippets, or SKILL.md excerpts when relevant.
 4. **Stays grounded in docs** — only include information found in the actual documentation. Do not speculate or fill gaps with general knowledge.
 
@@ -194,13 +186,15 @@ Would you like me to create a project for you?
 
 ```
 Tool packs are bundles of related OAT skills that you install together.
-There are three packs:
+There are four packs:
 
+- **core** — Diagnostics and docs skills (oat-doctor, oat-docs).
+  Always installed at user level. 2 skills.
 - **workflows** — Project lifecycle skills (discover, plan, implement,
   review, PR). 26 skills total.
 - **ideas** — Brainstorming and idea capture skills. 4 skills.
 - **utility** — Cross-cutting tools (docs analysis, code review,
-  skill creation). 11 skills.
+  skill creation). 9 skills.
 
 Install with: oat init tools
 Manage with: oat tools list, oat tools update, oat tools outdated
@@ -212,9 +206,9 @@ Would you like me to check which packs you have installed? (I'd run /oat-doctor 
 
 ## Success Criteria
 
-- ✅ Questions are answered using actual documentation content, not general knowledge.
+- ✅ Questions are answered using actual documentation content from `~/.oat/docs/`, not general knowledge.
 - ✅ Answers cite specific docs files for further reading.
 - ✅ Practical examples (commands, config) are included when relevant.
 - ✅ Next actions are offered when appropriate, but never executed without user confirmation.
 - ✅ No files are modified — purely read-only Q&A.
-- ✅ Graceful fallback when docs are not found at any expected location.
+- ✅ Graceful error when docs are not found at `~/.oat/docs/`, with instructions to install the core pack.
