@@ -3,6 +3,7 @@ import { join } from 'node:path';
 export interface DetectedDocs {
   tooling: string;
   root: string;
+  config?: string;
 }
 
 export interface DetectDocsDependencies {
@@ -65,7 +66,11 @@ export async function detectExistingDocs(
     for (const check of probe.checks) {
       const markerPath = join(repoRoot, check.marker);
       if (await deps.fileExists(markerPath)) {
-        return { tooling: probe.tooling, root: check.root };
+        return {
+          tooling: probe.tooling,
+          root: check.root,
+          config: check.marker,
+        };
       }
     }
   }

@@ -1,6 +1,6 @@
 import { execSync } from 'node:child_process';
 import { mkdir } from 'node:fs/promises';
-import { basename, join } from 'node:path';
+import { basename, isAbsolute, join, relative, resolve, sep } from 'node:path';
 
 import {
   buildCommandContext,
@@ -58,6 +58,7 @@ import {
 } from '@engine/index';
 import { dirExists, fileExists } from '@fs/io';
 import { resolveProjectRoot, resolveScopeRoot } from '@fs/paths';
+import { normalizeToPosixPath } from '@fs/paths';
 import {
   createEmptyManifest,
   loadManifest,
@@ -474,6 +475,95 @@ const DOCS_TOOLING_CHOICES: SelectChoice<string>[] = [
   { label: 'Nextra', value: 'nextra' },
 ];
 
+function trimDocsRoot(pathValue: string): string {
+  return pathValue.replace(/\/+$/, '').replace(/^\.\//, '').trim();
+}
+
+function normalizeDocumentationRoot(
+  repoRoot: string,
+  pathValue: string,
+): string | null {
+  const trimmed = pathValue.trim();
+  if (!trimmed) {
+    return null;
+  }
+
+  if (!isAbsolute(trimmed)) {
+    const normalizedRelative = trimDocsRoot(normalizeToPosixPath(trimmed));
+    if (!normalizedRelative || normalizedRelative === '.') {
+      return '.';
+    }
+    if (normalizedRelative === '..' || normalizedRelative.startsWith('../')) {
+      return null;
+    }
+  }
+
+  const repoRootResolved = resolve(repoRoot);
+  const absoluteResolved = isAbsolute(trimmed)
+    ? resolve(trimmed)
+    : resolve(repoRoot, trimmed);
+  const isInsideRepo =
+    absoluteResolved === repoRootResolved ||
+    absoluteResolved.startsWith(`${repoRootResolved}${sep}`);
+
+  if (!isInsideRepo) {
+    return null;
+  }
+
+  const relativePath = normalizeToPosixPath(
+    relative(repoRootResolved, absoluteResolved),
+  );
+  const normalizedRelative = trimDocsRoot(relativePath);
+  return !normalizedRelative || normalizedRelative === '.'
+    ? '.'
+    : normalizedRelative;
+}
+
+async function promptForManualDocsConfig(
+  projectRoot: string,
+  context: CommandContext,
+  dependencies: InitDependencies,
+  promptMessage: string,
+  defaultRoot = 'docs',
+): Promise<OatDocumentationConfig | null> {
+  const hasDocs = await dependencies.confirmAction(promptMessage, {
+    interactive: context.interactive,
+  });
+
+  if (!hasDocs) {
+    return null;
+  }
+
+  const tooling = await dependencies.selectWithAbort(
+    'Documentation framework',
+    DOCS_TOOLING_CHOICES,
+    { interactive: context.interactive },
+  );
+  if (!tooling) {
+    return null;
+  }
+
+  while (true) {
+    const rootInput = await dependencies.inputWithDefault(
+      'Docs root path (relative to repo root)',
+      defaultRoot,
+      { interactive: context.interactive },
+    );
+    if (rootInput === null) {
+      return null;
+    }
+
+    const root = normalizeDocumentationRoot(projectRoot, rootInput);
+    if (root) {
+      return { tooling, root };
+    }
+
+    context.logger.info(
+      'Docs root must be repo-relative or inside the repository.',
+    );
+  }
+}
+
 async function runGuidedSetupImpl(
   context: CommandContext,
   dependencies: InitDependencies,
@@ -562,33 +652,27 @@ async function runGuidedSetupImpl(
         { interactive: context.interactive },
       );
       if (confirmDetected) {
-        docsConfig = { tooling: detected.tooling, root: detected.root };
+        docsConfig = {
+          tooling: detected.tooling,
+          root: detected.root,
+          ...(detected.config ? { config: detected.config } : {}),
+        };
+      } else {
+        docsConfig = await promptForManualDocsConfig(
+          projectRoot,
+          context,
+          dependencies,
+          'Would you like to enter docs config manually instead?',
+          detected.root,
+        );
       }
     } else {
-      const hasDocs = await dependencies.confirmAction(
+      docsConfig = await promptForManualDocsConfig(
+        projectRoot,
+        context,
+        dependencies,
         'Do you have documentation in this repo?',
-        { interactive: context.interactive },
       );
-
-      if (hasDocs) {
-        const tooling = await dependencies.selectWithAbort(
-          'Documentation framework',
-          DOCS_TOOLING_CHOICES,
-          { interactive: context.interactive },
-        );
-
-        if (tooling) {
-          const root = await dependencies.inputWithDefault(
-            'Docs root path (relative to repo root)',
-            'docs',
-            { interactive: context.interactive },
-          );
-
-          if (root) {
-            docsConfig = { tooling, root };
-          }
-        }
-      }
     }
 
     if (docsConfig) {

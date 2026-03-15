@@ -24,7 +24,7 @@ function createGuidedSetupHarness(options: {
   providerSelectResponses?: Array<string[] | null>;
   toolPacksResult?: string[];
   detectedDocs?: DetectedDocs | null;
-  existingDocsConfig?: { tooling?: string; root?: string };
+  existingDocsConfig?: { tooling?: string; root?: string; config?: string };
 }): {
   capture: LoggerCapture;
   command: Command;
@@ -330,7 +330,7 @@ describe('guided setup integration', () => {
       hookInstalled: true,
       oatDirExists: true,
       providerSelectResponses: [['claude']],
-      detectedDocs: { tooling: 'mkdocs', root: '.' },
+      detectedDocs: { tooling: 'mkdocs', root: '.', config: 'mkdocs.yml' },
       confirmResponses: [
         true, // confirm detected docs
         false, // provider sync — skip
@@ -349,6 +349,7 @@ describe('guided setup integration', () => {
         documentation: expect.objectContaining({
           tooling: 'mkdocs',
           root: '.',
+          config: 'mkdocs.yml',
         }),
       }),
     );
@@ -365,7 +366,7 @@ describe('guided setup integration', () => {
       hookInstalled: true,
       oatDirExists: true,
       providerSelectResponses: [['claude']],
-      detectedDocs: { tooling: 'mkdocs', root: '.' },
+      detectedDocs: { tooling: 'mkdocs', root: '.', config: 'mkdocs.yml' },
       confirmResponses: [
         false, // decline detected docs
         false, // provider sync — skip
@@ -384,6 +385,39 @@ describe('guided setup integration', () => {
         (msg) => msg.includes('Documentation') && msg.includes('skipped'),
       ),
     ).toBe(true);
+  });
+
+  it('docs: declining detected tooling can fall back to manual entry', async () => {
+    const { command, writeOatConfig } = createGuidedSetupHarness({
+      interactive: true,
+      hookInstalled: true,
+      oatDirExists: true,
+      providerSelectResponses: [['claude']],
+      detectedDocs: { tooling: 'mkdocs', root: '.', config: 'mkdocs.yml' },
+      confirmResponses: [
+        false, // decline detected docs
+        true, // enter docs config manually
+        false, // provider sync — skip
+      ],
+      selectResponses: [[]],
+      selectWithAbortResponses: ['docusaurus'],
+      inputWithDefaultResponses: ['website'],
+    });
+
+    await runInit(command, {
+      globalArgs: ['--scope', 'project'],
+      commandArgs: ['--setup'],
+    });
+
+    expect(writeOatConfig).toHaveBeenCalledWith(
+      '/tmp/workspace',
+      expect.objectContaining({
+        documentation: expect.objectContaining({
+          tooling: 'docusaurus',
+          root: 'website',
+        }),
+      }),
+    );
   });
 
   it('docs: manual entry when nothing detected and user says they have docs', async () => {
@@ -423,6 +457,77 @@ describe('guided setup integration', () => {
           msg.includes('docusaurus at website'),
       ),
     ).toBe(true);
+  });
+
+  it('docs: manual entry normalizes absolute paths inside the repo', async () => {
+    const { command, writeOatConfig } = createGuidedSetupHarness({
+      interactive: true,
+      hookInstalled: true,
+      oatDirExists: true,
+      providerSelectResponses: [['claude']],
+      detectedDocs: null,
+      confirmResponses: [
+        true, // "Do you have documentation?" — yes
+        false, // provider sync — skip
+      ],
+      selectResponses: [[]],
+      selectWithAbortResponses: ['docusaurus'],
+      inputWithDefaultResponses: ['/tmp/workspace/website'],
+    });
+
+    await runInit(command, {
+      globalArgs: ['--scope', 'project'],
+      commandArgs: ['--setup'],
+    });
+
+    expect(writeOatConfig).toHaveBeenCalledWith(
+      '/tmp/workspace',
+      expect.objectContaining({
+        documentation: expect.objectContaining({
+          tooling: 'docusaurus',
+          root: 'website',
+        }),
+      }),
+    );
+  });
+
+  it('docs: manual entry rejects paths outside the repo and re-prompts', async () => {
+    const { command, capture, writeOatConfig } = createGuidedSetupHarness({
+      interactive: true,
+      hookInstalled: true,
+      oatDirExists: true,
+      providerSelectResponses: [['claude']],
+      detectedDocs: null,
+      confirmResponses: [
+        true, // "Do you have documentation?" — yes
+        false, // provider sync — skip
+      ],
+      selectResponses: [[]],
+      selectWithAbortResponses: ['docusaurus'],
+      inputWithDefaultResponses: ['../outside', 'website'],
+    });
+
+    await runInit(command, {
+      globalArgs: ['--scope', 'project'],
+      commandArgs: ['--setup'],
+    });
+
+    expect(
+      capture.info.some((msg) =>
+        msg.includes(
+          'Docs root must be repo-relative or inside the repository.',
+        ),
+      ),
+    ).toBe(true);
+    expect(writeOatConfig).toHaveBeenCalledWith(
+      '/tmp/workspace',
+      expect.objectContaining({
+        documentation: expect.objectContaining({
+          tooling: 'docusaurus',
+          root: 'website',
+        }),
+      }),
+    );
   });
 
   it('docs: skips detection when documentation already configured', async () => {
