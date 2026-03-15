@@ -1,6 +1,6 @@
 ---
-oat_current_task: p03-t01
-oat_last_commit: 0e3d1764a0d2e27f8e6de3d01c70268f01f17d0d
+oat_current_task: p03-t02
+oat_last_commit: fa340e54c7046a77752bbb4bbed6d943332f49d7
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p03-t01
+Implementation - Executing p03-t02
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Create the first project-management skill, starting with `p03-t01`
+Refactor repo-reference skill into the project-management namespace, starting with `p03-t02`
