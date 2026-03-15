@@ -1,6 +1,6 @@
 ---
-oat_current_task: p04-t01
-oat_last_commit: 4d5dd2a93731a9b46505ff0cdb4027792b09da9b
+oat_current_task: p04-t02
+oat_last_commit: 32cb7d92bacb209b5c40cbbd14aec1bca9ac6be8
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p04-t01
+Implementation - Executing p04-t02
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Register project-management skills in the CLI manifest, starting with `p04-t01`
+Extend pack resolution for project-management tooling, starting with `p04-t02`

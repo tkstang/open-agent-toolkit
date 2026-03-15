@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p04-t01
+oat_current_task_id: p04-t02
 oat_generated: false
 ---
 
@@ -29,10 +29,10 @@ oat_generated: false
 | Phase 1 | complete    | 4     | 4/4       |
 | Phase 2 | complete    | 3     | 3/3       |
 | Phase 3 | complete    | 3     | 3/3       |
-| Phase 4 | in_progress | 5     | 0/5       |
+| Phase 4 | in_progress | 5     | 1/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 10/19 tasks completed
+**Total:** 11/19 tasks completed
 
 ---
 
@@ -389,8 +389,26 @@ oat_generated: false
 
 ### Task p04-t01: Add `PROJECT_MANAGEMENT_SKILLS` to skill manifest
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 32cb7d92bacb209b5c40cbbd14aec1bca9ac6be8
+
+**Outcome (required when completed):**
+
+- Added the project-management pack’s skill and template lists to the shared installer manifest.
+- Established the bundle/install source of truth needed by the upcoming pack installer and CLI registration work.
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/tools/shared/skill-manifest.ts` - added project-management skill/template/script constants
+
+**Verification:**
+
+- Run: `pnpm type-check`
+- Result: Pass; the updated manifest compiles cleanly across the workspace
+
+**Notes / Decisions:**
+
+- Defined an explicit empty `PROJECT_MANAGEMENT_SCRIPTS` list now so the installer shape matches the other packs even before any project-management scripts exist.
 
 ---
 
@@ -484,7 +502,8 @@ Chronological log of implementation progress.
 - [x] p03-t01: Create `oat-pjm-add-backlog-item` skill - fa340e54c7046a77752bbb4bbed6d943332f49d7
 - [x] p03-t02: Refactor `update-repo-reference` to `oat-pjm-update-repo-reference` - e37b14700cce6fe39e6bcb0bf33f488cb3eb17d5
 - [x] p03-t03: Refactor `review-backlog` to `oat-pjm-review-backlog` - 4d5dd2a93731a9b46505ff0cdb4027792b09da9b
-- [ ] p04-t01: Add `PROJECT_MANAGEMENT_SKILLS` to skill manifest - pending
+- [x] p04-t01: Add `PROJECT_MANAGEMENT_SKILLS` to skill manifest - 32cb7d92bacb209b5c40cbbd14aec1bca9ac6be8
+- [ ] p04-t02: Extend `PackName` type and pack resolution - pending
 
 **What changed (high level):**
 
