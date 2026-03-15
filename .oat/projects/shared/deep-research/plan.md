@@ -901,17 +901,56 @@ git commit -m "feat(p08-t07): per-pack scope selection in interactive install fl
 
 ---
 
+### Task p09-t01: (review) Update --pack help text to include research
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/tools/remove/index.ts`
+- Modify: `packages/cli/src/commands/tools/update/index.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `VALID_PACKS` accepts `research`, but the `--pack` option description strings in `tools remove` and `tools update` still advertise only `ideas|workflows|utility`.
+Location: `packages/cli/src/commands/tools/remove/index.ts:65` and equivalent in `tools/update`
+
+**Step 2: Update help descriptions**
+
+In both `tools/remove/index.ts` and `tools/update/index.ts`, update the `--pack` option description to include `research` in the list (e.g., `ideas|workflows|utility|research`).
+
+**Step 3: Update help snapshots**
+
+Run: `npx vitest run -u help-snapshots`
+Expected: Snapshots updated for the new description strings
+
+**Step 4: Verify**
+
+Run: `pnpm --filter @oat/cli test`
+Expected: All tests pass
+
+Run: `pnpm --filter @oat/cli type-check`
+Expected: No type errors
+
+**Step 5: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/remove/index.ts packages/cli/src/commands/tools/update/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "fix(p09-t01): update --pack help text to include research"
+```
+
+---
+
 ## Reviews
 
-| Scope     | Type     | Status   | Date       | Artifact                                                 |
-| --------- | -------- | -------- | ---------- | -------------------------------------------------------- |
-| p01       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p02       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p03       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| p04       | code     | passed   | 2026-03-14 | implementation.md (orchestration run 1)                  |
-| final     | code     | received | 2026-03-15 | reviews/final-review-2026-03-15.md                       |
-| discovery | artifact | passed   | 2026-03-14 | reviews/archived/artifact-discovery-review-2026-03-14.md |
-| design    | artifact | passed   | 2026-03-14 | reviews/archived/artifact-design-review-2026-03-14.md    |
+| Scope     | Type     | Status | Date       | Artifact                                                 |
+| --------- | -------- | ------ | ---------- | -------------------------------------------------------- |
+| p01       | code     | passed | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p02       | code     | passed | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p03       | code     | passed | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| p04       | code     | passed | 2026-03-14 | implementation.md (orchestration run 1)                  |
+| final     | code     | passed | 2026-03-15 | reviews/archived/final-review-2026-03-15.md              |
+| discovery | artifact | passed | 2026-03-14 | reviews/archived/artifact-discovery-review-2026-03-14.md |
+| design    | artifact | passed | 2026-03-14 | reviews/archived/artifact-design-review-2026-03-14.md    |
 
 ---
 
@@ -927,8 +966,9 @@ git commit -m "feat(p08-t07): per-pack scope selection in interactive install fl
 - Phase 6: 2 tasks — Review fixes (final re-review)
 - Phase 7: 1 task — Review fixes (final re-review cycle 3)
 - Phase 8: 7 tasks — Research tool pack, output destination standardization, per-pack scope selection
+- Phase 9: 1 task — Review fix (help text)
 
-**Total: 21 tasks**
+**Total: 22 tasks**
 
 Ready for code review and merge.
 

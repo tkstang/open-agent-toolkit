@@ -31,7 +31,8 @@ oat_generated: false
 | Phase 6: Review Fixes (re-review) | 2      | 2         | complete     |
 | Phase 7: Review Fixes (cycle 3)   | 1      | 1         | complete     |
 | Phase 8: Research Tool Pack       | 7      | 7         | complete     |
-| **Total**                         | **21** | **21**    | **complete** |
+| Phase 9: Review Fix (final p8)    | 1      | 1         | complete     |
+| **Total**                         | **22** | **22**    | **complete** |
 
 ## Task Log
 
@@ -205,6 +206,33 @@ oat_generated: false
 - Removed unused `isUserEligibleSelection` function
 - Added mixed per-pack scope test, updated scope conflicts test
 - Commit: `96e59538`
+
+### Review Received: final (Phase 8)
+
+**Date:** 2026-03-15
+**Review artifact:** reviews/archived/final-review-2026-03-15.md
+
+**Findings:**
+
+- Critical: 0
+- Important: 1
+- Medium: 0
+- Minor: 1
+
+**Dispositions:**
+
+- I1: User-scoped research installs orphan agent from tool management — **deferred** (no functional impact on skills; gap limited to `oat tools list/update/remove` not scanning user-scope agents; tracked as separate backlog item)
+- m1: Help text omits research in --pack descriptions — **converted to task, fixed directly** (commit `45ab90d8`)
+
+**Status:** Final review passed. I1 deferred with rationale; m1 fixed.
+
+### Phase 9: Review Fix (final p8)
+
+**p09-t01: (review) Update --pack help text to include research** — complete
+
+- Updated `--pack` option descriptions in `tools/remove/index.ts` and `tools/update/index.ts`
+- Refreshed 2 help snapshots
+- Commit: `45ab90d8`
 
 ## Orchestration Runs
 
