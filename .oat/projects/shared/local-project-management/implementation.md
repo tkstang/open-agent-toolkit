@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p01-t02
+oat_current_task_id: p01-t03
 oat_generated: false
 ---
 
@@ -26,13 +26,13 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 4     | 1/4       |
+| Phase 1 | in_progress | 4     | 2/4       |
 | Phase 2 | pending     | 3     | 0/3       |
 | Phase 3 | pending     | 3     | 0/3       |
 | Phase 4 | pending     | 5     | 0/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 1/19 tasks completed
+**Total:** 2/19 tasks completed
 
 ---
 
@@ -87,12 +87,26 @@ oat_generated: false
 
 ### Task p01-t02: Create roadmap template
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 12d48e59ea1ccba0105d37b87bd1bc55204ba70b
 
-**Notes:**
+**Outcome (required when completed):**
 
-- Will create `.oat/templates/roadmap.md`
+- Added a roadmap template with explicit Now/Next/Later horizons for the new backlog model.
+- Included inline guidance for backlog-ID based entries so migrated roadmap items can point to file-backed backlog records.
+
+**Files changed:**
+
+- `.oat/templates/roadmap.md` - added the roadmap template and entry formatting guidance
+
+**Verification:**
+
+- Run: `cat .oat/templates/roadmap.md`
+- Result: Pass; template contains the expected horizon headings and usage comments
+
+**Notes / Decisions:**
+
+- Kept the template minimal and guidance-focused so migration can preserve current roadmap detail while adopting the new structure.
 
 ---
 
@@ -263,7 +277,8 @@ Chronological log of implementation progress.
 **Session Start:** 17:25
 
 - [x] p01-t01: Create backlog item template - 48c08748dd9e64541e2d999839170bc803332514
-- [ ] p01-t02: Create roadmap template - pending
+- [x] p01-t02: Create roadmap template - 12d48e59ea1ccba0105d37b87bd1bc55204ba70b
+- [ ] p01-t03: Create backlog directory structure - pending
 
 **What changed (high level):**
 
