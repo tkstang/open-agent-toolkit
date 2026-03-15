@@ -378,14 +378,113 @@ git commit -m "feat(p03-t03): finalize core pack skill registration"
 
 ---
 
+## Phase 4: Review Fixes (final)
+
+### Task p04-t01: (review) Fix --pack help text to include 'core'
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/tools/remove/index.ts`
+- Modify: `packages/cli/src/commands/tools/update/index.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: The `--pack` option description reads `'(ideas|workflows|utility)'` but `core` is absent from both `remove` and `update` commands. Users won't know they can target the core pack.
+Location: `packages/cli/src/commands/tools/remove/index.ts:68`, `packages/cli/src/commands/tools/update/index.ts:68`
+
+**Step 2: Implement fix**
+
+Update both description strings to include `core`: `'(core|ideas|workflows|utility)'`. Update the corresponding help-snapshot test expectations in `help-snapshots.test.ts`.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- --reporter verbose help-snapshots`
+Expected: All help snapshot tests pass with updated text
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/remove/index.ts packages/cli/src/commands/tools/update/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "fix(p04-t01): add core to --pack help text in remove and update commands"
+```
+
+---
+
+### Task p04-t02: (review) Add docs refresh to oat tools update --pack core
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/tools/update/index.ts`
+- Modify: `packages/cli/src/commands/init/tools/core/install-core.ts` (if docs-copy logic needs extraction)
+
+**Step 1: Understand the issue**
+
+Review finding: `oat tools update --pack core` copies skills but does not refresh `~/.oat/docs/`. Discovery D3 states update should refresh docs alongside skills.
+Location: architectural gap in `packages/cli/src/commands/tools/update/index.ts`
+
+**Step 2: Implement fix**
+
+When `updateTools` targets the `core` pack, additionally invoke the docs-copy logic from `installCore` (or extract it into a reusable helper). After skill updates complete, copy docs from `assets/docs/` to `~/.oat/docs/` using the same `copyDirWithStatus` approach.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test && pnpm --filter @oat/cli type-check`
+Expected: All tests pass, type-check clean. Consider adding a test that verifies docs are refreshed on core update.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/tools/update/index.ts packages/cli/src/commands/init/tools/core/install-core.ts
+git commit -m "fix(p04-t02): refresh docs on oat tools update --pack core per D3"
+```
+
+---
+
+### Task p04-t03: (review) Add directory guard to bundle-assets.sh docs copy
+
+**Files:**
+
+- Modify: `packages/cli/scripts/bundle-assets.sh`
+
+**Step 1: Understand the issue**
+
+Review finding: Plan specified `if [ -d ... ]` guard around docs copy but implementation uses bare `cp -R`. Build fails with `set -e` if docs directory is missing.
+Location: `packages/cli/scripts/bundle-assets.sh:71`
+
+**Step 2: Implement fix**
+
+Wrap the docs copy in a conditional guard:
+
+```bash
+if [ -d "${REPO_ROOT}/apps/oat-docs/docs" ]; then
+  mkdir -p "${ASSETS}/docs"
+  cp -R "${REPO_ROOT}/apps/oat-docs/docs/." "${ASSETS}/docs/"
+fi
+```
+
+**Step 3: Verify**
+
+Run: `pnpm build`
+Expected: Build succeeds, docs still bundled
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/scripts/bundle-assets.sh
+git commit -m "fix(p04-t03): add directory guard to docs copy in bundle-assets.sh"
+```
+
+---
+
 ## Reviews
 
-| Scope | Type | Status   | Date       | Artifact                           |
-| ----- | ---- | -------- | ---------- | ---------------------------------- |
-| p01   | code | pending  | -          | -                                  |
-| p02   | code | pending  | -          | -                                  |
-| p03   | code | pending  | -          | -                                  |
-| final | code | received | 2026-03-15 | reviews/final-review-2026-03-15.md |
+| Scope | Type | Status      | Date       | Artifact                                    |
+| ----- | ---- | ----------- | ---------- | ------------------------------------------- |
+| p01   | code | pending     | -          | -                                           |
+| p02   | code | pending     | -          | -                                           |
+| p03   | code | pending     | -          | -                                           |
+| final | code | fixes_added | 2026-03-15 | reviews/archived/final-review-2026-03-15.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -405,8 +504,9 @@ git commit -m "feat(p03-t03): finalize core pack skill registration"
 - Phase 1: 3 tasks — initial skill files + registration (committed, needs rework)
 - Phase 2: 7 tasks — core pack CLI infrastructure (types, manifest, installer, subcommand, orchestrator, scan-tools, bundle, tests)
 - Phase 3: 3 tasks — rewrite skills per create-oat-skill, finalize registration
+- Phase 4: 3 tasks — review fixes (help text, docs update, bundle guard)
 
-**Total: 13 tasks**
+**Total: 16 tasks (13 original + 3 review fixes)**
 
 ---
 

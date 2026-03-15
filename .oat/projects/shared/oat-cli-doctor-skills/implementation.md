@@ -1,9 +1,9 @@
 ---
-oat_status: complete
-oat_ready_for: pr
+oat_status: in_progress
+oat_ready_for: oat-project-implement
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: null
+oat_current_task_id: p04-t01
 oat_generated: false
 ---
 
@@ -24,13 +24,14 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status   | Tasks | Completed |
-| ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 3     | 3/3       |
-| Phase 2 | complete | 7     | 7/7       |
-| Phase 3 | complete | 3     | 3/3       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | complete    | 3     | 3/3       |
+| Phase 2 | complete    | 7     | 7/7       |
+| Phase 3 | complete    | 3     | 3/3       |
+| Phase 4 | not_started | 3     | 0/3       |
 
-**Total:** 13/13 tasks completed
+**Total:** 13/16 tasks completed
 
 ---
 
@@ -239,6 +240,42 @@ oat_generated: false
 - Lint: 0 warnings, 0 errors
 - Bundle consistency test passes (CORE_SKILLS recognized)
 - scan-tools resolves core pack correctly
+
+---
+
+## Review Received: final
+
+**Date:** 2026-03-15
+**Review artifact:** reviews/archived/final-review-2026-03-15.md
+
+**Findings:**
+
+- Critical: 0
+- Important: 2
+- Medium: 0
+- Minor: 3
+
+**Disposition:**
+
+- `I1` (help text missing core) → converted to p04-t01
+- `I2` (docs not refreshed on update) → converted to p04-t02
+- `m1` (bundle-assets.sh guard) → converted to p04-t03
+- `m2` (docsStatus simplification) → deferred: reviewer says no code change needed; reasonable simplification
+- `m3` (hardcoded skill manifest in SKILL.md) → deferred: pragmatic tradeoff for SKILL.md; drift risk is low
+
+**Deferred Findings (Minor):**
+
+- `m2`: install-core.ts docsStatus is a string instead of separate numeric counts — acceptable simplification, no code change needed
+- `m3`: oat-doctor SKILL.md hardcodes skill manifest inline — pragmatic for SKILL.md (cannot import TypeScript); low drift risk
+
+**New tasks added:** p04-t01, p04-t02, p04-t03
+
+**Next:** Execute fix tasks via `oat-project-implement` starting from p04-t01.
+
+After fix tasks are complete:
+
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ---
 
