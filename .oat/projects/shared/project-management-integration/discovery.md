@@ -101,15 +101,15 @@ This works in both directions — a project references its backlog items, a back
 
 ```yaml
 ---
-id: bl-003
+id: bl-a3f2
 title: Add webhook support
 status: open              # open | in_progress | closed | wont_do
 priority: high            # urgent | high | medium | low | none
 scope: feature            # idea | task | feature | initiative
 labels: [cli, integrations]
 assignee: null
-created: 2026-03-15
-updated: 2026-03-15
+created: 2026-03-15T14:30:00Z
+updated: 2026-03-15T14:30:00Z
 associated_issues:
   - type: linear
     ref: ENG-45
@@ -123,6 +123,8 @@ Support webhook endpoints for CLI event notifications...
 
 - ...
 ```
+
+The `id` is a `bl-` prefix + 4-char hash generated from filename + creation timestamp. The `title` is the human-readable name, always displayed alongside the ID (e.g., `bl-a3f2: Add webhook support`).
 
 ### Backlog Directory Structure
 
@@ -215,6 +217,9 @@ A `backlog-item.md` template in `.oat/templates/` enables consistent scaffolding
 11. **`deferred-phases.md` retired:** Legacy document merged/migrated — still-relevant phases (staleness/knowledge drift, memory system) become backlog items; the rest is done or dropped.
 12. **Backlog item template:** `.oat/templates/backlog-item.md` provides consistent scaffolding for new items, matching the project template pattern.
 13. **Completed log ordering:** `completed.md` entries ordered by ISO 8601 UTC timestamp — uses `oat_project_completed` from project `state.md` if the item was resolved via a project, otherwise the current UTC timestamp at close time. Newest first. Unique timestamps avoid merge conflicts.
+14. **Backlog item IDs are short hashes:** IDs use a `bl-` prefix + 4-char hash (e.g., `bl-a3f2`), generated from filename + creation timestamp. Avoids worktree conflicts (no shared counter). Filenames remain human-readable (`staleness-knowledge-drift.md`). All references use the hash ID; display always pairs it with the title (`bl-a3f2: Staleness + knowledge drift`).
+15. **Backlog index is hybrid (generated + curated):** `index.md` has a CLI-generated section (managed markers, auto-populated from item frontmatter) and a curated section (brief narrative summaries maintained by the agent via `oat-pjm-add-backlog-item` skill). Generated section uses the existing `<!-- OAT ... -->` / `<!-- END OAT ... -->` managed-section pattern.
+16. **`oat-pjm-add-backlog-item` skill orchestrates creation:** Creates item file from template, runs CLI to regenerate the generated index section, then guides the agent to update the curated section with a brief overview.
 
 ## Constraints
 
@@ -254,8 +259,6 @@ A `backlog-item.md` template in `.oat/templates/` enables consistent scaffolding
 
 ## Open Questions
 
-- **Backlog index: generated or curated?** Should `index.md` be auto-generated from item files (always in sync but less flexible) or hand-curated (allows custom ordering/grouping but can drift)? Or a hybrid — generated with manual overrides?
-- **Backlog item IDs:** Should IDs be auto-assigned sequential (`bl-001`, `bl-002`) or user-chosen (filename-based like `add-webhook-support`)? Sequential is unambiguous; name-based is more readable.
 - **Roadmap structure:** What sections should the roadmap file have? Time-based horizons (Now / Next / Later)? Theme-based groupings? Both?
 - **Project `associated_issues` location:** Should this field live in `state.md` frontmatter, or in a separate project-level config? State.md is already the project's metadata hub.
 
