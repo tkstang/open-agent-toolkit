@@ -528,12 +528,12 @@ git commit -m "fix(p05-t01): fix core pack scope accounting in oat init tools"
 
 ## Reviews
 
-| Scope | Type | Status   | Date       | Artifact                              |
-| ----- | ---- | -------- | ---------- | ------------------------------------- |
-| p01   | code | pending  | -          | -                                     |
-| p02   | code | pending  | -          | -                                     |
-| p03   | code | pending  | -          | -                                     |
-| final | code | received | 2026-03-15 | reviews/final-review-2026-03-15-v3.md |
+| Scope | Type | Status  | Date       | Artifact                                       |
+| ----- | ---- | ------- | ---------- | ---------------------------------------------- |
+| p01   | code | pending | -          | -                                              |
+| p02   | code | pending | -          | -                                              |
+| p03   | code | pending | -          | -                                              |
+| final | code | passed  | 2026-03-15 | reviews/archived/final-review-2026-03-15-v3.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
