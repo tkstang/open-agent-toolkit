@@ -774,57 +774,79 @@ git commit -m "docs(p08-t05): add research pack to tool packs and CLI reference 
 
 ---
 
-### Task p08-t06: Standardize output destination across /deep-research, /analyze, and /synthesize
+### Task p08-t06: Standardize output destination across artifact-producing skills
 
 **Files:**
 
 - Modify: `.agents/skills/deep-research/SKILL.md`
 - Modify: `.agents/skills/analyze/SKILL.md`
+- Modify: `.agents/skills/compare/SKILL.md`
 - Modify: `.agents/skills/synthesize/SKILL.md`
+- Modify: `.oat/repo/README.md`
 
 **Step 1: Define shared output destination resolution**
 
-All three artifact-producing skills should follow the same output destination pattern:
+All artifact-producing skills should follow the same output destination pattern:
 
 1. **If an explicit path was provided** in `$ARGUMENTS`, use it — no prompt.
-2. **Otherwise, ask the user** via `AskUserQuestion` (or provider equivalent) with a context-aware default suggestion:
-   - Detect OAT repo: check if `.oat/` exists at the repo root. If so, suggest `.oat/repo/research/` as the default destination.
-   - If not an OAT repo: suggest current directory as the default.
+2. **Otherwise, ask the user** via `AskUserQuestion` (or provider equivalent) with a skill-specific default suggestion:
    - The prompt should be: _"Where would you like to write the artifact? (default: {suggested path})"_
    - If the user confirms the default (empty response or "yes"), use the suggested path.
    - If the user provides a path, use that instead.
 
+**Skill-specific OAT-aware defaults** (when `.oat/` exists at repo root):
+
+| Skill             | OAT default                 | Non-OAT default   |
+| ----------------- | --------------------------- | ----------------- |
+| `/deep-research`  | `.oat/repo/research/`       | current directory |
+| `/analyze`        | `.oat/repo/analysis/`       | current directory |
+| `/compare --save` | `.oat/repo/analysis/`       | current directory |
+| `/synthesize`     | input artifacts directory\* | current directory |
+
+\* If all input artifacts came from the same directory, suggest that directory. Otherwise, fall back to OAT detection (`.oat/repo/analysis/`) or current directory.
+
 **Step 2: Update /deep-research**
 
 - Remove the Obsidian vault auto-detection from Step 9 (output target resolution). Delete the Obsidian priority entirely.
-- Replace the 3-priority resolution (Obsidian > explicit path > current directory) with the shared pattern above.
+- Replace the 3-priority resolution (Obsidian > explicit path > current directory) with the shared pattern above, using `.oat/repo/research/` as OAT default.
 - Remove any Obsidian references from the Troubleshooting section if present.
 - Update the Success Criteria to reflect the new prompt-based resolution.
 
 **Step 3: Update /analyze**
 
 - Add a new step between cross-angle synthesis and the write step: "Resolve output destination"
-- Follow the shared pattern above. Renumber subsequent steps.
+- Follow the shared pattern above, using `.oat/repo/analysis/` as OAT default. Renumber subsequent steps.
 - Update the Arguments section to document the optional trailing output-path argument.
 
-**Step 4: Update /synthesize**
+**Step 4: Update /compare**
+
+- Update the `--save` artifact output section to include output destination resolution.
+- Follow the shared pattern above, using `.oat/repo/analysis/` as OAT default.
+- Only applies when `--save` is specified (inline output doesn't write files).
+
+**Step 5: Update /synthesize**
 
 - Update Step 6 (Produce output) to include output destination resolution before writing.
-- For `/synthesize`, the context-aware default has an additional heuristic: if all input artifacts came from the same directory, suggest that directory (not current directory or `.oat/repo/research/`). Otherwise, fall back to the standard OAT-detection logic.
+- For `/synthesize`, the default has an additional heuristic: if all input artifacts came from the same directory, suggest that directory. Otherwise, fall back to OAT detection (`.oat/repo/analysis/`) or current directory.
 - The prompt should be: _"Where would you like to write the synthesis? (default: {suggested path})"_
 
-**Step 5: Verify**
+**Step 6: Update .oat/repo/README.md**
 
-Run: `grep -n 'AskUserQuestion\|output.*destination\|\.oat/repo/research' .agents/skills/deep-research/SKILL.md .agents/skills/analyze/SKILL.md .agents/skills/synthesize/SKILL.md`
-Expected: All three skills reference AskUserQuestion and the OAT-aware destination logic
+- Add `research/` directory to the Structure section with description: "Generated research artifacts produced by `/deep-research`."
+- Update `analysis/` description to include `/analyze` and `/compare` artifact types alongside the existing `oat-agent-instructions-analyze` type.
+
+**Step 7: Verify**
+
+Run: `grep -n 'AskUserQuestion\|output.*destination\|\.oat/repo/research\|\.oat/repo/analysis' .agents/skills/deep-research/SKILL.md .agents/skills/analyze/SKILL.md .agents/skills/compare/SKILL.md .agents/skills/synthesize/SKILL.md`
+Expected: All four skills reference AskUserQuestion and their respective OAT-aware destination
 
 Run: `grep -n 'Obsidian\|obsidian' .agents/skills/deep-research/SKILL.md`
 Expected: No matches
 
-**Step 6: Commit**
+**Step 8: Commit**
 
 ```bash
-git add .agents/skills/deep-research/SKILL.md .agents/skills/analyze/SKILL.md .agents/skills/synthesize/SKILL.md
+git add .agents/skills/deep-research/SKILL.md .agents/skills/analyze/SKILL.md .agents/skills/compare/SKILL.md .agents/skills/synthesize/SKILL.md .oat/repo/README.md
 git commit -m "feat(p08-t06): standardize output destination with user prompt and OAT-aware defaults"
 ```
 
