@@ -13,13 +13,13 @@ oat_workflow_origin: native
 oat_docs_updated: complete
 oat_project_created: '2026-03-15T15:23:22.569Z'
 oat_project_completed: null
-oat_project_state_updated: '2026-03-15T21:45:00Z'
+oat_project_state_updated: '2026-03-15T22:30:00Z'
 oat_generated: false
 ---
 
 # Project State: oat-cli-doctor-skills
 
-**Status:** Implementation Complete — Awaiting Re-Review
+**Status:** PR Ready — Run `oat-project-complete`
 **Started:** 2026-03-15
 **Last Updated:** 2026-03-15
 
@@ -49,4 +49,4 @@ None
 
 ## Next Milestone
 
-Re-review to reach `passed`, then create PR.
+Run `oat-project-complete`.
