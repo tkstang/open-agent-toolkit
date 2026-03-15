@@ -53,7 +53,7 @@ const defaultSyncDependencies: AutoSyncDependencies = {
   },
 };
 
-const VALID_PACKS = ['ideas', 'workflows', 'utility'] as const;
+const VALID_PACKS = ['ideas', 'workflows', 'utility', 'research'] as const;
 
 export function createToolsRemoveCommand(
   dependencies: RemoveToolsDependencies = defaultDependencies,
