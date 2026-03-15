@@ -40,6 +40,7 @@ describe('help output snapshots', () => {
         -h, --help       display help for command
 
       Commands:
+        backlog          Manage file-backed backlog items and indexes
         init [options]   Initialize canonical directories, manifest, and tool packs
         status           Report provider sync and drift status
         sync [options]   Sync canonical content to provider views
@@ -655,7 +656,7 @@ describe('help output snapshots', () => {
 
       Options:
         --pack <pack>  Remove all tools in a pack
-                       (core|ideas|workflows|utility|research)
+                       (core|ideas|workflows|utility|project-management|research)
         --all          Remove all installed tools
         --dry-run      Preview removals without applying
         --no-sync      Skip auto-sync after removal
@@ -680,7 +681,7 @@ describe('help output snapshots', () => {
 
       Options:
         --pack <pack>  Update all tools in a pack
-                       (core|ideas|workflows|utility|research)
+                       (core|ideas|workflows|utility|project-management|research)
         --all          Update all outdated tools
         --dry-run      Preview updates without applying
         --no-sync      Skip auto-sync after update
