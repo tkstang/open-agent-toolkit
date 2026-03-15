@@ -1,6 +1,6 @@
 ---
-oat_current_task: p02-t02
-oat_last_commit: 7708871b7c4ecaf6bd6cde83f8af20bf387f40a0
+oat_current_task: p02-t03
+oat_last_commit: 2a600879a6645981b8f169580eb533f75e39ae61
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p02-t02
+Implementation - Executing p02-t03
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Implement CLI support for backlog index regeneration, starting with `p02-t02`
+Wire CLI entry points for backlog tooling, starting with `p02-t03`

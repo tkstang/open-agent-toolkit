@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p02-t02
+oat_current_task_id: p02-t03
 oat_generated: false
 ---
 
@@ -27,12 +27,12 @@ oat_generated: false
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | complete    | 4     | 4/4       |
-| Phase 2 | in_progress | 3     | 1/3       |
+| Phase 2 | in_progress | 3     | 2/3       |
 | Phase 3 | pending     | 3     | 0/3       |
 | Phase 4 | pending     | 5     | 0/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 5/19 tasks completed
+**Total:** 6/19 tasks completed
 
 ---
 
@@ -203,8 +203,27 @@ oat_generated: false
 
 ### Task p02-t02: Implement backlog index regeneration command
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 2a600879a6645981b8f169580eb533f75e39ae61
+
+**Outcome (required when completed):**
+
+- Added a backlog index regeneration command implementation that scans file-backed items, sorts them by priority and title, and rewrites only the managed table section.
+- Added tests covering managed-section preservation, priority sorting, and the empty-directory fallback row.
+
+**Files changed:**
+
+- `packages/cli/src/commands/backlog/regenerate-index.ts` - implemented item parsing, sorting, and managed-section rewriting
+- `packages/cli/src/commands/backlog/regenerate-index.test.ts` - added temp-dir based coverage for regeneration behavior
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/regenerate-index.test.ts`
+- Result: Pass; managed content is replaced correctly and non-managed content is preserved
+
+**Notes / Decisions:**
+
+- Parsed frontmatter with `yaml` plus the shared frontmatter extractor so the implementation matches existing CLI parsing patterns without introducing a second markdown parser.
 
 ---
 
@@ -338,7 +357,8 @@ Chronological log of implementation progress.
 - [x] p01-t03: Create backlog directory structure - 1cdb035030eafe0a261ae4e736cdf2658b265670
 - [x] p01-t04: Add `associated_issues` to state.md template - c0990633ec60cda5f39c94153527fca9a6959b72
 - [x] p02-t01: Implement backlog item ID generation utility - 7708871b7c4ecaf6bd6cde83f8af20bf387f40a0
-- [ ] p02-t02: Implement backlog index regeneration command - pending
+- [x] p02-t02: Implement backlog index regeneration command - 2a600879a6645981b8f169580eb533f75e39ae61
+- [ ] p02-t03: Wire backlog CLI commands - pending
 
 **What changed (high level):**
 
