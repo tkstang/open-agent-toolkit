@@ -65,16 +65,18 @@ export const IDEA_SKILLS = [
   'oat-idea-scratchpad',
 ] as const;
 
+// ── Core pack (always user-level) ─────────────────────────────────
+
+export const CORE_SKILLS = ['oat-docs', 'oat-doctor'] as const;
+
 // ── Utility pack ───────────────────────────────────────────────────
 
 export const UTILITY_SKILLS = [
   'create-agnostic-skill',
   'oat-agent-instructions-analyze',
   'oat-agent-instructions-apply',
-  'oat-docs',
   'oat-docs-analyze',
   'oat-docs-apply',
-  'oat-doctor',
   'oat-repo-maintainability-review',
   'oat-review-provide',
   'oat-review-receive',
