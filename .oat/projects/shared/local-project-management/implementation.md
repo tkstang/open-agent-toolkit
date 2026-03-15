@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-15
-oat_current_task_id: p04-t02
+oat_current_task_id: p04-t03
 oat_generated: false
 ---
 
@@ -29,10 +29,10 @@ oat_generated: false
 | Phase 1 | complete    | 4     | 4/4       |
 | Phase 2 | complete    | 3     | 3/3       |
 | Phase 3 | complete    | 3     | 3/3       |
-| Phase 4 | in_progress | 5     | 1/5       |
+| Phase 4 | in_progress | 5     | 2/5       |
 | Phase 5 | pending     | 4     | 0/4       |
 
-**Total:** 11/19 tasks completed
+**Total:** 12/19 tasks completed
 
 ---
 
@@ -414,8 +414,29 @@ oat_generated: false
 
 ### Task p04-t02: Extend `PackName` type and pack resolution
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 792a96544bc51011847bd071bec361f952ddbfbe
+
+**Outcome (required when completed):**
+
+- Extended CLI pack typing and scan logic so project-management skills classify into a first-class `project-management` pack.
+- Updated `tools update` and `tools remove` pack validation/help text so pack-targeted maintenance commands accept the new pack name.
+
+**Files changed:**
+
+- `packages/cli/src/commands/tools/shared/types.ts` - added the `project-management` pack type
+- `packages/cli/src/commands/tools/shared/scan-tools.ts` - mapped namespaced PM skills into the new pack
+- `packages/cli/src/commands/tools/remove/index.ts` - accepted the new pack in remove command validation/help
+- `packages/cli/src/commands/tools/update/index.ts` - accepted the new pack in update command validation/help
+
+**Verification:**
+
+- Run: `pnpm type-check && pnpm lint`
+- Result: Pass; new pack typing and command options compile and lint cleanly
+
+**Notes / Decisions:**
+
+- The follow-on type errors in `tools update/remove` were in-scope because the new pack type would otherwise break pack-targeted maintenance commands.
 
 ---
 
@@ -503,7 +524,8 @@ Chronological log of implementation progress.
 - [x] p03-t02: Refactor `update-repo-reference` to `oat-pjm-update-repo-reference` - e37b14700cce6fe39e6bcb0bf33f488cb3eb17d5
 - [x] p03-t03: Refactor `review-backlog` to `oat-pjm-review-backlog` - 4d5dd2a93731a9b46505ff0cdb4027792b09da9b
 - [x] p04-t01: Add `PROJECT_MANAGEMENT_SKILLS` to skill manifest - 32cb7d92bacb209b5c40cbbd14aec1bca9ac6be8
-- [ ] p04-t02: Extend `PackName` type and pack resolution - pending
+- [x] p04-t02: Extend `PackName` type and pack resolution - 792a96544bc51011847bd071bec361f952ddbfbe
+- [ ] p04-t03: Create installer module - pending
 
 **What changed (high level):**
 

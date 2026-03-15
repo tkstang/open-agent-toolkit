@@ -1,6 +1,6 @@
 ---
-oat_current_task: p04-t02
-oat_last_commit: 32cb7d92bacb209b5c40cbbd14aec1bca9ac6be8
+oat_current_task: p04-t03
+oat_last_commit: 792a96544bc51011847bd071bec361f952ddbfbe
 oat_blockers: []
 oat_hill_checkpoints: [] # Quick mode — no spec/design gates
 oat_hill_completed: []
@@ -25,7 +25,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Executing p04-t02
+Implementation - Executing p04-t03
 
 ## Artifacts
 
@@ -47,4 +47,4 @@ None
 
 ## Next Milestone
 
-Extend pack resolution for project-management tooling, starting with `p04-t02`
+Add the project-management pack installer, starting with `p04-t03`
