@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-16
-oat_current_task_id: p06-t03
+oat_current_task_id: p06-t04
 oat_generated: false
 ---
 
@@ -31,9 +31,9 @@ oat_generated: false
 | Phase 3 | complete    | 3     | 3/3       |
 | Phase 4 | complete    | 5     | 5/5       |
 | Phase 5 | complete    | 4     | 4/4       |
-| Phase 6 | in_progress | 4     | 2/4       |
+| Phase 6 | in_progress | 4     | 3/4       |
 
-**Total:** 21/23 tasks completed
+**Total:** 22/23 tasks completed
 
 ---
 
@@ -773,7 +773,26 @@ oat_generated: false
 
 ### Task p06-t03: (review) Record the final 9-item backlog count in implementation deviations
 
-**Status:** pending
+**Status:** completed
+**Commit:** 5d15d650459ef8bafe0f0289191478a06589cccb
+
+**Outcome (required when completed):**
+
+- Added an explicit deviation entry explaining why the migration finished with 9 active backlog items instead of the earlier 7-item intermediate state.
+- Tied the final count directly to the `deferred-phases.md` retirement step so future readers can reconcile the migration without cross-referencing the commit history.
+
+**Files changed:**
+
+- `.oat/projects/shared/local-project-management/implementation.md` - added the final active-count deviation row to the phase 5 migration notes
+
+**Verification:**
+
+- Run: `rg -n "9 active item files|9 total|deferred-phases" .oat/projects/shared/local-project-management/implementation.md`
+- Result: Pass; the implementation notes now record the 9-item final state and its source
+
+**Notes / Decisions:**
+
+- Added a new `p05-t04` deviation row rather than rewriting the earlier `p05-t01` row so the chronology of the migration remains explicit.
 
 ### Task p06-t04: (review) Add reproducible input support to `oat backlog generate-id`
 
