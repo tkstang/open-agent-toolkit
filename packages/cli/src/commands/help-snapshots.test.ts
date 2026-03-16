@@ -78,15 +78,8 @@ describe('help output snapshots', () => {
         -h, --help  display help for command
 
       Commands:
-<<<<<<< HEAD
         tools       Install OAT tool packs (core, ideas, workflows, utility,
-                    research)
-||||||| parent of 30ed8042 (feat(p04-t05): add project-management skills to bundle-assets.sh)
-        tools       Install OAT tool packs (ideas, workflows, utility, research)
-=======
-        tools       Install OAT tool packs (ideas, workflows, utility,
                     project-management, research)
->>>>>>> 30ed8042 (feat(p04-t05): add project-management skills to bundle-assets.sh)
       "
     `);
   });
@@ -604,16 +597,8 @@ describe('help output snapshots', () => {
         info <name>              Show details for an installed tool
         update [options] [name]  Update installed tools to bundled versions
         remove [options] [name]  Remove installed tools
-<<<<<<< HEAD
         install [options]        Install OAT tool packs (core, ideas, workflows,
-                                 utility, research)
-||||||| parent of 30ed8042 (feat(p04-t05): add project-management skills to bundle-assets.sh)
-        install [options]        Install OAT tool packs (ideas, workflows, utility,
-                                 research)
-=======
-        install [options]        Install OAT tool packs (ideas, workflows, utility,
-                                 project-management, research)
->>>>>>> 30ed8042 (feat(p04-t05): add project-management skills to bundle-assets.sh)
+                                 utility, project-management, research)
         help [command]           display help for command
       "
     `);
