@@ -82,15 +82,10 @@ oat backlog regenerate-index
 
 ### Step 4: Sanity Checks
 
-Run focused searches for stale references:
+Use the `Grep` tool for focused searches:
 
-```bash
-rg -n "backlog\\.md|backlog-completed\\.md|deferred-phases\\.md" .oat/repo/reference docs/oat .agents/skills AGENTS.md
-```
-
-```bash
-rg -n "\\.oat/repo/reference/backlog/(index|completed|items|archived)" .oat/repo/reference docs/oat .agents/skills AGENTS.md
-```
+- Search for stale legacy references with pattern `backlog\.md|backlog-completed\.md|deferred-phases\.md` across `.oat/repo/reference`, `docs/oat`, `.agents/skills`, and `AGENTS.md`.
+- Search for the new file-backed paths with pattern `\.oat/repo/reference/backlog/(index|completed|items|archived)` across the same locations.
 
 Confirm that:
 
