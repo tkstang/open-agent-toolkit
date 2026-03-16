@@ -776,16 +776,16 @@ git commit -m "feat(p05-t04): retire deferred-phases.md, migrate items to backlo
 
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
 
-| Scope  | Type     | Status  | Date | Artifact |
-| ------ | -------- | ------- | ---- | -------- |
-| p01    | code     | pending | -    | -        |
-| p02    | code     | pending | -    | -        |
-| p03    | code     | pending | -    | -        |
-| p04    | code     | pending | -    | -        |
-| p05    | code     | pending | -    | -        |
-| final  | code     | pending | -    | -        |
-| spec   | artifact | pending | -    | -        |
-| design | artifact | pending | -    | -        |
+| Scope  | Type     | Status   | Date       | Artifact                           |
+| ------ | -------- | -------- | ---------- | ---------------------------------- |
+| p01    | code     | pending  | -          | -                                  |
+| p02    | code     | pending  | -          | -                                  |
+| p03    | code     | pending  | -          | -                                  |
+| p04    | code     | pending  | -          | -                                  |
+| p05    | code     | pending  | -          | -                                  |
+| final  | code     | received | 2026-03-16 | reviews/final-review-2026-03-16.md |
+| spec   | artifact | pending  | -          | -                                  |
+| design | artifact | pending  | -          | -                                  |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
