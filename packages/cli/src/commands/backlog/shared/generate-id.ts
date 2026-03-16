@@ -47,45 +47,51 @@ export function generateUniqueBacklogId(
 export async function readExistingBacklogIds(
   backlogRoot: string,
 ): Promise<Set<string>> {
-  const itemsDir = join(backlogRoot, 'items');
+  const ids = new Set<string>();
+  const sourceDirs = ['items', 'archived'];
 
-  try {
-    const entries = await readdir(itemsDir, { withFileTypes: true });
-    const ids = new Set<string>();
+  for (const dirName of sourceDirs) {
+    const sourceDir = join(backlogRoot, dirName);
 
-    for (const entry of entries) {
-      if (!entry.isFile() || !entry.name.endsWith('.md')) {
+    try {
+      const entries = await readdir(sourceDir, { withFileTypes: true });
+
+      for (const entry of entries) {
+        if (!entry.isFile() || !entry.name.endsWith('.md')) {
+          continue;
+        }
+
+        const content = await readFile(join(sourceDir, entry.name), 'utf8');
+        const rawFrontmatter = getFrontmatterBlock(content);
+        if (!rawFrontmatter) {
+          continue;
+        }
+
+        const parsed = YAML.parse(rawFrontmatter);
+        if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+          continue;
+        }
+
+        const id = parsed.id;
+        if (typeof id === 'string' && id.length > 0) {
+          ids.add(id);
+        }
+      }
+
+      continue;
+    } catch (error) {
+      const code =
+        error && typeof error === 'object' && 'code' in error
+          ? String(error.code)
+          : null;
+
+      if (code === 'ENOENT') {
         continue;
       }
 
-      const content = await readFile(join(itemsDir, entry.name), 'utf8');
-      const rawFrontmatter = getFrontmatterBlock(content);
-      if (!rawFrontmatter) {
-        continue;
-      }
-
-      const parsed = YAML.parse(rawFrontmatter);
-      if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-        continue;
-      }
-
-      const id = parsed.id;
-      if (typeof id === 'string' && id.length > 0) {
-        ids.add(id);
-      }
+      throw error;
     }
-
-    return ids;
-  } catch (error) {
-    const code =
-      error && typeof error === 'object' && 'code' in error
-        ? String(error.code)
-        : null;
-
-    if (code === 'ENOENT') {
-      return new Set();
-    }
-
-    throw error;
   }
+
+  return ids;
 }

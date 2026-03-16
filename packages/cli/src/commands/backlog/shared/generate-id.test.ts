@@ -1,6 +1,26 @@
-import { describe, expect, it } from 'vitest';
+import { mkdtemp, mkdir, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
 
-import { generateBacklogId, generateUniqueBacklogId } from './generate-id';
+import { afterEach, describe, expect, it } from 'vitest';
+
+import {
+  generateBacklogId,
+  generateUniqueBacklogId,
+  readExistingBacklogIds,
+} from './generate-id';
+
+const tempDirs: string[] = [];
+
+afterEach(async () => {
+  await Promise.all(
+    tempDirs.map(async (dir) => {
+      const { rm } = await import('node:fs/promises');
+      await rm(dir, { recursive: true, force: true });
+    }),
+  );
+  tempDirs.length = 0;
+});
 
 describe('generateBacklogId', () => {
   it('returns a backlog id with the expected prefix and hash length', () => {
@@ -69,6 +89,29 @@ describe('generateBacklogId', () => {
 
     expect(generateUniqueBacklogId('demo-item', createdAt, occupied)).toBe(
       generateBacklogId('demo-item', createdAt, 3),
+    );
+  });
+
+  it('includes archived backlog item ids in the uniqueness scan', async () => {
+    const backlogRoot = await mkdtemp(join(tmpdir(), 'oat-backlog-ids-'));
+    tempDirs.push(backlogRoot);
+
+    await mkdir(join(backlogRoot, 'items'), { recursive: true });
+    await mkdir(join(backlogRoot, 'archived'), { recursive: true });
+
+    const createdAt = '2026-03-15T22:30:00Z';
+    const archivedId = generateBacklogId('demo-item', createdAt);
+    await writeFile(
+      join(backlogRoot, 'archived', 'demo-item.md'),
+      `---\nid: ${archivedId}\ntitle: Demo Item\n---\n`,
+      'utf8',
+    );
+
+    const ids = await readExistingBacklogIds(backlogRoot);
+
+    expect(ids).toContain(archivedId);
+    expect(generateUniqueBacklogId('demo-item', createdAt, ids)).not.toBe(
+      archivedId,
     );
   });
 });
