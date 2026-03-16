@@ -68,6 +68,8 @@ oat backlog generate-id "{slug}"
 
 Use the returned `bl-XXXX` value as the backlog item ID.
 
+If the initial hash collides with an existing backlog item ID, the CLI should retry with a disambiguated seed until it returns an unused ID. If the command reports a duplicate or collision issue, do not continue writing the item until the generated ID is unique across `backlog/items/*.md`.
+
 ### Step 4: Copy Template and Fill Frontmatter
 
 1. Use `.oat/templates/backlog-item.md` as the source template.

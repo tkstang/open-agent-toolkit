@@ -6,7 +6,10 @@ import { resolveProjectRoot } from '@fs/paths';
 import { Command } from 'commander';
 
 import { regenerateBacklogIndex } from './regenerate-index';
-import { generateBacklogId } from './shared/generate-id';
+import {
+  generateUniqueBacklogId,
+  readExistingBacklogIds,
+} from './shared/generate-id';
 
 interface RegenerateIndexOptions {
   backlogRoot?: string;
@@ -83,7 +86,14 @@ export function createBacklogCommand(
       const context = dependencies.buildCommandContext(
         readGlobalOptions(command),
       );
-      const id = generateBacklogId(filename, new Date().toISOString());
+      const backlogRoot = await resolveBacklogRoot(
+        context,
+        undefined,
+        dependencies,
+      );
+      const createdAt = new Date().toISOString();
+      const existingIds = await readExistingBacklogIds(backlogRoot);
+      const id = generateUniqueBacklogId(filename, createdAt, existingIds);
 
       if (context.json) {
         context.logger.json({ status: 'ok', id, filename });
