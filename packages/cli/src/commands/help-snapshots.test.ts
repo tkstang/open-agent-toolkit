@@ -644,18 +644,17 @@ describe('help output snapshots', () => {
     expect(help).toMatchInlineSnapshot(`
       "Usage: oat tools install [options] [command]
 
-      Install OAT tool packs (core, ideas, workflows, utility,
-      project-management, research)
+      Install OAT tool packs (core, ideas, workflows, utility, project-management,
+      research)
 
       Options:
         --no-sync                     Skip auto-sync after install
         -h, --help                    display help for command
 
       Commands:
-        core [options]                Install OAT core skills (diagnostics,
-                                      docs)
-        ideas [options]               Install OAT ideas skills, templates, and
-                                      idea workflow files
+        core [options]                Install OAT core skills (diagnostics, docs)
+        ideas [options]               Install OAT ideas skills, templates, and idea
+                                      workflow files
         project-management [options]  Install OAT project-management skills and
                                       templates
         workflows [options]           Install OAT workflows skills, agents,
