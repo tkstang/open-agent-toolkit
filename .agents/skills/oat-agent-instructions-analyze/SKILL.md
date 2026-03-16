@@ -1,6 +1,6 @@
 ---
 name: oat-agent-instructions-analyze
-version: 1.5.2
+version: 1.6.1
 description: Run when you need to evaluate agent instruction file coverage, quality, and drift. Produces a severity-rated analysis artifact. Run before oat-agent-instructions-apply to identify what needs improvement.
 disable-model-invocation: true
 user-invocable: true
@@ -285,71 +285,30 @@ For each directory meeting 1+ primary indicators from the criteria doc:
 
 ### Step 5: File-Type Pattern Discovery
 
-Discover cross-cutting file-type patterns that warrant glob-scoped rules. This step runs independently of directory coverage assessment — it identifies patterns that span multiple directories and are best addressed with targeted rules rather than directory-level instruction files.
+Discover cross-cutting file-type patterns that warrant glob-scoped rules. These patterns often span multiple
+directories, but a concentrated pattern inside a single architectural area can still justify a glob-scoped rule when
+agents need a repeatable template for that file type.
 
 Follow the systematic process in `references/file-type-discovery-checklist.md`.
 
-**Core principle:** The goal is not to prove consistency from file counts. The goal is to find non-obvious conventions, competing sub-patterns, and failure modes that would cause an agent to generate the wrong file.
+The checklist is the canonical source for the detailed substeps in this phase. The summary below is intentionally
+shorter than the checklist on purpose. If wording ever diverges, follow the checklist.
 
-**1. Scan for file-type patterns and co-located directory conventions:**
+**Core principle:** The goal is not to prove consistency from file counts. The goal is to find non-obvious
+conventions, competing sub-patterns, and failure modes that would cause an agent to generate the wrong file.
 
-Search the repo for files matching common naming conventions (test files, story files, style files, config files, schema files, etc.). Also scan for directory-level co-location conventions where the meaningful pattern is a set of files that appear together in a repeated structure.
+Emphasis points:
 
-For each file or directory pattern with 5+ occurrences, proceed to calibrated sampling and deep-read investigation.
-
-```bash
-# Example discovery commands
-find . -name '*.stories.tsx' -not -path '*/node_modules/*' | wc -l
-find . -name '*.test.tsx' -not -path '*/node_modules/*' | wc -l
-find . -name 'styles.ts' -not -path '*/node_modules/*' | wc -l
-```
-
-**2. Calibrate sample size to detect splits, not just consistency:**
-
-Use these minimums:
-
-- 5–10 matching files: read **all** of them
-- 11–30 files: sample **8–12** files across different directories and different git ages
-- 30+ files: sample **12–15** files across directories; if any inconsistency appears, expand sampling enough to confirm the split ratio
-
-Do not take all samples from one directory or one generation of files. Mix older and newer files because convention splits often correlate with time.
-
-**3. Deep-read the sample and investigate behavioral consistency:**
-
-For every pattern with 5+ files, read the sampled files and answer:
-
-- What non-obvious setup is required: shared imports, wrappers, providers, helper classes, framework extensions, generated markers, or required boilerplate?
-- What behavioral conventions exist inside the files: registration patterns, instantiation style, setup/teardown style, schema/API versions, escaping/sanitization patterns?
-- What co-located files or directory structure are assumed: sibling templates, configs, PHP/JS pairs, block metadata, fixtures, shared helpers?
-- What would break if an agent copied the wrong example: compile failure, runtime/test failure, incorrect registration, XSS/security issue, CI failure?
-
-**4. Prioritize competing sub-patterns and exception cases:**
-
-Quantify the discovered behavior, not just the filename suffix. Record `N/M files follow pattern A` and, if relevant, `X/Y directories follow structure B`.
-
-Treat these as the highest-priority rule opportunities:
-
-- **Competing sub-patterns**, especially roughly `40–60%` or `50–50%` splits. These are more valuable than perfect consistency because agents are likely to guess wrong.
-- **File-type-specific deviations from project-wide rules**, not just export style. Check for any file-type-specific exception such as different imports, instantiation style, security handling, lint suppressions, schema/API versions, or registration mechanisms.
-- **Security-sensitive patterns**, especially in templates and rendering code. For PHP/WordPress, inspect `template.php`-style files for escaping, sanitization, and `phpcs:ignore` usage. For React/JS, inspect `dangerouslySetInnerHTML`, raw HTML rendering, and similar exception patterns. Also watch for raw SQL, shell execution, or other sensitive sinks when relevant to the stack.
-
-Patterns with >80% consistency are still useful, but unresolved splits are often the most important because they represent active ambiguity in production code.
-
-**5. Assess correctness impact and assign severity:**
-
-For each pattern, determine what breaks when an agent writes a new file without the rule:
-
-- **Crashes/breaks:** Code won't compile, tests won't run, app crashes
-- **Visual/behavioral bugs:** Code runs but produces wrong results
-- **Security vulnerability:** Wrong escaping/sanitization, unsafe HTML, raw query/command usage
-- **Lint/CI failures:** Code works but fails automated checks
-- **Style inconsistency:** Code works but doesn't match conventions
-
-Assign severity using the calibrated scale in the checklist. Give extra weight to:
-
-- security-sensitive patterns
-- competing sub-patterns with a meaningful split ratio
-- file-type-specific exceptions to general project conventions
+- Start with repo-wide inventory, not just known suffixes. Primary extensions, repeated compound suffixes, and
+  co-located directory structures all count.
+- Reading sampled files is mandatory. Do not stop at counts; extract structural conventions, behavioral rules, and
+  what breaks when an agent copies the wrong example.
+- If many patterns qualify, prioritize by correctness impact, exception-to-rule risk, competing sub-patterns, and
+  security sensitivity before spending context on lower-value patterns.
+- Do not dismiss a pattern because it lives in one directory or because a directory `AGENTS.md` might also mention it.
+  Glob-scoped rules and directory instructions serve different purposes.
+- Splits matter. Patterns in the `40–60%` range are often more valuable than perfectly consistent patterns because
+  they represent active ambiguity in production code.
 
 **In delta mode:** Still run the full file-type scan. File-type patterns are repo-wide concerns that may not intersect with recently-changed directories but are still high-value for agent correctness.
 
