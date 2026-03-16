@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-16
-oat_current_task_id: p06-t05
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,16 +24,16 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | complete    | 4     | 4/4       |
-| Phase 2 | complete    | 3     | 3/3       |
-| Phase 3 | complete    | 3     | 3/3       |
-| Phase 4 | complete    | 5     | 5/5       |
-| Phase 5 | complete    | 4     | 4/4       |
-| Phase 6 | in_progress | 5     | 4/5       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 4     | 4/4       |
+| Phase 2 | complete | 3     | 3/3       |
+| Phase 3 | complete | 3     | 3/3       |
+| Phase 4 | complete | 5     | 5/5       |
+| Phase 5 | complete | 4     | 4/4       |
+| Phase 6 | complete | 5     | 5/5       |
 
-**Total:** 23/24 tasks completed
+**Total:** 24/24 tasks completed
 
 ---
 
@@ -717,7 +717,7 @@ oat_generated: false
 
 ## Phase 6: Review Fixes
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-16
 
 ### Phase Summary (fill when phase is complete)
@@ -725,6 +725,7 @@ oat_generated: false
 **Outcome (what changed):**
 
 - Hardened backlog ID creation so generated IDs avoid collisions with existing file-backed backlog items.
+- Extended the uniqueness guard so archived backlog items stay in the same ID namespace as active items.
 - Added a reproducible `--created-at` input to `oat backlog generate-id` and documented it in the CLI help snapshots.
 - Aligned the project-management skills and implementation notes with the reviewed behavior and migration outcomes.
 
@@ -732,6 +733,7 @@ oat_generated: false
 
 - `packages/cli/src/commands/backlog/index.ts` - added collision-aware and reproducible ID generation inputs
 - `packages/cli/src/commands/backlog/shared/generate-id.ts` - added unique-ID generation and existing-ID scanning helpers
+- `packages/cli/src/commands/backlog/shared/generate-id.test.ts` - added collision, reproducibility, and archived-ID regression coverage
 - `.agents/skills/oat-pjm-add-backlog-item/SKILL.md` - documented collision retry behavior
 - `.agents/skills/oat-pjm-update-repo-reference/SKILL.md` - replaced raw shell examples with Grep-tool guidance
 - `packages/cli/src/commands/help-snapshots.test.ts` - documented `backlog generate-id --help`
@@ -847,7 +849,27 @@ oat_generated: false
 
 ### Task p06-t05: (review) Prevent archived backlog IDs from being reused
 
-**Status:** pending
+**Status:** completed
+**Commit:** 4f5fd5e6b83bf8f03e9034b8845f0faf48b96df2
+
+**Outcome (required when completed):**
+
+- Extended backlog ID uniqueness checks to include archived backlog items so closed item IDs cannot be regenerated later.
+- Added a regression test proving an archived backlog item's ID blocks reuse for new items with the same slug and timestamp seed.
+
+**Files changed:**
+
+- `packages/cli/src/commands/backlog/shared/generate-id.ts` - expanded existing-ID discovery to scan both active and archived backlog directories
+- `packages/cli/src/commands/backlog/shared/generate-id.test.ts` - added archived-ID reuse regression coverage
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/shared/generate-id.test.ts`; `pnpm test`; `pnpm lint`; `pnpm type-check`; `pnpm build`
+- Result: Pass; targeted helper tests and full repo verification completed successfully
+
+**Notes / Decisions:**
+
+- Treated active and archived backlog items as one shared uniqueness namespace because both remain referenceable in the local PM model.
 
 ---
 
@@ -926,6 +948,7 @@ Chronological log of implementation progress.
 - [x] p06-t02: (review) Update `oat-pjm-update-repo-reference` to use Grep-tool instructions - bf6f244f2d3489df82c3a0ef510624e57b3fbd97
 - [x] p06-t03: (review) Record the final 9-item backlog count in implementation deviations - 5d15d650459ef8bafe0f0289191478a06589cccb
 - [x] p06-t04: (review) Add reproducible input support to `oat backlog generate-id` - 9d72fc0c42b7da9dc8e94743cb9bd74a7d2d07c4
+- [x] p06-t05: (review) Prevent archived backlog IDs from being reused - 4f5fd5e6b83bf8f03e9034b8845f0faf48b96df2
 
 **Verification:**
 
@@ -958,7 +981,7 @@ Chronological log of implementation progress.
 
 - `m3` `review-backlog` still has \`allowed-tools: Task\``— rejected because`Task` is a valid Claude Code tool identifier and other providers ignore undeclared capabilities without breaking the skill
 
-**Next:** Execute `p06-t05` via `oat-project-implement`, then re-run `oat-project-review-provide code final`.
+**Next:** Review-fix tasks are complete. Run `oat-project-review-provide code final` again to try to move the final review from `fixes_completed` to `passed`.
 
 ---
 
@@ -980,7 +1003,7 @@ Chronological log of implementation progress.
 
 - `m4` `oat-pjm-review-backlog` references an Explore agent — still accepted as low-risk wording cleanup that does not block merge
 
-**Next:** Execute the new review-fix task via `oat-project-implement`. After it completes, update the review row to `fixes_completed` and run a fresh final code review again.
+**Next:** The follow-up review-fix task is complete. Re-run `oat-project-review-provide code final`, then receive the new review artifact.
 
 ---
 
