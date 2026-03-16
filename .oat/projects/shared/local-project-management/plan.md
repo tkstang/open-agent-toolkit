@@ -895,16 +895,16 @@ git commit -m "fix(p06-t04): add reproducible input support to generate-id"
 
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
 
-| Scope  | Type     | Status          | Date       | Artifact                                    |
-| ------ | -------- | --------------- | ---------- | ------------------------------------------- |
-| p01    | code     | pending         | -          | -                                           |
-| p02    | code     | pending         | -          | -                                           |
-| p03    | code     | pending         | -          | -                                           |
-| p04    | code     | pending         | -          | -                                           |
-| p05    | code     | pending         | -          | -                                           |
-| final  | code     | fixes_completed | 2026-03-16 | reviews/archived/final-review-2026-03-16.md |
-| spec   | artifact | pending         | -          | -                                           |
-| design | artifact | pending         | -          | -                                           |
+| Scope  | Type     | Status   | Date       | Artifact                           |
+| ------ | -------- | -------- | ---------- | ---------------------------------- |
+| p01    | code     | pending  | -          | -                                  |
+| p02    | code     | pending  | -          | -                                  |
+| p03    | code     | pending  | -          | -                                  |
+| p04    | code     | pending  | -          | -                                  |
+| p05    | code     | pending  | -          | -                                  |
+| final  | code     | received | 2026-03-16 | reviews/final-review-2026-03-16.md |
+| spec   | artifact | pending  | -          | -                                  |
+| design | artifact | pending  | -          | -                                  |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
