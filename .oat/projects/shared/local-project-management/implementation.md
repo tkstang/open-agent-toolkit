@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-16
-oat_current_task_id: null
+oat_current_task_id: p06-t05
 oat_generated: false
 ---
 
@@ -24,16 +24,16 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status   | Tasks | Completed |
-| ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 4     | 4/4       |
-| Phase 2 | complete | 3     | 3/3       |
-| Phase 3 | complete | 3     | 3/3       |
-| Phase 4 | complete | 5     | 5/5       |
-| Phase 5 | complete | 4     | 4/4       |
-| Phase 6 | complete | 4     | 4/4       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | complete    | 4     | 4/4       |
+| Phase 2 | complete    | 3     | 3/3       |
+| Phase 3 | complete    | 3     | 3/3       |
+| Phase 4 | complete    | 5     | 5/5       |
+| Phase 5 | complete    | 4     | 4/4       |
+| Phase 6 | in_progress | 5     | 4/5       |
 
-**Total:** 23/23 tasks completed
+**Total:** 23/24 tasks completed
 
 ---
 
@@ -717,7 +717,7 @@ oat_generated: false
 
 ## Phase 6: Review Fixes
 
-**Status:** complete
+**Status:** in_progress
 **Started:** 2026-03-16
 
 ### Phase Summary (fill when phase is complete)
@@ -845,6 +845,10 @@ oat_generated: false
 
 - Preserved the current timestamp-default behavior so existing callers still get one-shot ID generation without needing to supply a seed.
 
+### Task p06-t05: (review) Prevent archived backlog IDs from being reused
+
+**Status:** pending
+
 ---
 
 ## Implementation Log
@@ -954,7 +958,29 @@ Chronological log of implementation progress.
 
 - `m3` `review-backlog` still has \`allowed-tools: Task\``— rejected because`Task` is a valid Claude Code tool identifier and other providers ignore undeclared capabilities without breaking the skill
 
-**Next:** Review-fix tasks are complete. Run `oat-project-review-provide code final`, then receive the new review artifact to reach `passed`.
+**Next:** Execute `p06-t05` via `oat-project-implement`, then re-run `oat-project-review-provide code final`.
+
+---
+
+## Review Received: final (re-review 2)
+
+**Date:** 2026-03-16
+**Review artifact:** `reviews/archived/final-review-2026-03-16-v2.md`
+
+**Findings:**
+
+- Critical: 0
+- Important: 1
+- Medium: 0
+- Minor: 0
+
+**New tasks added:** `p06-t05`
+
+**Deferred Findings (Minor):**
+
+- `m4` `oat-pjm-review-backlog` references an Explore agent — still accepted as low-risk wording cleanup that does not block merge
+
+**Next:** Execute the new review-fix task via `oat-project-implement`. After it completes, update the review row to `fixes_completed` and run a fresh final code review again.
 
 ---
 

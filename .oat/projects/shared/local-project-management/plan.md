@@ -887,6 +887,34 @@ git add packages/cli/src/commands/backlog/index.ts packages/cli/src/commands/bac
 git commit -m "fix(p06-t04): add reproducible input support to generate-id"
 ```
 
+### Task p06-t05: (review) Prevent archived backlog IDs from being reused
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/backlog/shared/generate-id.ts`
+- Modify: `packages/cli/src/commands/backlog/shared/generate-id.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: the collision-avoidance logic only scans `backlog/items/*.md`, so IDs retained by archived backlog items can still be reissued.
+Location: `packages/cli/src/commands/backlog/shared/generate-id.ts:47`
+
+**Step 2: Implement fix**
+
+Extend the existing backlog-ID uniqueness scan to include `.oat/repo/reference/backlog/archived/*.md` before calling `generateUniqueBacklogId()`. Add a regression test proving an archived backlog item ID is never reused.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/commands/backlog/shared/generate-id.test.ts`; `rg -n "archived" packages/cli/src/commands/backlog/shared/generate-id.ts`
+Expected: targeted tests pass and the uniqueness scan clearly includes archived backlog items
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/backlog/shared/generate-id.ts packages/cli/src/commands/backlog/shared/generate-id.test.ts
+git commit -m "fix(p06-t05): prevent archived backlog id reuse"
+```
+
 ---
 
 ## Reviews
@@ -895,16 +923,16 @@ git commit -m "fix(p06-t04): add reproducible input support to generate-id"
 
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
 
-| Scope  | Type     | Status   | Date       | Artifact                           |
-| ------ | -------- | -------- | ---------- | ---------------------------------- |
-| p01    | code     | pending  | -          | -                                  |
-| p02    | code     | pending  | -          | -                                  |
-| p03    | code     | pending  | -          | -                                  |
-| p04    | code     | pending  | -          | -                                  |
-| p05    | code     | pending  | -          | -                                  |
-| final  | code     | received | 2026-03-16 | reviews/final-review-2026-03-16.md |
-| spec   | artifact | pending  | -          | -                                  |
-| design | artifact | pending  | -          | -                                  |
+| Scope  | Type     | Status      | Date       | Artifact                                       |
+| ------ | -------- | ----------- | ---------- | ---------------------------------------------- |
+| p01    | code     | pending     | -          | -                                              |
+| p02    | code     | pending     | -          | -                                              |
+| p03    | code     | pending     | -          | -                                              |
+| p04    | code     | pending     | -          | -                                              |
+| p05    | code     | pending     | -          | -                                              |
+| final  | code     | fixes_added | 2026-03-16 | reviews/archived/final-review-2026-03-16-v2.md |
+| spec   | artifact | pending     | -          | -                                              |
+| design | artifact | pending     | -          | -                                              |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -926,11 +954,11 @@ git commit -m "fix(p06-t04): add reproducible input support to generate-id"
 - Phase 3: 3 tasks - Agent skills (add-backlog-item, update-repo-reference, review-backlog)
 - Phase 4: 5 tasks - Skill pack infrastructure (manifest, types, installer, registration, bundling)
 - Phase 5: 4 tasks - Migration (backlog items, completed items, roadmap, deferred-phases retirement)
-- Phase 6: 4 tasks - Review fixes from the final code review
+- Phase 6: 5 tasks - Review fixes from the final code review
 
-**Total: 23 tasks**
+**Total: 24 tasks**
 
-Review-fix tasks are complete. Re-run the final review gate to move this project from `fixes_completed` to `passed`.
+Review-fix work is queued again. Run `oat-project-implement` to complete `p06-t05`, then re-run the final review gate.
 
 ---
 
