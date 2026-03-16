@@ -882,10 +882,11 @@ Chronological log of implementation progress.
 
 Document any deviations from the original plan.
 
-| Task    | Planned                                          | Actual                              | Reason                                                                                                                                      |
-| ------- | ------------------------------------------------ | ----------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| p05-t01 | Migrate 8 active backlog items from `backlog.md` | Migrated 7 active backlog items     | `oat-project-capture` was already moved to `backlog-completed.md`, so `backlog.md` contained 7 live entries at execution time               |
-| p05-t02 | Migrate 31 completed backlog items               | Migrated 50 completed backlog items | `backlog-completed.md` currently contains 50 real completed entries, so the migration preserved the full archive rather than a stale subset |
+| Task    | Planned                                              | Actual                                 | Reason                                                                                                                                                                                                       |
+| ------- | ---------------------------------------------------- | -------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| p05-t01 | Migrate 8 active backlog items from `backlog.md`     | Migrated 7 active backlog items        | `oat-project-capture` was already moved to `backlog-completed.md`, so `backlog.md` contained 7 live entries at execution time                                                                                |
+| p05-t02 | Migrate 31 completed backlog items                   | Migrated 50 completed backlog items    | `backlog-completed.md` currently contains 50 real completed entries, so the migration preserved the full archive rather than a stale subset                                                                  |
+| p05-t04 | Finish migration with prior active-count assumptions | Backlog settled at 9 active item files | Retiring `deferred-phases.md` added the `staleness-knowledge-drift` and `memory-system` items after the initial 7-item migration, so the final active backlog count exceeded the original p05-t01 assumption |
 
 ## Test Results
 
