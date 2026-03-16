@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-16
-oat_current_task_id: p06-t02
+oat_current_task_id: p06-t03
 oat_generated: false
 ---
 
@@ -31,9 +31,9 @@ oat_generated: false
 | Phase 3 | complete    | 3     | 3/3       |
 | Phase 4 | complete    | 5     | 5/5       |
 | Phase 5 | complete    | 4     | 4/4       |
-| Phase 6 | in_progress | 4     | 1/4       |
+| Phase 6 | in_progress | 4     | 2/4       |
 
-**Total:** 20/23 tasks completed
+**Total:** 21/23 tasks completed
 
 ---
 
@@ -750,7 +750,26 @@ oat_generated: false
 
 ### Task p06-t02: (review) Update `oat-pjm-update-repo-reference` to use Grep-tool instructions
 
-**Status:** pending
+**Status:** completed
+**Commit:** bf6f244f2d3489df82c3a0ef510624e57b3fbd97
+
+**Outcome (required when completed):**
+
+- Replaced the raw shell-oriented sanity-check snippets with Grep-tool instructions that match the skill's declared tool surface.
+- Kept the stale-reference patterns and path coverage intact so the operational guidance remains equivalent.
+
+**Files changed:**
+
+- `.agents/skills/oat-pjm-update-repo-reference/SKILL.md` - converted Step 4 from `rg` examples to Grep-tool usage guidance
+
+**Verification:**
+
+- Run: `rg -n "\\brg\\b" .agents/skills/oat-pjm-update-repo-reference/SKILL.md`
+- Result: Pass; no raw `rg` invocation remains in the skill
+
+**Notes / Decisions:**
+
+- Kept the search patterns verbatim so only the execution mechanism changed, not the reference-audit scope.
 
 ### Task p06-t03: (review) Record the final 9-item backlog count in implementation deviations
 
