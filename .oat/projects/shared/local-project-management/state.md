@@ -33,7 +33,7 @@ Implementation complete; final review passed
 - **Spec:** N/A (quick mode)
 - **Design:** N/A (quick mode)
 - **Plan:** `plan.md` (complete — 24 tasks across 6 phases, including review-fix work)
-- **Implementation:** `implementation.md` (complete — awaiting final re-review)
+- **Implementation:** `implementation.md` (complete — final review passed)
 
 ## Progress
 
