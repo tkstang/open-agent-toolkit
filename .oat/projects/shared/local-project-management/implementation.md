@@ -1,16 +1,16 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
-oat_last_updated: 2026-03-15
-oat_current_task_id: null
+oat_last_updated: 2026-03-16
+oat_current_task_id: p06-t02
 oat_generated: false
 ---
 
 # Implementation: local-project-management
 
 **Started:** 2026-03-15
-**Last Updated:** 2026-03-15
+**Last Updated:** 2026-03-16
 
 > This document is used to resume interrupted implementation sessions.
 >
@@ -24,15 +24,16 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status   | Tasks | Completed |
-| ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 4     | 4/4       |
-| Phase 2 | complete | 3     | 3/3       |
-| Phase 3 | complete | 3     | 3/3       |
-| Phase 4 | complete | 5     | 5/5       |
-| Phase 5 | complete | 4     | 4/4       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | complete    | 4     | 4/4       |
+| Phase 2 | complete    | 3     | 3/3       |
+| Phase 3 | complete    | 3     | 3/3       |
+| Phase 4 | complete    | 5     | 5/5       |
+| Phase 5 | complete    | 4     | 4/4       |
+| Phase 6 | in_progress | 4     | 1/4       |
 
-**Total:** 19/19 tasks completed
+**Total:** 20/23 tasks completed
 
 ---
 
@@ -714,6 +715,53 @@ oat_generated: false
 
 ---
 
+## Phase 6: Review Fixes
+
+**Status:** in_progress
+**Started:** 2026-03-16
+
+### Task p06-t01: (review) Add backlog ID collision handling to backlog item creation
+
+**Status:** completed
+**Commit:** 90ab166578f2c6438b19494083a1e78de77becda
+
+**Outcome (required when completed):**
+
+- Added unique-ID generation support that preserves the existing `bl-XXXX` format while retrying with a nonce when a candidate collides.
+- Updated the `oat backlog generate-id` command to scan existing backlog item frontmatter before returning an ID.
+- Documented the collision-handling expectation in the `oat-pjm-add-backlog-item` skill so the workflow guidance matches the CLI behavior.
+
+**Files changed:**
+
+- `.agents/skills/oat-pjm-add-backlog-item/SKILL.md` - documented the collision retry guard in the backlog item creation flow
+- `packages/cli/src/commands/backlog/index.ts` - wired `generate-id` through backlog-root resolution and duplicate-ID avoidance
+- `packages/cli/src/commands/backlog/shared/generate-id.ts` - added unique-ID generation plus existing-ID scanning helpers
+- `packages/cli/src/commands/backlog/shared/generate-id.test.ts` - added coverage for collision and multi-collision fallback behavior
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/shared/generate-id.test.ts`; `rg -n "collision|duplicate|existing ID|existing id" .agents/skills/oat-pjm-add-backlog-item/SKILL.md`
+- Result: Pass; all 1019 CLI tests passed and the skill now documents the collision retry path
+
+**Notes / Decisions:**
+
+- Kept the ID shape at 4 hex characters to stay within the implemented requirement; only the collision path appends a nonce to the hash seed.
+- Existing backlog IDs are read from item frontmatter and missing `items/` directories resolve to an empty set so the command still works before any items exist.
+
+### Task p06-t02: (review) Update `oat-pjm-update-repo-reference` to use Grep-tool instructions
+
+**Status:** pending
+
+### Task p06-t03: (review) Record the final 9-item backlog count in implementation deviations
+
+**Status:** pending
+
+### Task p06-t04: (review) Add reproducible input support to `oat backlog generate-id`
+
+**Status:** pending
+
+---
+
 ## Implementation Log
 
 Chronological log of implementation progress.
@@ -768,6 +816,46 @@ Chronological log of implementation progress.
 - None
 
 **Session End:** -
+
+### 2026-03-16
+
+**Review Receive:** final code review processed
+
+- Added review-fix phase `p06` with tasks `p06-t01` through `p06-t04`
+- Re-opened implementation tracking at `p06-t01`
+- Archived the consumed review artifact after updating plan and implementation references
+
+**Disposition Summary:**
+
+- Converted to tasks: `I1`, `I2`, `m1`, `m2`
+- Rejected as not applicable: `m3` (`Task` is a valid Claude Code tool identifier in skill metadata)
+- Deferred: `m4` (low-risk wording cleanup; can wait until after merge if needed)
+
+---
+
+## Review Received: final
+
+**Date:** 2026-03-16
+**Review artifact:** `reviews/archived/final-review-2026-03-16.md`
+
+**Findings:**
+
+- Critical: 0
+- Important: 2
+- Medium: 0
+- Minor: 4
+
+**New tasks added:** `p06-t01`, `p06-t02`, `p06-t03`, `p06-t04`
+
+**Deferred Findings (Minor):**
+
+- `m4` `oat-pjm-review-backlog` references an Explore agent — deferred as low-risk wording cleanup that does not block shipping the implemented backlog flow
+
+**Rejected Findings:**
+
+- `m3` `review-backlog` still has \`allowed-tools: Task\``— rejected because`Task` is a valid Claude Code tool identifier and other providers ignore undeclared capabilities without breaking the skill
+
+**Next:** Execute the review-fix tasks via `oat-project-implement`. After those tasks complete, update the review row to `fixes_completed` and run a fresh final code review to reach `passed`.
 
 ---
 

@@ -2,7 +2,7 @@
 oat_status: complete
 oat_ready_for: oat-project-implement
 oat_blockers: []
-oat_last_updated: 2026-03-15
+oat_last_updated: 2026-03-16
 oat_phase: plan
 oat_phase_status: complete
 oat_plan_hill_phases: ['p05']
@@ -770,22 +770,141 @@ git commit -m "feat(p05-t04): retire deferred-phases.md, migrate items to backlo
 
 ---
 
+## Phase 6: Review Fixes
+
+Close the final code-review findings, then re-run the final review gate before PR preparation.
+
+### Task p06-t01: (review) Add backlog ID collision handling to backlog item creation
+
+**Files:**
+
+- Modify: `.agents/skills/oat-pjm-add-backlog-item/SKILL.md`
+- Modify: `packages/cli/src/commands/backlog/index.ts`
+- Modify: `packages/cli/src/commands/backlog/shared/generate-id.ts`
+- Modify: `packages/cli/src/commands/backlog/shared/generate-id.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: the current file-backed backlog flow generates 4-character hex IDs without checking for collisions before writing a new item.
+Location: `packages/cli/src/commands/backlog/shared/generate-id.ts:1-11`
+
+**Step 2: Implement fix**
+
+Add an explicit duplicate-ID guard to the backlog item creation flow. After generating a candidate ID, scan existing `backlog/items/*.md` records for a matching `id:` value and regenerate with a disambiguated input when needed. Keep the retry path documented in the `oat-pjm-add-backlog-item` skill so the workflow stays portable.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/commands/backlog/shared/generate-id.test.ts`; `rg -n "collision|duplicate|existing id" .agents/skills/oat-pjm-add-backlog-item/SKILL.md`
+Expected: tests pass and the skill documents the collision-handling flow
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-pjm-add-backlog-item/SKILL.md packages/cli/src/commands/backlog/index.ts packages/cli/src/commands/backlog/shared/generate-id.ts packages/cli/src/commands/backlog/shared/generate-id.test.ts
+git commit -m "fix(p06-t01): add backlog id collision handling"
+```
+
+### Task p06-t02: (review) Update `oat-pjm-update-repo-reference` to use Grep-tool instructions
+
+**Files:**
+
+- Modify: `.agents/skills/oat-pjm-update-repo-reference/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: the skill still shows raw `rg` sanity-check commands instead of using the repo's Grep-tool convention.
+Location: `.agents/skills/oat-pjm-update-repo-reference/SKILL.md:88-93`
+
+**Step 2: Implement fix**
+
+Replace the raw `rg` command examples with Grep-tool-oriented instructions or neutral wording that does not require shelling out to `rg`. Keep the verification guidance aligned with the skill's declared tool surface.
+
+**Step 3: Verify**
+
+Run: `rg -n "\\brg\\b" .agents/skills/oat-pjm-update-repo-reference/SKILL.md`
+Expected: no raw `rg` invocation remains in the sanity-check step
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-pjm-update-repo-reference/SKILL.md
+git commit -m "fix(p06-t02): align repo-reference skill with grep-tool guidance"
+```
+
+### Task p06-t03: (review) Record the final 9-item backlog count in implementation deviations
+
+**Files:**
+
+- Modify: `implementation.md`
+
+**Step 1: Understand the issue**
+
+Review finding: the deviation log captures the initial 7-vs-8 migration mismatch but does not record the final active backlog count after the deferred-phases retirement added two more items.
+Location: `implementation.md` deviation tracking for phase 5 migration outcomes
+
+**Step 2: Implement fix**
+
+Update the deviation tracking so it explicitly records that the active backlog settled at 9 items after `p05-t04` completed. Keep the note tied to the plan assumptions so future readers can reconcile the migration history without re-reading the commit log.
+
+**Step 3: Verify**
+
+Run: `rg -n "9 active item files|9 total|deferred-phases" .oat/projects/shared/local-project-management/implementation.md`
+Expected: the implementation notes clearly explain the final 9-item outcome
+
+**Step 4: Commit**
+
+```bash
+git add .oat/projects/shared/local-project-management/implementation.md
+git commit -m "fix(p06-t03): document final backlog item count deviation"
+```
+
+### Task p06-t04: (review) Add reproducible input support to `oat backlog generate-id`
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/backlog/index.ts`
+- Modify: `packages/cli/src/commands/backlog/shared/generate-id.test.ts`
+- Modify: `packages/cli/src/commands/help-snapshots.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: the CLI subcommand always seeds ID generation with the invocation timestamp, so the same filename cannot be reproduced later from the command alone.
+Location: `packages/cli/src/commands/backlog/index.ts:86`
+
+**Step 2: Implement fix**
+
+Add an optional `--created-at <timestamp>` input to `oat backlog generate-id` so callers can reproduce a known ID when they have the original creation timestamp. Keep the current timestamp-default behavior for the normal one-shot workflow, and document the option in the command help/output snapshots.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/commands/backlog/shared/generate-id.test.ts src/commands/help-snapshots.test.ts`; `pnpm run cli -- backlog generate-id test-item --help`
+Expected: targeted tests pass and the CLI help documents the reproducible-input option
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/backlog/index.ts packages/cli/src/commands/backlog/shared/generate-id.test.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "fix(p06-t04): add reproducible input support to generate-id"
+```
+
+---
+
 ## Reviews
 
 {Track reviews here after running the oat-project-review-provide and oat-project-review-receive skills.}
 
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
 
-| Scope  | Type     | Status   | Date       | Artifact                           |
-| ------ | -------- | -------- | ---------- | ---------------------------------- |
-| p01    | code     | pending  | -          | -                                  |
-| p02    | code     | pending  | -          | -                                  |
-| p03    | code     | pending  | -          | -                                  |
-| p04    | code     | pending  | -          | -                                  |
-| p05    | code     | pending  | -          | -                                  |
-| final  | code     | received | 2026-03-16 | reviews/final-review-2026-03-16.md |
-| spec   | artifact | pending  | -          | -                                  |
-| design | artifact | pending  | -          | -                                  |
+| Scope  | Type     | Status      | Date       | Artifact                                    |
+| ------ | -------- | ----------- | ---------- | ------------------------------------------- |
+| p01    | code     | pending     | -          | -                                           |
+| p02    | code     | pending     | -          | -                                           |
+| p03    | code     | pending     | -          | -                                           |
+| p04    | code     | pending     | -          | -                                           |
+| p05    | code     | pending     | -          | -                                           |
+| final  | code     | fixes_added | 2026-03-16 | reviews/archived/final-review-2026-03-16.md |
+| spec   | artifact | pending     | -          | -                                           |
+| design | artifact | pending     | -          | -                                           |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -807,10 +926,11 @@ git commit -m "feat(p05-t04): retire deferred-phases.md, migrate items to backlo
 - Phase 3: 3 tasks - Agent skills (add-backlog-item, update-repo-reference, review-backlog)
 - Phase 4: 5 tasks - Skill pack infrastructure (manifest, types, installer, registration, bundling)
 - Phase 5: 4 tasks - Migration (backlog items, completed items, roadmap, deferred-phases retirement)
+- Phase 6: 4 tasks - Review fixes from the final code review
 
-**Total: 19 tasks**
+**Total: 23 tasks**
 
-Ready for code review and merge.
+Review-fix tasks are queued. Run `oat-project-implement` to complete phase 6, then re-run the final review gate.
 
 ---
 
