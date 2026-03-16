@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-16
-oat_current_task_id: p06-t04
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,16 +24,16 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | complete    | 4     | 4/4       |
-| Phase 2 | complete    | 3     | 3/3       |
-| Phase 3 | complete    | 3     | 3/3       |
-| Phase 4 | complete    | 5     | 5/5       |
-| Phase 5 | complete    | 4     | 4/4       |
-| Phase 6 | in_progress | 4     | 3/4       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 4     | 4/4       |
+| Phase 2 | complete | 3     | 3/3       |
+| Phase 3 | complete | 3     | 3/3       |
+| Phase 4 | complete | 5     | 5/5       |
+| Phase 5 | complete | 4     | 4/4       |
+| Phase 6 | complete | 4     | 4/4       |
 
-**Total:** 22/23 tasks completed
+**Total:** 23/23 tasks completed
 
 ---
 
@@ -717,8 +717,34 @@ oat_generated: false
 
 ## Phase 6: Review Fixes
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-16
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+
+- Hardened backlog ID creation so generated IDs avoid collisions with existing file-backed backlog items.
+- Added a reproducible `--created-at` input to `oat backlog generate-id` and documented it in the CLI help snapshots.
+- Aligned the project-management skills and implementation notes with the reviewed behavior and migration outcomes.
+
+**Key files touched:**
+
+- `packages/cli/src/commands/backlog/index.ts` - added collision-aware and reproducible ID generation inputs
+- `packages/cli/src/commands/backlog/shared/generate-id.ts` - added unique-ID generation and existing-ID scanning helpers
+- `.agents/skills/oat-pjm-add-backlog-item/SKILL.md` - documented collision retry behavior
+- `.agents/skills/oat-pjm-update-repo-reference/SKILL.md` - replaced raw shell examples with Grep-tool guidance
+- `packages/cli/src/commands/help-snapshots.test.ts` - documented `backlog generate-id --help`
+- `.oat/projects/shared/local-project-management/implementation.md` - recorded the final 9-item migration deviation
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/shared/generate-id.test.ts src/commands/help-snapshots.test.ts`; `pnpm run cli -- backlog generate-id test-item --help`; `pnpm test`; `pnpm lint`; `pnpm type-check`; `pnpm build`
+- Result: Pass; targeted checks and full repo verification completed successfully after rerunning the repo-wide commands without overlapping Turbo builds
+
+**Notes / Decisions:**
+
+- The first attempt at repo-wide verification was run in parallel and surfaced a shared `bundle-assets.sh` race between multiple Turbo invocations; rerunning the commands sequentially produced clean exits.
 
 ### Task p06-t01: (review) Add backlog ID collision handling to backlog item creation
 
@@ -796,7 +822,28 @@ oat_generated: false
 
 ### Task p06-t04: (review) Add reproducible input support to `oat backlog generate-id`
 
-**Status:** pending
+**Status:** completed
+**Commit:** 9d72fc0c42b7da9dc8e94743cb9bd74a7d2d07c4
+
+**Outcome (required when completed):**
+
+- Added an optional `--created-at` flag to `oat backlog generate-id` so callers can reproduce a previously generated ID when they know the original timestamp.
+- Updated the help snapshot coverage to document the new reproducible input path and kept the helper tests explicit about timestamp-seeded determinism.
+
+**Files changed:**
+
+- `packages/cli/src/commands/backlog/index.ts` - added the optional `--created-at` CLI input and surfaced the seed in JSON output
+- `packages/cli/src/commands/backlog/shared/generate-id.test.ts` - added explicit reproducibility coverage for timestamp-seeded IDs
+- `packages/cli/src/commands/help-snapshots.test.ts` - added the `backlog generate-id --help` snapshot
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/shared/generate-id.test.ts src/commands/help-snapshots.test.ts`; `pnpm run cli -- backlog generate-id test-item --help`
+- Result: Pass; targeted tests passed and the CLI help documents the new option
+
+**Notes / Decisions:**
+
+- Preserved the current timestamp-default behavior so existing callers still get one-shot ID generation without needing to supply a seed.
 
 ---
 
@@ -869,6 +916,20 @@ Chronological log of implementation progress.
 - Rejected as not applicable: `m3` (`Task` is a valid Claude Code tool identifier in skill metadata)
 - Deferred: `m4` (low-risk wording cleanup; can wait until after merge if needed)
 
+**Review Fix Execution:**
+
+- [x] p06-t01: (review) Add backlog ID collision handling to backlog item creation - 90ab166578f2c6438b19494083a1e78de77becda
+- [x] p06-t02: (review) Update `oat-pjm-update-repo-reference` to use Grep-tool instructions - bf6f244f2d3489df82c3a0ef510624e57b3fbd97
+- [x] p06-t03: (review) Record the final 9-item backlog count in implementation deviations - 5d15d650459ef8bafe0f0289191478a06589cccb
+- [x] p06-t04: (review) Add reproducible input support to `oat backlog generate-id` - 9d72fc0c42b7da9dc8e94743cb9bd74a7d2d07c4
+
+**Verification:**
+
+- `pnpm test`
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm build`
+
 ---
 
 ## Review Received: final
@@ -893,7 +954,7 @@ Chronological log of implementation progress.
 
 - `m3` `review-backlog` still has \`allowed-tools: Task\``— rejected because`Task` is a valid Claude Code tool identifier and other providers ignore undeclared capabilities without breaking the skill
 
-**Next:** Execute the review-fix tasks via `oat-project-implement`. After those tasks complete, update the review row to `fixes_completed` and run a fresh final code review to reach `passed`.
+**Next:** Review-fix tasks are complete. Run `oat-project-review-provide code final`, then receive the new review artifact to reach `passed`.
 
 ---
 
@@ -924,11 +985,13 @@ Track test execution during implementation.
 
 - File-backed backlog management with generated index, completed summary archive, archived recent completions, and migrated legacy reference files.
 - CLI/project-management pack support for backlog ID generation, backlog index regeneration, and installable `oat-pjm-*` project-management skills.
+- Review-fix follow-up work that makes backlog ID generation collision-aware and reproducible for known timestamps.
 - Roadmap and reference cleanup that converts deferred roadmap work into backlog items and standardizes roadmap horizons.
 
 **Behavioral changes (user-facing):**
 
-- `oat backlog generate-id` and `oat backlog regenerate-index` are available from the CLI.
+- `oat backlog generate-id` now avoids returning an ID that already exists in the file-backed backlog and accepts `--created-at <timestamp>` for reproducible output.
+- `oat backlog regenerate-index` is available from the CLI.
 - `oat init tools` / `oat tools install` now support the `project-management` pack.
 - Backlog and completed-work tracking now live under `.oat/repo/reference/backlog/` instead of the legacy flat markdown files.
 
