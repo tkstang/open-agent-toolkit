@@ -91,6 +91,28 @@ describe('help output snapshots', () => {
     `);
   });
 
+  it('backlog generate-id --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, [
+      'backlog',
+      'generate-id',
+    ]).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat backlog generate-id [options] <filename>
+
+      Generate a backlog item identifier from a filename seed
+
+      Arguments:
+        filename                  Filename or slug seed for the backlog item
+
+      Options:
+        --created-at <timestamp>  Creation timestamp seed for reproducible ID
+                                  generation
+        -h, --help                display help for command
+      "
+    `);
+  });
+
   it('status --help matches snapshot', () => {
     const program = createRegisteredProgram();
     const help = getCommandByPath(program, ['status']).helpInformation();

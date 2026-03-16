@@ -15,6 +15,10 @@ interface RegenerateIndexOptions {
   backlogRoot?: string;
 }
 
+interface GenerateIdOptions {
+  createdAt?: string;
+}
+
 interface BacklogCommandDependencies {
   buildCommandContext: typeof buildCommandContext;
   resolveProjectRoot: typeof resolveProjectRoot;
@@ -82,26 +86,36 @@ export function createBacklogCommand(
     .command('generate-id')
     .description('Generate a backlog item identifier from a filename seed')
     .argument('<filename>', 'Filename or slug seed for the backlog item')
-    .action(async (filename: string, _options, command: Command) => {
-      const context = dependencies.buildCommandContext(
-        readGlobalOptions(command),
-      );
-      const backlogRoot = await resolveBacklogRoot(
-        context,
-        undefined,
-        dependencies,
-      );
-      const createdAt = new Date().toISOString();
-      const existingIds = await readExistingBacklogIds(backlogRoot);
-      const id = generateUniqueBacklogId(filename, createdAt, existingIds);
+    .option(
+      '--created-at <timestamp>',
+      'Creation timestamp seed for reproducible ID generation',
+    )
+    .action(
+      async (
+        filename: string,
+        options: GenerateIdOptions,
+        command: Command,
+      ) => {
+        const context = dependencies.buildCommandContext(
+          readGlobalOptions(command),
+        );
+        const backlogRoot = await resolveBacklogRoot(
+          context,
+          undefined,
+          dependencies,
+        );
+        const createdAt = options.createdAt ?? new Date().toISOString();
+        const existingIds = await readExistingBacklogIds(backlogRoot);
+        const id = generateUniqueBacklogId(filename, createdAt, existingIds);
 
-      if (context.json) {
-        context.logger.json({ status: 'ok', id, filename });
-      } else {
-        context.logger.info(id);
-      }
-      process.exitCode = 0;
-    });
+        if (context.json) {
+          context.logger.json({ status: 'ok', id, filename, createdAt });
+        } else {
+          context.logger.info(id);
+        }
+        process.exitCode = 0;
+      },
+    );
 
   return cmd;
 }

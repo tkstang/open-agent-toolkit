@@ -20,6 +20,16 @@ describe('generateBacklogId', () => {
     );
   });
 
+  it('allows callers to reproduce a known id when the original timestamp is provided', () => {
+    const createdAt = '2026-03-15T22:30:00Z';
+    const knownId = generateBacklogId('demo-item', createdAt);
+
+    expect(generateBacklogId('demo-item', createdAt)).toBe(knownId);
+    expect(generateBacklogId('demo-item', '2026-03-15T22:31:00Z')).not.toBe(
+      knownId,
+    );
+  });
+
   it('returns different ids for different inputs', () => {
     const createdAt = '2026-03-15T22:30:00Z';
 
