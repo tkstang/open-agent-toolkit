@@ -290,13 +290,15 @@ B06 (Dependency intelligence) [independent]
 
 ### Gaps: Roadmap items without backlog coverage
 
-| Roadmap Item                                           | Phase   | Recommendation                                                  |
+| Roadmap Item                                           | Phase   | Status                                                          |
 | ------------------------------------------------------ | ------- | --------------------------------------------------------------- |
-| Template rendering helper (`oat template render ...`)  | Phase 7 | Add backlog item — this is the remaining Phase 7 deliverable    |
-| Staleness + knowledge drift upgrades                   | Phase 5 | Add backlog item — Phase 5 is Planned but has no backlog items  |
-| Parallel fan-out execution + reconcile tooling         | Phase 6 | Low urgency (Deferred status) — add backlog item when ready     |
-| Provider capability matrix + expanded docs             | Phase 8 | Add backlog item — "remaining" work noted in roadmap            |
-| Repo State Dashboard contract tightening               | Phase 4 | Covered by B03 (PM workflow family) — no separate item needed   |
+| Template rendering helper (`oat template render ...`)  | Phase 7 | Minor convenience — skills already handle scaffolding. Low priority unless manual template use becomes common. |
+| Staleness + knowledge drift upgrades                   | Phase 5 | Already covered by backlog item `bl-f9bd`.                      |
+| Parallel fan-out execution + reconcile tooling         | Phase 6 | Low urgency (Deferred status) — add backlog item when ready.    |
+| Provider capability matrix + expanded docs             | Phase 8 | Capability docs already exist. Remaining work is expanding sync support for provider-specific features (e.g., hooks). Partially covered by `bl-71a1`. |
+| Repo State Dashboard contract tightening               | Phase 4 | Covered by B03 (PM workflow family) — no separate item needed.  |
+
+No significant uncovered gaps. The backlog-to-roadmap coverage is strong.
 
 ### Orphans: Backlog items not on the roadmap
 
@@ -316,18 +318,18 @@ B06 (Dependency intelligence) [independent]
 2. **The ideas-to-projects gap (B07) is the most impactful quick win.** The contract is pre-documented, the pieces exist, and it connects two workflow families that are currently manually bridged. This should be first.
 3. **B03 (PM workflow family) is the backbone investment.** It formalizes what's already being done ad-hoc. The existing `oat-pjm-*` skills (3 skills) provide a foundation. This deserves its own OAT project with proper discovery.
 4. **External integrations (B01, B02) are premature.** Neither S3 archival nor Jira integration serves the current dogfood workflow. They should wait until there's pull from an actual user/team.
-5. **The roadmap has 3 gaps without backlog coverage** — most notably the Phase 7 template rendering helper, which is the last remaining deliverable for an in-progress phase. This should be added to the backlog.
+5. **Roadmap-to-backlog coverage is strong.** Phase 5 (staleness) and Phase 10 (provider enhancements) both have corresponding backlog items. The Phase 7 template rendering helper is the only uncovered item, and it's a minor convenience feature since skills already handle template scaffolding internally.
 
 ### Risks
 
 | Risk                                        | Mitigation                                                       |
 | ------------------------------------------- | ---------------------------------------------------------------- |
 | B03 scope creep (PM workflow family is broad) | Start with discovery phase to tightly scope which flows to formalize first. Build incrementally — one skill at a time. |
-| Phase 7 template helper has no backlog item  | Add a backlog item for `oat template render` to ensure it's tracked and doesn't slip. |
+| Phase 7 template helper is untracked         | Low risk — minor convenience feature. Consider dropping from roadmap if skills continue to handle scaffolding. |
 | B05 (PR review follow-on) may not all be needed | The backlog item already says "evaluate" — assess each skill's value before implementing all three. |
 
 ### Quick wins to tackle immediately
 
 1. **B07** - Idea promotion and auto-discovery (Low effort, High value — contract pre-documented in `oat-idea-summarize` Step 7)
 2. **B04** - Codex prompt-wrapper generation (Low effort, Medium value — leverages existing Codex sync infrastructure)
-3. **Add missing backlog item** for Phase 7's template rendering helper (`oat template render`) — it's the last remaining deliverable for an in-progress roadmap phase with no backlog tracking
+3. **Consider dropping the Phase 7 template rendering helper** from the roadmap — skills already handle scaffolding, so this may not be needed
