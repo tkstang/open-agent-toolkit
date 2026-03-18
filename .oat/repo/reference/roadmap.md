@@ -16,10 +16,10 @@ As of `2026-03-15` on `main`, dogfood workflow baseline and provider-interop CLI
 
 ## Now (Active / Committed)
 
-### Phase 7: Quick mode + template rendering helper
+### Phase 7: Quick mode
 
 - Status: In Progress
-- Focus: quick/import lanes, promotion paths, and plan-writing contracts are in place; the remaining work is the template rendering helper and follow-on UX integration.
+- Focus: quick/import lanes, promotion paths, and plan-writing contracts are in place; remaining work is idea promotion UX integration.
 - Related backlog: `bl-b3f7` (idea promotion and auto-discovery flow to `oat-project-new`)
 
 ### Phase 8: Provider interop CLI + sync manifest
@@ -53,10 +53,17 @@ As of `2026-03-15` on `main`, dogfood workflow baseline and provider-interop CLI
 - Status: Later
 - Focus: branch-aware multi-project coordination and smoother automation across `.oat/projects/shared`, `.oat/projects/local`, and archived history.
 
-### Phase 10: Memory system + provider enhancements
+### Phase 10: Memory system
 
 - Status: Later
-- Focus: longer-term memory, durability, and provider enhancement work beyond the current dogfood workflow baseline.
+- Focus: cross-session context persistence (`.oat/memory/`).
+- Related backlog: `bl-ca74` (memory system)
+
+### Phase 11: Provider sync enhancements
+
+- Status: Later
+- Focus: expand `oat sync` to cover provider-specific features like hooks syncing.
+- Related backlog: `bl-aded` (provider sync enhancements)
 
 ## Status Summary
 
@@ -67,10 +74,11 @@ As of `2026-03-15` on `main`, dogfood workflow baseline and provider-interop CLI
 | Phase 4: Active project lifecycle state + Repo State Dashboard | Completed (polish remaining)   | Config-backed lifecycle state + `oat project open/pause` + generated `.oat/state.md`; continue dashboard contract polish                       |
 | Phase 5: Staleness + knowledge drift                           | Planned                        | Improve/enforce freshness beyond warn-only                                                                                                     |
 | Phase 6: Parallel execution + reconcile                        | Deferred (groundwork expanded) | `oat-worktree-bootstrap` + subagent orchestration skills (PR #21, refined in PR #26) exist; parallel fan-out + reconcile tooling still pending |
-| Phase 7: Quick mode + template rendering helper                | In Progress                    | Quick/import lanes + canonical plan writing contract implemented; template rendering helper still planned                                      |
+| Phase 7: Quick mode                                            | In Progress                    | Quick/import lanes + canonical plan writing contract implemented; idea promotion UX remaining                                                  |
 | Phase 8: Provider interop CLI + sync manifest                  | In Progress                    | Core command surface + config-aware provider sync + Codex TOML sync + instructions validate/sync shipped; lifecycle polish remains             |
 | Phase 9: Multi-project switching + branch awareness            | Later                          | Full `.oat/projects/(shared                                                                                                                    | local)/...` + hooks |
-| Phase 10: Memory system + provider enhancements                | Later                          | Longer-term durability features                                                                                                                |
+| Phase 10: Memory system                                        | Later                          | Cross-session context persistence (`.oat/memory/`)                                                                                             |
+| Phase 11: Provider sync enhancements                           | Later                          | Hooks syncing and expanded provider feature parity                                                                                             |
 | Cross-cutting: skill invocation normalization                  | Completed (guardrails ongoing) | Skill-first wording adopted; continue preventing regressions                                                                                   |
 
 ## Current State (Implemented)
@@ -291,7 +299,7 @@ Core workflow + interop foundations are now in place. Remaining gaps are mostly 
 
 ---
 
-### Phase 7 (Dogfood v1.5): Quick Mode + Template Rendering Helper
+### Phase 7 (Dogfood v1.5): Quick Mode
 
 **Goal:** Make small feature / quick fix workflows faster by safely skipping heavy steps (with guardrails).
 
@@ -302,7 +310,6 @@ Core workflow + interop foundations are now in place. Remaining gaps are mostly 
 - Done: in-place promotion skill (`oat-project-promote-spec-driven`)
 - Done: mode-aware routing/review/PR/dashboard contracts (`spec-driven|quick|import`)
 - Done: shared canonical plan-writing contract (`oat-project-plan-writing`) applied across planning/import/review flows
-- Remaining: template rendering helper (`oat template render ...`)
 
 **When to do it:**
 
@@ -312,7 +319,6 @@ Core workflow + interop foundations are now in place. Remaining gaps are mostly 
 **Deliverables:**
 
 - Quick/import mode lanes: reduced ceremony with canonical `plan.md` execution contract
-- Template rendering helper (`oat template render ...`) to avoid copy/paste and ensure consistent frontmatter
 
 ---
 
@@ -378,9 +384,9 @@ Core workflow + interop foundations are now in place. Remaining gaps are mostly 
 
 ---
 
-### Phase 10 (Product v2.2+): Memory System + Deeper Provider-Specific Enhancements
+### Phase 10 (Product v2.2): Memory System
 
-**Goal:** Longer-term improvements once workflow + interop are stable.
+**Goal:** Cross-session context persistence so OAT can carry forward insights, preferences, and decisions.
 
 **When to do it:**
 
@@ -389,4 +395,20 @@ Core workflow + interop foundations are now in place. Remaining gaps are mostly 
 **Deliverables:**
 
 - `.oat/memory/` (cross-session context; patterns; "what we learned")
-- More complete provider capability matrix and provider-specific enhancements (hooks, subagent limitations, etc.)
+- Clear contracts for what gets stored, when it's updated, and how skills consume it
+
+---
+
+### Phase 11 (Product v2.3): Provider Sync Enhancements
+
+**Goal:** Expand `oat sync` to cover provider-specific features beyond skills and agents.
+
+**When to do it:**
+
+- After core provider interop (Phase 8) is stable and hooks syncing demand is clear.
+
+**Deliverables:**
+
+- Hooks syncing to providers that support them (e.g., Claude Code)
+- Evaluation of other syncable provider-specific features
+- Sync remains additive/non-destructive, respecting the manifest safety model

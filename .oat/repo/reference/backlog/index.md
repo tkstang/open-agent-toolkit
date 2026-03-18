@@ -21,7 +21,8 @@
 | bl-cbdd | Optional Codex prompt-wrapper generation for synced OAT skills                                  | open        | medium   | feature    | M        |
 | bl-ea64 | Optional S3 archival in oat-project-complete workflow                                           | open        | medium   | feature    | L        |
 | bl-f9bd | Staleness + knowledge drift upgrades                                                            | open        | medium   | feature    | L        |
-| bl-71a1 | Memory system + provider enhancements                                                           | open        | low      | initiative | XL       |
+| bl-ca74 | Memory system (cross-session context persistence)                                               | open        | low      | initiative | L        |
+| bl-aded | Provider sync enhancements (hooks syncing, expanded feature parity)                             | open        | low      | feature    | M        |
 
 <!-- END OAT BACKLOG-INDEX -->
 

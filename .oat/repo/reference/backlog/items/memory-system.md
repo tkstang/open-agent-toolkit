@@ -1,32 +1,29 @@
 ---
-id: bl-71a1
-title: 'Memory system + provider enhancements'
+id: bl-ca74
+title: 'Memory system (cross-session context persistence)'
 status: open
 priority: low
 scope: initiative
-scope_estimate: XL
+scope_estimate: L
 labels: ['tooling', 'memory']
 assignee: null
 created: '2026-03-15T22:59:28Z'
-updated: '2026-03-15T22:59:28Z'
+updated: '2026-03-18T00:00:00Z'
 associated_issues: []
 ---
 
 ## Description
 
-This item tracks longer-term workflow durability work that should happen after provider interop and multi-project support are proven in real usage. The focus is persistent cross-session memory plus deeper provider-specific capabilities once the current sync and workflow foundations are stable.
-
-Proposed change:
-
-- Add `.oat/memory/` as a home for cross-session context, learned patterns, and durable workflow memory.
-- Expand the provider capability matrix and provider-specific features such as hook mirroring policies and subagent limitation handling.
+Add a durable `.oat/memory/` surface for cross-session context, learned patterns, and workflow memory. This gives OAT the ability to carry forward insights, preferences, and decisions across sessions without relying on provider-specific memory features.
 
 When to start:
 
 - After Phase 8 and Phase 9 work is proven in real usage.
 
+Split from the original `bl-71a1` which bundled this with provider enhancements. See also `bl-aded` (provider sync enhancements).
+
 ## Acceptance Criteria
 
 - OAT defines a durable `.oat/memory/` surface for cross-session context and learned patterns.
-- Provider capability documentation is expanded beyond the current baseline.
-- Provider-specific enhancements are scoped with clear behavioral contracts.
+- Memory persistence works independently of any specific provider.
+- Clear contracts for what gets stored, when it's updated, and how it's consumed by skills.
