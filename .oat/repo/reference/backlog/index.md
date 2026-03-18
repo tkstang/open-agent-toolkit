@@ -4,25 +4,26 @@
 
 ## Curated Overview
 
-- `bl-42f9` tracks the only in-progress backlog item and is currently being delivered through the active `local-project-management` project.
-- Inbox work is concentrated on workflow operations: optional S3 archival for project completion and a Jira-oriented backlog refinement flow.
-- Planned follow-on investments cluster around provider ergonomics (`bl-cbdd`), review collaboration (`bl-9fb8`), dependency analysis (`bl-3327`), and ideas-to-project promotion (`bl-b3f7`).
-- Longer-horizon backlog work now includes explicit entries for freshness hardening (`bl-f9bd`) and memory/provider-enhancement work (`bl-71a1`).
+- `bl-42f9` (local PM workflow family) is now closed — shipped in PR #82 with `oat-pjm-*` skills, `oat backlog` CLI commands, and `project-management` tool pack.
+- No items are currently in progress. All remaining items are open.
+- Quick wins: `bl-b3f7` (idea promotion) and `bl-cbdd` (Codex prompt-wrappers) are the highest value-to-effort items.
+- Deferred: `bl-ea64` (S3 archival) and `bl-ff5d` (Jira refinement) — low value for current dogfood use.
+- Longer-horizon: `bl-ca74` (memory system) and `bl-aded` (provider sync enhancements) are gated behind Phase 8/9 maturity.
+- `bl-f9bd` (staleness) is downscoped — core detection works; remaining scope is optional CI automation.
 
 <!-- OAT BACKLOG-INDEX -->
 
-| ID      | Title                                                                                           | Status      | Priority | Scope      | Estimate |
-| ------- | ----------------------------------------------------------------------------------------------- | ----------- | -------- | ---------- | -------- |
-| bl-42f9 | Add first-class OAT project/repo management workflow family (oat-pjm-_ or oat-repo-reference-_) | in_progress | high     | initiative | XL       |
-| bl-3327 | Add dependency intelligence skill family                                                        | open        | medium   | feature    | L        |
-| bl-b3f7 | Add idea promotion and auto-discovery flow to oat-project-new                                   | open        | medium   | feature    | L        |
-| bl-9fb8 | Add PR review follow-on skill set (provide-remote, respond-remote, summarize-remote)            | open        | medium   | feature    | L        |
-| bl-ff5d | Backlog Refinement Flow (Jira ticket generation)                                                | open        | medium   | feature    | L        |
-| bl-cbdd | Optional Codex prompt-wrapper generation for synced OAT skills                                  | open        | medium   | feature    | M        |
-| bl-ea64 | Optional S3 archival in oat-project-complete workflow                                           | open        | medium   | feature    | L        |
-| bl-f9bd | Staleness + knowledge drift upgrades                                                            | open        | medium   | feature    | L        |
-| bl-ca74 | Memory system (cross-session context persistence)                                               | open        | low      | initiative | L        |
-| bl-aded | Provider sync enhancements (hooks syncing, expanded feature parity)                             | open        | low      | feature    | M        |
+| ID      | Title                                                                                | Status | Priority | Scope      | Estimate |
+| ------- | ------------------------------------------------------------------------------------ | ------ | -------- | ---------- | -------- |
+| bl-3327 | Add dependency intelligence skill family                                             | open   | medium   | feature    | L        |
+| bl-b3f7 | Add idea promotion and auto-discovery flow to oat-project-new                        | open   | medium   | feature    | L        |
+| bl-9fb8 | Add PR review follow-on skill set (provide-remote, respond-remote, summarize-remote) | open   | medium   | feature    | L        |
+| bl-ff5d | Backlog Refinement Flow (Jira ticket generation)                                     | open   | medium   | feature    | L        |
+| bl-cbdd | Optional Codex prompt-wrapper generation for synced OAT skills                       | open   | medium   | feature    | M        |
+| bl-ea64 | Optional S3 archival in oat-project-complete workflow                                | open   | medium   | feature    | L        |
+| bl-f9bd | Staleness + knowledge drift upgrades                                                 | open   | medium   | feature    | L        |
+| bl-ca74 | Memory system (cross-session context persistence)                                    | open   | low      | initiative | L        |
+| bl-aded | Provider sync enhancements (hooks syncing, expanded feature parity)                  | open   | low      | feature    | M        |
 
 <!-- END OAT BACKLOG-INDEX -->
 

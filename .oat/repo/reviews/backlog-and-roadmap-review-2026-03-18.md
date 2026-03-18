@@ -1,7 +1,7 @@
 # Backlog & Roadmap Review
 
 **Date:** 2026-03-18
-**Scope:** All items in backlog.md (Inbox: 2 items, Planned: 5 items). In Progress, Deferred, and Completed sections excluded.
+**Scope:** All items in backlog (Inbox: 2 items, Planned: 5 items → post-review: 9 open items after closing bl-42f9 and splitting bl-71a1).
 **Roadmap:** `.oat/repo/reference/roadmap.md`
 **Purpose:** Prioritize by value/effort, surface dependencies, and recommend an execution sequence
 
@@ -21,8 +21,16 @@ The backlog contains **7 items** (2 Inbox, 5 Planned) spanning 4 themes:
 **Top-line recommendations:**
 
 1. **Start with B07 (idea promotion)** — the handshake contract is already documented in `oat-idea-summarize`, making this a well-bounded quick win that connects the ideas and projects workflows.
-2. **Tackle B03 (PM workflow family) next** — it's the highest-value strategic item, formalizing ad-hoc flows that are already being run. Start with a discovery phase to scope the skill family.
+2. **B04 (Codex prompt-wrappers)** is the other quick win — small, isolated, leverages existing infrastructure.
 3. **Defer B01 (S3 archival) and B02 (Jira backlog refinement)** — both are external integration work with narrow audience and optional value; save them for when there's a concrete user need.
+
+**Post-review actions taken:**
+
+- **B03 (PM workflow family / bl-42f9) closed** — local PM workflow shipped in PR #82. Remote PM (Jira/Linear) deferred as separate future work in the `remote-project-management` project.
+- **bl-71a1 split** into `bl-ca74` (memory system, Phase 10) and `bl-aded` (provider sync enhancements, Phase 11).
+- **Phase 4 marked Completed** (was "polish remaining").
+- **bl-f9bd (staleness) downscoped** — core detection works; remaining scope is optional CI automation.
+- **Template rendering helper removed** from Phase 7 roadmap.
 
 ---
 

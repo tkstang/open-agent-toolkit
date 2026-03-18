@@ -1,7 +1,7 @@
 ---
 id: bl-42f9
 title: 'Add first-class OAT project/repo management workflow family (oat-pjm-* or oat-repo-reference-*)'
-status: in_progress
+status: closed
 priority: high
 scope: initiative
 scope_estimate: XL

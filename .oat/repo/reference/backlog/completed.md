@@ -10,6 +10,7 @@
 
 ## Completed Items
 
+- 2026-03-17 — bl-42f9 — Add first-class OAT project/repo management workflow family — Local PM workflow shipped in PR #82: oat-pjm-add-backlog-item, oat-pjm-review-backlog, oat-pjm-update-repo-reference skills; oat backlog generate-id/regenerate-index CLI commands; file-per-item backlog structure; project-management tool pack. Remote PM integration (Jira/Linear) deferred as separate future work.
 - 2026-03-15 — bl-dc12 — Add research, analysis, verification, and synthesis skill suite — Five new skills: deep-research (comprehensive research orchestrator with parallel sub-agent dispatch), analyze (multi-angle analysis of artifacts/codebases/systems), compare (domain-aware comparative analysis with clear recommendations), skeptic (adversarial claim verification with cited evidence), synthesize (merge multiple analysis artifacts into single report with provenance tracking).
 - 2026-03-14 — bl-1008 — Add retroactive project capture skill (`oat-project-capture`) — oat-project-capture creates a full OAT project from untracked work on an existing branch using conversation context + commit history.
 - 2026-03-14 — bl-1b44 — Add guided setup flow to `oat init` with documentation detection — Enhanced oat init with guided setup flow: auto-triggers on fresh repos (no .oat/), supports --setup flag for re-run on existing repos.

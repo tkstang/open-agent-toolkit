@@ -30,11 +30,11 @@ As of `2026-03-15` on `main`, dogfood workflow baseline and provider-interop CLI
 
 ## Next (Planned)
 
-### Phase 4 polish: Active project lifecycle state + Repo State Dashboard
+### Phase 4: Active project lifecycle state + Repo State Dashboard
 
-- Status: Completed (polish remaining)
-- Focus: tighten the repo-dashboard contract, clarify regeneration ownership, and keep active-project state/reporting friction low.
-- Related backlog: `bl-42f9` (first-class OAT project/repo management workflow family)
+- Status: Completed
+- Focus: Config-backed lifecycle state, `oat project open/pause`, generated `.oat/state.md`, file-backed backlog system with `oat-pjm-*` skills and `project-management` tool pack. Shipped in PR #82.
+- Related backlog: `bl-42f9` (closed — local PM workflow shipped)
 
 ### Phase 5: Staleness + knowledge drift upgrades
 
@@ -71,7 +71,7 @@ As of `2026-03-15` on `main`, dogfood workflow baseline and provider-interop CLI
 | -------------------------------------------------------------- | ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------------- | ------------------- |
 | Dogfood workflow baseline                                      | Completed                      | `oat-repo-knowledge-index`, `oat-project-new`, phases (`discover → implement`), router, review loop, PR skills                                 |
 | Phase 3: Reviews + PR loop                                     | Completed                      | Implemented + dogfooded                                                                                                                        |
-| Phase 4: Active project lifecycle state + Repo State Dashboard | Completed (polish remaining)   | Config-backed lifecycle state + `oat project open/pause` + generated `.oat/state.md`; continue dashboard contract polish                       |
+| Phase 4: Active project lifecycle state + Repo State Dashboard | Completed                      | Config-backed lifecycle state + `oat project open/pause` + `.oat/state.md` + file-backed backlog + `oat-pjm-*` skills (PR #82)                 |
 | Phase 5: Staleness + knowledge drift                           | Planned                        | Improve/enforce freshness beyond warn-only                                                                                                     |
 | Phase 6: Parallel execution + reconcile                        | Deferred (groundwork expanded) | `oat-worktree-bootstrap` + subagent orchestration skills (PR #21, refined in PR #26) exist; parallel fan-out + reconcile tooling still pending |
 | Phase 7: Quick mode                                            | In Progress                    | Quick/import lanes + canonical plan writing contract implemented; idea promotion UX remaining                                                  |
@@ -226,12 +226,12 @@ Core workflow + interop foundations are now in place. Remaining gaps are mostly 
 
 **Goal:** Make project selection deterministic without committing to the full `.oat/projects/**` product model yet.
 
-**Status:** Completed (polish remaining)
+**Status:** Completed
 
 - Done: config-backed lifecycle state (`.oat/config.json`, `.oat/config.local.json`) + `oat config get/set/list`
 - Done: `oat project open` / `oat project pause` lifecycle commands and dashboard integration
 - Done: generated Repo State Dashboard (`.oat/state.md`) via `oat state refresh` CLI command
-- Remaining: tighten the "first-class" contract (who regenerates it, what fields it includes, and how it stays in sync with skills)
+- Done: file-backed backlog system (`oat-pjm-*` skills, `oat backlog` CLI commands, `project-management` tool pack) — shipped PR #82
 
 **When to do it:**
 
