@@ -1,7 +1,7 @@
 ---
 id: bl-cbdd
 title: 'Optional Codex prompt-wrapper generation for synced OAT skills'
-status: open
+status: closed
 priority: medium
 scope: feature
 scope_estimate: M
