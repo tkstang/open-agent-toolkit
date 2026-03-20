@@ -65,26 +65,22 @@ describe('agent instructions bundle contract', () => {
     expect(applyPlanTemplate).toContain('| Bundle Pack');
   });
 
-  it('requires apply to consume the bundle before falling back to markdown-only review context', () => {
+  it('requires apply to define bundle-first intake, planning, and generation markers', () => {
     const applySkill = readFileSync(
       repoFilePath('.agents/skills/oat-agent-instructions-apply/SKILL.md'),
       'utf8',
     );
 
+    expect(applySkill).toContain('### Step 0: Intake — Find Analysis Artifact');
+    expect(applySkill).toContain('BUNDLE_DIR="${ARTIFACT_PATH%.md}.bundle"');
     expect(applySkill).toContain(
-      'the bundle is the primary generation contract',
+      'MANIFEST_PATH="${BUNDLE_DIR}/recommendations.yaml"',
     );
+    expect(applySkill).toContain('**Bundle-first behavior:**');
+    expect(applySkill).toContain('### Step 2: Build Recommendation Plan');
     expect(applySkill).toContain(
-      'If the bundle exists but is incomplete, stop and require a refreshed analysis rather than falling back silently to the',
+      '### Step 5: Generate/Update Instruction Files',
     );
-    expect(applySkill).toContain(
-      'build the plan from the bundle manifest and recommendation packs first',
-    );
-    expect(applySkill).toContain(
-      "load the approved recommendation's manifest entry and matching pack before",
-    );
-    expect(applySkill).toContain(
-      'Do not generate from the markdown summary alone.',
-    );
+    expect(applySkill).toContain('matching pack');
   });
 });
