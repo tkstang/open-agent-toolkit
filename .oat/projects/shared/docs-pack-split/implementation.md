@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p01-t02
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -26,36 +26,54 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 2     | 1/2       |
-| Phase 2 | pending     | 2     | 0/2       |
+| Phase 1 | completed   | 2     | 2/2       |
+| Phase 2 | in_progress | 2     | 0/2       |
 
-**Total:** 1/4 tasks completed
+**Total:** 2/4 tasks completed
 
 ---
 
 ## Phase 1: Add the Docs Pack to the CLI Model
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-20
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
 
-- {2-5 bullets describing user-visible / behavior-level changes delivered in this phase}
+- Added a dedicated `docs` pack to the installer model without moving
+  foundational `oat-docs` out of `core`.
+- Split docs and agent-instructions workflow skills out of `utility` and into
+  pack-aware CLI metadata plus installer flows.
+- Propagated the new pack name through tool scanning, update/remove targeting,
+  legacy `remove skills --pack`, and CLI help output.
 
 **Key files touched:**
 
-- `{path}` - {why}
+- `packages/cli/src/commands/init/tools/` - new docs pack installer and main
+  pack registration
+- `packages/cli/src/commands/tools/shared/scan-tools.ts` - pack detection for installed tools
+- `packages/cli/src/commands/tools/update/index.ts` - update pack validation
+- `packages/cli/src/commands/tools/remove/index.ts` - remove pack validation
+- `packages/cli/src/commands/remove/skills/remove-skills.ts` - legacy skill-pack removal support
+- `packages/cli/src/commands/help-snapshots.test.ts` - CLI help expectations
 
 **Verification:**
 
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `pnpm --filter @oat/cli exec vitest run src/commands/init/tools/docs/install-docs.test.ts src/commands/init/tools/docs/index.test.ts src/commands/init/tools/index.test.ts src/commands/init/tools/shared/bundle-consistency.test.ts`
+- Result: pass
+- Run: `pnpm --filter @oat/cli exec vitest run src/commands/tools/shared/scan-tools.test.ts src/commands/tools/list/list-tools.test.ts src/commands/tools/update/update-tools.test.ts src/commands/tools/remove/remove-tools.test.ts src/commands/remove/skills/remove-skills.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass
+- Run: `pnpm --filter @oat/cli lint && pnpm --filter @oat/cli type-check`
+- Result: pass
 
 **Notes / Decisions:**
 
-- {trade-offs or deviations discovered during implementation}
+- Direct `vitest` execution remains the reliable way to verify task-owned files
+  without picking up unrelated suites from later plan tasks.
+- Help snapshot updates are part of pack-management scope because the pack names
+  are user-facing CLI contract, not optional follow-up docs.
 
 ### Task p01-t01: Introduce the `docs` pack manifest and installer command
 
@@ -101,20 +119,51 @@ oat_generated: false
 
 ### Task p01-t02: Propagate `docs` pack support through tool management and legacy removal flows
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** e254abe52c00f88cf2a736c94096eafd88cf0fcc
 
-**Notes:**
+**Outcome (required when completed):**
 
-- Update scanning, list/update/remove flows, legacy `remove skills --pack`, and
-  help snapshots after the new pack exists in the installer path.
+- Added `docs` as a recognized pack across installed-tool scanning and tool info
+  typing, so moved skills no longer show up as `custom`.
+- Updated update/remove command pack validation and help text to accept the new
+  `docs` pack name.
+- Extended legacy `oat remove skills --pack` support to handle `docs`.
+- Updated downstream test fixtures and help snapshots to reflect the new pack
+  taxonomy consistently.
+
+**Files changed:**
+
+- `packages/cli/src/commands/tools/shared/types.ts` - pack type union
+- `packages/cli/src/commands/tools/shared/scan-tools.ts` - docs pack resolution
+- `packages/cli/src/commands/tools/shared/scan-tools.test.ts` - docs and utility pack expectations
+- `packages/cli/src/commands/tools/list/list-tools.test.ts` - docs-pack list sample
+- `packages/cli/src/commands/tools/update/index.ts` - docs pack validation
+- `packages/cli/src/commands/tools/update/update-tools.test.ts` - docs pack fixture
+- `packages/cli/src/commands/tools/remove/index.ts` - docs pack validation
+- `packages/cli/src/commands/tools/remove/remove-tools.test.ts` - docs pack fixture
+- `packages/cli/src/commands/remove/skills/remove-skills.ts` - docs pack legacy removal support
+- `packages/cli/src/commands/remove/skills/remove-skills.test.ts` - docs pack removal test
+- `packages/cli/src/commands/help-snapshots.test.ts` - CLI help snapshots
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli exec vitest run src/commands/tools/shared/scan-tools.test.ts src/commands/tools/list/list-tools.test.ts src/commands/tools/update/update-tools.test.ts src/commands/tools/remove/remove-tools.test.ts src/commands/remove/skills/remove-skills.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass
+- Run: `pnpm --filter @oat/cli lint && pnpm --filter @oat/cli type-check`
+- Result: pass
+
+**Notes / Decisions:**
+
+- Updated user-facing help snapshots in the same task because pack-name drift in
+  help output would otherwise immediately break the CLI contract.
 
 ---
 
 ## Phase 2: Decouple Shared Assets and Refresh Documentation
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-20
 
 ### Task p02-t01: Move the shared tracking helper to a neutral location and update skill references
 
@@ -150,7 +199,7 @@ Chronological log of implementation progress.
 **Session Start:** {time}
 
 - [x] p01-t01: Introduce the `docs` pack manifest and installer command - 983e23bc
-- [ ] p01-t02: Propagate `docs` pack support through tool management and legacy removal flows
+- [x] p01-t02: Propagate `docs` pack support through tool management and legacy removal flows - e254abe5
 - [ ] p02-t01: Move the shared tracking helper to a neutral location and update skill references
 - [ ] p02-t02: Update product docs and examples for the new pack layout
 
@@ -160,6 +209,8 @@ Chronological log of implementation progress.
 - Discovery captured and approved path selected
 - Implementation plan generated with four executable tasks
 - Added the `docs` pack installer, manifest split, and task-owned test coverage
+- Wired the `docs` pack through scanning, update/remove flows, legacy removal,
+  and CLI help output
 
 **Decisions:**
 
