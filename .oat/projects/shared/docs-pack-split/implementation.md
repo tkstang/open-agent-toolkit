@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p03-t01
+oat_current_task_id: p03-t02
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | completed   | 2     | 2/2       |
 | Phase 2 | completed   | 2     | 2/2       |
-| Phase 3 | in_progress | 2     | 0/2       |
+| Phase 3 | in_progress | 2     | 1/2       |
 
-**Total:** 4/6 tasks completed
+**Total:** 5/6 tasks completed
 
 ---
 
@@ -291,6 +291,47 @@ oat_generated: false
 
 ---
 
+## Phase 3: Review Fixes
+
+**Status:** in_progress
+**Started:** 2026-03-20
+
+### Task p03-t01: (review) Update the utility pack description to match the split
+
+**Status:** completed
+**Commit:** fa480c4ed59dc32d1e9469353aaf4cdbe672bf24
+
+**Outcome (required when completed):**
+
+- Updated the `utility` pack description so it no longer claims the pack
+  contains docs-analysis and agent-instructions workflows.
+- Reworded the description to match the actual post-split utility-pack
+  contents: skill authoring, maintainability review, and code reviews.
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/tools/index.ts` - corrected the utility-pack
+  description constant used by generated tool-pack guidance
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli exec vitest run src/commands/init/tools/index.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The targeted test run covered the user-facing description drift without
+  requiring any additional fixture changes.
+
+---
+
+### Task p03-t02: (review) Expand oat-doctor pack guidance to match PackName
+
+**Status:** pending
+**Commit:** -
+
+---
+
 ## Orchestration Runs
 
 > This section is used by `oat-project-subagent-implement` to log parallel execution runs.
@@ -399,14 +440,15 @@ Chronological log of implementation progress.
 - [x] final review received and parsed
 - [x] m1 converted to `p03-t01`
 - [x] m2 converted to `p03-t02`
-- [ ] Execute `p03-t01`
+- [x] Execute `p03-t01` - fa480c4e
 - [ ] Execute `p03-t02`
 
 **What changed (high level):**
 
 - Processed the active final code review artifact
 - Added a dedicated review-fixes phase with two small follow-up tasks
-- Reset implementation state to resume at `p03-t01`
+- Corrected the stale `utility` pack description and advanced execution to
+  `p03-t02`
 
 **Decisions:**
 
@@ -417,7 +459,7 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Implement `p03-t01` and `p03-t02`
+- Implement `p03-t02`
 - Re-run final code review after fixes land
 
 **Blockers:**
