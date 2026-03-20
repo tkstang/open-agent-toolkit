@@ -21,6 +21,7 @@ async function seedAssets(assetsRoot: string): Promise<void> {
   await mkdir(join(assetsRoot, 'skills', 'oat-docs-apply'), {
     recursive: true,
   });
+  await mkdir(join(assetsRoot, 'scripts'), { recursive: true });
   await writeFile(
     join(assetsRoot, 'skills', 'oat-docs-analyze', 'SKILL.md'),
     '---\nname: oat-docs-analyze\nversion: 1.0.0\n---\n',
@@ -29,6 +30,11 @@ async function seedAssets(assetsRoot: string): Promise<void> {
   await writeFile(
     join(assetsRoot, 'skills', 'oat-docs-apply', 'SKILL.md'),
     '---\nname: oat-docs-apply\nversion: 1.0.0\n---\n',
+    'utf8',
+  );
+  await writeFile(
+    join(assetsRoot, 'scripts', 'resolve-tracking.sh'),
+    '#!/bin/sh\necho tracking\n',
     'utf8',
   );
 }
@@ -56,6 +62,7 @@ describe('installDocs', () => {
     });
 
     expect(result.copiedSkills).toEqual(['oat-docs-analyze']);
+    expect(result.copiedScripts).toEqual(['resolve-tracking.sh']);
     expect(result.outdatedSkills).toEqual([]);
     await expect(
       readFile(
@@ -78,6 +85,7 @@ describe('installDocs', () => {
     });
 
     expect(result.copiedSkills).toEqual(['oat-docs-apply']);
+    expect(result.copiedScripts).toEqual(['resolve-tracking.sh']);
     expect(result.outdatedSkills).toEqual([]);
     await expect(
       readFile(
@@ -113,6 +121,7 @@ describe('installDocs', () => {
     expect(result.copiedSkills).toEqual([]);
     expect(result.updatedSkills).toEqual([]);
     expect(result.skippedSkills).toEqual([]);
+    expect(result.skippedScripts).toEqual(['resolve-tracking.sh']);
     expect(result.outdatedSkills).toEqual([
       { name: 'oat-docs-analyze', installed: '1.0.0', bundled: '1.1.0' },
     ]);

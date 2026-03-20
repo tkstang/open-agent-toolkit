@@ -84,6 +84,9 @@ function reportSuccess(
   context.logger.info(
     `Skills: copied=${result.copiedSkills.length}, updated=${result.updatedSkills.length}, skipped=${result.skippedSkills.length}`,
   );
+  context.logger.info(
+    `Scripts: copied=${result.copiedScripts.length}, updated=${result.updatedScripts.length}, skipped=${result.skippedScripts.length}`,
+  );
   context.logger.info(`Run: oat sync --scope ${scope}`);
 }
 

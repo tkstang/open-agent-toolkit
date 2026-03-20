@@ -54,6 +54,7 @@ export const WORKFLOW_TEMPLATES = [
 export const WORKFLOW_SCRIPTS = [
   'generate-oat-state.sh',
   'generate-thin-index.sh',
+  'resolve-tracking.sh',
 ] as const;
 
 // ── Ideas pack ─────────────────────────────────────────────────────
@@ -77,6 +78,8 @@ export const DOCS_SKILLS = [
   'oat-docs-analyze',
   'oat-docs-apply',
 ] as const;
+
+export const DOCS_SCRIPTS = ['resolve-tracking.sh'] as const;
 
 // ── Utility pack ───────────────────────────────────────────────────
 

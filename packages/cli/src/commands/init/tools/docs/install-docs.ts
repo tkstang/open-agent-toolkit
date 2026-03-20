@@ -1,9 +1,16 @@
 import { join } from 'node:path';
 
-import { copyDirWithVersionCheck } from '@commands/init/tools/shared/copy-helpers';
-import { DOCS_SKILLS } from '@commands/init/tools/shared/skill-manifest';
+import {
+  copyDirWithVersionCheck,
+  copyFileWithStatus,
+} from '@commands/init/tools/shared/copy-helpers';
+import {
+  DOCS_SCRIPTS,
+  DOCS_SKILLS,
+} from '@commands/init/tools/shared/skill-manifest';
+import { fileExists } from '@fs/io';
 
-export { DOCS_SKILLS };
+export { DOCS_SCRIPTS, DOCS_SKILLS };
 
 export interface InstallDocsOptions {
   assetsRoot: string;
@@ -21,6 +28,9 @@ export interface InstallDocsResult {
     installed: string | null;
     bundled: string | null;
   }>;
+  copiedScripts: string[];
+  updatedScripts: string[];
+  skippedScripts: string[];
 }
 
 export async function installDocs(
@@ -32,6 +42,9 @@ export async function installDocs(
     updatedSkills: [],
     skippedSkills: [],
     outdatedSkills: [],
+    copiedScripts: [],
+    updatedScripts: [],
+    skippedScripts: [],
   };
 
   for (const skill of options.skills) {
@@ -55,6 +68,27 @@ export async function installDocs(
       });
     } else {
       result.skippedSkills.push(skill);
+    }
+  }
+
+  for (const script of DOCS_SCRIPTS) {
+    const source = join(options.assetsRoot, 'scripts', script);
+    const destination = join(options.targetRoot, '.oat', 'scripts', script);
+    const sourceExists = await fileExists(source);
+
+    if (!sourceExists) {
+      result.skippedScripts.push(script);
+      continue;
+    }
+
+    const copyStatus = await copyFileWithStatus(source, destination, force);
+
+    if (copyStatus === 'copied') {
+      result.copiedScripts.push(script);
+    } else if (copyStatus === 'updated') {
+      result.updatedScripts.push(script);
+    } else {
+      result.skippedScripts.push(script);
     }
   }
 

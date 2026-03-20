@@ -41,6 +41,9 @@ function createHarness(options: HarnessOptions = {}): {
     updatedSkills: [],
     skippedSkills: [],
     outdatedSkills: [],
+    copiedScripts: ['resolve-tracking.sh'],
+    updatedScripts: [],
+    skippedScripts: [],
   }));
 
   const command = createInitToolsDocsCommand({
