@@ -26,6 +26,12 @@ describe('initializeBacklog', () => {
     await expect(
       access(join(backlogRoot, 'archived')),
     ).resolves.toBeUndefined();
+    await expect(
+      access(join(backlogRoot, 'items', '.gitkeep')),
+    ).resolves.toBeUndefined();
+    await expect(
+      access(join(backlogRoot, 'archived', '.gitkeep')),
+    ).resolves.toBeUndefined();
 
     const index = await readFile(join(backlogRoot, 'index.md'), 'utf8');
     expect(index).toContain('# OAT Backlog Index');
@@ -81,5 +87,19 @@ describe('initializeBacklog', () => {
     await expect(readFile(indexPath, 'utf8')).resolves.toContain(
       '- Keep this curated summary.',
     );
+  });
+
+  it('does not overwrite existing directory placeholders on rerun', async () => {
+    const backlogRoot = await mkdtemp(join(tmpdir(), 'oat-backlog-init-'));
+    tempDirs.push(backlogRoot);
+
+    await initializeBacklog(backlogRoot);
+
+    const itemsPlaceholder = join(backlogRoot, 'items', '.gitkeep');
+    await writeFile(itemsPlaceholder, 'keep me\n', 'utf8');
+
+    await initializeBacklog(backlogRoot);
+
+    await expect(readFile(itemsPlaceholder, 'utf8')).resolves.toBe('keep me\n');
   });
 });

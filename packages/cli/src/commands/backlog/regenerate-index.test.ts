@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
@@ -177,5 +178,45 @@ describe('regenerateBacklogIndex', () => {
     expect(index).not.toContain(
       '| _No backlog items yet_ | - | - | - | - | - |',
     );
+  });
+
+  it('works after a git commit and clone round-trip without rerunning init', async () => {
+    const tempRoot = await mkdtemp(join(tmpdir(), 'oat-backlog-git-'));
+    tempDirs.push(tempRoot);
+
+    const repoRoot = join(tempRoot, 'repo');
+    const cloneRoot = join(tempRoot, 'clone');
+    const backlogRoot = join(repoRoot, '.oat', 'repo', 'reference', 'backlog');
+
+    await mkdir(repoRoot, { recursive: true });
+    await initializeBacklog(backlogRoot);
+
+    execFileSync('git', ['init', '-q'], { cwd: repoRoot });
+    execFileSync('git', ['config', 'user.email', 'review@example.com'], {
+      cwd: repoRoot,
+    });
+    execFileSync('git', ['config', 'user.name', 'reviewer'], { cwd: repoRoot });
+    execFileSync('git', ['add', '.'], { cwd: repoRoot });
+    execFileSync('git', ['commit', '-qm', 'init backlog scaffold'], {
+      cwd: repoRoot,
+    });
+    execFileSync('git', ['clone', '-q', repoRoot, cloneRoot], {
+      cwd: tempRoot,
+    });
+
+    const clonedBacklogRoot = join(
+      cloneRoot,
+      '.oat',
+      'repo',
+      'reference',
+      'backlog',
+    );
+
+    await expect(
+      readFile(join(clonedBacklogRoot, 'items', '.gitkeep'), 'utf8'),
+    ).resolves.toBe('');
+    await expect(
+      regenerateBacklogIndex(clonedBacklogRoot),
+    ).resolves.toBeUndefined();
   });
 });

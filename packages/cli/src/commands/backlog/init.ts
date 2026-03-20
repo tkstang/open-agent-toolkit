@@ -3,6 +3,7 @@ import { join } from 'node:path';
 
 const INDEX_START = '<!-- OAT BACKLOG-INDEX -->';
 const INDEX_END = '<!-- END OAT BACKLOG-INDEX -->';
+const DIRECTORY_PLACEHOLDER = '.gitkeep';
 
 const EMPTY_MANAGED_TABLE = [
   INDEX_START,
@@ -69,6 +70,14 @@ async function writeFileIfMissing(
 export async function initializeBacklog(backlogRoot: string): Promise<void> {
   await mkdir(join(backlogRoot, 'items'), { recursive: true });
   await mkdir(join(backlogRoot, 'archived'), { recursive: true });
+  await writeFileIfMissing(
+    join(backlogRoot, 'items', DIRECTORY_PLACEHOLDER),
+    '',
+  );
+  await writeFileIfMissing(
+    join(backlogRoot, 'archived', DIRECTORY_PLACEHOLDER),
+    '',
+  );
 
   await writeFileIfMissing(join(backlogRoot, 'index.md'), STARTER_INDEX);
   await writeFileIfMissing(
