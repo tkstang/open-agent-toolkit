@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p03-t02
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,13 +24,13 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | completed   | 2     | 2/2       |
-| Phase 2 | completed   | 2     | 2/2       |
-| Phase 3 | in_progress | 2     | 1/2       |
+| Phase   | Status    | Tasks | Completed |
+| ------- | --------- | ----- | --------- |
+| Phase 1 | completed | 2     | 2/2       |
+| Phase 2 | completed | 2     | 2/2       |
+| Phase 3 | completed | 2     | 2/2       |
 
-**Total:** 5/6 tasks completed
+**Total:** 6/6 tasks completed
 
 ---
 
@@ -293,8 +293,33 @@ oat_generated: false
 
 ## Phase 3: Review Fixes
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-20
+
+### Phase Summary
+
+**Outcome (what changed):**
+
+- Cleared the two final-review minor findings without expanding scope beyond
+  the reported drift.
+- Corrected the stale `utility` pack description in the CLI installer guidance
+  so generated tool-pack docs match the actual manifest split.
+- Updated `oat-doctor` guidance to list the full current pack set used by the
+  CLI.
+
+**Key files touched:**
+
+- `packages/cli/src/commands/init/tools/index.ts` - corrected user-facing
+  utility-pack description
+- `.agents/skills/oat-doctor/SKILL.md` - aligned pack enum guidance with the
+  `PackName` union
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli exec vitest run src/commands/init/tools/index.test.ts src/commands/help-snapshots.test.ts`
+- Result: pass
+- Run: `rg -n -F "core/docs/ideas/workflows/utility/project-management/research/custom" .agents/skills/oat-doctor/SKILL.md`
+- Result: pass
 
 ### Task p03-t01: (review) Update the utility pack description to match the split
 
@@ -327,8 +352,30 @@ oat_generated: false
 
 ### Task p03-t02: (review) Expand oat-doctor pack guidance to match PackName
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 29f26e8177973dc0aa971d8cefe6ee5035f2b205
+
+**Outcome (required when completed):**
+
+- Expanded the `oat-doctor` guidance line to include `docs`,
+  `project-management`, and `research` in the documented pack enum.
+- Brought the skill’s pack-model explanation back into sync with the CLI’s
+  current `PackName` union.
+
+**Files changed:**
+
+- `.agents/skills/oat-doctor/SKILL.md` - corrected pack enum guidance in the
+  JSON parsing instructions
+
+**Verification:**
+
+- Run: `rg -n -F "core/docs/ideas/workflows/utility/project-management/research/custom" .agents/skills/oat-doctor/SKILL.md`
+- Result: pass
+
+**Notes / Decisions:**
+
+- Used an exact-string check instead of the original regex-shaped probe because
+  the markdown punctuation made the regex unnecessarily brittle.
 
 ---
 
@@ -368,13 +415,13 @@ oat_generated: false
 - `m2` -> converted (`p03-t02`) - align `oat-doctor` pack enum guidance with
   the current `PackName` union
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
+**Next:** Re-run `oat-project-review-provide code final`, then
+`oat-project-review-receive` to close the final review gate.
 
-After the fix tasks are complete:
+Review-fix tasks are complete:
 
-- Update the review row status to `fixes_completed`
-- Re-run `oat-project-review-provide code final` then
-  `oat-project-review-receive` to reach `passed`
+- The review row should now be `fixes_completed`
+- The next lifecycle step is final re-review, not more implementation work
 
 ---
 
@@ -441,14 +488,14 @@ Chronological log of implementation progress.
 - [x] m1 converted to `p03-t01`
 - [x] m2 converted to `p03-t02`
 - [x] Execute `p03-t01` - fa480c4e
-- [ ] Execute `p03-t02`
+- [x] Execute `p03-t02` - 29f26e81
 
 **What changed (high level):**
 
 - Processed the active final code review artifact
 - Added a dedicated review-fixes phase with two small follow-up tasks
-- Corrected the stale `utility` pack description and advanced execution to
-  `p03-t02`
+- Corrected the stale `utility` pack description and the truncated
+  `oat-doctor` pack enum guidance
 
 **Decisions:**
 
@@ -459,7 +506,6 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Implement `p03-t02`
 - Re-run final code review after fixes land
 
 **Blockers:**
@@ -480,34 +526,52 @@ Document any deviations from the original plan.
 
 Track test execution during implementation.
 
-| Phase | Tests Run | Passed | Failed | Coverage |
-| ----- | --------- | ------ | ------ | -------- |
-| 1     | -         | -      | -      | -        |
-| 2     | -         | -      | -      | -        |
+| Phase | Tests Run                      | Passed | Failed | Coverage   |
+| ----- | ------------------------------ | ------ | ------ | ---------- |
+| 1     | -                              | -      | -      | -          |
+| 2     | -                              | -      | -      | -          |
+| 3     | targeted verification commands | ✓      | 0      | task-owned |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
 
-- Not yet implemented
+- Added a first-class `docs` tool pack while keeping `oat-docs` in `core`
+- Propagated the new pack through install, scan, update, remove, and help
+  surfaces
+- Moved the shared tracking helper to `.oat/scripts`
+- Updated product docs and `oat-doctor` guidance to reflect the new pack layout
+- Closed the final review drift with two small follow-up fixes
 
 **Behavioral changes (user-facing):**
 
-- Not yet implemented
+- Users can install and manage docs workflows via a dedicated `docs` pack
+- Generated tool-pack guidance now describes `utility` accurately after the
+  split
+- `oat-doctor` guidance now lists the full supported pack set
 
 **Key files / modules:**
 
 - `packages/cli/src/commands/init/tools/` - pack installer and manifest work
 - `packages/cli/src/commands/tools/` - pack lifecycle and scan/update/remove behavior
 - `apps/oat-docs/docs/` - end-user docs for the new pack layout
+- `.oat/scripts/resolve-tracking.sh` - neutral shared helper location
+- `.agents/skills/oat-doctor/SKILL.md` - updated pack guidance
 
 **Verification performed:**
 
-- Planning only - no implementation verification yet
+- Task-owned Vitest coverage for init-tools/docs-pack/help flows
+- `pnpm --filter @oat/cli lint`
+- `pnpm --filter @oat/cli type-check`
+- `pnpm --filter oat-docs docs:lint`
+- `pnpm build:docs`
+- targeted `rg` checks for stale helper-path and pack-taxonomy drift
 
 **Design deltas (if any):**
 
 - No design artifact used in this quick-mode project
+- Review-fix work added a dedicated `Phase 3` rather than mutating prior phase
+  task lists in place
 
 ## References
 
