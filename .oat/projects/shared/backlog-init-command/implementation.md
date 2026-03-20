@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p03-t01
+oat_current_task_id: p03-t02
 oat_generated: false
 ---
 
@@ -24,13 +24,13 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status   | Tasks | Completed |
-| ------- | -------- | ----- | --------- |
-| Phase 1 | complete | 2     | 2/2       |
-| Phase 2 | complete | 1     | 1/1       |
-| Phase 3 | pending  | 2     | 0/2       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | complete    | 2     | 2/2       |
+| Phase 2 | complete    | 1     | 1/1       |
+| Phase 3 | in_progress | 2     | 1/2       |
 
-**Total:** 3/5 tasks completed
+**Total:** 4/5 tasks completed
 
 ---
 
@@ -153,23 +153,33 @@ oat_generated: false
 
 ## Phase 3: Review Fixes (final)
 
-**Status:** pending
+**Status:** in_progress
 **Started:** 2026-03-20
 
 ### Task p03-t01: (review) Preserve empty backlog directories across git clone
 
-**Status:** pending
+**Status:** completed
+**Commit:** bf784cc7
 
-**Files to change:**
+**Outcome (required when completed):**
 
-- `packages/cli/src/commands/backlog/init.ts`
-- `packages/cli/src/commands/backlog/init.test.ts`
-- `packages/cli/src/commands/backlog/regenerate-index.test.ts`
+- Added `.gitkeep` placeholders to the scaffolded `items/` and `archived/` directories so the canonical backlog shape survives git commits and clones.
+- Added regression coverage that commits and clones a scaffolded repo before running `regenerate-index`, proving the backlog remains usable without rerunning `init`.
 
-**Notes:**
+**Files changed:**
 
-- Seed tracked placeholders for empty scaffold directories so a committed/cloned backlog keeps the canonical shape.
-- Add a regression that proves `oat backlog regenerate-index` still works after the scaffold survives a git round-trip.
+- `packages/cli/src/commands/backlog/init.ts` - seeds tracked placeholders for empty scaffold directories
+- `packages/cli/src/commands/backlog/init.test.ts` - verifies placeholder creation and rerun preservation
+- `packages/cli/src/commands/backlog/regenerate-index.test.ts` - covers the git round-trip compatibility path
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts`
+- Result: Pass; targeted scaffold and round-trip regressions succeeded
+
+**Notes / Decisions:**
+
+- Used `.gitkeep` so empty directories remain versionable without changing runtime behavior; `regenerate-index` already ignores non-Markdown files.
 
 ---
 
