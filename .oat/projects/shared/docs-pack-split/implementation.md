@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p03-t03
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,13 +24,13 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | completed   | 2     | 2/2       |
-| Phase 2 | completed   | 2     | 2/2       |
-| Phase 3 | in_progress | 3     | 2/3       |
+| Phase   | Status    | Tasks | Completed |
+| ------- | --------- | ----- | --------- |
+| Phase 1 | completed | 2     | 2/2       |
+| Phase 2 | completed | 2     | 2/2       |
+| Phase 3 | completed | 3     | 3/3       |
 
-**Total:** 6/7 tasks completed
+**Total:** 7/7 tasks completed
 
 ---
 
@@ -293,7 +293,7 @@ oat_generated: false
 
 ## Phase 3: Review Fixes
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-20
 
 ### Phase Summary
@@ -306,8 +306,8 @@ oat_generated: false
   so generated tool-pack docs match the actual manifest split.
 - Updated `oat-doctor` guidance to list the full current pack set used by the
   CLI.
-- A narrowed final re-review found one remaining `oat-doctor`
-  summary-manifest gap that is now queued as `p03-t03`.
+- Closed the narrowed re-review follow-up by extending `oat-doctor`'s
+  summary-mode manifest and example output to include the remaining packs.
 
 **Key files touched:**
 
@@ -321,6 +321,8 @@ oat_generated: false
 - Run: `pnpm --filter @oat/cli exec vitest run src/commands/init/tools/index.test.ts src/commands/help-snapshots.test.ts`
 - Result: pass
 - Run: `rg -n -F "core/docs/ideas/workflows/utility/project-management/research/custom" .agents/skills/oat-doctor/SKILL.md`
+- Result: pass
+- Run: `rg -n -e 'Project management pack skills' -e 'Research pack skills' .agents/skills/oat-doctor/SKILL.md && rg -n -F 'oat-pjm-add-backlog-item' .agents/skills/oat-doctor/SKILL.md && rg -n -F 'deep-research' .agents/skills/oat-doctor/SKILL.md`
 - Result: pass
 
 ### Task p03-t01: (review) Update the utility pack description to match the split
@@ -383,8 +385,32 @@ oat_generated: false
 
 ### Task p03-t03: (review) Complete oat-doctor summary pack manifest coverage
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 6d48c2ac9093963b02e757cb2ea48780f1de0fe1
+
+**Outcome (required when completed):**
+
+- Added the missing `project-management` and `research` pack sections to the
+  summary-mode bundled-skill manifest guidance in `oat-doctor`.
+- Updated the summary-mode dashboard example so the Installed Packs and
+  Available But Not Installed sections now include the missing packs and
+  representative skills.
+
+**Files changed:**
+
+- `.agents/skills/oat-doctor/SKILL.md` - completed the summary-mode manifest
+  and example output coverage
+
+**Verification:**
+
+- Run: `rg -n -e 'Project management pack skills' -e 'Research pack skills' .agents/skills/oat-doctor/SKILL.md && rg -n -F 'oat-pjm-add-backlog-item' .agents/skills/oat-doctor/SKILL.md && rg -n -F 'deep-research' .agents/skills/oat-doctor/SKILL.md`
+- Result: pass
+
+**Notes / Decisions:**
+
+- Kept the fix entirely within the `oat-doctor` skill surface instead of
+  broadening scope into shared generation logic, because the review asked for
+  documentation parity rather than refactoring.
 
 ---
 
@@ -453,9 +479,10 @@ Review-fix tasks are complete:
 - `I1` -> converted (`p03-t03`) - complete the `oat-doctor` summary-mode
   bundled-skill manifest so it includes `project-management` and `research`
 
-**Next:** Execute fix task `p03-t03` via the `oat-project-implement` skill.
+**Next:** Re-run `oat-project-review-provide code final`, then
+`oat-project-review-receive` to close the final review gate.
 
-After the fix task is complete:
+Review-fix task is complete:
 
 - Update the review row status to `fixes_completed`
 - Re-run `oat-project-review-provide code final` then
@@ -529,7 +556,7 @@ Chronological log of implementation progress.
 - [x] Execute `p03-t02` - 29f26e81
 - [x] final re-review received and parsed
 - [x] I1 converted to `p03-t03`
-- [ ] Execute `p03-t03`
+- [x] Execute `p03-t03` - 6d48c2ac
 
 **What changed (high level):**
 
@@ -538,7 +565,7 @@ Chronological log of implementation progress.
 - Corrected the stale `utility` pack description and the truncated
   `oat-doctor` pack enum guidance
 - Processed the narrowed final re-review and queued one more bounded
-  `oat-doctor` summary-manifest fix
+  `oat-doctor` summary-manifest fix, then implemented it
 
 **Decisions:**
 
@@ -549,7 +576,6 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Implement `p03-t03`
 - Re-run final code review after fixes land
 
 **Blockers:**
@@ -585,14 +611,15 @@ Track test execution during implementation.
   surfaces
 - Moved the shared tracking helper to `.oat/scripts`
 - Updated product docs and `oat-doctor` guidance to reflect the new pack layout
-- Closed the final review drift with two small follow-up fixes
+- Closed the final review drift with three bounded follow-up fixes
 
 **Behavioral changes (user-facing):**
 
 - Users can install and manage docs workflows via a dedicated `docs` pack
 - Generated tool-pack guidance now describes `utility` accurately after the
   split
-- `oat-doctor` guidance now lists the full supported pack set
+- `oat-doctor` guidance now lists the full supported pack set and its summary
+  example includes the missing packs
 
 **Key files / modules:**
 
