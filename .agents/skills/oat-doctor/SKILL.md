@@ -178,6 +178,16 @@ Utility pack skills:
 - oat-repo-maintainability-review, oat-review-provide
 - oat-review-receive, oat-review-receive-remote
 
+Project management pack skills:
+
+- oat-pjm-add-backlog-item, oat-pjm-update-repo-reference
+- oat-pjm-review-backlog
+
+Research pack skills:
+
+- analyze, compare, deep-research
+- skeptic, synthesize
+
 For each pack, determine:
 
 - **Installed:** all pack skills found in installed tools list
@@ -212,6 +222,8 @@ OAT ▸ DOCTOR SUMMARY
 | docs      | project | 4/4    | current  |
 | workflows | project | 26/26  | current  |
 | ideas     | user    | 4/4    | current  |
+| project-management | project | 3/3 | current |
+| research  | project | 5/5    | current  |
 | utility   | project | 5/5    | outdated |
 
 ## Outdated Skills
@@ -224,6 +236,10 @@ OAT ▸ DOCTOR SUMMARY
 
 - **docs** pack: oat-docs-analyze, oat-docs-apply, oat-agent-instructions-analyze, oat-agent-instructions-apply (4 skills available)
   → Run: oat tools install docs --scope {scope}
+- **project-management** pack: oat-pjm-add-backlog-item, oat-pjm-update-repo-reference, oat-pjm-review-backlog (3 skills available)
+  → Run: oat tools install project-management --scope {scope}
+- **research** pack: analyze, compare, deep-research, skeptic, synthesize (5 skills available)
+  → Run: oat tools install research --scope {scope}
 
 ## Configuration
 
