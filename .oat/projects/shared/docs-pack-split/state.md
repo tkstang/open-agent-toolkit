@@ -14,7 +14,7 @@ oat_workflow_origin: native # native | imported
 oat_docs_updated: complete # null | skipped | complete — documentation sync status
 oat_project_created: '2026-03-20T19:21:10.139Z' # ISO 8601 UTC timestamp — set once at project creation
 oat_project_completed: null # ISO 8601 UTC timestamp — set when project is completed/archived
-oat_project_state_updated: '2026-03-20T23:28:27Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
+oat_project_state_updated: '2026-03-20T23:52:45Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
 oat_generated: false
 ---
 
@@ -60,4 +60,4 @@ None
 
 ## Next Milestone
 
-Run `oat-project-pr-final` to generate the final PR description
+Run `oat-project-complete`.
