@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p03-t01
+oat_current_task_id: p03-t02
 oat_generated: false
 ---
 
@@ -28,9 +28,9 @@ oat_generated: false
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | completed   | 2     | 2/2       |
 | Phase 2 | completed   | 2     | 2/2       |
-| Phase 3 | in_progress | 2     | 0/2       |
+| Phase 3 | in_progress | 2     | 1/2       |
 
-**Total:** 4/6 tasks completed
+**Total:** 5/6 tasks completed
 
 ---
 
@@ -231,6 +231,48 @@ oat_generated: false
 
 - The bundle summary remains reviewer-facing context only; apply must not generate from it without first loading the
   manifest entry and matching pack.
+
+---
+
+## Phase 3: Review Fixes
+
+**Status:** in_progress
+**Started:** 2026-03-20
+
+### Task p03-t01: (review) Reduce prose coupling in bundle contract test
+
+**Status:** completed
+**Commit:** 06177a21
+
+**Outcome (required when completed):**
+
+- Replaced wording-locked assertions in the apply-side contract test with stable intake/planning/generation markers.
+- Kept the bundle-first contract covered without pinning exact editorial phrasing from the apply skill doc.
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts` - swapped sentence-level
+  assertions for durable section/code markers from the apply skill
+
+**Verification:**
+
+- Run: `pnpm test`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The test still enforces bundle-first behavior, but it now tolerates routine copy edits to the skill text.
+
+---
+
+### Task p03-t02: (review) Make bundle contract test repo-root resolution robust
+
+**Status:** pending
+**Commit:** -
+
+**Notes:**
+
+- Replace the seven-level parent traversal in `repoFilePath` with a stable repo-root resolution strategy.
 
 ---
 
