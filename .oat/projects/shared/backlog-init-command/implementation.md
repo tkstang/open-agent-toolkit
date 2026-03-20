@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p02-t01
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,12 +24,12 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | complete    | 2     | 2/2       |
-| Phase 2 | in_progress | 1     | 0/1       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 2     | 2/2       |
+| Phase 2 | complete | 1     | 1/1       |
 
-**Total:** 2/3 tasks completed
+**Total:** 3/3 tasks completed
 
 ---
 
@@ -120,18 +120,33 @@ oat_generated: false
 
 ## Phase 2: Compatibility Coverage
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-20
 
 ### Task p02-t01: Add regression coverage for scaffold compatibility
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** cee41cca
 
-**Notes:**
+**Outcome (required when completed):**
 
-- Prove a freshly scaffolded backlog root works with `regenerate-index`.
-- Preserve curated overview content across repeated `init` runs.
+- Added regression coverage that proves a freshly scaffolded backlog root works with `regenerate-index`.
+- Added a focused idempotence test that preserves curated overview edits across repeated `initializeBacklog()` runs.
+- Confirmed the scaffolded backlog shape was already compatible, so no additional production code changes were needed in this phase.
+
+**Files changed:**
+
+- `packages/cli/src/commands/backlog/init.test.ts` - added curated-overview preservation coverage
+- `packages/cli/src/commands/backlog/regenerate-index.test.ts` - added scaffold-compatibility regression coverage
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts src/commands/help-snapshots.test.ts && pnpm type-check`
+- Result: Pass; targeted backlog coverage and workspace type-check both succeeded
+
+**Notes / Decisions:**
+
+- The compatibility regressions passed without production changes, which confirmed the phase-1 scaffold content already matches `regenerate-index` expectations.
 
 ---
 
@@ -235,6 +250,34 @@ Chronological log of implementation progress.
 
 ---
 
+### 2026-03-20
+
+**Session Start:** implementation
+
+- [x] p02-t01: Add regression coverage for scaffold compatibility - cee41cca
+
+**What changed (high level):**
+
+- Added compatibility coverage proving a freshly scaffolded backlog root works with the existing index regeneration flow.
+- Added a realistic idempotence test that preserves curated overview edits on rerun.
+- Completed all planned implementation tasks and passed the full verification suite.
+
+**Decisions:**
+
+- Keep phase 2 test-only; the new regressions showed the scaffold contract was already correct.
+
+**Follow-ups / TODO:**
+
+- Request final review before PR work.
+
+**Blockers:**
+
+- None
+
+**Session End:** implementation complete
+
+---
+
 ## Deviations from Plan
 
 Document any deviations from the original plan.
@@ -256,19 +299,31 @@ Track test execution during implementation.
 
 **What shipped:**
 
-- Pending implementation
+- Added an explicit `oat backlog init` command for scaffolding the canonical local backlog directory structure.
+- Added a reusable initializer that creates `items/`, `archived/`, `index.md`, and `completed.md` without overwriting existing backlog files on rerun.
+- Added regression coverage proving the scaffolded backlog shape is compatible with `oat backlog regenerate-index` and preserves curated overview edits.
 
 **Behavioral changes (user-facing):**
 
-- Pending implementation
+- Users can now run `oat backlog init` in a fresh repo to create the starter backlog structure before using other file-backed backlog flows.
+- Re-running the command leaves curated backlog content intact instead of resetting the backlog index or completed summary files.
 
 **Key files / modules:**
 
-- Pending implementation
+- `packages/cli/src/commands/backlog/init.ts` - backlog scaffold helper and starter file content
+- `packages/cli/src/commands/backlog/index.ts` - `oat backlog init` command wiring
+- `packages/cli/src/commands/backlog/init.test.ts` - scaffold creation and idempotence coverage
+- `packages/cli/src/commands/backlog/regenerate-index.test.ts` - scaffold compatibility coverage
 
 **Verification performed:**
 
-- Pending implementation
+- `pnpm --filter @oat/cli test -- src/commands/backlog/init.test.ts`
+- `pnpm --filter @oat/cli test -- src/commands/help-snapshots.test.ts`
+- `pnpm --filter @oat/cli test -- src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts src/commands/help-snapshots.test.ts && pnpm type-check`
+- `pnpm test`
+- `pnpm lint`
+- `pnpm type-check`
+- `pnpm build`
 
 **Design deltas (if any):**
 
