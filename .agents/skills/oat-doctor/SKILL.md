@@ -167,10 +167,14 @@ Ideas pack skills:
 
 - oat-idea-new, oat-idea-ideate, oat-idea-summarize, oat-idea-scratchpad
 
+Docs pack skills:
+
+- oat-agent-instructions-analyze, oat-agent-instructions-apply
+- oat-docs-analyze, oat-docs-apply
+
 Utility pack skills:
 
-- create-agnostic-skill, oat-agent-instructions-analyze, oat-agent-instructions-apply
-- oat-docs-analyze, oat-docs-apply
+- create-agnostic-skill
 - oat-repo-maintainability-review, oat-review-provide
 - oat-review-receive, oat-review-receive-remote
 
@@ -205,9 +209,10 @@ OAT ▸ DOCTOR SUMMARY
 | Pack      | Scope   | Skills | Status   |
 | --------- | ------- | ------ | -------- |
 | core      | user    | 2/2    | current  |
+| docs      | project | 4/4    | current  |
 | workflows | project | 26/26  | current  |
 | ideas     | user    | 4/4    | current  |
-| utility   | project | 9/9    | outdated |
+| utility   | project | 5/5    | outdated |
 
 ## Outdated Skills
 
@@ -217,8 +222,8 @@ OAT ▸ DOCTOR SUMMARY
 
 ## Available But Not Installed
 
-- **utility** pack: oat-docs-analyze, oat-docs-apply (2 skills available)
-  → Run: oat tools update --scope {scope}
+- **docs** pack: oat-docs-analyze, oat-docs-apply, oat-agent-instructions-analyze, oat-agent-instructions-apply (4 skills available)
+  → Run: oat tools install docs --scope {scope}
 
 ## Configuration
 
