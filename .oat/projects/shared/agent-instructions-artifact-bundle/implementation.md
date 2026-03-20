@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p03-t02
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,13 +24,13 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | completed   | 2     | 2/2       |
-| Phase 2 | completed   | 2     | 2/2       |
-| Phase 3 | in_progress | 2     | 1/2       |
+| Phase   | Status    | Tasks | Completed |
+| ------- | --------- | ----- | --------- |
+| Phase 1 | completed | 2     | 2/2       |
+| Phase 2 | completed | 2     | 2/2       |
+| Phase 3 | completed | 2     | 2/2       |
 
-**Total:** 5/6 tasks completed
+**Total:** 6/6 tasks completed
 
 ---
 
@@ -236,8 +236,31 @@ oat_generated: false
 
 ## Phase 3: Review Fixes
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-20
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+
+- Reduced maintenance friction in the bundle contract test by switching from prose-locked assertions to structural
+  markers.
+- Replaced the brittle parent-directory traversal with git-root resolution so the test remains stable if the file
+  moves.
+
+**Key files touched:**
+
+- `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts` - review-fix updates for
+  contract marker stability and repo-root resolution.
+
+**Verification:**
+
+- Run: `pnpm test && pnpm type-check`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The review-fix phase stayed intentionally narrow and did not change bundle semantics or artifact templates.
 
 ### Task p03-t01: (review) Reduce prose coupling in bundle contract test
 
@@ -267,12 +290,28 @@ oat_generated: false
 
 ### Task p03-t02: (review) Make bundle contract test repo-root resolution robust
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 19ee809a
 
-**Notes:**
+**Outcome (required when completed):**
 
-- Replace the seven-level parent traversal in `repoFilePath` with a stable repo-root resolution strategy.
+- Replaced the hard-coded seven-level parent traversal with a git-root lookup anchored to the current test directory.
+- Made repo path resolution explicit and resilient to future file moves within the CLI test tree.
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts` - uses `git rev-parse
+--show-toplevel` to resolve repo root once before joining contract fixture paths
+
+**Verification:**
+
+- Run: `pnpm test && pnpm type-check`
+- Result: pass
+
+**Notes / Decisions:**
+
+- A git-root lookup is a better fit here than another shared helper because this test only needs stable workspace-root
+  resolution and already runs inside a git worktree.
 
 ---
 
@@ -315,11 +354,10 @@ oat_generated: false
 - `m3` - Quality checklist renumbering is already internally consistent and requires no corrective change.
 - `m4` - Positive observation only; no action required.
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
+**Next:** Request final re-review via `oat-project-review-provide code final`.
 
 After the fix tasks are complete:
 
-- Update the review row status to `fixes_completed`
 - Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
 
 ---
