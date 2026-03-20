@@ -408,9 +408,9 @@ Write the human-readable markdown artifact to `$ARTIFACT_PATH`.
 
 Also write the companion bundle to `$BUNDLE_DIR` with this layout:
 
-- `summary.md` — compact bridge summary for apply-time context and reviewer inspection
-- `recommendations.yaml` — bundle manifest with one entry per recommendation
-- `packs/<recommendation-id>.md` — recommendation-scoped context packs
+- `summary.md` — rendered from `references/bundle-summary-template.md`
+- `recommendations.yaml` — rendered from `references/recommendations-manifest-template.yaml`
+- `packs/<recommendation-id>.md` — rendered from `references/recommendation-pack-template.md`
 
 Bundle contract requirements:
 
@@ -490,6 +490,9 @@ Next step: Run oat-agent-instructions-apply to act on these findings.
 - Directory criteria: `references/directory-assessment-criteria.md`
 - File-type discovery: `references/file-type-discovery-checklist.md`
 - Artifact template: `references/analysis-artifact-template.md`
+- Bundle summary template: `references/bundle-summary-template.md`
+- Bundle manifest template: `references/recommendations-manifest-template.yaml`
+- Recommendation pack template: `references/recommendation-pack-template.md`
 - Tracking script: `scripts/resolve-tracking.sh`
 - Provider resolution: `scripts/resolve-providers.sh`
 - File discovery: `scripts/resolve-instruction-files.sh`

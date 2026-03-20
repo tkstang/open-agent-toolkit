@@ -170,7 +170,10 @@ Do not rediscover conventions from scratch during this step.
 When the companion bundle exists, build the plan from the bundle manifest and recommendation packs first, then use the
 markdown artifact only to confirm reviewer-facing rationale and summary wording.
 Carry forward the artifact's structured handoff fields (`Content Guidance`, `Must Include`, `Must Not Include`,
-`Preferred Default for New Files`, `Claim Corrections`) into the plan wherever they are present.
+`Counter-Examples`, `New-File Workflow`, `Preferred Default for New Files`, `Claim Corrections`) into the plan wherever
+they are present.
+When the companion bundle exists, also carry forward the stable `Recommendation ID` and `Bundle Pack` path for each
+recommendation so plan review and generation stay aligned to the same pack file.
 
 **For provider baseline gaps (always-on provider files):**
 
