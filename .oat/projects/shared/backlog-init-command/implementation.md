@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p01-t02
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -26,36 +26,42 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 2     | 1/2       |
-| Phase 2 | pending     | 1     | 0/1       |
+| Phase 1 | complete    | 2     | 2/2       |
+| Phase 2 | in_progress | 1     | 0/1       |
 
-**Total:** 1/3 tasks completed
+**Total:** 2/3 tasks completed
 
 ---
 
 ## Phase 1: Backlog Scaffold Command
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-20
 
 ### Phase Summary (fill when phase is complete)
 
 **Outcome (what changed):**
 
-- Pending implementation
+- Added the reusable backlog scaffold helper and surfaced it through a new `oat backlog init` CLI command.
+- Documented the new scaffold entry point in the backlog help output and added dedicated help snapshot coverage.
+- Finished the first implementation phase without adding any skill-side auto-init behavior.
 
 **Key files touched:**
 
-- `packages/cli/src/commands/backlog/` - new scaffold command and tests
+- `packages/cli/src/commands/backlog/init.ts` - backlog scaffold helper and starter content
+- `packages/cli/src/commands/backlog/index.ts` - new `backlog init` command wiring
+- `packages/cli/src/commands/backlog/init.test.ts` - initializer coverage
+- `packages/cli/src/commands/help-snapshots.test.ts` - help coverage for the new command surface
 
 **Verification:**
 
-- Run: pending
-- Result: pending
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/init.test.ts`; `pnpm --filter @oat/cli test -- src/commands/help-snapshots.test.ts`
+- Result: Pass; initializer tests and help snapshots both succeeded
 
 **Notes / Decisions:**
 
-- Keep this phase limited to the explicit backlog scaffold entry point and command wiring.
+- Kept the feature backlog-scoped and explicit; no skill auto-scaffold behavior was introduced.
+- Reused the existing backlog root resolution path so all backlog commands share the same lookup semantics.
 
 ### Task p01-t01: Implement backlog scaffold initializer
 
@@ -87,20 +93,35 @@ oat_generated: false
 
 ### Task p01-t02: Wire `oat backlog init` into the CLI
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** dcb2b50e
 
-**Notes:**
+**Outcome (required when completed):**
 
-- Register the subcommand under `oat backlog`.
-- Add help snapshot coverage for the new command surface.
+- Added `oat backlog init` to the backlog command group with standard text and JSON output.
+- Exposed `--backlog-root <path>` for explicit scaffold targeting when needed.
+- Added help snapshot coverage for both `oat backlog --help` and `oat backlog init --help`.
+
+**Files changed:**
+
+- `packages/cli/src/commands/backlog/index.ts` - wired the new init subcommand into the CLI
+- `packages/cli/src/commands/help-snapshots.test.ts` - added help expectations for the new backlog scaffold command
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/help-snapshots.test.ts`
+- Result: Pass; help output matches the updated snapshots
+
+**Notes / Decisions:**
+
+- Used the same `resolveBacklogRoot()` helper as `generate-id` and `regenerate-index` to keep path behavior consistent.
 
 ---
 
 ## Phase 2: Compatibility Coverage
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-20
 
 ### Task p02-t01: Add regression coverage for scaffold compatibility
 
@@ -134,7 +155,7 @@ Chronological log of implementation progress.
 **Session Start:** planning
 
 - [x] p01-t01: Implement backlog scaffold initializer - 1db39dd6
-- [ ] p01-t02: Wire `oat backlog init` into the CLI - pending
+- [x] p01-t02: Wire `oat backlog init` into the CLI - dcb2b50e
 - [ ] p02-t01: Add regression coverage for scaffold compatibility - pending
 
 **What changed (high level):**
@@ -165,7 +186,8 @@ Chronological log of implementation progress.
 **Session Start:** implementation
 
 - [x] p01-t01: Implement backlog scaffold initializer - 1db39dd6
-- [ ] p01-t02: Wire `oat backlog init` into the CLI - next
+- [x] p01-t02: Wire `oat backlog init` into the CLI - dcb2b50e
+- [ ] p02-t01: Add regression coverage for scaffold compatibility - next
 
 **What changed (high level):**
 
@@ -178,13 +200,38 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Wire the helper into the `oat backlog` command group and expose help text next.
+- Add regression coverage proving a freshly scaffolded backlog root works with `regenerate-index`.
 
 **Blockers:**
 
 - None
 
 **Session End:** task complete
+
+---
+
+### 2026-03-20
+
+**Session Start:** implementation
+
+- [x] p01-t01: Implement backlog scaffold initializer - 1db39dd6
+- [x] p01-t02: Wire `oat backlog init` into the CLI - dcb2b50e
+- [ ] p02-t01: Add regression coverage for scaffold compatibility - next
+
+**What changed (high level):**
+
+- Added the `oat backlog init` command and documented it in the backlog help surface.
+- Completed phase 1 and rolled directly into phase 2 because the only configured checkpoint is `p02`.
+
+**Decisions:**
+
+- Keep CLI output aligned with the other backlog commands by returning `status` and `backlogRoot` in JSON mode.
+
+**Blockers:**
+
+- None
+
+**Session End:** phase 1 complete
 
 ---
 
