@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
-oat_ready_for: null
+oat_status: complete
+oat_ready_for: oat-project-review-provide
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p02-t02
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,12 +24,12 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | completed   | 2     | 2/2       |
-| Phase 2 | in_progress | 2     | 1/2       |
+| Phase   | Status    | Tasks | Completed |
+| ------- | --------- | ----- | --------- |
+| Phase 1 | completed | 2     | 2/2       |
+| Phase 2 | completed | 2     | 2/2       |
 
-**Total:** 3/4 tasks completed
+**Total:** 4/4 tasks completed
 
 ---
 
@@ -162,8 +162,43 @@ oat_generated: false
 
 ## Phase 2: Decouple Shared Assets and Refresh Documentation
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-20
+
+### Phase Summary
+
+**Outcome (what changed):**
+
+- Updated the product docs to describe the new `docs` pack and its role next to
+  `core` and `utility`.
+- Switched docs-workflow quickstarts to prefer `oat tools install docs` while
+  keeping `oat init tools docs` documented as the legacy pack-specific path.
+- Refreshed the `oat-doctor` skill’s pack inventory and examples so its
+  user-facing guidance matches the new pack split.
+- Removed the last stale helper symlink from `oat-agent-instructions-apply`,
+  which unblocked the full docs build after the helper relocation.
+
+**Key files touched:**
+
+- `README.md` - repo quickstart pack list
+- `apps/oat-docs/docs/guide/tool-packs.md` - bundled-pack contract and docs-pack section
+- `apps/oat-docs/docs/guide/getting-started.md` - guided setup pack descriptions
+- `apps/oat-docs/docs/guide/cli-reference.md` - tool install pack list
+- `apps/oat-docs/docs/guide/documentation/quickstart.md` - preferred docs-pack installation flow
+- `apps/oat-docs/docs/guide/documentation/workflows.md` - docs workflow prerequisite guidance
+- `.agents/skills/oat-doctor/SKILL.md` - user-facing pack inventory examples
+- `.agents/skills/oat-agent-instructions-apply/scripts/resolve-tracking.sh` - removed stale symlink
+
+**Verification:**
+
+- Run: `rg -n -e 'utility pack' -e 'oat init tools utility' -e 'docs analysis and apply skills installed via the utility pack' README.md apps/oat-docs/docs .agents/skills`
+- Result: no matches
+- Run: `rg -n -e 'oat tools install docs' -e 'oat init tools docs' -e 'docs pack installs' README.md apps/oat-docs/docs .agents/skills`
+- Result: expected docs-pack references found
+- Run: `pnpm --filter oat-docs docs:lint`
+- Result: pass
+- Run: `pnpm build:docs`
+- Result: pass
 
 ### Task p02-t01: Move the shared tracking helper to a neutral location and update skill references
 
@@ -213,8 +248,45 @@ oat_generated: false
 
 ### Task p02-t02: Update product docs and examples for the new pack layout
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** ce0a6352baa7a3939d75302648fb516850028739
+
+**Outcome (required when completed):**
+
+- Updated the README and OAT docs app pages to present `docs` as a first-class
+  pack and to remove stale guidance that routed docs workflows through
+  `utility`.
+- Added a dedicated docs-pack explanation covering its analyze/apply workflows
+  and the distinction between passive `oat-docs` access in `core` and active
+  docs/instructions workflows in `docs`.
+- Switched docs-workflow quickstarts and workflow pages to prefer
+  `oat tools install docs`, while retaining `oat init tools docs` as the
+  backward-compatible pack-specific path.
+- Updated the `oat-doctor` skill’s user-facing pack inventory and removed the
+  stale helper symlink in `oat-agent-instructions-apply` so the full docs build
+  no longer pulled a dead helper path.
+
+**Files changed:**
+
+- `README.md` - quickstart pack list
+- `apps/oat-docs/docs/guide/tool-packs.md` - docs pack contract and install examples
+- `apps/oat-docs/docs/guide/getting-started.md` - guided setup pack list
+- `apps/oat-docs/docs/guide/cli-reference.md` - tool install examples
+- `apps/oat-docs/docs/guide/documentation/quickstart.md` - docs-pack quickstart flow
+- `apps/oat-docs/docs/guide/documentation/workflows.md` - docs workflow prerequisite note
+- `.agents/skills/oat-doctor/SKILL.md` - pack inventory examples
+- `.agents/skills/oat-agent-instructions-apply/scripts/resolve-tracking.sh` - removed stale symlink
+
+**Verification:**
+
+- Run: `rg -n -e 'utility pack' -e 'oat init tools utility' -e 'docs analysis and apply skills installed via the utility pack' README.md apps/oat-docs/docs .agents/skills`
+- Result: no matches
+- Run: `rg -n -e 'oat tools install docs' -e 'oat init tools docs' -e 'docs pack installs' README.md apps/oat-docs/docs .agents/skills`
+- Result: expected docs-pack references found
+- Run: `pnpm --filter oat-docs docs:lint`
+- Result: pass
+- Run: `pnpm build:docs`
+- Result: pass
 
 ---
 
@@ -240,7 +312,7 @@ Chronological log of implementation progress.
 - [x] p01-t01: Introduce the `docs` pack manifest and installer command - 983e23bc
 - [x] p01-t02: Propagate `docs` pack support through tool management and legacy removal flows - e254abe5
 - [x] p02-t01: Move the shared tracking helper to a neutral location and update skill references - 30234c42
-- [ ] p02-t02: Update product docs and examples for the new pack layout
+- [x] p02-t02: Update product docs and examples for the new pack layout - ce0a6352
 
 **What changed (high level):**
 
@@ -252,6 +324,8 @@ Chronological log of implementation progress.
   and CLI help output
 - Moved the shared tracking helper to `.oat/scripts` and updated bundled skill
   references plus docs-pack installation to use the neutral path
+- Updated repo/docs guidance for the new pack layout and removed the final
+  stale helper symlink that blocked full docs builds
 
 **Decisions:**
 
@@ -264,7 +338,7 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Sweep for any remaining pack mentions outside the currently identified docs pages
+- Pause at the configured `p02` checkpoint before entering review/finalization flow
 
 **Blockers:**
 
