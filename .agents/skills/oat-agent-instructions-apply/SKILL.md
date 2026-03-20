@@ -1,6 +1,6 @@
 ---
 name: oat-agent-instructions-apply
-version: 1.6.0
+version: 1.6.1
 description: Run when you have an agent instructions analysis artifact and want to generate or update instruction files. Creates a branch, generates files from templates, and optionally opens a PR.
 disable-model-invocation: true
 user-invocable: true
@@ -292,10 +292,15 @@ If branch creation fails (e.g., uncommitted changes), ask the user to resolve an
 
 For each approved recommendation, in the order from Step 2:
 
+- When the companion bundle exists, load the approved recommendation's manifest entry and matching pack before
+  reading repo evidence or generating content.
+- Treat that pack as the executable contract for the recommendation. Do not generate from the markdown summary alone.
+
 **Creating new files:**
 
 1. Read the appropriate template from `references/instruction-file-templates/`.
 2. Read only the project context needed to fill the approved recommendation:
+   - the matching recommendation pack when the companion bundle exists
    - the evidence files cited in the artifact
    - `package.json` for commands and dependencies
    - directory structure for architecture section
@@ -322,7 +327,7 @@ For each approved recommendation, in the order from Step 2:
 
 **Updating existing files:**
 
-1. Read the existing file.
+1. Read the existing file and the matching recommendation pack when the companion bundle exists.
 2. Identify the section(s) that need updating based on the finding.
 3. Make targeted edits using only the approved recommendation and its cited evidence.
 4. Do not rewrite the entire file unless the user explicitly approves.
