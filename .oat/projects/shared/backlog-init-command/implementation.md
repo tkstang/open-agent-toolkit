@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: null
+oat_current_task_id: p03-t01
 oat_generated: false
 ---
 
@@ -28,8 +28,9 @@ oat_generated: false
 | ------- | -------- | ----- | --------- |
 | Phase 1 | complete | 2     | 2/2       |
 | Phase 2 | complete | 1     | 1/1       |
+| Phase 3 | pending  | 2     | 0/2       |
 
-**Total:** 3/3 tasks completed
+**Total:** 3/5 tasks completed
 
 ---
 
@@ -147,6 +148,77 @@ oat_generated: false
 **Notes / Decisions:**
 
 - The compatibility regressions passed without production changes, which confirmed the phase-1 scaffold content already matches `regenerate-index` expectations.
+
+---
+
+## Phase 3: Review Fixes (final)
+
+**Status:** pending
+**Started:** 2026-03-20
+
+### Task p03-t01: (review) Preserve empty backlog directories across git clone
+
+**Status:** pending
+
+**Files to change:**
+
+- `packages/cli/src/commands/backlog/init.ts`
+- `packages/cli/src/commands/backlog/init.test.ts`
+- `packages/cli/src/commands/backlog/regenerate-index.test.ts`
+
+**Notes:**
+
+- Seed tracked placeholders for empty scaffold directories so a committed/cloned backlog keeps the canonical shape.
+- Add a regression that proves `oat backlog regenerate-index` still works after the scaffold survives a git round-trip.
+
+---
+
+### Task p03-t02: (review) Add command-level coverage for `oat backlog init`
+
+**Status:** pending
+
+**Files to change:**
+
+- `packages/cli/src/commands/backlog/index.test.ts`
+- `packages/cli/src/commands/backlog/index.ts` (if testability hooks are needed)
+
+**Notes:**
+
+- Exercise the actual `backlog init` Commander action, not just the helper implementation.
+- Cover default root resolution, `--backlog-root`, text output, JSON output, and exit-code behavior.
+
+---
+
+## Review Received: final
+
+**Date:** 2026-03-20
+**Review artifact:** reviews/archived/final-review-2026-03-20.md
+
+**Findings:**
+
+- Critical: 1
+- Important: 1
+- Medium: 0
+- Minor: 0
+
+**Disposition:**
+
+- `C1` (empty scaffold directories are not persisted in git) → converted to `p03-t01`
+- `I1` (`oat backlog init` command wiring/output path is untested) → converted to `p03-t02`
+
+**Deferred Findings Disposition (Final Scope):**
+
+- Deferred Medium count: 0 (gate satisfied)
+- Minor findings count: 0 (gate satisfied)
+
+**New tasks added:** p03-t01, p03-t02
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+
+- Update the final review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final`, then `oat-project-review-receive` to reach `passed`
 
 ---
 

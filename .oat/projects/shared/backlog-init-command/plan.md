@@ -173,19 +173,84 @@ git commit -m "test(p02-t01): cover backlog init compatibility"
 
 ---
 
+## Phase 3: Review Fixes (final)
+
+Address the final review findings around git-persisted scaffold directories and command-level CLI coverage.
+
+### Task p03-t01: (review) Preserve empty backlog directories across git clone
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/backlog/init.ts`
+- Modify: `packages/cli/src/commands/backlog/init.test.ts`
+- Modify: `packages/cli/src/commands/backlog/regenerate-index.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `oat backlog init` creates empty `items/` and `archived/` directories but does not seed tracked placeholders, so a committed/cloned scaffold can lose them and `oat backlog regenerate-index` then fails with `ENOENT`.
+Location: `packages/cli/src/commands/backlog/init.ts:69`
+
+**Step 2: Implement fix**
+
+Seed tracked placeholders such as `items/.gitkeep` and `archived/.gitkeep` when initializing a fresh scaffold, without disturbing existing directory contents. Add regression coverage that simulates the git round-trip and proves `regenerate-index` works without rerunning `init`.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts`
+Expected: All targeted backlog scaffold tests pass, including the clone-round-trip regression
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/backlog/init.ts packages/cli/src/commands/backlog/init.test.ts packages/cli/src/commands/backlog/regenerate-index.test.ts
+git commit -m "fix(p03-t01): persist backlog scaffold directories in git"
+```
+
+---
+
+### Task p03-t02: (review) Add command-level coverage for `oat backlog init`
+
+**Files:**
+
+- Create: `packages/cli/src/commands/backlog/index.test.ts`
+- Modify: `packages/cli/src/commands/backlog/index.ts` (only if testability hooks are needed)
+
+**Step 1: Understand the issue**
+
+Review finding: current tests cover the initializer helper and help snapshots, but do not execute the actual Commander action for `oat backlog init`, leaving root resolution and text/JSON output behavior unverified.
+Location: `packages/cli/src/commands/backlog/index.ts:66`
+
+**Step 2: Implement fix**
+
+Add command-level tests that run `backlog init` through the command surface with injected dependencies and assert default backlog-root resolution, `--backlog-root` override behavior, text output, JSON output `{ status: 'ok', backlogRoot }`, and `process.exitCode`. Make only the minimal production changes needed to support that harness.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli test -- src/commands/backlog/index.test.ts src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts`
+Expected: Command-level and helper-level backlog tests all pass
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/backlog/index.test.ts packages/cli/src/commands/backlog/index.ts packages/cli/src/commands/backlog/init.test.ts packages/cli/src/commands/backlog/regenerate-index.test.ts
+git commit -m "test(p03-t02): cover backlog init command surface"
+```
+
+---
+
 ## Reviews
 
 {Track reviews here after running the oat-project-review-provide and oat-project-review-receive skills.}
 
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
 
-| Scope  | Type     | Status   | Date       | Artifact                           |
-| ------ | -------- | -------- | ---------- | ---------------------------------- |
-| p01    | code     | pending  | -          | -                                  |
-| p02    | code     | pending  | -          | -                                  |
-| final  | code     | received | 2026-03-20 | reviews/final-review-2026-03-20.md |
-| spec   | artifact | pending  | -          | -                                  |
-| design | artifact | pending  | -          | -                                  |
+| Scope  | Type     | Status      | Date       | Artifact                                    |
+| ------ | -------- | ----------- | ---------- | ------------------------------------------- |
+| p01    | code     | pending     | -          | -                                           |
+| p02    | code     | pending     | -          | -                                           |
+| final  | code     | fixes_added | 2026-03-20 | reviews/archived/final-review-2026-03-20.md |
+| spec   | artifact | pending     | -          | -                                           |
+| design | artifact | pending     | -          | -                                           |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -204,10 +269,11 @@ git commit -m "test(p02-t01): cover backlog init compatibility"
 
 - Phase 1: 2 tasks - add the scaffold initializer and wire `oat backlog init` into the backlog CLI
 - Phase 2: 1 task - add compatibility and idempotence regression coverage
+- Phase 3: 2 tasks - address final review findings around git persistence and command-level coverage
 
-**Total: 3 tasks**
+**Total: 5 tasks**
 
-Ready for code review and merge.
+Ready for review-fix implementation.
 
 ---
 
