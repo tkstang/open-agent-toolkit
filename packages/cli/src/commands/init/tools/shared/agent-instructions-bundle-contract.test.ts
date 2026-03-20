@@ -1,10 +1,16 @@
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
 
+const REPO_ROOT = execFileSync('git', ['rev-parse', '--show-toplevel'], {
+  cwd: import.meta.dirname,
+  encoding: 'utf8',
+}).trim();
+
 function repoFilePath(relativePath: string): string {
-  return join(import.meta.dirname, '../../../../../../../', relativePath);
+  return join(REPO_ROOT, relativePath);
 }
 
 describe('agent instructions bundle contract', () => {
