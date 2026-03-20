@@ -234,19 +234,86 @@ git commit -m "docs(p02-t02): document docs tool pack split"
 
 ---
 
+## Phase 3: Review Fixes
+
+### Task p03-t01: (review) Update the utility pack description to match the split
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/tools/index.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: The `utility` entry in `PACK_DESCRIPTIONS` still says `docs
+analysis` and `agent instructions`, even though those skills moved to the
+`docs` pack.
+Location: `packages/cli/src/commands/init/tools/index.ts:332`
+
+**Step 2: Implement fix**
+
+Update the `utility` pack description so it reflects the actual pack contents
+after the split, such as skill authoring, maintainability review, and code
+reviews.
+
+**Step 3: Verify**
+
+Run: `pnpm --filter @oat/cli exec vitest run src/commands/init/tools/index.test.ts src/commands/help-snapshots.test.ts`
+Expected: init-tools output and help snapshots still pass with the corrected
+description
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/index.ts packages/cli/src/commands/help-snapshots.test.ts
+git commit -m "fix(p03-t01): correct utility pack description"
+```
+
+---
+
+### Task p03-t02: (review) Expand oat-doctor pack guidance to match PackName
+
+**Files:**
+
+- Modify: `.agents/skills/oat-doctor/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: The `oat-doctor` JSON parsing guidance still lists a truncated
+pack enum and omits `docs`, `project-management`, and `research`.
+Location: `.agents/skills/oat-doctor/SKILL.md:89`
+
+**Step 2: Implement fix**
+
+Update the pack enum guidance so it matches the current `PackName` union used
+by the CLI.
+
+**Step 3: Verify**
+
+Run: `rg -n "pack \\(core/docs/ideas/workflows/utility/project-management/research/custom\\)" .agents/skills/oat-doctor/SKILL.md`
+Expected: the updated pack enum is present in the skill guidance
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-doctor/SKILL.md
+git commit -m "fix(p03-t02): align oat-doctor pack guidance"
+```
+
+---
+
 ## Reviews
 
 {Track reviews here after running the oat-project-review-provide and oat-project-review-receive skills.}
 
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
 
-| Scope  | Type     | Status   | Date       | Artifact                           |
-| ------ | -------- | -------- | ---------- | ---------------------------------- |
-| p01    | code     | pending  | -          | -                                  |
-| p02    | code     | pending  | -          | -                                  |
-| final  | code     | received | 2026-03-20 | reviews/final-review-2026-03-20.md |
-| spec   | artifact | pending  | -          | -                                  |
-| design | artifact | pending  | -          | -                                  |
+| Scope  | Type     | Status      | Date       | Artifact                                    |
+| ------ | -------- | ----------- | ---------- | ------------------------------------------- |
+| p01    | code     | pending     | -          | -                                           |
+| p02    | code     | pending     | -          | -                                           |
+| final  | code     | fixes_added | 2026-03-20 | reviews/archived/final-review-2026-03-20.md |
+| spec   | artifact | pending     | -          | -                                           |
+| design | artifact | pending     | -          | -                                           |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -267,10 +334,12 @@ git commit -m "docs(p02-t02): document docs tool pack split"
   and help surfaces
 - Phase 2: 2 tasks - decouple shared helper assets and update repository/docs
   guidance
+- Phase 3: 2 tasks - close final review drift in pack descriptions and
+  `oat-doctor` guidance
 
-**Total: 4 tasks**
+**Total: 6 tasks**
 
-Ready for code review and merge.
+Ready for review-fix implementation.
 
 ---
 

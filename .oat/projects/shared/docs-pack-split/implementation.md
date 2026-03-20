@@ -1,9 +1,9 @@
 ---
-oat_status: complete
-oat_ready_for: oat-project-review-provide
+oat_status: in_progress
+oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: null
+oat_current_task_id: p03-t01
 oat_generated: false
 ---
 
@@ -24,12 +24,13 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status    | Tasks | Completed |
-| ------- | --------- | ----- | --------- |
-| Phase 1 | completed | 2     | 2/2       |
-| Phase 2 | completed | 2     | 2/2       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | completed   | 2     | 2/2       |
+| Phase 2 | completed   | 2     | 2/2       |
+| Phase 3 | in_progress | 2     | 0/2       |
 
-**Total:** 4/4 tasks completed
+**Total:** 4/6 tasks completed
 
 ---
 
@@ -301,6 +302,41 @@ oat_generated: false
 
 ---
 
+## Review Received: final
+
+**Date:** 2026-03-20
+**Review artifact:** reviews/archived/final-review-2026-03-20.md
+
+**Findings:**
+
+- Critical: 0
+- Important: 0
+- Medium: 0
+- Minor: 2
+
+**New tasks added:** `p03-t01`, `p03-t02`
+
+**Deferred Findings (Minor):**
+
+- None. User chose to convert all final-review minor findings into fix tasks.
+
+**Finding disposition map:**
+
+- `m1` -> converted (`p03-t01`) - correct the stale `utility` pack description
+  in `PACK_DESCRIPTIONS`
+- `m2` -> converted (`p03-t02`) - align `oat-doctor` pack enum guidance with
+  the current `PackName` union
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then
+  `oat-project-review-receive` to reach `passed`
+
+---
+
 ## Implementation Log
 
 Chronological log of implementation progress.
@@ -353,6 +389,40 @@ Chronological log of implementation progress.
 **Session Start:** {time}
 
 {Continue log...}
+
+---
+
+### 2026-03-20
+
+**Session Start:** {time}
+
+- [x] final review received and parsed
+- [x] m1 converted to `p03-t01`
+- [x] m2 converted to `p03-t02`
+- [ ] Execute `p03-t01`
+- [ ] Execute `p03-t02`
+
+**What changed (high level):**
+
+- Processed the active final code review artifact
+- Added a dedicated review-fixes phase with two small follow-up tasks
+- Reset implementation state to resume at `p03-t01`
+
+**Decisions:**
+
+- Converted both final-review minor findings into tasks instead of deferring
+  them so the final gate can be cleared cleanly on re-review
+- Added fixes as a dedicated `Phase 3: Review Fixes` rather than mutating prior
+  phase summaries retroactively
+
+**Follow-ups / TODO:**
+
+- Implement `p03-t01` and `p03-t02`
+- Re-run final code review after fixes land
+
+**Blockers:**
+
+- None
 
 ---
 
