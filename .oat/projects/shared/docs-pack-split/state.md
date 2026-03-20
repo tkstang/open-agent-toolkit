@@ -7,27 +7,27 @@ oat_hill_checkpoints: ['p02'] # Configured: which phases require human-in-the-lo
 oat_hill_completed: [] # Progress: which HiLL checkpoints have been completed
 oat_parallel_execution: false
 oat_phase: implement # Current phase: discovery | spec | design | plan | implement
-oat_phase_status: in_progress # Status: in_progress | complete
+oat_phase_status: complete # Status: in_progress | complete
 oat_execution_mode: single-thread # single-thread | subagent-driven
 oat_workflow_mode: quick # spec-driven | quick | import
 oat_workflow_origin: native # native | imported
 oat_docs_updated: complete # null | skipped | complete — documentation sync status
 oat_project_created: '2026-03-20T19:21:10.139Z' # ISO 8601 UTC timestamp — set once at project creation
 oat_project_completed: null # ISO 8601 UTC timestamp — set when project is completed/archived
-oat_project_state_updated: '2026-03-20T23:12:39Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
+oat_project_state_updated: '2026-03-20T23:28:27Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
 oat_generated: false
 ---
 
 # Project State: docs-pack-split
 
-**Status:** Awaiting final re-review
+**Status:** Implementation complete
 **Started:** 2026-03-20
 **Last Updated:** 2026-03-20
 
 ## Current Phase
 
-All implementation and review-fix tasks are complete again. Final re-review is
-the next required gate.
+Implementation tasks and final re-review are complete. The project is ready for
+final PR generation.
 
 ## Artifacts
 
@@ -51,7 +51,8 @@ the next required gate.
 - ✓ `p03-t02` complete
 - ✓ Final re-review received
 - ✓ `p03-t03` complete
-- ⧗ Awaiting final re-review
+- ✓ Final re-review passed
+- ⧗ Ready for final PR generation
 
 ## Blockers
 
@@ -59,4 +60,4 @@ None
 
 ## Next Milestone
 
-Run final re-review and process it via `oat-project-review-receive`
+Run `oat-project-pr-final` to generate the final PR description

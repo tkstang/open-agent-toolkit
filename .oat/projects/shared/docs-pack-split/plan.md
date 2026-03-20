@@ -341,13 +341,13 @@ git commit -m "fix(p03-t03): complete oat-doctor manifest guidance"
 
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
 
-| Scope  | Type     | Status          | Date       | Artifact                                       |
-| ------ | -------- | --------------- | ---------- | ---------------------------------------------- |
-| p01    | code     | pending         | -          | -                                              |
-| p02    | code     | pending         | -          | -                                              |
-| final  | code     | fixes_completed | 2026-03-20 | reviews/archived/final-review-2026-03-20-v2.md |
-| spec   | artifact | pending         | -          | -                                              |
-| design | artifact | pending         | -          | -                                              |
+| Scope  | Type     | Status  | Date       | Artifact                                       |
+| ------ | -------- | ------- | ---------- | ---------------------------------------------- |
+| p01    | code     | pending | -          | -                                              |
+| p02    | code     | pending | -          | -                                              |
+| final  | code     | passed  | 2026-03-20 | reviews/archived/final-review-2026-03-20-v3.md |
+| spec   | artifact | pending | -          | -                                              |
+| design | artifact | pending | -          | -                                              |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
