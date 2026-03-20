@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p03-t02
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,13 +24,13 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | complete    | 2     | 2/2       |
-| Phase 2 | complete    | 1     | 1/1       |
-| Phase 3 | in_progress | 2     | 1/2       |
+| Phase   | Status   | Tasks | Completed |
+| ------- | -------- | ----- | --------- |
+| Phase 1 | complete | 2     | 2/2       |
+| Phase 2 | complete | 1     | 1/1       |
+| Phase 3 | complete | 2     | 2/2       |
 
-**Total:** 4/5 tasks completed
+**Total:** 5/5 tasks completed
 
 ---
 
@@ -153,8 +153,34 @@ oat_generated: false
 
 ## Phase 3: Review Fixes (final)
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-03-20
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+
+- Persisted the scaffolded backlog directory shape across git commit/clone round-trips by seeding `.gitkeep` placeholders.
+- Added command-level coverage for the actual `oat backlog init` action path, including default root resolution, `--backlog-root`, text output, JSON output, and exit-code behavior.
+- Closed both final-review findings without widening the feature scope beyond backlog scaffolding and verification.
+
+**Key files touched:**
+
+- `packages/cli/src/commands/backlog/init.ts` - seeds tracked placeholders for empty scaffold directories
+- `packages/cli/src/commands/backlog/init.test.ts` - verifies placeholder creation and rerun preservation
+- `packages/cli/src/commands/backlog/regenerate-index.test.ts` - covers git round-trip compatibility
+- `packages/cli/src/commands/backlog/index.test.ts` - exercises the `backlog init` command surface
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts`
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/index.test.ts src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts`
+- Run: `pnpm test && pnpm lint && pnpm type-check && pnpm build`
+- Result: Pass; targeted backlog coverage and repo-wide verification all succeeded
+
+**Notes / Decisions:**
+
+- The command surface was already testable with dependency injection, so `p03-t02` required no production code changes.
 
 ### Task p03-t01: (review) Preserve empty backlog directories across git clone
 
@@ -185,17 +211,26 @@ oat_generated: false
 
 ### Task p03-t02: (review) Add command-level coverage for `oat backlog init`
 
-**Status:** pending
+**Status:** completed
+**Commit:** 009f0619
 
-**Files to change:**
+**Outcome (required when completed):**
 
-- `packages/cli/src/commands/backlog/index.test.ts`
-- `packages/cli/src/commands/backlog/index.ts` (if testability hooks are needed)
+- Added a dedicated command harness for `oat backlog init` that exercises the Commander action instead of only the helper.
+- Verified default backlog-root resolution, `--backlog-root` override behavior, text output, JSON payload shape, and `process.exitCode`.
 
-**Notes:**
+**Files changed:**
 
-- Exercise the actual `backlog init` Commander action, not just the helper implementation.
-- Cover default root resolution, `--backlog-root`, text output, JSON output, and exit-code behavior.
+- `packages/cli/src/commands/backlog/index.test.ts` - covers the `backlog init` command surface and output contract
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli test -- src/commands/backlog/index.test.ts src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts`
+- Result: Pass; command-level and helper-level backlog tests all succeeded
+
+**Notes / Decisions:**
+
+- Kept the production implementation unchanged because the existing dependency seams were sufficient for command-level testing.
 
 ---
 
@@ -223,11 +258,11 @@ oat_generated: false
 
 **New tasks added:** p03-t01, p03-t02
 
-**Next:** Execute fix tasks via the `oat-project-implement` skill.
+**Next:** Request final re-review via `oat-project-review-provide code final`.
 
 After the fix tasks are complete:
 
-- Update the final review row status to `fixes_completed`
+- The final review row is `fixes_completed`
 - Re-run `oat-project-review-provide code final`, then `oat-project-review-receive` to reach `passed`
 
 ---
@@ -382,18 +417,21 @@ Track test execution during implementation.
 **What shipped:**
 
 - Added an explicit `oat backlog init` command for scaffolding the canonical local backlog directory structure.
-- Added a reusable initializer that creates `items/`, `archived/`, `index.md`, and `completed.md` without overwriting existing backlog files on rerun.
-- Added regression coverage proving the scaffolded backlog shape is compatible with `oat backlog regenerate-index` and preserves curated overview edits.
+- Added a reusable initializer that creates `items/`, `archived/`, `index.md`, and `completed.md` without overwriting existing backlog files on rerun, and now seeds `.gitkeep` placeholders so the scaffold survives git round-trips.
+- Added regression coverage proving the scaffolded backlog shape is compatible with `oat backlog regenerate-index`, preserves curated overview edits, and remains valid after commit/clone.
+- Added command-level coverage for the `oat backlog init` action path and its text/JSON output contract.
 
 **Behavioral changes (user-facing):**
 
 - Users can now run `oat backlog init` in a fresh repo to create the starter backlog structure before using other file-backed backlog flows.
 - Re-running the command leaves curated backlog content intact instead of resetting the backlog index or completed summary files.
+- Repositories that commit a freshly initialized backlog now retain the empty `items/` and `archived/` directories after clone.
 
 **Key files / modules:**
 
 - `packages/cli/src/commands/backlog/init.ts` - backlog scaffold helper and starter file content
 - `packages/cli/src/commands/backlog/index.ts` - `oat backlog init` command wiring
+- `packages/cli/src/commands/backlog/index.test.ts` - command-level `backlog init` coverage
 - `packages/cli/src/commands/backlog/init.test.ts` - scaffold creation and idempotence coverage
 - `packages/cli/src/commands/backlog/regenerate-index.test.ts` - scaffold compatibility coverage
 
@@ -402,6 +440,8 @@ Track test execution during implementation.
 - `pnpm --filter @oat/cli test -- src/commands/backlog/init.test.ts`
 - `pnpm --filter @oat/cli test -- src/commands/help-snapshots.test.ts`
 - `pnpm --filter @oat/cli test -- src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts src/commands/help-snapshots.test.ts && pnpm type-check`
+- `pnpm --filter @oat/cli test -- src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts`
+- `pnpm --filter @oat/cli test -- src/commands/backlog/index.test.ts src/commands/backlog/init.test.ts src/commands/backlog/regenerate-index.test.ts`
 - `pnpm test`
 - `pnpm lint`
 - `pnpm type-check`
