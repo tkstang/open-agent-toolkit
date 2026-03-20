@@ -329,7 +329,8 @@ const PACK_DESCRIPTIONS: Record<ToolPack, string> = {
   ideas: 'Idea capture and refinement',
   'project-management':
     'Local backlog, roadmap, and reference doc management (oat-pjm-* skills)',
-  utility: 'Standalone utilities (reviews, docs analysis, agent instructions)',
+  utility:
+    'Standalone utilities (skill authoring, maintainability review, code reviews)',
   research: 'Research, analysis, verification, and synthesis',
 };
 
