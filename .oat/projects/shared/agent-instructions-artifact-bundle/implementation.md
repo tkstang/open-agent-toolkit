@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p02-t01
+oat_current_task_id: p02-t02
 oat_generated: false
 ---
 
@@ -27,9 +27,9 @@ oat_generated: false
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | completed   | 2     | 2/2       |
-| Phase 2 | in_progress | 2     | 0/2       |
+| Phase 2 | in_progress | 2     | 1/2       |
 
-**Total:** 2/4 tasks completed
+**Total:** 3/4 tasks completed
 
 ---
 
@@ -150,12 +150,29 @@ oat_generated: false
 
 ### Task p02-t01: Add regression fixtures for bundle fidelity
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 0b5f78f1
 
-**Notes:**
+**Outcome (required when completed):**
 
-- Cover cases where behavioral guidance and claim corrections were previously lost.
+- Added a regression test that locks the bundle contract to the expected pack, manifest, and apply-plan metadata.
+- Hardened the summary-template expectation so the test checks semantic bundle markers instead of formatter-specific
+  markdown spacing.
+
+**Files changed:**
+
+- `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts` - new contract fixture
+  coverage for recommendation packs, bundle manifests, summaries, and apply-plan metadata
+
+**Verification:**
+
+- Run: `pnpm test`
+- Result: pass
+
+**Notes / Decisions:**
+
+- Contract tests assert semantic markers such as section headers and pack references so markdown formatting changes do
+  not create false failures.
 
 ---
 
@@ -220,7 +237,8 @@ Chronological log of implementation progress.
 
 - [x] p01-t01: Define bundle schema and output layout - 798cd649
 - [x] p01-t02: Add recommendation-pack templates and validation guidance - c69a9ab2
-- [ ] p02-t01: Add regression fixtures for bundle fidelity - pending
+- [x] p02-t01: Add regression fixtures for bundle fidelity - 0b5f78f1
+- [ ] p02-t02: Validate apply consumption end to end - pending
 
 **What changed (high level):**
 
@@ -237,6 +255,8 @@ Chronological log of implementation progress.
 - Add fixture coverage proving pack fields survive into apply planning and generation.
 
 **Blockers:**
+
+- None
 
 - None
 
