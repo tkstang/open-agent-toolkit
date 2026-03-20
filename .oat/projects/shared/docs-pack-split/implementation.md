@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p02-t01
+oat_current_task_id: p02-t02
 oat_generated: false
 ---
 
@@ -27,9 +27,9 @@ oat_generated: false
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
 | Phase 1 | completed   | 2     | 2/2       |
-| Phase 2 | in_progress | 2     | 0/2       |
+| Phase 2 | in_progress | 2     | 1/2       |
 
-**Total:** 2/4 tasks completed
+**Total:** 3/4 tasks completed
 
 ---
 
@@ -167,8 +167,47 @@ oat_generated: false
 
 ### Task p02-t01: Move the shared tracking helper to a neutral location and update skill references
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 30234c42dc042de5fccc62b79532830c3e3d2d87
+
+**Outcome (required when completed):**
+
+- Moved the shared tracking resolver to `.oat/scripts/resolve-tracking.sh` so
+  docs workflows no longer depend on an internal path owned by
+  `oat-agent-instructions-analyze`.
+- Updated docs, agent-instructions, and repo-knowledge-index skill references
+  to point at the neutral helper location.
+- Extended the docs-pack installer and workflow asset expectations so the
+  shared helper is bundled and installed into `.oat/scripts`.
+- Updated task-owned tests and bundling logic to treat the helper as a shared
+  asset rather than a skill-private script.
+
+**Files changed:**
+
+- `.oat/scripts/resolve-tracking.sh` - new neutral helper location
+- `.agents/skills/oat-agent-instructions-analyze/SKILL.md` - helper reference update
+- `.agents/skills/oat-agent-instructions-apply/SKILL.md` - helper reference update
+- `.agents/skills/oat-docs-analyze/SKILL.md` - helper reference update
+- `.agents/skills/oat-docs-apply/SKILL.md` - helper reference update
+- `.agents/skills/oat-repo-knowledge-index/SKILL.md` - helper reference update
+- `packages/cli/src/commands/init/tools/shared/skill-manifest.ts` - shared script manifest entries
+- `packages/cli/src/commands/init/tools/docs/install-docs.ts` - docs-pack shared-script installation
+- `packages/cli/src/commands/init/tools/docs/index.ts` - installer result reporting
+- `packages/cli/src/commands/init/tools/docs/install-docs.test.ts` - shared-script installer coverage
+- `packages/cli/src/commands/init/tools/docs/index.test.ts` - command output expectations
+- `packages/cli/src/commands/init/tools/workflows/install-workflows.test.ts` - workflow shared-script expectations
+- `packages/cli/scripts/bundle-assets.sh` - bundled shared helper asset
+
+**Verification:**
+
+- Run: `pnpm --filter @oat/cli exec vitest run src/commands/init/tools/docs/install-docs.test.ts src/commands/init/tools/docs/index.test.ts src/commands/init/tools/workflows/install-workflows.test.ts`
+- Result: pass
+- Run: `pnpm --filter @oat/cli lint && pnpm --filter @oat/cli type-check`
+- Result: pass
+- Run: `rg -n "oat-agent-instructions-analyze/scripts/resolve-tracking\\.sh" .agents/skills packages/cli/scripts .oat/scripts -S`
+- Result: no matches
+- Run: `rg -n "\\.oat/scripts/resolve-tracking\\.sh" .agents/skills .oat/scripts packages/cli/scripts -S`
+- Result: only neutral helper references found
 
 ---
 
@@ -200,7 +239,7 @@ Chronological log of implementation progress.
 
 - [x] p01-t01: Introduce the `docs` pack manifest and installer command - 983e23bc
 - [x] p01-t02: Propagate `docs` pack support through tool management and legacy removal flows - e254abe5
-- [ ] p02-t01: Move the shared tracking helper to a neutral location and update skill references
+- [x] p02-t01: Move the shared tracking helper to a neutral location and update skill references - 30234c42
 - [ ] p02-t02: Update product docs and examples for the new pack layout
 
 **What changed (high level):**
@@ -211,19 +250,20 @@ Chronological log of implementation progress.
 - Added the `docs` pack installer, manifest split, and task-owned test coverage
 - Wired the `docs` pack through scanning, update/remove flows, legacy removal,
   and CLI help output
+- Moved the shared tracking helper to `.oat/scripts` and updated bundled skill
+  references plus docs-pack installation to use the neutral path
 
 **Decisions:**
 
 - Keep `oat-docs` in `core` and move the four analyze/apply workflows into a
   new `docs` pack
-- Treat helper relocation as first-class implementation work so the new pack
-  has no hidden dependency on `oat-agent-instructions-analyze`
+- Use `.oat/scripts` as the neutral shared-helper home so installer packs and
+  skill docs can reference the same stable path
 - Use direct `vitest` file execution for task verification when the package
   script would pull in unrelated suites from later tasks
 
 **Follow-ups / TODO:**
 
-- Confirm the best neutral shared-script home before implementing `p02-t01`
 - Sweep for any remaining pack mentions outside the currently identified docs pages
 
 **Blockers:**
