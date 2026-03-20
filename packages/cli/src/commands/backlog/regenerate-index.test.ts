@@ -4,6 +4,7 @@ import { join } from 'node:path';
 
 import { afterEach, describe, expect, it } from 'vitest';
 
+import { initializeBacklog } from './init';
 import { regenerateBacklogIndex } from './regenerate-index';
 
 const INDEX_START = '<!-- OAT BACKLOG-INDEX -->';
@@ -139,5 +140,42 @@ describe('regenerateBacklogIndex', () => {
     const index = await readFile(join(backlogRoot, 'index.md'), 'utf8');
 
     expect(index).toContain('| _No backlog items yet_ | - | - | - | - | - |');
+  });
+
+  it('works with a freshly scaffolded backlog root and preserves curated overview content', async () => {
+    const backlogRoot = await mkdtemp(join(tmpdir(), 'oat-backlog-seeded-'));
+    tempDirs.push(backlogRoot);
+
+    await initializeBacklog(backlogRoot);
+
+    const itemsDir = join(backlogRoot, 'items');
+    await writeBacklogItem(itemsDir, 'alpha.md', {
+      id: 'bl-aaaa',
+      title: '"Alpha"',
+      status: 'open',
+      priority: 'high',
+      scope: 'feature',
+      scope_estimate: 'M',
+    });
+
+    const indexPath = join(backlogRoot, 'index.md');
+    const originalIndex = await readFile(indexPath, 'utf8');
+    await writeFile(
+      indexPath,
+      originalIndex.replace(
+        '- Add brief narrative summaries here as backlog items are created and reprioritized.',
+        '- Keep this curated summary.',
+      ),
+      'utf8',
+    );
+
+    await regenerateBacklogIndex(backlogRoot);
+
+    const index = await readFile(indexPath, 'utf8');
+    expect(index).toContain('- Keep this curated summary.');
+    expect(index).toContain('| bl-aaaa | Alpha | open | high | feature | M |');
+    expect(index).not.toContain(
+      '| _No backlog items yet_ | - | - | - | - | - |',
+    );
   });
 });

@@ -61,4 +61,25 @@ describe('initializeBacklog', () => {
       customCompleted,
     );
   });
+
+  it('preserves curated overview edits when the scaffold runs again', async () => {
+    const backlogRoot = await mkdtemp(join(tmpdir(), 'oat-backlog-init-'));
+    tempDirs.push(backlogRoot);
+
+    await initializeBacklog(backlogRoot);
+
+    const indexPath = join(backlogRoot, 'index.md');
+    const index = await readFile(indexPath, 'utf8');
+    const updatedIndex = index.replace(
+      '- Add brief narrative summaries here as backlog items are created and reprioritized.',
+      '- Keep this curated summary.',
+    );
+    await writeFile(indexPath, updatedIndex, 'utf8');
+
+    await initializeBacklog(backlogRoot);
+
+    await expect(readFile(indexPath, 'utf8')).resolves.toContain(
+      '- Keep this curated summary.',
+    );
+  });
 });
