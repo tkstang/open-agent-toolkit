@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p01-t02
+oat_current_task_id: p02-t01
 oat_generated: false
 ---
 
@@ -26,36 +26,51 @@ oat_generated: false
 
 | Phase   | Status      | Tasks | Completed |
 | ------- | ----------- | ----- | --------- |
-| Phase 1 | in_progress | 2     | 1/2       |
-| Phase 2 | pending     | 2     | 0/2       |
+| Phase 1 | completed   | 2     | 2/2       |
+| Phase 2 | in_progress | 2     | 0/2       |
 
-**Total:** 1/4 tasks completed
+**Total:** 2/4 tasks completed
 
 ---
 
 ## Phase 1: Define Bundle Contract
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-19
 
 ### Phase Summary (fill when phase is complete)
 
 **Outcome (what changed):**
 
-- {2-5 bullets describing user-visible / behavior-level changes delivered in this phase}
+- Defined a two-layer analyze/apply handoff: review artifact plus companion bundle.
+- Introduced stable recommendation IDs and pack references into the contract.
+- Added concrete bundle templates for the summary, manifest, and recommendation packs.
 
 **Key files touched:**
 
-- `{path}` - {why}
+- `.agents/skills/oat-agent-instructions-analyze/SKILL.md` - documented bundle-aware analyze output.
+- `.agents/skills/oat-agent-instructions-analyze/references/analysis-artifact-template.md` - added recommendation IDs
+  and bundle-pack references.
+- `.agents/skills/oat-agent-instructions-analyze/references/bundle-summary-template.md` - added bundle summary
+  template.
+- `.agents/skills/oat-agent-instructions-analyze/references/recommendations-manifest-template.yaml` - added bundle
+  manifest template.
+- `.agents/skills/oat-agent-instructions-analyze/references/recommendation-pack-template.md` - added per-recommendation
+  pack template.
+- `.agents/skills/oat-agent-instructions-apply/SKILL.md` - made apply bundle-first with legacy fallback.
+- `.agents/skills/oat-agent-instructions-apply/references/apply-plan-template.md` - threaded recommendation IDs and
+  bundle-pack references into the plan review contract.
 
 **Verification:**
 
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `pnpm format && pnpm lint`
+- Result: pass
 
 **Notes / Decisions:**
 
-- {trade-offs or deviations discovered during implementation}
+- Bundle discovery is based on the markdown artifact basename, so apply can derive `.bundle/` without tracking
+  changes.
+- Concrete parsing and fixture coverage are deferred to Phase 2.
 
 ### Task p01-t01: Define bundle schema and output layout
 
@@ -94,19 +109,44 @@ oat_generated: false
 
 ### Task p01-t02: Add recommendation-pack templates and validation guidance
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** c69a9ab2
 
-**Notes:**
+**Outcome (required when completed):**
 
-- Carry bundle fields through analyze references and apply planning inputs.
+- Added concrete templates for the bundle summary, recommendations manifest, and recommendation packs.
+- Threaded recommendation IDs and bundle-pack paths into the apply plan template.
+- Tightened apply guidance so plan construction stays anchored to the same pack file referenced by the manifest.
+
+**Files changed:**
+
+- `.agents/skills/oat-agent-instructions-analyze/references/bundle-summary-template.md` - new apply-facing summary
+  template.
+- `.agents/skills/oat-agent-instructions-analyze/references/recommendations-manifest-template.yaml` - new manifest
+  template.
+- `.agents/skills/oat-agent-instructions-analyze/references/recommendation-pack-template.md` - new recommendation-pack
+  template.
+- `.agents/skills/oat-agent-instructions-analyze/SKILL.md` - linked the new templates in Step 8 and references.
+- `.agents/skills/oat-agent-instructions-apply/SKILL.md` - carried recommendation ID and bundle-pack guidance into
+  planning.
+- `.agents/skills/oat-agent-instructions-apply/references/apply-plan-template.md` - added source bundle,
+  recommendation ID, and bundle-pack fields.
+
+**Verification:**
+
+- Run: `pnpm format && pnpm lint`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The manifest stays intentionally small; dense recommendation detail belongs in the pack file.
 
 ---
 
 ## Phase 2: Add Verification Coverage
 
-**Status:** pending
-**Started:** -
+**Status:** in_progress
+**Started:** 2026-03-20
 
 ### Task p02-t01: Add regression fixtures for bundle fidelity
 
@@ -179,7 +219,8 @@ Chronological log of implementation progress.
 **Session Start:** 00:00 CT
 
 - [x] p01-t01: Define bundle schema and output layout - 798cd649
-- [ ] p01-t02: Add recommendation-pack templates and validation guidance - pending
+- [x] p01-t02: Add recommendation-pack templates and validation guidance - c69a9ab2
+- [ ] p02-t01: Add regression fixtures for bundle fidelity - pending
 
 **What changed (high level):**
 
@@ -193,7 +234,7 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Add concrete bundle templates and pack structure in `p01-t02`
+- Add fixture coverage proving pack fields survive into apply planning and generation.
 
 **Blockers:**
 
