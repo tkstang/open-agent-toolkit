@@ -301,19 +301,53 @@ git commit -m "fix(p03-t02): align oat-doctor pack guidance"
 
 ---
 
+### Task p03-t03: (review) Complete oat-doctor summary pack manifest coverage
+
+**Files:**
+
+- Modify: `.agents/skills/oat-doctor/SKILL.md`
+
+**Step 1: Understand the issue**
+
+Review finding: The `oat-doctor` summary-mode bundled-skill manifest and
+example output still omit the `project-management` and `research` packs, even
+after the enum line was corrected.
+Location: `.agents/skills/oat-doctor/SKILL.md:170`
+
+**Step 2: Implement fix**
+
+Extend the Step 5 pack-manifest section and the Step 7 summary-mode example so
+they include `project-management` and `research`, or otherwise make the
+documented pack list match the shared CLI manifest.
+
+**Step 3: Verify**
+
+Run: `rg -n -e 'Project management pack skills' -e 'Research pack skills' .agents/skills/oat-doctor/SKILL.md && rg -n -F 'oat-pjm-add-backlog-item' .agents/skills/oat-doctor/SKILL.md && rg -n -F 'deep-research' .agents/skills/oat-doctor/SKILL.md`
+Expected: the summary-manifest section and example output include the missing
+packs and representative skills
+
+**Step 4: Commit**
+
+```bash
+git add .agents/skills/oat-doctor/SKILL.md
+git commit -m "fix(p03-t03): complete oat-doctor manifest guidance"
+```
+
+---
+
 ## Reviews
 
 {Track reviews here after running the oat-project-review-provide and oat-project-review-receive skills.}
 
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`/`design`.}
 
-| Scope  | Type     | Status          | Date       | Artifact                                    |
-| ------ | -------- | --------------- | ---------- | ------------------------------------------- |
-| p01    | code     | pending         | -          | -                                           |
-| p02    | code     | pending         | -          | -                                           |
-| final  | code     | fixes_completed | 2026-03-20 | reviews/archived/final-review-2026-03-20.md |
-| spec   | artifact | pending         | -          | -                                           |
-| design | artifact | pending         | -          | -                                           |
+| Scope  | Type     | Status      | Date       | Artifact                                       |
+| ------ | -------- | ----------- | ---------- | ---------------------------------------------- |
+| p01    | code     | pending     | -          | -                                              |
+| p02    | code     | pending     | -          | -                                              |
+| final  | code     | fixes_added | 2026-03-20 | reviews/archived/final-review-2026-03-20-v2.md |
+| spec   | artifact | pending     | -          | -                                              |
+| design | artifact | pending     | -          | -                                              |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -334,12 +368,12 @@ git commit -m "fix(p03-t02): align oat-doctor pack guidance"
   and help surfaces
 - Phase 2: 2 tasks - decouple shared helper assets and update repository/docs
   guidance
-- Phase 3: 2 tasks - close final review drift in pack descriptions and
-  `oat-doctor` guidance
+- Phase 3: 3 tasks - close final review drift in pack descriptions and
+  `oat-doctor` guidance, including the summary-manifest follow-up
 
-**Total: 6 tasks**
+**Total: 7 tasks**
 
-Ready for final re-review.
+Ready for review-fix implementation.
 
 ---
 

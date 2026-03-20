@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: null
+oat_current_task_id: p03-t03
 oat_generated: false
 ---
 
@@ -24,13 +24,13 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status    | Tasks | Completed |
-| ------- | --------- | ----- | --------- |
-| Phase 1 | completed | 2     | 2/2       |
-| Phase 2 | completed | 2     | 2/2       |
-| Phase 3 | completed | 2     | 2/2       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | completed   | 2     | 2/2       |
+| Phase 2 | completed   | 2     | 2/2       |
+| Phase 3 | in_progress | 3     | 2/3       |
 
-**Total:** 6/6 tasks completed
+**Total:** 6/7 tasks completed
 
 ---
 
@@ -293,19 +293,21 @@ oat_generated: false
 
 ## Phase 3: Review Fixes
 
-**Status:** completed
+**Status:** in_progress
 **Started:** 2026-03-20
 
 ### Phase Summary
 
 **Outcome (what changed):**
 
-- Cleared the two final-review minor findings without expanding scope beyond
-  the reported drift.
+- Cleared the original two final-review minor findings without expanding scope
+  beyond the reported drift.
 - Corrected the stale `utility` pack description in the CLI installer guidance
   so generated tool-pack docs match the actual manifest split.
 - Updated `oat-doctor` guidance to list the full current pack set used by the
   CLI.
+- A narrowed final re-review found one remaining `oat-doctor`
+  summary-manifest gap that is now queued as `p03-t03`.
 
 **Key files touched:**
 
@@ -379,6 +381,13 @@ oat_generated: false
 
 ---
 
+### Task p03-t03: (review) Complete oat-doctor summary pack manifest coverage
+
+**Status:** pending
+**Commit:** -
+
+---
+
 ## Orchestration Runs
 
 > This section is used by `oat-project-subagent-implement` to log parallel execution runs.
@@ -422,6 +431,35 @@ Review-fix tasks are complete:
 
 - The review row should now be `fixes_completed`
 - The next lifecycle step is final re-review, not more implementation work
+
+---
+
+## Review Received: final (re-review 2)
+
+**Date:** 2026-03-20
+**Review artifact:** reviews/archived/final-review-2026-03-20-v2.md
+
+**Findings:**
+
+- Critical: 0
+- Important: 1
+- Medium: 0
+- Minor: 0
+
+**New tasks added:** `p03-t03`
+
+**Finding disposition map:**
+
+- `I1` -> converted (`p03-t03`) - complete the `oat-doctor` summary-mode
+  bundled-skill manifest so it includes `project-management` and `research`
+
+**Next:** Execute fix task `p03-t03` via the `oat-project-implement` skill.
+
+After the fix task is complete:
+
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then
+  `oat-project-review-receive` to reach `passed`
 
 ---
 
@@ -489,6 +527,9 @@ Chronological log of implementation progress.
 - [x] m2 converted to `p03-t02`
 - [x] Execute `p03-t01` - fa480c4e
 - [x] Execute `p03-t02` - 29f26e81
+- [x] final re-review received and parsed
+- [x] I1 converted to `p03-t03`
+- [ ] Execute `p03-t03`
 
 **What changed (high level):**
 
@@ -496,6 +537,8 @@ Chronological log of implementation progress.
 - Added a dedicated review-fixes phase with two small follow-up tasks
 - Corrected the stale `utility` pack description and the truncated
   `oat-doctor` pack enum guidance
+- Processed the narrowed final re-review and queued one more bounded
+  `oat-doctor` summary-manifest fix
 
 **Decisions:**
 
@@ -506,6 +549,7 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
+- Implement `p03-t03`
 - Re-run final code review after fixes land
 
 **Blockers:**
