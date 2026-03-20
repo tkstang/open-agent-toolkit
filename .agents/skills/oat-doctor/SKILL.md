@@ -86,7 +86,7 @@ Read `$ARGUMENTS`:
 TOOLS_JSON=$(oat tools list --json --scope all 2>/dev/null || echo '{"tools":[]}')
 ```
 
-Parse the JSON output. Each tool has: `name`, `type` (skill/agent), `scope` (project/user), `version`, `bundledVersion`, `pack` (core/ideas/workflows/utility/custom), `status` (current/outdated/newer/not-bundled).
+Parse the JSON output. Each tool has: `name`, `type` (skill/agent), `scope` (project/user), `version`, `bundledVersion`, `pack` (core/docs/ideas/workflows/utility/project-management/research/custom), `status` (current/outdated/newer/not-bundled).
 
 ### Step 2: Check for Outdated Skills
 
