@@ -183,6 +183,69 @@ git commit -m "feat(p02-t02): wire apply to artifact bundle inputs"
 
 ---
 
+## Phase 3: Review Fixes
+
+### Task p03-t01: (review) Reduce prose coupling in bundle contract test
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: Contract tests assert exact prose strings from skill docs, creating high editorial coupling.
+Location: `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts:74-88`
+
+**Step 2: Implement fix**
+
+Replace the fourth test's exact prose assertions with structural markers that still prove the bundle-first apply
+contract without locking sentence wording. Prefer stable section markers, code-path markers, or grouped semantic
+signals over full-sentence string matches.
+
+**Step 3: Verify**
+
+Run: `pnpm test`
+Expected: Bundle contract tests still enforce the apply-side contract and the full test suite passes.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts
+git commit -m "fix(p03-t01): reduce prose coupling in bundle contract test"
+```
+
+---
+
+### Task p03-t02: (review) Make bundle contract test repo-root resolution robust
+
+**Files:**
+
+- Modify: `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts`
+
+**Step 1: Understand the issue**
+
+Review finding: `repoFilePath` relies on a fragile seven-level parent traversal to reach the repo root.
+Location: `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts:6-8`
+
+**Step 2: Implement fix**
+
+Replace the hard-coded parent traversal with a more robust repo-root or workspace-root resolution strategy so the test
+fails clearly if the root cannot be found and remains stable if the file moves.
+
+**Step 3: Verify**
+
+Run: `pnpm test && pnpm type-check`
+Expected: The bundle contract test resolves repo paths reliably and all checks pass.
+
+**Step 4: Commit**
+
+```bash
+git add packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts
+git commit -m "fix(p03-t02): stabilize repo root resolution in contract test"
+```
+
+---
+
 ## Reviews
 
 {Track reviews here after running the oat-project-review-provide and oat-project-review-receive skills.}
@@ -190,13 +253,13 @@ git commit -m "feat(p02-t02): wire apply to artifact bundle inputs"
 {Keep both code + artifact rows below. Add additional code rows (p03, p04, etc.) as needed, but do not delete `spec`
 / `design`.}
 
-| Scope  | Type     | Status   | Date       | Artifact                           |
-| ------ | -------- | -------- | ---------- | ---------------------------------- |
-| p01    | code     | pending  | -          | -                                  |
-| p02    | code     | pending  | -          | -                                  |
-| final  | code     | received | 2026-03-20 | reviews/final-review-2026-03-20.md |
-| spec   | artifact | pending  | -          | -                                  |
-| design | artifact | pending  | -          | -                                  |
+| Scope  | Type     | Status      | Date       | Artifact                                    |
+| ------ | -------- | ----------- | ---------- | ------------------------------------------- |
+| p01    | code     | pending     | -          | -                                           |
+| p02    | code     | pending     | -          | -                                           |
+| final  | code     | fixes_added | 2026-03-20 | reviews/archived/final-review-2026-03-20.md |
+| spec   | artifact | pending     | -          | -                                           |
+| design | artifact | pending     | -          | -                                           |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
@@ -215,8 +278,9 @@ git commit -m "feat(p02-t02): wire apply to artifact bundle inputs"
 
 - Phase 1: 2 tasks - define the artifact bundle contract and recommendation-pack templates
 - Phase 2: 2 tasks - add regression fixtures and end-to-end apply consumption coverage
+- Phase 3: 2 tasks - address final review findings in bundle contract tests
 
-**Total: 4 tasks**
+**Total: 6 tasks**
 
 Ready for code review and merge.
 

@@ -1,9 +1,9 @@
 ---
-oat_status: complete
+oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: null
+oat_current_task_id: p03-t01
 oat_generated: false
 ---
 
@@ -24,12 +24,13 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status    | Tasks | Completed |
-| ------- | --------- | ----- | --------- |
-| Phase 1 | completed | 2     | 2/2       |
-| Phase 2 | completed | 2     | 2/2       |
+| Phase   | Status      | Tasks | Completed |
+| ------- | ----------- | ----- | --------- |
+| Phase 1 | completed   | 2     | 2/2       |
+| Phase 2 | completed   | 2     | 2/2       |
+| Phase 3 | in_progress | 2     | 0/2       |
 
-**Total:** 4/4 tasks completed
+**Total:** 4/6 tasks completed
 
 ---
 
@@ -244,6 +245,43 @@ oat_generated: false
 
 ---
 
+### Review Received: final
+
+**Date:** 2026-03-20
+**Review artifact:** `reviews/archived/final-review-2026-03-20.md`
+
+**Findings:**
+
+- Critical: 0
+- Important: 0
+- Medium: 3
+- Minor: 4
+
+**New tasks added:** `p03-t01`, `p03-t02`
+
+**Deferred Findings (Medium):**
+
+- `M3` - Keep the three pre-project docs-only commits on the branch for this PR. Rationale: this is branch traceability
+  cleanup rather than a product defect, and splitting/rebasing them now would add workflow churn outside the scoped
+  implementation fixes.
+
+**Deferred Findings (Minor):**
+
+- `m1` - No skill-versioning policy change in this project; treat as a separate process/documentation concern.
+- `m2` - Placeholder brace spacing in the bundle summary template is currently benign and not backed by a concrete tool
+  failure.
+- `m3` - Quality checklist renumbering is already internally consistent and requires no corrective change.
+- `m4` - Positive observation only; no action required.
+
+**Next:** Execute fix tasks via the `oat-project-implement` skill.
+
+After the fix tasks are complete:
+
+- Update the review row status to `fixes_completed`
+- Re-run `oat-project-review-provide code final` then `oat-project-review-receive` to reach `passed`
+
+---
+
 ## Implementation Log
 
 Chronological log of implementation progress.
@@ -305,9 +343,30 @@ Chronological log of implementation progress.
 
 - None
 
-- None
-
 **Session End:** -
+
+**Review Intake:** 14:28 CDT
+
+- [ ] p03-t01: (review) Reduce prose coupling in bundle contract test - pending
+- [ ] p03-t02: (review) Make bundle contract test repo-root resolution robust - pending
+
+**What changed (high level):**
+
+- Processed the final code review and converted two Medium findings into explicit review-fix tasks.
+- Recorded one deferred Medium and four deferred Minor findings with rationale.
+
+**Decisions:**
+
+- Fix `M1` and `M2` now because they are localized test-quality issues with low implementation risk.
+- Defer `M3` because branch-history cleanup is outside the implementation patch path.
+
+**Follow-ups / TODO:**
+
+- Execute `p03-t01` and `p03-t02`, then request final re-review.
+
+**Blockers:**
+
+- None
 
 ---
 
