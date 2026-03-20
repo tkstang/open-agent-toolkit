@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-03-20
-oat_current_task_id: p02-t02
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -24,12 +24,12 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase   | Status      | Tasks | Completed |
-| ------- | ----------- | ----- | --------- |
-| Phase 1 | completed   | 2     | 2/2       |
-| Phase 2 | in_progress | 2     | 1/2       |
+| Phase   | Status    | Tasks | Completed |
+| ------- | --------- | ----- | --------- |
+| Phase 1 | completed | 2     | 2/2       |
+| Phase 2 | completed | 2     | 2/2       |
 
-**Total:** 3/4 tasks completed
+**Total:** 4/4 tasks completed
 
 ---
 
@@ -145,8 +145,34 @@ oat_generated: false
 
 ## Phase 2: Add Verification Coverage
 
-**Status:** in_progress
+**Status:** completed
 **Started:** 2026-03-20
+
+### Phase Summary (fill when phase is complete)
+
+**Outcome (what changed):**
+
+- Added regression coverage for the new bundle contract so semantic bundle drift fails tests instead of surfacing only
+  during manual runs.
+- Tightened apply guidance so recommendation generation explicitly loads manifest entries and matching packs before
+  using markdown review context.
+
+**Key files touched:**
+
+- `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts` - bundle-contract
+  regression coverage for analyze/apply handoff semantics.
+- `.agents/skills/oat-agent-instructions-apply/SKILL.md` - explicit bundle-first generation guidance for per-pack
+  application.
+
+**Verification:**
+
+- Run: `pnpm test && pnpm lint && pnpm type-check && pnpm build`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The repo still has no runtime parser for analyze/apply bundles, so the correct verification surface is contract
+  tests against skill docs/templates.
 
 ### Task p02-t01: Add regression fixtures for bundle fidelity
 
@@ -178,12 +204,32 @@ oat_generated: false
 
 ### Task p02-t02: Validate apply consumption end to end
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 05cccdbf
 
-**Notes:**
+**Outcome (required when completed):**
 
-- Confirm apply consumes the manifest and packs as its primary contract.
+- Added contract coverage proving apply treats the bundle as the primary generation contract and blocks incomplete
+  bundles from silently falling back to markdown-only behavior.
+- Clarified apply Step 5 so each approved recommendation loads its manifest entry and matching pack before generation
+  work begins.
+
+**Files changed:**
+
+- `.agents/skills/oat-agent-instructions-apply/SKILL.md` - explicit per-recommendation pack loading during
+  generation/update flow
+- `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts` - end-to-end bundle-first
+  consumption assertions for apply
+
+**Verification:**
+
+- Run: `pnpm test && pnpm type-check`
+- Result: pass
+
+**Notes / Decisions:**
+
+- The bundle summary remains reviewer-facing context only; apply must not generate from it without first loading the
+  manifest entry and matching pack.
 
 ---
 
@@ -238,12 +284,13 @@ Chronological log of implementation progress.
 - [x] p01-t01: Define bundle schema and output layout - 798cd649
 - [x] p01-t02: Add recommendation-pack templates and validation guidance - c69a9ab2
 - [x] p02-t01: Add regression fixtures for bundle fidelity - 0b5f78f1
-- [ ] p02-t02: Validate apply consumption end to end - pending
+- [x] p02-t02: Validate apply consumption end to end - 05cccdbf
 
 **What changed (high level):**
 
 - Confirmed final-only implementation checkpoint at `p02`
 - Defined the bundle-aware analyze/apply contract and legacy fallback behavior
+- Added bundle-contract regression tests and explicit apply-side pack loading guidance
 
 **Decisions:**
 
@@ -252,7 +299,7 @@ Chronological log of implementation progress.
 
 **Follow-ups / TODO:**
 
-- Add fixture coverage proving pack fields survive into apply planning and generation.
+- Request final code review for the completed implementation before PR work.
 
 **Blockers:**
 
@@ -276,33 +323,58 @@ Document any deviations from the original plan.
 
 Track test execution during implementation.
 
-| Phase | Tests Run | Passed | Failed | Coverage |
-| ----- | --------- | ------ | ------ | -------- |
-| 1     | -         | -      | -      | -        |
-| 2     | -         | -      | -      | -        |
+| Phase | Tests Run                                                                                              | Passed | Failed | Coverage |
+| ----- | ------------------------------------------------------------------------------------------------------ | ------ | ------ | -------- |
+| 1     | `pnpm format && pnpm lint`                                                                             | yes    | 0      | N/A      |
+| 2     | `pnpm test`; `pnpm test && pnpm type-check`; `pnpm test && pnpm lint && pnpm type-check && pnpm build` | yes    | 0      | N/A      |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
 
-- {capability 1}
-- {capability 2}
+- Added a two-layer analyze/apply handoff contract: reviewer-facing markdown analysis plus a companion bundle with
+  summary, manifest, and recommendation packs.
+- Added bundle contract regression coverage so missing pack metadata, broken pack references, or apply-side
+  markdown-only regressions fail tests.
+- Tightened apply guidance so per-recommendation generation explicitly loads manifest entries and matching packs before
+  using repo evidence or templates.
 
 **Behavioral changes (user-facing):**
 
-- {bullet}
+- `oat-agent-instructions-analyze` now defines a concrete companion bundle layout and stable recommendation IDs for
+  apply consumption.
+- `oat-agent-instructions-apply` now treats the bundle as the executable contract and blocks incomplete bundles
+  instead of silently falling back.
 
 **Key files / modules:**
 
-- `{path}` - {purpose}
+- `.agents/skills/oat-agent-instructions-analyze/SKILL.md` - bundle-aware analyze contract and output expectations
+- `.agents/skills/oat-agent-instructions-analyze/references/analysis-artifact-template.md` - recommendation IDs and
+  bundle pack mapping in the reviewer artifact
+- `.agents/skills/oat-agent-instructions-analyze/references/bundle-summary-template.md` - compact bundle index for
+  apply-time context
+- `.agents/skills/oat-agent-instructions-analyze/references/recommendations-manifest-template.yaml` - machine-readable
+  recommendation index
+- `.agents/skills/oat-agent-instructions-analyze/references/recommendation-pack-template.md` - recommendation-scoped
+  generation contract
+- `.agents/skills/oat-agent-instructions-apply/SKILL.md` - bundle-first intake, planning, and generation rules
+- `.agents/skills/oat-agent-instructions-apply/references/apply-plan-template.md` - bundle-addressable apply-plan
+  fields
+- `packages/cli/src/commands/init/tools/shared/agent-instructions-bundle-contract.test.ts` - regression fixtures for
+  bundle fidelity and apply consumption
 
 **Verification performed:**
 
-- {tests/lint/typecheck/build/manual steps}
+- `pnpm format`
+- `pnpm lint`
+- `pnpm test`
+- `pnpm type-check`
+- `pnpm build`
 
 **Design deltas (if any):**
 
-- {what changed vs design.md and why}
+- No material design delta. The implementation stayed within the planned bundle contract and used contract tests as the
+  verification surface because there is no runtime bundle parser yet.
 
 ## References
 
