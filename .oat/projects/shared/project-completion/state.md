@@ -6,7 +6,7 @@ associated_issues: [] # [{type: backlog|project|jira|linear, ref: "identifier"}]
 oat_hill_checkpoints: ['discovery', 'spec', 'design'] # Configured: which phases require human-in-the-loop lifecycle approval
 oat_hill_completed: ['discovery'] # Progress: which HiLL checkpoints have been completed
 oat_parallel_execution: false
-oat_phase: spec # Current phase: discovery | spec | design | plan | implement
+oat_phase: design # Current phase: discovery | spec | design | plan | implement
 oat_phase_status: in_progress # Status: in_progress | complete
 oat_execution_mode: single-thread # single-thread | subagent-driven
 oat_workflow_mode: spec-driven # spec-driven | quick | import
