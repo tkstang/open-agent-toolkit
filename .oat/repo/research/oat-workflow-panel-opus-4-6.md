@@ -13,9 +13,11 @@ depth: standard
 
 Building a TUI panel that displays OAT project state and provides interactive controls to trigger workflow steps is **highly feasible**. The recommended approach is a **TypeScript package using Ink (React for CLI)** running as a standalone process in a Zellij or tmux pane, integrated into the existing OAT monorepo as `packages/panel/`.
 
-**tmux is the pragmatic default** for this use case — it has battle-tested scriptability (`send-keys`, `split-window`, `capture-pane`), Claude Code's Agent Teams uses it exclusively, and every existing agent orchestrator in this space (claude-squad, agtx, ntm, dmux, opensessions) builds on tmux. Zellij has a more modern WASM plugin system and pipe-based IPC that are architecturally appealing, but its ecosystem is significantly smaller and Claude Code has no official Zellij support yet. The panel should target **tmux-first with Zellij as a supported alternative**, since the Ink-based TUI runs identically in either multiplexer's panes, and pane-spawning commands can be abstracted behind a multiplexer adapter.
+**Zellij is the primary multiplexer target**, with tmux supported via adapter. While every existing agent orchestrator builds on tmux, the panel itself is multiplexer-agnostic — it's an Ink TUI process running in a pane, identical in either environment. The only multiplexer-specific code is pane spawning, which is a thin abstraction (~50 lines per adapter). Zellij is primary because: (1) the developer is actively setting it up and will dogfood this path, (2) Zellij layouts (KDL files) let us ship a default `oat-panel.kdl` that auto-configures the sidebar — tmux has no equivalent, (3) Zellij's plugin system leaves the door open for a future native status bar widget, and (4) `zellij run` is a cleaner pane-spawning API than tmux's `split-window`. tmux support costs almost nothing to add and should be first-class from day one.
 
-A landscape analysis of seven existing tools — [tmux-agent-status](https://github.com/samleeney/tmux-agent-status), [claude-squad](https://github.com/smtg-ai/claude-squad), [agtx](https://github.com/fynnfluegge/agtx), [cmux](https://github.com/craigsc/cmux), [opensessions](https://github.com/ataraxy-labs/opensessions), [ntm](https://github.com/Dicklesworthstone/ntm), and [dmux](https://github.com/standardagents/dmux) — reveals converging patterns: filesystem-as-message-bus for state, git worktrees for isolation, and tmux for session management. **agtx stands out** as the closest prior art to what OAT needs: a Rust-based kanban TUI with per-phase agent assignment, plugin-driven workflows, and an MCP server for orchestrator-to-board communication. Its phase model (Backlog/Planning/Running/Review/Done) maps naturally to OAT's lifecycle. OAT already has a richer state model (`state.md` frontmatter with phase tracking, HiLL checkpoints, blockers, and task progress) that maps naturally to a panel UI. The main gap is the absence of a real-time notification mechanism, which can be bridged with Claude Code hooks and file watching.
+A landscape analysis of seven existing tools — [tmux-agent-status](https://github.com/samleeney/tmux-agent-status), [claude-squad](https://github.com/smtg-ai/claude-squad), [agtx](https://github.com/fynnfluegge/agtx), [cmux](https://github.com/craigsc/cmux), [opensessions](https://github.com/ataraxy-labs/opensessions), [ntm](https://github.com/Dicklesworthstone/ntm), and [dmux](https://github.com/standardagents/dmux) — reveals converging patterns: filesystem-as-message-bus for state, git worktrees for isolation, and tmux for session management. **agtx stands out** as the closest prior art: a Rust kanban TUI with per-phase agent assignment, TOML plugin system, and MCP-based orchestration. Its phase model (Backlog/Planning/Running/Review/Done) maps naturally to OAT's lifecycle, and its plugin system is generic enough that an OAT plugin could likely work today — but agtx doesn't provide OAT-specific features like HiLL checkpoint gates, skill routing, frontmatter-driven state, or the spec-driven/quick workflow modes. The panel should draw heavily from agtx's kanban UI model while adding native OAT state management.
+
+**The kanban board is the core UI metaphor.** OAT's 5-phase lifecycle (discovery → spec → design → plan → implement) maps naturally to kanban columns, with tasks flowing left-to-right as work progresses. Each column shows phase status, active tasks, blockers, and available actions. HiLL checkpoints appear as gates between columns. This provides an at-a-glance view of where everything is across all active projects. OAT already has a richer state model (`state.md` frontmatter with phase tracking, HiLL checkpoints, blockers, and task progress) that maps naturally to this panel UI. The main gap is the absence of a real-time notification mechanism, which can be bridged with Claude Code hooks and file watching.
 
 **Ghostty** (the user's terminal) has native splits and tabs but no plugin system or general-purpose IPC, so it cannot replace a multiplexer for programmatic pane management. The recommended stack is **Ghostty (terminal) + tmux or Zellij (multiplexer) + OAT panel (TUI in a pane)**.
 
@@ -51,7 +53,7 @@ Sources included GitHub repositories, Zellij/tmux documentation, framework docs,
 - Display real-time OAT project state (phase, task progress, blockers, HiLL checkpoints)
 - Provide interactive controls to trigger workflow steps (implement, review, next phase)
 - Support spawning new terminal panes for agent sessions
-- Work with tmux (primary) and Zellij (supported alternative) via a multiplexer adapter
+- Work with Zellij (primary, developer's environment) and tmux (supported) via a multiplexer adapter
 
 **Constraints:**
 - Must not require users to learn a new programming language to contribute
@@ -146,6 +148,105 @@ Ghostty is the user's terminal emulator. Key findings for integration potential:
 - **Good terminal host**: GPU-accelerated, Kitty graphics protocol, shell integration — works well *hosting* tmux/Zellij sessions but cannot *replace* them for automation.
 
 **Verdict**: Ghostty is a great terminal to run OAT inside, but the panel must rely on tmux or Zellij for programmatic pane management. Recommended stack: **Ghostty (terminal) + tmux/Zellij (multiplexer) + OAT panel (Ink TUI in a pane)**.
+
+### Kanban Board as Core UI
+
+The panel's primary view should be a **kanban board** showing OAT project state across lifecycle phases. This is inspired by agtx's approach but tailored to OAT's richer state model.
+
+**Conceptual layout (single project view):**
+```
+┌─────────────┬─────────────┬─────────────┬─────────────┬─────────────┐
+│  Discovery  │    Spec     │   Design    │    Plan     │  Implement  │
+│  ✓ complete │  ✓ complete │ → in_prog   │   pending   │   pending   │
+├─────────────┼─────────────┼─────────────┼─────────────┼─────────────┤
+│             │             │ ▸ API layer │             │             │
+│             │             │ ▸ Data model│             │             │
+│             │             │             │             │             │
+│             │             │  ⊘ HiLL     │             │             │
+│             │             │  checkpoint │             │             │
+└─────────────┴─────────────┴─────────────┴─────────────┴─────────────┘
+  Blockers: none                          Actions: [Approve Design ↵]
+  Workflow: spec-driven                   [Open Review Pane] [Pause]
+```
+
+**Multi-project dashboard view:**
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│  OAT Projects                                          ↻ 2s ago    │
+├──────────────────────────────────────────────────────────────────────┤
+│  auth-refactor      ██████████░░░░  Plan (3/7 tasks)    ▸ working  │
+│  api-v2-migration   ████████████░░  Implement (5/6)     ▸ working  │
+│  docs-overhaul      ██░░░░░░░░░░░░  Discovery           ● waiting  │
+├──────────────────────────────────────────────────────────────────────┤
+│  [n] New Project  [↵] Open  [i] Implement  [r] Review  [?] Help   │
+└──────────────────────────────────────────────────────────────────────┘
+```
+
+**Key UI elements:**
+- **Phase columns** with status indicators (✓ complete, → in progress, pending)
+- **Task cards** within active phase showing current task ID and description
+- **HiLL checkpoint gates** shown as barriers between phases requiring approval
+- **Blocker alerts** surfaced prominently when `oat_blockers` is non-empty
+- **Action buttons** contextually showing valid next steps based on current state
+- **Progress bars** for implementation phase (tasks completed / total)
+- **Agent status** indicators (working, waiting, done) fed by Claude Code hooks
+
+**OAT phase → kanban column mapping:**
+
+| OAT Phase | Kanban Column | agtx Equivalent | Available Actions |
+|-----------|---------------|-----------------|-------------------|
+| discovery | Discovery | Backlog | "Start Discovery", "Skip to Plan" (quick mode) |
+| spec | Specification | Planning | "Write Spec", "Approve Spec" (HiLL) |
+| design | Design | Planning | "Create Design", "Approve Design" (HiLL) |
+| plan | Plan | Planning | "Generate Plan", "Approve Plan" (HiLL) |
+| implement | Implement | Running → Review → Done | "Implement", "Open Review Pane", "Pause" |
+
+### agtx Plugin Compatibility Analysis
+
+agtx's TOML plugin system is generic enough to configure for any agent workflow. An OAT plugin would look approximately like:
+
+```toml
+[plugin]
+name = "oat"
+description = "OAT project lifecycle"
+
+[phases.backlog]
+display_name = "Discovery"
+
+[phases.planning]
+display_name = "Spec → Design → Plan"
+command = "claude"
+prompt_template = "Run /oat-project-next for project {task_name}"
+artifacts = ["plan.md"]  # gate: file must exist to advance
+
+[phases.running]
+display_name = "Implement"
+command = "claude"
+prompt_template = "Run /oat-project-implement for project {task_name}"
+
+[phases.review]
+display_name = "Review"
+command = "claude"
+prompt_template = "Run /oat-project-review for project {task_name}"
+```
+
+**What agtx gives us today:**
+- Kanban TUI with task lifecycle
+- Per-task git worktree isolation
+- tmux pane management per task
+- MCP server for orchestrator-driven automation
+- Multi-agent support (different agents per phase)
+
+**What agtx doesn't give us (and why we still need our own panel):**
+- **OAT state awareness** — agtx uses SQLite; OAT uses `state.md` frontmatter. No native parsing of `oat_phase`, `oat_hill_checkpoints`, etc.
+- **HiLL checkpoint gates** — agtx has no concept of human-in-the-loop approval barriers between phases
+- **Workflow mode switching** — no spec-driven vs quick vs import mode distinction
+- **OAT skill routing** — agtx can run commands but doesn't understand `oat-project-next`'s routing logic (boundary tier detection, review safety checks)
+- **Multi-phase compression** — agtx maps 1:1 between kanban columns and phases; OAT's spec/design/plan might compress to a single "Planning" column in quick mode
+- **Multiplexer flexibility** — agtx is tmux-only; OAT panel targets Zellij-first
+- **Monorepo integration** — agtx is a standalone Rust binary; OAT panel should share code with the CLI
+
+**Verdict**: agtx could be used as a lightweight OAT orchestrator *today* with a TOML plugin, but it would be a "dumb" wrapper — triggering commands without understanding OAT's state machine. The value of building our own panel is native state awareness: the panel *understands* what phase you're in, what transitions are valid, which checkpoints need approval, and can present contextual actions accordingly.
 
 ### Options Analyzed
 
@@ -268,19 +369,21 @@ impl ZellijPlugin for OatPanel {
 | **Scriptability** | Battle-tested, decades of tooling | Good CLI, less proven for automation |
 | **UX/Discoverability** | Steep learning curve | Built-in keybinding hints per mode |
 
-**Verdict**: **tmux is the pragmatic choice today.** Every agent orchestrator in the ecosystem builds on tmux. Claude Code's Agent Teams requires it. tmux's scriptable CLI is exactly what programmatic agent orchestration needs. However, Zellij's architecture (WASM plugins, pipes, KDL layouts) is more *modern* and would provide deeper integration *if* the ecosystem catches up. Since the OAT panel runs as a standalone Ink TUI process, it works identically in either multiplexer's panes — the only multiplexer-specific code is pane spawning, which can be abstracted behind a simple adapter:
+**Verdict**: **Zellij-first, tmux-supported.** While every existing agent orchestrator builds on tmux, the panel itself is multiplexer-agnostic — it's an Ink process in a pane. The only multiplexer-specific code is pane spawning, abstracted behind a simple adapter. Zellij is primary because: (1) developer is actively using it and will dogfood this path, (2) KDL layout files let us ship a default `oat-panel.kdl` for automatic sidebar setup, (3) Zellij's plugin system keeps the door open for a future native status bar widget, (4) `zellij run` is a cleaner pane-spawning API. tmux support costs ~50 lines and should be first-class from day one.
 
 ```typescript
 interface MuxAdapter {
   splitPane(command: string, opts?: { name?: string; cwd?: string; floating?: boolean }): void;
   listPanes(): PaneInfo[];
+  detectMultiplexer(): 'zellij' | 'tmux' | 'none';
 }
 
-// tmux: tmux split-window -h -t $session "command"
+// Auto-detect: check $ZELLIJ env var, then $TMUX, then fallback
 // zellij: zellij run --name "name" -- command
+// tmux: tmux split-window -h -t $session "command"
 ```
 
-**Recommendation**: Target tmux first (largest user base, proven patterns), support Zellij via adapter (user is actively setting it up), design the abstraction layer from day one so both are first-class.
+**Recommendation**: Target Zellij first (developer's environment, better layout system), support tmux via adapter, design the abstraction layer from day one so both are first-class.
 
 ### IPC Architecture
 
@@ -341,18 +444,61 @@ The recommended communication architecture layers multiple mechanisms:
 
 - **Recommended option**: **Option A — TypeScript Ink Package**
 - **Rationale**: Best monorepo fit, fastest development, single-language maintenance, proven framework (Ink), and sufficient integration depth via Zellij CLI commands. The marginal benefit of native Zellij plugin integration (Option B) does not justify the Rust toolchain overhead and code duplication.
-- **Conditions**: Ink must remain maintained (high confidence — used by Claude Code, Gemini CLI). tmux CLI must remain stable for pane spawning (high confidence — decades of stability).
-- **Fallback**: If deeper Zellij integration becomes necessary, pursue Option C (hybrid) as a Phase 2 enhancement — add a thin Rust status-bar plugin while keeping the core logic in TypeScript.
+- **Conditions**: Ink must remain maintained (high confidence — used by Claude Code, Gemini CLI). Zellij/tmux CLIs must remain stable for pane spawning (high confidence — part of their public APIs).
+- **Fallback**: If deeper Zellij integration becomes necessary, pursue Option C (hybrid) as a Phase 2 enhancement — add a thin Rust status-bar plugin (using ratatui + zellij_widgets adapter) while keeping the core logic in TypeScript.
 - **Next steps**:
   1. Scaffold `packages/panel/` with Ink, React, and TypeScript
   2. Implement `state.md` frontmatter parser and file watcher (chokidar)
-  3. Build phase progress (kanban-style, inspired by agtx), task list, and action button components
-  4. Implement multiplexer adapter abstraction (tmux primary, Zellij secondary)
-  5. Add `oat panel` CLI subcommand
-  6. Implement pane spawning for workflow triggers (`tmux split-window` / `zellij run`)
-  7. Configure Claude Code hooks for agent-to-panel notifications
-  8. Create default layout files: `.tmux.conf` snippet and `layouts/oat-panel.kdl` for Zellij
-  9. Explore agtx's MCP server pattern for potential orchestrator-to-panel communication
+  3. Build kanban board view — phase columns, task cards, HiLL checkpoint gates, progress bars
+  4. Build multi-project dashboard view — project list with progress summaries
+  5. Implement multiplexer adapter abstraction (Zellij primary, tmux secondary, auto-detect via `$ZELLIJ`/`$TMUX` env vars)
+  6. Add `oat panel` CLI subcommand
+  7. Implement pane spawning for workflow triggers (`zellij run` / `tmux split-window`)
+  8. Configure Claude Code hooks for agent-to-panel notifications
+  9. Create default Zellij layout (`layouts/oat-panel.kdl`) with sidebar + main pane
+  10. Explore agtx's MCP server pattern for potential orchestrator-to-panel communication
+
+## Brainstorming & Discovery
+
+_This section captures open questions, feature ideas, and design explorations that are still being shaped. Separate from the research findings above._
+
+### Feature Ideas Under Consideration
+
+**Core kanban panel:**
+- Kanban board showing OAT project phases as columns with task flow
+- Multi-project dashboard with progress bars and agent status
+- Contextual action buttons based on current state (Implement, Review, Approve, Pause)
+- HiLL checkpoint gates as visual barriers requiring explicit approval
+- Blocker alerts surfaced prominently
+
+**Pane management:**
+- Spawn new Claude sessions for specific workflow steps in adjacent panes
+- Open independent code review in a separate pane
+- Attach/detach from running agent sessions
+- Auto-layout: `oat panel` configures Zellij layout with sidebar panel + main workspace
+
+**Notifications & awareness:**
+- Agent completion notifications (via Claude Code hooks)
+- Review feedback alerts (watch `reviews/` directory)
+- Idle agent detection (agent waiting for input)
+- Optional audio/desktop notifications (like tmux-agent-status)
+
+**Orchestration:**
+- MCP server for programmatic board control (inspired by agtx)
+- Multi-agent coordination across projects
+- Per-phase agent assignment (e.g., different models for research vs implementation)
+
+### Open Questions
+
+_To be answered through discussion to shape the feature set._
+
+<!-- Q1 --> **TBD**
+<!-- Q2 --> **TBD**
+<!-- Q3 --> **TBD**
+<!-- Q4 --> **TBD**
+<!-- Q5 --> **TBD**
+
+---
 
 ## Sources & References
 
