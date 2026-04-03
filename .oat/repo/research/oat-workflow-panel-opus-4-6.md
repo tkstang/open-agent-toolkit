@@ -583,13 +583,110 @@ Based on discovery, the product is better described as:
 - Action menu with valid next steps
 - Full-screen kanban available as a view mode
 
-### Open Questions (Round 3)
+### Discovery Answers (Round 3)
 
-_To be answered through discussion._
+**HiLL checkpoint approval flow:**
+- Ideal: **file viewer inline** — show the artifact (spec, design, plan) directly in the panel using something like yazi or delta diff view
+- Not just a button — user wants to *read* the artifact before approving, without leaving the panel context
+- Implication: panel needs an embedded file viewer or tight integration with a pager/viewer tool. Could render markdown in the expanded panel view, or spawn delta/bat in a preview pane.
 
-<!-- Q10 --> **TBD**
-<!-- Q11 --> **TBD**
-<!-- Q12 --> **TBD**
+**Session resume:**
+- **Context-aware resume** — panel knows where the agent stopped (e.g., "implement task p2-t3"), queues the next action, and offers to launch it with the right context pre-loaded
+- Implication: panel tracks not just OAT phase but the specific `oat_current_task` value, and can construct a resume prompt. This means reading `state.md` for `oat_current_task` and generating the appropriate `claude --resume` or fresh `claude --prompt "continue oat-project-implement from p2-t3"` command.
+
+**Review flow:**
+- **Auto-trigger review-receive** — when review feedback lands in `reviews/`, panel automatically spawns `oat-project-review-receive` without waiting for user action
+- Implication: file watcher on `reviews/` directory triggers automated agent spawn. This is the first *autonomous* behavior — panel acts without user clicking anything. Should have a config toggle for users who prefer manual control.
+
+**Quick actions (all selected):**
+1. **Tool launcher** — open lazygit/yazi/editor scoped to selected workspace's worktree
+2. **New workspace wizard** — create worktree + branch + agent session in one flow
+3. **Smart "Next Step"** — run `oat-project-next` to auto-detect and launch the right phase
+4. **Workspace cleanup** — merge worktree branch, clean up worktree, archive OAT project
+
+**Superset.sh as design reference (and why not just use it):**
+- [Superset.sh](https://superset.sh) is the closest UX reference — Electron + React desktop app for orchestrating parallel CLI agents across git worktrees
+- Its layout matches what we want: workspaces sidebar (Cmd+B), changes/diff panel (Cmd+L), central terminal with splits/tabs, editor launcher (Cmd+O)
+- Features: worktree-per-agent isolation, agent-agnostic (Claude/Codex/Gemini/etc.), built-in diff viewer, status monitoring, workspace presets via `.superset/config.json`
+- Architecture: Electron + React + TailwindCSS + tRPC + Drizzle ORM, built with Vite/Turborepo/Bun
+
+**Why NOT superset:**
+1. **Vendor lock-in** — tied to their decisions on features, direction, and priorities. Can't extend it for OAT-specific workflows.
+2. **Electron overhead** — heavy runtime for what's fundamentally a terminal-adjacent tool. User already has Ghostty + Zellij.
+3. **No OAT awareness** — no concept of project phases, HiLL checkpoints, skill routing, spec-driven workflows. Would need to be bolted on externally.
+4. **Closed ecosystem** — ELv2 license, can't fork and customize deeply.
+
+**Agentastic.dev as additional reference:**
+- Native macOS app (Swift) that embeds **libghostty** for GPU-accelerated terminal rendering — not a Ghostty plugin, a standalone app linking Ghostty's library
+- Features: 30+ agent support, worktree-per-agent isolation, built-in diff viewer, code editor, browser panel, **kanban board** for organizing worktrees by label with drag-and-drop, fuzzy finder, multi-agent code review
+- Layout: panel-based IDE with vertical tabs for worktrees, terminal panes, splits, integrated tooling
+- Free but **closed source**, macOS-only — same vendor lock-in concern as superset
+- Interesting technical approach: proving that libghostty can be embedded as a terminal rendering component, though this doesn't help us for a cross-platform TUI
+
+**What to steal from superset + agentastic's designs:**
+- Workspace sidebar as always-on navigation (repos → worktrees → agent status)
+- Toggle-able changes/diff panel
+- Keyboard-driven workflow (Cmd+1-9 for workspace switching, splits, etc.)
+- Workspace presets/config for setup/teardown scripts
+- One-click tool launching (editor, terminal, etc.)
+
+**What we add that superset can't:**
+- OAT workflow state awareness (phases, tasks, checkpoints)
+- Contextual action menus based on project state machine
+- Auto-triggered review-receive flow
+- Context-aware session resume
+- Terminal-native (runs in Zellij/tmux, no Electron)
+- User-owned and extensible
+
+### Discovery Answers (Round 4)
+
+**Subagent visualization:**
+- **Aggregate progress only** — show "3/7 tasks done" in the panel, don't expose individual subagent worktrees
+- Subagent internals stay within OAT's execution engine; panel is a high-level dashboard, not a process manager
+- Implication: panel reads `oat_current_task` and task completion counts from `implementation.md`, doesn't need to track subagent panes or worktrees
+
+**MVP scope:**
+- **Thin vertical slice** — basic workspace nav + basic OAT state + basic actions, ship fast and iterate
+- Not a workspace-manager-first or OAT-first approach — do a thin cut through all three layers simultaneously
+- Implication: MVP includes (1) workspace sidebar with repo/worktree listing, (2) OAT phase indicator for active workspace, (3) one or two action triggers (Next Step, tool launcher), (4) basic agent status from hooks. Iterate from there based on what feels most useful in practice.
+
+### MVP Feature Set (Draft)
+
+Based on all discovery rounds, the thin vertical slice MVP would include:
+
+**Layer 1 — Workspace Navigator (minimal):**
+- List repos (from config) and their worktrees (`git worktree list`)
+- Agent status indicator per worktree (working/done/idle via Claude Code hooks)
+- Select workspace to focus → switch context
+
+**Layer 2 — Agent Session Manager (minimal):**
+- Spawn new agent session in a new pane for selected workspace
+- Launch lazygit/yazi scoped to selected worktree (tool launcher)
+
+**Layer 3 — OAT Workflow (minimal):**
+- Show current phase + phase status for active workspace (reads `state.md`)
+- Aggregate task progress for implement phase
+- "Next Step" action that runs `oat-project-next`
+- File watcher on `state.md` for live updates
+
+**Deferred to v2:**
+- Full kanban board view
+- Diff/preview pane
+- HiLL checkpoint approval flow with inline file viewer
+- Context-aware session resume
+- Auto-triggered review-receive
+- New workspace wizard
+- Workspace cleanup/archival
+- Git branch overview
+- Activity log feed
+- Notifications (audio/desktop)
+- Multi-project dashboard with progress bars
+
+### Open Questions (Round 5)
+
+<!-- Q13 --> **TBD**
+<!-- Q14 --> **TBD**
+<!-- Q15 --> **TBD**
 
 ---
 
