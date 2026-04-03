@@ -682,7 +682,30 @@ Based on all discovery rounds, the thin vertical slice MVP would include:
 - Notifications (audio/desktop)
 - Multi-project dashboard with progress bars
 
-### Open Questions (Round 5)
+### Discovery Answers (Round 5)
+
+**Repo registration model:**
+- **Explicit add, not auto-discover** — you run something like `oat panel add /path/to/repo` and it appears in the panel. Repos don't show up until added.
+- Stored in a config file (e.g., `~/.oat/panel.json`)
+- Implication: panel needs an `add`/`remove` command and reads from a persistent config. No filesystem scanning magic. Simple, predictable, user-controlled.
+
+**Subagent visualization:**
+- **Task progress only** — same display whether single-thread or subagent-driven. Just show task completion counts.
+- Panel doesn't need to know about subagent internals, worktrees, or pane assignments.
+
+**Project end-of-lifecycle:**
+- **Manual archive** — completed projects stay visible showing state details, PR link, etc. User explicitly archives when ready.
+- No auto-cleanup. Completed state is informational, not a trigger for automation.
+- Similar to how claude-squad, agtx, and superset handle it — done items persist until dismissed.
+
+**MVP scope confirmation:**
+- **Thin vertical slice of both layers** — basic workspace sidebar + basic OAT state, ship fast, iterate together.
+
+### Open Questions (Resolved)
+
+All discovery questions have been answered. The artifact is ready to inform a project plan.
+
+_If new questions emerge during implementation, they'll be captured here._
 
 <!-- Q13 --> **TBD**
 <!-- Q14 --> **TBD**
