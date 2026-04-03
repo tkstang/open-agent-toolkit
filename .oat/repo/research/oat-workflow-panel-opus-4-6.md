@@ -488,15 +488,108 @@ _This section captures open questions, feature ideas, and design explorations th
 - Multi-agent coordination across projects
 - Per-phase agent assignment (e.g., different models for research vs implementation)
 
-### Open Questions
+### Discovery Answers (Round 1)
 
-_To be answered through discussion to shape the feature set._
+**Scale & concurrency:**
+- 2-5 different repositories at a time, 1-5 OAT projects per repo
+- Sometimes focused on one repo with multiple projects, other times spread across repos with 1-2 each
+- Implication: **multi-repo, multi-project dashboard is essential**. Single-project kanban is a drill-down view, not the default. Need a repo-aware project hierarchy.
 
-<!-- Q1 --> **TBD**
-<!-- Q2 --> **TBD**
-<!-- Q3 --> **TBD**
-<!-- Q4 --> **TBD**
-<!-- Q5 --> **TBD**
+**Automation & triggers:**
+- One-click trigger is primary, but actions are **contextual and multi-option** — e.g., after plan completes, user might want to "Implement" OR "Open Review Pane" OR "Pause"
+- Notifications always on — badge/alert when next step is ready
+- Orchestrator not needed as a separate system — OAT's execution continuation already handles autonomous implementation when desired
+- Implication: **action menu, not single button**. Show all valid transitions as selectable options. Notification layer runs independently.
+
+**Views & features (prioritized):**
+1. **Diff/preview pane** — see agent changes without switching panes (like claude-squad)
+2. **Git branch overview** — branches, worktrees, merge status across projects
+3. **Log/activity feed** — scrollable feed of agent actions, state transitions, notifications
+
+**Layout:**
+- **Both: sidebar + full-screen toggle**. Sidebar (20-30% width) as default for ambient awareness, expand to full-screen dashboard with a keybinding for detailed interaction.
+- **Kanban is NOT the primary view** — it's a drill-down/full-screen view for when you want to see the big picture. The primary interface is a compact sidebar or tab showing project summaries, agent status, and action options. Kanban board is available as a full-screen mode (Ghostty tab or expanded pane).
+- Implication: need three rendering modes — (1) **compact sidebar** (project list with status indicators and action shortcuts), (2) **expanded panel** (project detail with phase progress, logs, diff preview), (3) **full-screen kanban** (multi-project board view). Ink components should be responsive to available width.
+
+### Discovery Answers (Round 2)
+
+**Sidebar information density:**
+- All of: project + phase + status, next action keybind hints, agent activity, and blockers
+- Blockers slightly lower priority but still shown
+- Implication: sidebar is **information-dense**, not minimal. Each project line should pack status, progress, agent state, and action hints. Think of it like a compact htop for OAT projects.
+
+**Multi-repo model — THIS IS A KEY REFRAME:**
+- The panel is fundamentally a **workspace manager** first, OAT project tracker second
+- Left-side panel always shows **workspaces** (repos) and **worktrees** within each — like superset.sh, cmux, codex desktop app, conductor.build
+- That workspace panel is the always-on primary navigation surface
+- OAT project state is an **additive layer** on top of the workspace view — easy to show/hide
+- Implication: **the core product is a workspace/worktree navigator with agent session management.** OAT integration is a feature, not the whole product. This changes the architecture — the base layer is repo/worktree awareness, and OAT state enriches it when `.oat/` exists.
+
+**Diff/preview:**
+- Integrate with existing tools: **yazi** (file browser), **lazygit** (git TUI)
+- Or use diff viewer patterns from the landscape tools (claude-squad's inline diff)
+- Implication: panel should **launch** these tools in panes rather than reimplementing diff viewing. Spawning a lazygit pane for a worktree is more powerful than a built-in diff widget.
+
+**Agent tracking scope:**
+- Panel tracks **one project at a time**, switches as user cycles through workspaces/projects
+- Not a multi-project simultaneous monitoring dashboard
+- Implication: simplifies the design significantly — no need for multiplexed state watching. The active workspace determines what OAT state is displayed. Switching workspace = switching OAT context.
+
+### Revised Architecture Vision
+
+Based on discovery, the product is better described as:
+
+**`oat panel` = Workspace Manager + Agent Session Manager + OAT Workflow Layer**
+
+```
+┌─ Workspace Navigator (always visible) ──┬─ Main Content Area ──────────────┐
+│                                          │                                  │
+│  ▼ repo-1 (main)                        │  [Agent session / editor / etc]  │
+│    ├─ worktree: feat-auth  ▸ working    │                                  │
+│    ├─ worktree: fix-api    ● done       │                                  │
+│    └─ worktree: docs       ○ idle       │                                  │
+│                                          │                                  │
+│  ▼ repo-2 (main)                        │                                  │
+│    └─ worktree: v2-migrate ▸ working    │                                  │
+│                                          │                                  │
+│  ▶ repo-3 (collapsed)                   │                                  │
+│                                          │                                  │
+├─ OAT Layer (toggle) ────────────────────┤                                  │
+│  Project: auth-refactor                  │                                  │
+│  Phase: Plan → Implement                │                                  │
+│  Tasks: ████████░░ 4/6                  │                                  │
+│  [i] Implement  [r] Review  [l] Log     │                                  │
+│  HiLL: ✓ discovery ✓ spec ✓ design     │                                  │
+└──────────────────────────────────────────┴──────────────────────────────────┘
+```
+
+**Layer 1 — Workspace Navigator** (core, always visible):
+- List repos and their worktrees (git worktree list)
+- Agent status per worktree (working/done/idle via hooks)
+- Click/select to focus a workspace → switch multiplexer pane
+- Create new worktree + branch + agent session
+- Merge worktree back, clean up
+
+**Layer 2 — Agent Session Manager** (core):
+- Track which agents are running in which panes
+- Spawn new agent sessions (claude, codex, etc.) in new panes
+- Attach/detach from sessions
+- Launch lazygit, yazi in worktree context
+
+**Layer 3 — OAT Workflow Layer** (additive, toggleable):
+- Only appears when selected workspace has `.oat/` 
+- Shows OAT project state for active workspace
+- Phase progress, task tracking, HiLL checkpoints
+- Action menu with valid next steps
+- Full-screen kanban available as a view mode
+
+### Open Questions (Round 3)
+
+_To be answered through discussion._
+
+<!-- Q10 --> **TBD**
+<!-- Q11 --> **TBD**
+<!-- Q12 --> **TBD**
 
 ---
 
