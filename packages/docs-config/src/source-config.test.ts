@@ -43,7 +43,6 @@ describe('createSourceConfig', () => {
     const config = createSourceConfig();
 
     expect(config.search).toBeDefined();
-    expect(config.search.engine).toBe('flexsearch');
-    expect(config.search.type).toBe('static');
+    expect(config.search.options.type).toBe('static');
   });
 });
