@@ -1,17 +1,28 @@
-import { readdir, readFile, stat } from 'node:fs/promises';
-import { dirname, join, relative } from 'node:path';
+import {
+  lstat,
+  readdir,
+  readFile,
+  readlink,
+  realpath,
+  stat,
+} from 'node:fs/promises';
+import { dirname, join, relative, resolve } from 'node:path';
 
 import type {
+  InstructionSyncStrategy,
   InstructionActionRecord,
   InstructionEntry,
   InstructionsJsonPayload,
   InstructionsMode,
+  InstructionsScanOptions,
   InstructionsScanDependencies,
   InstructionsStatus,
   InstructionsSummary,
 } from './instructions.types';
 
 export const EXPECTED_CLAUDE_CONTENT = '@AGENTS.md\n';
+export const DEFAULT_INSTRUCTION_SYNC_STRATEGY: InstructionSyncStrategy =
+  'pointer';
 
 const ROOT_EXCLUDED_DIRECTORIES = new Set(['.git', '.oat', '.worktrees']);
 const GLOBAL_EXCLUDED_DIRECTORIES = new Set(['node_modules']);
@@ -20,6 +31,15 @@ interface BuildInstructionsPayloadArgs {
   mode: InstructionsMode;
   entries: InstructionEntry[];
   actions: InstructionActionRecord[];
+}
+
+interface InstructionDirectoryEntry {
+  agentsPath?: string;
+  brokenAgentsPath?: string;
+  brokenAgentsErrorCode?: string;
+  brokenClaudePath?: string;
+  brokenClaudeErrorCode?: string;
+  claudePath?: string;
 }
 
 function getErrorCode(error: unknown): string | null {
@@ -32,14 +52,46 @@ function normalizeLineEndings(content: string): string {
   return content.replaceAll('\r\n', '\n');
 }
 
+export function resolveInstructionSyncStrategy(
+  strategy?: InstructionSyncStrategy,
+): InstructionSyncStrategy {
+  return strategy ?? DEFAULT_INSTRUCTION_SYNC_STRATEGY;
+}
+
+function getValidInstructionDetail(strategy: InstructionSyncStrategy): string {
+  switch (strategy) {
+    case 'symlink':
+      return 'symlink valid';
+    case 'copy':
+      return 'copy valid';
+    default:
+      return 'pointer valid';
+  }
+}
+
+function getInvalidInstructionDetail(
+  strategy: InstructionSyncStrategy,
+): string {
+  switch (strategy) {
+    case 'symlink':
+      return 'expected symlink to AGENTS.md';
+    case 'copy':
+      return 'expected hard copy of AGENTS.md content';
+    default:
+      return `expected ${JSON.stringify(EXPECTED_CLAUDE_CONTENT)}`;
+  }
+}
+
 function toPosixPath(pathValue: string): string {
   return pathValue.replaceAll('\\', '/');
 }
 
 function normalizeEntries(entries: InstructionEntry[]): InstructionEntry[] {
   return [...entries].sort((left, right) => {
+    const leftSortPath = left.agentsPath ?? left.claudePath;
+    const rightSortPath = right.agentsPath ?? right.claudePath;
     return (
-      left.agentsPath.localeCompare(right.agentsPath) ||
+      leftSortPath.localeCompare(rightSortPath) ||
       left.claudePath.localeCompare(right.claudePath) ||
       left.status.localeCompare(right.status) ||
       left.detail.localeCompare(right.detail)
@@ -60,12 +112,32 @@ function normalizeActions(
   });
 }
 
-async function scanAgentsFiles(
+function recordInstructionFile(
+  directoryEntries: Map<string, InstructionDirectoryEntry>,
+  directoryPath: string,
+  entryName: 'AGENTS.md' | 'CLAUDE.md',
+  entryPath: string,
+): void {
+  const current = directoryEntries.get(directoryPath) ?? {};
+  if (entryName === 'AGENTS.md') {
+    current.agentsPath = entryPath;
+    current.brokenAgentsPath = undefined;
+    current.brokenAgentsErrorCode = undefined;
+  } else {
+    current.claudePath = entryPath;
+    current.brokenClaudePath = undefined;
+    current.brokenClaudeErrorCode = undefined;
+  }
+  directoryEntries.set(directoryPath, current);
+}
+
+async function scanInstructionDirectories(
   repoRoot: string,
   dependencies: InstructionsScanDependencies,
-): Promise<string[]> {
+  debug?: (message: string) => void,
+): Promise<Map<string, InstructionDirectoryEntry>> {
   const queue = [repoRoot];
-  const agentsFiles: string[] = [];
+  const directoryEntries = new Map<string, InstructionDirectoryEntry>();
 
   while (queue.length > 0) {
     const currentDirectory = queue.shift();
@@ -80,7 +152,7 @@ async function scanAgentsFiles(
       });
     } catch (error) {
       const errorCode = getErrorCode(error);
-      dependencies.debug?.(
+      debug?.(
         `Skipping directory scan for ${toPosixPath(currentDirectory)} (${errorCode ?? 'unknown error'})`,
       );
       continue;
@@ -102,8 +174,13 @@ async function scanAgentsFiles(
       }
 
       if (entry.isFile()) {
-        if (entry.name === 'AGENTS.md') {
-          agentsFiles.push(entryPath);
+        if (entry.name === 'AGENTS.md' || entry.name === 'CLAUDE.md') {
+          recordInstructionFile(
+            directoryEntries,
+            currentDirectory,
+            entry.name,
+            entryPath,
+          );
         }
         continue;
       }
@@ -117,7 +194,22 @@ async function scanAgentsFiles(
         entryStats = await dependencies.stat(entryPath);
       } catch (error) {
         const errorCode = getErrorCode(error);
-        dependencies.debug?.(
+        if (entry.name === 'CLAUDE.md') {
+          const current = directoryEntries.get(currentDirectory) ?? {};
+          current.claudePath = entryPath;
+          current.brokenClaudePath = entryPath;
+          current.brokenClaudeErrorCode = errorCode ?? 'unknown error';
+          directoryEntries.set(currentDirectory, current);
+          continue;
+        }
+        if (entry.name === 'AGENTS.md') {
+          const current = directoryEntries.get(currentDirectory) ?? {};
+          current.brokenAgentsPath = entryPath;
+          current.brokenAgentsErrorCode = errorCode ?? 'unknown error';
+          directoryEntries.set(currentDirectory, current);
+          continue;
+        }
+        debug?.(
           `Skipping symlink target stat for ${toPosixPath(entryPath)} (${errorCode ?? 'unknown error'})`,
         );
         continue;
@@ -127,49 +219,107 @@ async function scanAgentsFiles(
         continue;
       }
 
-      if (entryStats.isFile() && entry.name === 'AGENTS.md') {
-        agentsFiles.push(entryPath);
+      if (
+        entryStats.isFile() &&
+        (entry.name === 'AGENTS.md' || entry.name === 'CLAUDE.md')
+      ) {
+        recordInstructionFile(
+          directoryEntries,
+          currentDirectory,
+          entry.name,
+          entryPath,
+        );
       }
     }
   }
 
-  return agentsFiles.sort((left, right) => left.localeCompare(right));
+  return directoryEntries;
 }
 
 export async function scanInstructionFiles(
   repoRoot: string,
+  options: InstructionsScanOptions = {},
   overrides: Partial<InstructionsScanDependencies> = {},
 ): Promise<InstructionEntry[]> {
+  const strategy = resolveInstructionSyncStrategy(options.strategy);
   const dependencies: InstructionsScanDependencies = {
+    lstat,
+    realpath,
     readdir,
     readFile,
+    readlink,
     stat,
     ...overrides,
   };
 
-  const agentsFiles = await scanAgentsFiles(repoRoot, dependencies);
+  const instructionDirectories = await scanInstructionDirectories(
+    repoRoot,
+    dependencies,
+    options.debug,
+  );
   const entries: InstructionEntry[] = [];
 
-  for (const agentsPath of agentsFiles) {
-    const claudePath = join(dirname(agentsPath), 'CLAUDE.md');
+  for (const [directoryPath, directoryEntry] of instructionDirectories) {
+    const agentsPath = directoryEntry.agentsPath ?? null;
+    const brokenAgentsPath = directoryEntry.brokenAgentsPath ?? null;
+    const brokenAgentsErrorCode =
+      directoryEntry.brokenAgentsErrorCode ?? 'unknown error';
+    const brokenClaudePath = directoryEntry.brokenClaudePath ?? null;
+    const brokenClaudeErrorCode =
+      directoryEntry.brokenClaudeErrorCode ?? 'unknown error';
+    const claudePath =
+      directoryEntry.claudePath ?? join(directoryPath, 'CLAUDE.md');
 
-    try {
-      const claudeContent = await dependencies.readFile(claudePath, 'utf8');
-      if (normalizeLineEndings(claudeContent) === EXPECTED_CLAUDE_CONTENT) {
+    if (!agentsPath && brokenAgentsPath) {
+      entries.push({
+        agentsPath: brokenAgentsPath,
+        claudePath,
+        status: 'content_mismatch',
+        detail:
+          brokenAgentsErrorCode === 'ENOENT'
+            ? 'broken AGENTS.md symlink'
+            : `unreadable AGENTS.md symlink target (${brokenAgentsErrorCode})`,
+      });
+      continue;
+    }
+
+    if (brokenClaudePath) {
+      entries.push({
+        agentsPath,
+        claudePath,
+        status: 'content_mismatch',
+        detail:
+          brokenClaudeErrorCode === 'ENOENT'
+            ? 'broken CLAUDE.md symlink'
+            : `unreadable CLAUDE.md symlink target (${brokenClaudeErrorCode})`,
+      });
+      continue;
+    }
+
+    if (!agentsPath) {
+      try {
+        await dependencies.readFile(claudePath, 'utf8');
+      } catch (error) {
         entries.push({
-          agentsPath,
-          claudePath,
-          status: 'ok',
-          detail: 'pointer valid',
-        });
-      } else {
-        entries.push({
-          agentsPath,
+          agentsPath: null,
           claudePath,
           status: 'content_mismatch',
-          detail: `expected ${JSON.stringify(EXPECTED_CLAUDE_CONTENT)}`,
+          detail: `unable to read CLAUDE.md (${getErrorCode(error) ?? 'unknown'})`,
         });
+        continue;
       }
+      entries.push({
+        agentsPath: null,
+        claudePath,
+        status: 'stray',
+        detail: 'CLAUDE.md found without AGENTS.md',
+      });
+      continue;
+    }
+
+    let claudeStats;
+    try {
+      claudeStats = await dependencies.lstat(claudePath);
     } catch (error) {
       const errorCode = getErrorCode(error);
       if (errorCode === 'ENOENT') {
@@ -187,6 +337,130 @@ export async function scanInstructionFiles(
           detail: `unable to read CLAUDE.md (${errorCode ?? 'unknown error'})`,
         });
       }
+      continue;
+    }
+
+    if (strategy === 'symlink') {
+      if (!claudeStats.isSymbolicLink()) {
+        entries.push({
+          agentsPath,
+          claudePath,
+          status: 'content_mismatch',
+          detail: getInvalidInstructionDetail(strategy),
+        });
+        continue;
+      }
+
+      let claudeTarget: string;
+      try {
+        claudeTarget = await dependencies.readlink(claudePath);
+      } catch (error) {
+        const errorCode = getErrorCode(error);
+        entries.push({
+          agentsPath,
+          claudePath,
+          status: 'content_mismatch',
+          detail: `unable to read CLAUDE.md symlink target (${errorCode ?? 'unknown error'})`,
+        });
+        continue;
+      }
+
+      const resolvedTarget = resolve(dirname(claudePath), claudeTarget);
+      const [canonicalTarget, canonicalAgentsPath] = await Promise.all([
+        dependencies.realpath(resolvedTarget).catch(() => resolvedTarget),
+        dependencies.realpath(agentsPath).catch(() => agentsPath),
+      ]);
+
+      if (canonicalTarget === canonicalAgentsPath) {
+        entries.push({
+          agentsPath,
+          claudePath,
+          status: 'ok',
+          detail: getValidInstructionDetail(strategy),
+        });
+      } else {
+        entries.push({
+          agentsPath,
+          claudePath,
+          status: 'content_mismatch',
+          detail: getInvalidInstructionDetail(strategy),
+        });
+      }
+      continue;
+    }
+
+    if (claudeStats.isSymbolicLink()) {
+      entries.push({
+        agentsPath,
+        claudePath,
+        status: 'content_mismatch',
+        detail: getInvalidInstructionDetail(strategy),
+      });
+      continue;
+    }
+
+    let claudeContent: string;
+    try {
+      claudeContent = await dependencies.readFile(claudePath, 'utf8');
+    } catch (error) {
+      const errorCode = getErrorCode(error);
+      if (errorCode === 'ENOENT') {
+        entries.push({
+          agentsPath,
+          claudePath,
+          status: 'missing',
+          detail: 'CLAUDE.md missing',
+        });
+      } else {
+        entries.push({
+          agentsPath,
+          claudePath,
+          status: 'content_mismatch',
+          detail: `unable to read CLAUDE.md (${errorCode ?? 'unknown error'})`,
+        });
+      }
+      continue;
+    }
+
+    const expectedContent =
+      strategy === 'copy'
+        ? await (async () => {
+            try {
+              return await dependencies.readFile(agentsPath, 'utf8');
+            } catch (error) {
+              const errorCode = getErrorCode(error);
+              entries.push({
+                agentsPath,
+                claudePath,
+                status: 'content_mismatch',
+                detail: `unable to read AGENTS.md (${errorCode ?? 'unknown error'})`,
+              });
+              return null;
+            }
+          })()
+        : EXPECTED_CLAUDE_CONTENT;
+
+    if (expectedContent === null) {
+      continue;
+    }
+
+    if (
+      normalizeLineEndings(claudeContent) ===
+      normalizeLineEndings(expectedContent)
+    ) {
+      entries.push({
+        agentsPath,
+        claudePath,
+        status: 'ok',
+        detail: getValidInstructionDetail(strategy),
+      });
+    } else {
+      entries.push({
+        agentsPath,
+        claudePath,
+        status: 'content_mismatch',
+        detail: getInvalidInstructionDetail(strategy),
+      });
     }
   }
 
@@ -208,6 +482,7 @@ export function buildInstructionsSummary(
     contentMismatch: normalizedEntries.filter(
       (entry) => entry.status === 'content_mismatch',
     ).length,
+    stray: normalizedEntries.filter((entry) => entry.status === 'stray').length,
     created: normalizedActions.filter((action) => action.type === 'create')
       .length,
     updated: normalizedActions.filter((action) => action.type === 'update')
@@ -255,7 +530,7 @@ export function formatInstructionsReport(
   const lines = [
     `instructions ${payload.mode}`,
     `status: ${payload.status}`,
-    `summary: scanned=${payload.summary.scanned}, ok=${payload.summary.ok}, missing=${payload.summary.missing}, content_mismatch=${payload.summary.contentMismatch}, created=${payload.summary.created}, updated=${payload.summary.updated}, skipped=${payload.summary.skipped}`,
+    `summary: scanned=${payload.summary.scanned}, ok=${payload.summary.ok}, missing=${payload.summary.missing}, content_mismatch=${payload.summary.contentMismatch}, stray=${payload.summary.stray}, created=${payload.summary.created}, updated=${payload.summary.updated}, skipped=${payload.summary.skipped}`,
   ];
 
   if (payload.entries.length === 0) {
@@ -263,10 +538,11 @@ export function formatInstructionsReport(
   } else {
     lines.push('entries:');
     for (const entry of payload.entries) {
-      const agentsPath = repoRoot
-        ? toPosixPath(relative(repoRoot, entry.agentsPath)) || '.'
-        : toPosixPath(entry.agentsPath);
-      lines.push(`- ${agentsPath} -> ${entry.status} (${entry.detail})`);
+      const displayPath = entry.agentsPath ?? entry.claudePath;
+      const relativePath = repoRoot
+        ? toPosixPath(relative(repoRoot, displayPath)) || '.'
+        : toPosixPath(displayPath);
+      lines.push(`- ${relativePath} -> ${entry.status} (${entry.detail})`);
     }
   }
 

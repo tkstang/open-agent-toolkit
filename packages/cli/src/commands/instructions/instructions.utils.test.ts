@@ -1,6 +1,9 @@
 import {
+  lstat as fsLstat,
   readdir as fsReaddir,
   readFile as fsReadFile,
+  readlink as fsReadlink,
+  realpath as fsRealpath,
   stat as fsStat,
   mkdir,
   mkdtemp,
@@ -43,11 +46,12 @@ describe('instructions utils', () => {
     return root;
   }
 
-  it('scans AGENTS.md files and reports ok/missing/content_mismatch statuses', async () => {
+  it('scans instruction files and reports ok/missing/content_mismatch/stray statuses', async () => {
     const repoRoot = await createRepoRoot();
 
     await mkdir(join(repoRoot, 'packages', 'cli'), { recursive: true });
     await mkdir(join(repoRoot, 'packages', 'docs'), { recursive: true });
+    await mkdir(join(repoRoot, 'packages', 'stray'), { recursive: true });
 
     await writeFile(
       join(repoRoot, 'AGENTS.md'),
@@ -76,19 +80,29 @@ describe('instructions utils', () => {
       'custom content\n',
       'utf8',
     );
+    await writeFile(
+      join(repoRoot, 'packages', 'stray', 'CLAUDE.md'),
+      '# stray claude instructions\n',
+      'utf8',
+    );
 
     const entries = await scanInstructionFiles(repoRoot);
-    const byAgents = Object.fromEntries(
-      entries.map((entry) => [relative(repoRoot, entry.agentsPath), entry]),
+    const byPath = Object.fromEntries(
+      entries.map((entry) => [
+        relative(repoRoot, entry.agentsPath ?? entry.claudePath),
+        entry,
+      ]),
     );
 
-    expect(entries).toHaveLength(3);
-    expect(byAgents['AGENTS.md']?.status).toBe('ok');
-    expect(byAgents['packages/cli/AGENTS.md']?.status).toBe('missing');
-    expect(byAgents['packages/docs/AGENTS.md']?.status).toBe(
-      'content_mismatch',
-    );
-    expect(byAgents['packages/docs/AGENTS.md']?.detail).toContain('expected');
+    expect(entries).toHaveLength(4);
+    expect(byPath['AGENTS.md']?.status).toBe('ok');
+    expect(byPath['packages/cli/AGENTS.md']?.status).toBe('missing');
+    expect(byPath['packages/docs/AGENTS.md']?.status).toBe('content_mismatch');
+    expect(byPath['packages/docs/AGENTS.md']?.detail).toContain('expected');
+    expect(byPath['packages/stray/CLAUDE.md']).toMatchObject({
+      agentsPath: null,
+      status: 'stray',
+    });
   });
 
   it('ignores excluded directories and nested node_modules', async () => {
@@ -141,6 +155,348 @@ describe('instructions utils', () => {
     expect(entries[0]?.status).toBe('ok');
   });
 
+  it('validates symlink strategy against CLAUDE.md link targets', async () => {
+    const repoRoot = await createRepoRoot();
+
+    await mkdir(join(repoRoot, 'docs'), { recursive: true });
+    await writeFile(join(repoRoot, 'docs', 'AGENTS.md'), '# docs\n', 'utf8');
+    await symlink('AGENTS.md', join(repoRoot, 'docs', 'CLAUDE.md'));
+
+    const entries = await scanInstructionFiles(
+      repoRoot,
+      { strategy: 'symlink' },
+      {
+        lstat: fsLstat,
+        realpath: fsRealpath,
+        readlink: fsReadlink,
+      },
+    );
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      status: 'ok',
+      detail: 'symlink valid',
+    });
+  });
+
+  it('accepts symlink targets that resolve through a canonical root path', async () => {
+    const repoRoot = await createRepoRoot();
+    const aliasRoot = join(tmpdir(), `oat-instructions-alias-${Date.now()}`);
+
+    await mkdir(join(repoRoot, 'docs'), { recursive: true });
+    await writeFile(join(repoRoot, 'docs', 'AGENTS.md'), '# docs\n', 'utf8');
+    await symlink(
+      join(repoRoot, 'docs', 'AGENTS.md'),
+      join(repoRoot, 'docs', 'CLAUDE.md'),
+    );
+    await symlink(repoRoot, aliasRoot);
+    tempDirs.push(aliasRoot);
+
+    const entries = await scanInstructionFiles(
+      aliasRoot,
+      { strategy: 'symlink' },
+      {
+        lstat: fsLstat,
+        realpath: fsRealpath,
+        readlink: fsReadlink,
+      },
+    );
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      status: 'ok',
+      detail: 'symlink valid',
+    });
+  });
+
+  it('treats symlinks as drift when copy strategy is requested', async () => {
+    const repoRoot = await createRepoRoot();
+
+    await mkdir(join(repoRoot, 'docs'), { recursive: true });
+    await writeFile(join(repoRoot, 'docs', 'AGENTS.md'), '# docs\n', 'utf8');
+    await symlink('AGENTS.md', join(repoRoot, 'docs', 'CLAUDE.md'));
+
+    const entries = await scanInstructionFiles(
+      repoRoot,
+      { strategy: 'copy' },
+      {
+        lstat: fsLstat,
+        realpath: fsRealpath,
+        readlink: fsReadlink,
+      },
+    );
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      status: 'content_mismatch',
+    });
+    expect(entries[0]?.detail).toContain('expected hard copy');
+  });
+
+  it('reports AGENTS.md read failures separately when validating copy strategy', async () => {
+    const repoRoot = await createRepoRoot();
+    const docsDir = join(repoRoot, 'docs');
+
+    await mkdir(docsDir, { recursive: true });
+    await writeFile(join(docsDir, 'AGENTS.md'), '# docs\n', 'utf8');
+    await writeFile(join(docsDir, 'CLAUDE.md'), '# docs\n', 'utf8');
+
+    const entries = await scanInstructionFiles(
+      repoRoot,
+      { strategy: 'copy' },
+      {
+        lstat: fsLstat,
+        realpath: fsRealpath,
+        readFile: async (path, encoding) => {
+          if (path === join(docsDir, 'AGENTS.md')) {
+            throw Object.assign(new Error('gone'), { code: 'ENOENT' });
+          }
+
+          return fsReadFile(path, encoding);
+        },
+      },
+    );
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      status: 'content_mismatch',
+      detail: 'unable to read AGENTS.md (ENOENT)',
+    });
+  });
+
+  it('reports CLAUDE symlink target read failures separately', async () => {
+    const repoRoot = await createRepoRoot();
+    const docsDir = join(repoRoot, 'docs');
+
+    await mkdir(docsDir, { recursive: true });
+    await writeFile(join(docsDir, 'AGENTS.md'), '# docs\n', 'utf8');
+    await symlink('AGENTS.md', join(docsDir, 'CLAUDE.md'));
+
+    const entries = await scanInstructionFiles(
+      repoRoot,
+      { strategy: 'symlink' },
+      {
+        lstat: fsLstat,
+        realpath: fsRealpath,
+        readlink: async () => {
+          throw Object.assign(new Error('permission denied'), {
+            code: 'EACCES',
+          });
+        },
+      },
+    );
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      status: 'content_mismatch',
+      detail: 'unable to read CLAUDE.md symlink target (EACCES)',
+    });
+  });
+
+  it('reports unreadable CLAUDE files as content mismatch', async () => {
+    const repoRoot = await createRepoRoot();
+    const docsDir = join(repoRoot, 'docs');
+
+    await mkdir(docsDir, { recursive: true });
+    await writeFile(join(docsDir, 'AGENTS.md'), '# docs\n', 'utf8');
+    await writeFile(join(docsDir, 'CLAUDE.md'), '@AGENTS.md\n', 'utf8');
+
+    const entries = await scanInstructionFiles(repoRoot, undefined, {
+      readFile: async (path, encoding) => {
+        if (path === join(docsDir, 'CLAUDE.md')) {
+          throw Object.assign(new Error('permission denied'), {
+            code: 'EACCES',
+          });
+        }
+
+        return fsReadFile(path, encoding);
+      },
+    });
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      status: 'content_mismatch',
+      detail: 'unable to read CLAUDE.md (EACCES)',
+    });
+  });
+
+  it('surfaces broken Claude symlinks without sibling AGENTS.md as drift', async () => {
+    const repoRoot = await createRepoRoot();
+    const docsDir = join(repoRoot, 'docs');
+
+    await mkdir(docsDir, { recursive: true });
+    await symlink('missing-AGENTS.md', join(docsDir, 'CLAUDE.md'));
+
+    const entries = await scanInstructionFiles(repoRoot);
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      agentsPath: null,
+      claudePath: join(docsDir, 'CLAUDE.md'),
+      status: 'content_mismatch',
+      detail: 'broken CLAUDE.md symlink',
+    });
+  });
+
+  it('surfaces unreadable Claude-only files as drift instead of stray adoption', async () => {
+    const repoRoot = await createRepoRoot();
+    const docsDir = join(repoRoot, 'docs');
+
+    await mkdir(docsDir, { recursive: true });
+    await writeFile(
+      join(docsDir, 'CLAUDE.md'),
+      '# stray claude instructions\n',
+      'utf8',
+    );
+
+    const entries = await scanInstructionFiles(repoRoot, undefined, {
+      readFile: async (path, encoding) => {
+        if (path === join(docsDir, 'CLAUDE.md')) {
+          throw Object.assign(new Error('permission denied'), {
+            code: 'EACCES',
+          });
+        }
+
+        return fsReadFile(path, encoding);
+      },
+    });
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      agentsPath: null,
+      claudePath: join(docsDir, 'CLAUDE.md'),
+      status: 'content_mismatch',
+      detail: 'unable to read CLAUDE.md (EACCES)',
+    });
+  });
+
+  it('surfaces unreadable AGENTS symlink targets as canonical drift', async () => {
+    const repoRoot = await createRepoRoot();
+    const docsDir = join(repoRoot, 'docs');
+
+    await mkdir(docsDir, { recursive: true });
+    await symlink('target.md', join(docsDir, 'AGENTS.md'));
+    await writeFile(join(docsDir, 'CLAUDE.md'), '@AGENTS.md\n', 'utf8');
+
+    const entries = await scanInstructionFiles(repoRoot, undefined, {
+      stat: async (path) => {
+        if (path === join(docsDir, 'AGENTS.md')) {
+          throw Object.assign(new Error('permission denied'), {
+            code: 'EACCES',
+          });
+        }
+
+        return fsStat(path);
+      },
+    });
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      agentsPath: join(docsDir, 'AGENTS.md'),
+      claudePath: join(docsDir, 'CLAUDE.md'),
+      status: 'content_mismatch',
+      detail: 'unreadable AGENTS.md symlink target (EACCES)',
+    });
+  });
+
+  it('surfaces unreadable Claude-only symlink targets as drift', async () => {
+    const repoRoot = await createRepoRoot();
+    const docsDir = join(repoRoot, 'docs');
+
+    await mkdir(docsDir, { recursive: true });
+    await symlink('target.md', join(docsDir, 'CLAUDE.md'));
+
+    const entries = await scanInstructionFiles(repoRoot, undefined, {
+      stat: async (path) => {
+        if (path === join(docsDir, 'CLAUDE.md')) {
+          throw Object.assign(new Error('permission denied'), {
+            code: 'EACCES',
+          });
+        }
+
+        return fsStat(path);
+      },
+    });
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      agentsPath: null,
+      claudePath: join(docsDir, 'CLAUDE.md'),
+      status: 'content_mismatch',
+      detail: 'unreadable CLAUDE.md symlink target (EACCES)',
+    });
+  });
+
+  it('surfaces unreadable paired Claude symlink targets as drift for symlink strategy', async () => {
+    const repoRoot = await createRepoRoot();
+    const docsDir = join(repoRoot, 'docs');
+
+    await mkdir(docsDir, { recursive: true });
+    await writeFile(join(docsDir, 'AGENTS.md'), '# docs\n', 'utf8');
+    await symlink('AGENTS.md', join(docsDir, 'CLAUDE.md'));
+
+    const entries = await scanInstructionFiles(
+      repoRoot,
+      { strategy: 'symlink' },
+      {
+        stat: async (path) => {
+          if (path === join(docsDir, 'CLAUDE.md')) {
+            throw Object.assign(new Error('permission denied'), {
+              code: 'EACCES',
+            });
+          }
+
+          return fsStat(path);
+        },
+      },
+    );
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      agentsPath: join(docsDir, 'AGENTS.md'),
+      claudePath: join(docsDir, 'CLAUDE.md'),
+      status: 'content_mismatch',
+      detail: 'unreadable CLAUDE.md symlink target (EACCES)',
+    });
+  });
+
+  it('surfaces broken AGENTS symlinks as canonical drift when Claude exists', async () => {
+    const repoRoot = await createRepoRoot();
+    const docsDir = join(repoRoot, 'docs');
+
+    await mkdir(docsDir, { recursive: true });
+    await symlink('missing-AGENTS.md', join(docsDir, 'AGENTS.md'));
+    await writeFile(join(docsDir, 'CLAUDE.md'), '@AGENTS.md\n', 'utf8');
+
+    const entries = await scanInstructionFiles(repoRoot);
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      agentsPath: join(docsDir, 'AGENTS.md'),
+      claudePath: join(docsDir, 'CLAUDE.md'),
+      status: 'content_mismatch',
+      detail: 'broken AGENTS.md symlink',
+    });
+  });
+
+  it('surfaces broken AGENTS symlinks as canonical drift without Claude siblings', async () => {
+    const repoRoot = await createRepoRoot();
+    const docsDir = join(repoRoot, 'docs');
+
+    await mkdir(docsDir, { recursive: true });
+    await symlink('missing-AGENTS.md', join(docsDir, 'AGENTS.md'));
+
+    const entries = await scanInstructionFiles(repoRoot);
+
+    expect(entries).toHaveLength(1);
+    expect(entries[0]).toMatchObject({
+      agentsPath: join(docsDir, 'AGENTS.md'),
+      claudePath: join(docsDir, 'CLAUDE.md'),
+      status: 'content_mismatch',
+      detail: 'broken AGENTS.md symlink',
+    });
+  });
+
   it('skips directory symlinks during traversal', async () => {
     const repoRoot = await createRepoRoot();
 
@@ -174,28 +530,33 @@ describe('instructions utils', () => {
       join(repoRoot, 'broken-link'),
     );
 
-    const entries = await scanInstructionFiles(repoRoot, {
-      readdir: async (path, options) => {
-        if (path === join(repoRoot, 'bad-dir')) {
-          throw Object.assign(new Error('permission denied'), {
-            code: 'EACCES',
-          });
-        }
-        return fsReaddir(path, options);
+    const entries = await scanInstructionFiles(
+      repoRoot,
+      {
+        debug: (message) => {
+          debugLogs.push(message);
+        },
       },
-      readFile: fsReadFile,
-      stat: async (path) => {
-        if (path === join(repoRoot, 'broken-link')) {
-          throw Object.assign(new Error('permission denied'), {
-            code: 'EACCES',
-          });
-        }
-        return fsStat(path);
+      {
+        readdir: async (path, options) => {
+          if (path === join(repoRoot, 'bad-dir')) {
+            throw Object.assign(new Error('permission denied'), {
+              code: 'EACCES',
+            });
+          }
+          return fsReaddir(path, options);
+        },
+        readFile: fsReadFile,
+        stat: async (path) => {
+          if (path === join(repoRoot, 'broken-link')) {
+            throw Object.assign(new Error('permission denied'), {
+              code: 'EACCES',
+            });
+          }
+          return fsStat(path);
+        },
       },
-      debug: (message) => {
-        debugLogs.push(message);
-      },
-    });
+    );
 
     expect(relative(repoRoot, entries[0]?.agentsPath ?? '')).toBe(
       'good/AGENTS.md',
@@ -228,6 +589,12 @@ describe('instructions utils', () => {
         status: 'content_mismatch',
         detail: 'content mismatch',
       },
+      {
+        agentsPath: null,
+        claudePath: '/tmp/workspace/d/CLAUDE.md',
+        status: 'stray',
+        detail: 'CLAUDE.md found without AGENTS.md',
+      },
     ];
 
     const actions: InstructionActionRecord[] = [
@@ -253,10 +620,11 @@ describe('instructions utils', () => {
 
     const summary = buildInstructionsSummary(entries, actions);
     expect(summary).toEqual({
-      scanned: 3,
+      scanned: 4,
       ok: 1,
       missing: 1,
       contentMismatch: 1,
+      stray: 1,
       created: 1,
       updated: 1,
       skipped: 1,
@@ -270,10 +638,13 @@ describe('instructions utils', () => {
 
     expect(payload.status).toBe('drift');
     expect(payload.summary).toEqual(summary);
-    expect(payload.entries.map((entry) => entry.agentsPath)).toEqual([
+    expect(
+      payload.entries.map((entry) => entry.agentsPath ?? entry.claudePath),
+    ).toEqual([
       '/tmp/workspace/a/AGENTS.md',
       '/tmp/workspace/b/AGENTS.md',
       '/tmp/workspace/c/AGENTS.md',
+      '/tmp/workspace/d/CLAUDE.md',
     ]);
   });
 
@@ -282,10 +653,10 @@ describe('instructions utils', () => {
       mode: 'validate',
       entries: [
         {
-          agentsPath: '/tmp/workspace/AGENTS.md',
+          agentsPath: null,
           claudePath: '/tmp/workspace/CLAUDE.md',
-          status: 'missing',
-          detail: 'CLAUDE.md missing',
+          status: 'stray',
+          detail: 'CLAUDE.md found without AGENTS.md',
         },
       ],
       actions: [],
@@ -295,7 +666,7 @@ describe('instructions utils', () => {
 
     expect(output).toContain('instructions validate');
     expect(output).toContain('status: drift');
-    expect(output).toContain('AGENTS.md');
-    expect(output).toContain('missing');
+    expect(output).toContain('CLAUDE.md');
+    expect(output).toContain('stray');
   });
 });

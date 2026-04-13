@@ -12,7 +12,7 @@ import { CliError } from '@errors/cli-error';
 import { Command } from 'commander';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { createInstructionsSyncCommand } from './sync';
+import { createInstructionsSyncCommand, removeInstructionFile } from './sync';
 
 interface HarnessOptions {
   entries?: InstructionEntry[];
@@ -23,7 +23,11 @@ interface HarnessOptions {
 function createHarness(options: HarnessOptions = {}): {
   capture: LoggerCapture;
   command: Command;
+  lstat: ReturnType<typeof vi.fn>;
+  readFile: ReturnType<typeof vi.fn>;
+  removeFile: ReturnType<typeof vi.fn>;
   scanInstructionFiles: ReturnType<typeof vi.fn>;
+  symlinkFile: ReturnType<typeof vi.fn>;
   writeFile: ReturnType<typeof vi.fn>;
 } {
   const capture = createLoggerCapture();
@@ -37,6 +41,12 @@ function createHarness(options: HarnessOptions = {}): {
   });
 
   const writeFile = vi.fn(async () => undefined);
+  const lstat = vi.fn(async () => {
+    throw Object.assign(new Error('missing'), { code: 'ENOENT' });
+  });
+  const readFile = vi.fn(async () => '# canonical instructions\n');
+  const removeFile = vi.fn(async () => undefined);
+  const symlinkFile = vi.fn(async () => undefined);
 
   const command = createInstructionsSyncCommand({
     buildCommandContext: (globalOptions: GlobalOptions): CommandContext => ({
@@ -49,15 +59,23 @@ function createHarness(options: HarnessOptions = {}): {
       interactive: false,
       logger: capture.logger,
     }),
+    lstat,
+    readFile,
+    removeFile,
     resolveProjectRoot: vi.fn(async () => '/tmp/workspace'),
     scanInstructionFiles,
+    symlinkFile,
     writeFile,
   } satisfies Partial<InstructionsSyncCommandDependencies>);
 
   return {
     capture,
     command,
+    lstat,
+    readFile,
+    removeFile,
     scanInstructionFiles,
+    symlinkFile,
     writeFile,
   };
 }
@@ -94,6 +112,16 @@ describe('createInstructionsSyncCommand', () => {
 
   afterEach(() => {
     process.exitCode = originalExitCode;
+  });
+
+  it('removeInstructionFile only uses force when deleting a file target', async () => {
+    const remove = vi.fn(async () => undefined);
+
+    await removeInstructionFile('/tmp/workspace/CLAUDE.md', remove);
+
+    expect(remove).toHaveBeenCalledWith('/tmp/workspace/CLAUDE.md', {
+      force: true,
+    });
   });
 
   it('dry-run plans create actions and prints apply guidance', async () => {
@@ -139,6 +167,142 @@ describe('createInstructionsSyncCommand', () => {
     expect(process.exitCode).toBe(1);
   });
 
+  it('dry-run reports unreadable canonical AGENTS.md files as manual-repair skips', async () => {
+    const { command, capture } = createHarness({
+      entries: [
+        {
+          agentsPath: '/tmp/workspace/docs/AGENTS.md',
+          claudePath: '/tmp/workspace/docs/CLAUDE.md',
+          status: 'content_mismatch',
+          detail: 'broken AGENTS.md symlink',
+        },
+      ],
+      json: true,
+    });
+
+    await runSyncCommand(command, {
+      globalArgs: ['--json'],
+      commandArgs: ['--dry-run'],
+    });
+
+    expect(capture.jsonPayloads[0]).toMatchObject({
+      mode: 'dry-run',
+      status: 'drift',
+      summary: { scanned: 1, contentMismatch: 1, skipped: 1 },
+      actions: [
+        {
+          type: 'skip',
+          target: '/tmp/workspace/docs/AGENTS.md',
+          reason: 'canonical AGENTS.md unreadable; repair manually',
+          result: 'skipped',
+        },
+      ],
+    });
+    expect(process.exitCode).toBe(1);
+  });
+
+  it('dry-run reports unreadable AGENTS symlink targets as manual-repair skips', async () => {
+    const { command, capture } = createHarness({
+      entries: [
+        {
+          agentsPath: '/tmp/workspace/docs/AGENTS.md',
+          claudePath: '/tmp/workspace/docs/CLAUDE.md',
+          status: 'content_mismatch',
+          detail: 'unreadable AGENTS.md symlink target (EACCES)',
+        },
+      ],
+      json: true,
+    });
+
+    await runSyncCommand(command, {
+      globalArgs: ['--json'],
+      commandArgs: ['--dry-run'],
+    });
+
+    expect(capture.jsonPayloads[0]).toMatchObject({
+      mode: 'dry-run',
+      status: 'drift',
+      summary: { scanned: 1, contentMismatch: 1, skipped: 1 },
+      actions: [
+        {
+          type: 'skip',
+          target: '/tmp/workspace/docs/AGENTS.md',
+          reason: 'canonical AGENTS.md unreadable; repair manually',
+          result: 'skipped',
+        },
+      ],
+    });
+    expect(process.exitCode).toBe(1);
+  });
+
+  it('dry-run reports unreadable Claude symlink targets as manual-repair skips', async () => {
+    const { command, capture } = createHarness({
+      entries: [
+        {
+          agentsPath: null,
+          claudePath: '/tmp/workspace/docs/CLAUDE.md',
+          status: 'content_mismatch',
+          detail: 'unreadable CLAUDE.md symlink target (EACCES)',
+        },
+      ],
+      json: true,
+    });
+
+    await runSyncCommand(command, {
+      globalArgs: ['--json'],
+      commandArgs: ['--dry-run'],
+    });
+
+    expect(capture.jsonPayloads[0]).toMatchObject({
+      mode: 'dry-run',
+      status: 'drift',
+      summary: { scanned: 1, contentMismatch: 1, skipped: 1 },
+      actions: [
+        {
+          type: 'skip',
+          target: '/tmp/workspace/docs/CLAUDE.md',
+          reason: 'CLAUDE.md unreadable; repair manually',
+          result: 'skipped',
+        },
+      ],
+    });
+    expect(process.exitCode).toBe(1);
+  });
+
+  it('dry-run reports unreadable Claude-only files as manual-repair skips', async () => {
+    const { command, capture } = createHarness({
+      entries: [
+        {
+          agentsPath: null,
+          claudePath: '/tmp/workspace/docs/CLAUDE.md',
+          status: 'content_mismatch',
+          detail: 'broken CLAUDE.md symlink',
+        },
+      ],
+      json: true,
+    });
+
+    await runSyncCommand(command, {
+      globalArgs: ['--json'],
+      commandArgs: ['--dry-run'],
+    });
+
+    expect(capture.jsonPayloads[0]).toMatchObject({
+      mode: 'dry-run',
+      status: 'drift',
+      summary: { scanned: 1, contentMismatch: 1, skipped: 1 },
+      actions: [
+        {
+          type: 'skip',
+          target: '/tmp/workspace/docs/CLAUDE.md',
+          reason: 'CLAUDE.md unreadable; repair manually',
+          result: 'skipped',
+        },
+      ],
+    });
+    expect(process.exitCode).toBe(1);
+  });
+
   it('dry-run with --force plans update actions', async () => {
     const { command, capture } = createHarness({
       entries: [
@@ -159,7 +323,7 @@ describe('createInstructionsSyncCommand', () => {
   });
 
   it('apply (default) writes pointer content for planned create and update actions', async () => {
-    const { command, writeFile, capture } = createHarness({
+    const { command, removeFile, writeFile, capture } = createHarness({
       entries: [
         {
           agentsPath: '/tmp/workspace/AGENTS.md',
@@ -191,8 +355,182 @@ describe('createInstructionsSyncCommand', () => {
       EXPECTED_CLAUDE_CONTENT,
       'utf8',
     );
+    expect(removeFile).toHaveBeenCalledWith(
+      '/tmp/workspace/packages/cli/CLAUDE.md',
+    );
     expect(capture.info[0]).toContain('instructions apply');
     expect(process.exitCode).toBe(0);
+  });
+
+  it('apply with --strategy symlink creates relative file symlinks', async () => {
+    const { command, removeFile, symlinkFile, writeFile } = createHarness({
+      entries: [
+        {
+          agentsPath: '/tmp/workspace/docs/AGENTS.md',
+          claudePath: '/tmp/workspace/docs/CLAUDE.md',
+          status: 'missing',
+          detail: 'CLAUDE.md missing',
+        },
+        {
+          agentsPath: '/tmp/workspace/packages/cli/AGENTS.md',
+          claudePath: '/tmp/workspace/packages/cli/CLAUDE.md',
+          status: 'content_mismatch',
+          detail: 'wrong file type',
+        },
+      ],
+    });
+
+    await runSyncCommand(command, {
+      commandArgs: ['--strategy', 'symlink', '--force'],
+    });
+
+    expect(writeFile).not.toHaveBeenCalled();
+    expect(symlinkFile).toHaveBeenCalledTimes(2);
+    expect(symlinkFile).toHaveBeenNthCalledWith(
+      1,
+      'AGENTS.md',
+      '/tmp/workspace/docs/CLAUDE.md',
+    );
+    expect(symlinkFile).toHaveBeenNthCalledWith(
+      2,
+      'AGENTS.md',
+      '/tmp/workspace/packages/cli/CLAUDE.md',
+    );
+    expect(removeFile).toHaveBeenCalledWith(
+      '/tmp/workspace/packages/cli/CLAUDE.md',
+    );
+  });
+
+  it('apply with --strategy copy writes AGENTS.md content into CLAUDE.md', async () => {
+    const { command, readFile, removeFile, symlinkFile, writeFile } =
+      createHarness({
+        entries: [
+          {
+            agentsPath: '/tmp/workspace/AGENTS.md',
+            claudePath: '/tmp/workspace/CLAUDE.md',
+            status: 'missing',
+            detail: 'CLAUDE.md missing',
+          },
+          {
+            agentsPath: '/tmp/workspace/packages/cli/AGENTS.md',
+            claudePath: '/tmp/workspace/packages/cli/CLAUDE.md',
+            status: 'content_mismatch',
+            detail: 'pointer file present',
+          },
+        ],
+      });
+
+    readFile
+      .mockResolvedValueOnce('# root instructions\n')
+      .mockResolvedValueOnce('# cli instructions\n');
+
+    await runSyncCommand(command, {
+      commandArgs: ['--strategy', 'copy', '--force'],
+    });
+
+    expect(symlinkFile).not.toHaveBeenCalled();
+    expect(writeFile).toHaveBeenNthCalledWith(
+      1,
+      '/tmp/workspace/CLAUDE.md',
+      '# root instructions\n',
+      'utf8',
+    );
+    expect(writeFile).toHaveBeenNthCalledWith(
+      2,
+      '/tmp/workspace/packages/cli/CLAUDE.md',
+      '# cli instructions\n',
+      'utf8',
+    );
+    expect(removeFile).toHaveBeenCalledWith(
+      '/tmp/workspace/packages/cli/CLAUDE.md',
+    );
+  });
+
+  it('adopts stray CLAUDE.md content into AGENTS.md before re-syncing Claude', async () => {
+    const { command, readFile, removeFile, symlinkFile, writeFile } =
+      createHarness({
+        entries: [
+          {
+            agentsPath: null,
+            claudePath: '/tmp/workspace/docs/CLAUDE.md',
+            status: 'stray',
+            detail: 'CLAUDE.md found without AGENTS.md',
+          },
+        ],
+      });
+
+    readFile.mockResolvedValueOnce('# stray claude instructions\n');
+
+    await runSyncCommand(command);
+
+    expect(symlinkFile).not.toHaveBeenCalled();
+    expect(writeFile).toHaveBeenNthCalledWith(
+      1,
+      '/tmp/workspace/docs/AGENTS.md',
+      '# stray claude instructions\n',
+      'utf8',
+    );
+    expect(removeFile).toHaveBeenCalledWith('/tmp/workspace/docs/CLAUDE.md');
+    expect(writeFile).toHaveBeenNthCalledWith(
+      2,
+      '/tmp/workspace/docs/CLAUDE.md',
+      EXPECTED_CLAUDE_CONTENT,
+      'utf8',
+    );
+  });
+
+  it('reports partial stray adoption when Claude regeneration fails after AGENTS.md is written', async () => {
+    const { command, capture, readFile, removeFile, writeFile } = createHarness(
+      {
+        entries: [
+          {
+            agentsPath: null,
+            claudePath: '/tmp/workspace/docs/CLAUDE.md',
+            status: 'stray',
+            detail: 'CLAUDE.md found without AGENTS.md',
+          },
+        ],
+      },
+    );
+
+    readFile.mockResolvedValueOnce('# stray claude instructions\n');
+    writeFile
+      .mockResolvedValueOnce(undefined)
+      .mockRejectedValueOnce(new Error('permission denied'));
+
+    await runSyncCommand(command);
+
+    expect(removeFile).toHaveBeenCalledWith('/tmp/workspace/docs/CLAUDE.md');
+    expect(capture.error).toContain(
+      'Adopted stray instructions into /tmp/workspace/docs/AGENTS.md, but failed to regenerate /tmp/workspace/docs/CLAUDE.md: permission denied',
+    );
+    expect(process.exitCode).toBe(2);
+  });
+
+  it('fails when canonical AGENTS.md appears before stray adoption is applied', async () => {
+    const { command, capture, lstat, removeFile, writeFile } = createHarness({
+      entries: [
+        {
+          agentsPath: null,
+          claudePath: '/tmp/workspace/docs/CLAUDE.md',
+          status: 'stray',
+          detail: 'CLAUDE.md found without AGENTS.md',
+        },
+      ],
+    });
+
+    lstat.mockResolvedValueOnce({
+      isFile: () => true,
+    });
+
+    await runSyncCommand(command);
+
+    expect(removeFile).not.toHaveBeenCalled();
+    expect(writeFile).not.toHaveBeenCalled();
+    expect(capture.error).toContain(
+      'Canonical AGENTS.md appeared during sync at /tmp/workspace/docs/AGENTS.md; re-run to reclassify before adopting stray CLAUDE.md',
+    );
+    expect(process.exitCode).toBe(2);
   });
 
   it('apply (default) without --force leaves mismatches skipped and exits 1', async () => {
@@ -278,5 +616,19 @@ describe('createInstructionsSyncCommand', () => {
 
     expect(capture.error).toContain('sync failed');
     expect(process.exitCode).toBe(2);
+  });
+
+  it('passes the requested strategy through the shared scan path', async () => {
+    const { command, scanInstructionFiles } = createHarness({
+      entries: [],
+    });
+
+    await runSyncCommand(command, {
+      commandArgs: ['--dry-run', '--strategy', 'copy'],
+    });
+
+    expect(scanInstructionFiles).toHaveBeenCalledWith('/tmp/workspace', {
+      strategy: 'copy',
+    });
   });
 });

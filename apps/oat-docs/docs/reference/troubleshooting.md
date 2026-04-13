@@ -27,12 +27,17 @@ Expected for native-read skill mappings. Codex can read canonical skills without
   - `oat providers set --scope project --enabled <providers> --disabled <providers>`
 - Re-run `oat sync --scope project` after updating config.
 
-## `instructions validate` reports `missing` or `content_mismatch`
+## `instructions validate` reports `missing`, `content_mismatch`, or `stray`
 
-- Run `oat instructions sync` to preview changes.
-- Run `oat instructions sync` to create missing pointer files.
-- If mismatched `CLAUDE.md` files should be overwritten, run `oat instructions sync --force`.
+- Run `oat instructions sync --dry-run` to preview changes.
+- Run `oat instructions sync --strategy pointer|symlink|copy` to apply the expected `CLAUDE.md` shape.
+- If mismatched `CLAUDE.md` files should be overwritten, run `oat instructions sync --force` (or combine it with `--strategy` if needed).
+- If `stray` is reported, `oat instructions sync` will adopt the Claude-only file into `AGENTS.md` and then regenerate `CLAUDE.md`.
+- If a broken or unreadable instruction path is reported, fix the underlying file or symlink target first; sync will intentionally skip manual-repair cases instead of forcing recovery.
+- If a directory you expected to see is missing from the scan, confirm it is not under `.git`, `.oat`, `.worktrees`, or `node_modules`.
 - Re-run `oat instructions validate` and confirm status is `ok`.
+
+Use [Instruction Sync](../provider-sync/instruction-sync.md) for the full strategy matrix and state model.
 
 ## `doctor` warns about canonical directories
 

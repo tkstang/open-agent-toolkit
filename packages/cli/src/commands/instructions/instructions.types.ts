@@ -2,12 +2,21 @@ import type { Dirent, Stats } from 'node:fs';
 
 import type { CommandContext, GlobalOptions } from '@app/command-context';
 
-export type InstructionStatus = 'ok' | 'missing' | 'content_mismatch';
+export const INSTRUCTION_SYNC_STRATEGIES = [
+  'pointer',
+  'symlink',
+  'copy',
+] as const;
+
+export type InstructionSyncStrategy =
+  (typeof INSTRUCTION_SYNC_STRATEGIES)[number];
+
+export type InstructionStatus = 'ok' | 'missing' | 'content_mismatch' | 'stray';
 
 export type InstructionsStatus = 'ok' | 'drift';
 
 export interface InstructionEntry {
-  agentsPath: string;
+  agentsPath: string | null;
   claudePath: string;
   status: InstructionStatus;
   detail: string;
@@ -31,6 +40,7 @@ export interface InstructionsSummary {
   ok: number;
   missing: number;
   contentMismatch: number;
+  stray: number;
   created: number;
   updated: number;
   skipped: number;
@@ -44,14 +54,21 @@ export interface InstructionsJsonPayload {
   actions: InstructionActionRecord[];
 }
 
+export interface InstructionsScanOptions {
+  strategy?: InstructionSyncStrategy;
+  debug?: (message: string) => void;
+}
+
 export interface InstructionsScanDependencies {
   readdir: (
     path: string,
     options: { withFileTypes: true },
   ) => Promise<Dirent[]>;
+  lstat: (path: string) => Promise<Stats>;
+  realpath: (path: string) => Promise<string>;
   readFile: (path: string, encoding: 'utf8') => Promise<string>;
+  readlink: (path: string) => Promise<string>;
   stat: (path: string) => Promise<Stats>;
-  debug?: (message: string) => void;
 }
 
 export interface InstructionsValidateCommandDependencies {
@@ -59,10 +76,15 @@ export interface InstructionsValidateCommandDependencies {
   resolveProjectRoot: (cwd: string) => Promise<string>;
   scanInstructionFiles: (
     repoRoot: string,
+    options?: InstructionsScanOptions,
     overrides?: Partial<InstructionsScanDependencies>,
   ) => Promise<InstructionEntry[]>;
 }
 
 export interface InstructionsSyncCommandDependencies extends InstructionsValidateCommandDependencies {
+  lstat: (path: string) => Promise<Stats>;
+  readFile: (path: string, encoding: 'utf8') => Promise<string>;
+  removeFile: (path: string) => Promise<void>;
+  symlinkFile: (target: string, path: string) => Promise<void>;
   writeFile: (path: string, content: string, encoding: 'utf8') => Promise<void>;
 }

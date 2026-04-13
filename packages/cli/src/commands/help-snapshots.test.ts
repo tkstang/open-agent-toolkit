@@ -397,20 +397,24 @@ describe('help output snapshots', () => {
   it('instructions --help matches snapshot', () => {
     const program = createRegisteredProgram();
     const help = getCommandByPath(program, ['instructions']).helpInformation();
-    expect(help).toMatchInlineSnapshot(`
-      "Usage: oat instructions [options] [command]
-
-      Manage AGENTS.md and CLAUDE.md instruction file integrity
-
-      Options:
-        -h, --help      display help for command
-
-      Commands:
-        validate        Validate AGENTS.md to CLAUDE.md pointer integrity
-        sync [options]  Repair AGENTS.md to CLAUDE.md pointer drift
-        help [command]  display help for command
-      "
-    `);
+    expect(help).toBe(
+      [
+        'Usage: oat instructions [options] [command]',
+        '',
+        'Manage AGENTS.md and CLAUDE.md instruction file integrity',
+        '',
+        'Options:',
+        '  -h, --help          display help for command',
+        '',
+        'Commands:',
+        '  validate [options]  Validate AGENTS.md/CLAUDE.md sync integrity for the',
+        '                      selected strategy',
+        '  sync [options]      Repair AGENTS.md/CLAUDE.md sync drift using the selected',
+        '                      strategy',
+        '  help [command]      display help for command',
+        '',
+      ].join('\n'),
+    );
   });
 
   it('docs --help matches snapshot', () => {
@@ -519,10 +523,12 @@ describe('help output snapshots', () => {
     expect(help).toMatchInlineSnapshot(`
       "Usage: oat instructions validate [options]
 
-      Validate AGENTS.md to CLAUDE.md pointer integrity
+      Validate AGENTS.md/CLAUDE.md sync integrity for the selected strategy
 
       Options:
-        -h, --help  display help for command
+        --strategy <strategy>  Sync strategy (choices: "pointer", "symlink", "copy",
+                               default: "pointer")
+        -h, --help             display help for command
       "
     `);
   });
@@ -536,12 +542,14 @@ describe('help output snapshots', () => {
     expect(help).toMatchInlineSnapshot(`
       "Usage: oat instructions sync [options]
 
-      Repair AGENTS.md to CLAUDE.md pointer drift
+      Repair AGENTS.md/CLAUDE.md sync drift using the selected strategy
 
       Options:
-        --dry-run   Preview sync changes without applying
-        --force     Overwrite mismatched CLAUDE.md files
-        -h, --help  display help for command
+        --dry-run              Preview sync changes without applying
+        --force                Overwrite mismatched CLAUDE.md files
+        --strategy <strategy>  Sync strategy (choices: "pointer", "symlink", "copy",
+                               default: "pointer")
+        -h, --help             display help for command
       "
     `);
   });
