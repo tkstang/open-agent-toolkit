@@ -14,7 +14,54 @@ interface HarnessOptions {
   scope?: Scope;
   interactive?: boolean;
   packSelection?: Array<string[] | null>;
-  scopeSelection?: Array<'project' | 'user' | null>;
+  scopeSelection?: Array<string | null>;
+  toolsByScope?: Partial<
+    Record<
+      'project' | 'user',
+      Array<{
+        name: string;
+        type: 'skill' | 'agent';
+        scope: 'project' | 'user';
+        version: string | null;
+        bundledVersion: string | null;
+        pack:
+          | 'core'
+          | 'ideas'
+          | 'docs'
+          | 'workflows'
+          | 'utility'
+          | 'project-management'
+          | 'research'
+          | 'custom';
+        status: 'current' | 'outdated' | 'newer' | 'not-bundled';
+      }>
+    >
+  >;
+}
+
+function createScannedTool(
+  name: string,
+  pack:
+    | 'core'
+    | 'ideas'
+    | 'docs'
+    | 'workflows'
+    | 'utility'
+    | 'project-management'
+    | 'research'
+    | 'custom',
+  scope: 'project' | 'user',
+  type: 'skill' | 'agent' = 'skill',
+) {
+  return {
+    name,
+    type,
+    scope,
+    version: '1.0.0',
+    bundledVersion: '1.0.0',
+    pack,
+    status: 'current' as const,
+  };
 }
 
 function createHarness(options: HarnessOptions = {}) {
@@ -25,6 +72,21 @@ function createHarness(options: HarnessOptions = {}) {
     ]),
   ];
   const scopeSelection = [...(options.scopeSelection ?? ['project'])];
+  const toolsByScope = options.toolsByScope ?? {
+    project: [
+      createScannedTool('oat-idea-new', 'ideas', 'project'),
+      createScannedTool('oat-docs-analyze', 'docs', 'project'),
+      createScannedTool('oat-project-new', 'workflows', 'project'),
+      createScannedTool('oat-review-provide', 'utility', 'project'),
+      createScannedTool(
+        'oat-pjm-add-backlog-item',
+        'project-management',
+        'project',
+      ),
+      createScannedTool('analyze', 'research', 'project'),
+    ],
+    user: [createScannedTool('oat-docs', 'core', 'user')],
+  };
 
   const selectManyWithAbort = vi.fn(
     async (_message: string, _choices: MultiSelectChoice<string>[]) => {
@@ -35,9 +97,9 @@ function createHarness(options: HarnessOptions = {}) {
     },
   );
   const selectWithAbort = vi.fn(
-    async (_message: string, _choices: SelectChoice<'project' | 'user'>[]) => {
+    async (_message: string, _choices: SelectChoice<string>[]) => {
       const next = scopeSelection.shift();
-      return next === undefined ? 'project' : next;
+      return next === undefined ? (choices[0]?.value ?? null) : next;
     },
   );
 
@@ -108,6 +170,8 @@ function createHarness(options: HarnessOptions = {}) {
     skippedAgents: [],
   }));
   const copyDirWithStatus = vi.fn(async () => 'updated' as const);
+  const removeDirectory = vi.fn(async () => {});
+  const removeFile = vi.fn(async () => {});
   const addLocalPaths = vi.fn(async (_repoRoot: string, paths: string[]) => ({
     added: paths,
     alreadyPresent: [] as string[],
@@ -122,6 +186,10 @@ function createHarness(options: HarnessOptions = {}) {
   const writeOatConfig = vi.fn(async () => {});
   const resolveLocalPaths = vi.fn(
     (config: { localPaths?: string[] }) => config.localPaths ?? [],
+  );
+  const scanTools = vi.fn(
+    async (scanOptions: { scope: 'project' | 'user' }) =>
+      toolsByScope[scanOptions.scope] ?? [],
   );
   const upsertAgentsMdSection = vi.fn(async () => ({
     action: 'updated' as const,
@@ -142,6 +210,7 @@ function createHarness(options: HarnessOptions = {}) {
     resolveProjectRoot: vi.fn(async () => '/tmp/workspace'),
     resolveScopeRoot: vi.fn((_scope: 'project' | 'user', _cwd, home) => home),
     resolveAssetsRoot: vi.fn(async () => '/tmp/assets'),
+    scanTools,
     selectManyWithAbort,
     selectWithAbort,
     installCore,
@@ -152,6 +221,8 @@ function createHarness(options: HarnessOptions = {}) {
     installProjectManagement,
     installResearch,
     copyDirWithStatus,
+    removeDirectory,
+    removeFile,
     addLocalPaths,
     applyGitignore,
     readOatConfig,
@@ -174,11 +245,14 @@ function createHarness(options: HarnessOptions = {}) {
     installProjectManagement,
     installResearch,
     copyDirWithStatus,
+    removeDirectory,
+    removeFile,
     addLocalPaths,
     applyGitignore,
     readOatConfig,
     writeOatConfig,
     resolveLocalPaths,
+    scanTools,
     upsertAgentsMdSection,
   };
 }
@@ -257,6 +331,114 @@ describe('createInitToolsCommand', () => {
         .filter((choice) => choice.value !== 'project-management')
         .every((choice) => choice.checked === true),
     ).toBe(true);
+  });
+
+  it('annotates already-installed packs in the main pack selection prompt', async () => {
+    const { command, selectManyWithAbort } = createHarness({
+      interactive: true,
+      packSelection: [['ideas', 'docs', 'research'], ['docs']],
+      toolsByScope: {
+        project: [
+          createScannedTool('oat-idea-new', 'ideas', 'project'),
+          createScannedTool('analyze', 'research', 'project'),
+        ],
+        user: [
+          createScannedTool('oat-docs-analyze', 'docs', 'user'),
+          createScannedTool('analyze', 'research', 'user'),
+          createScannedTool('oat-docs', 'core', 'user'),
+        ],
+      },
+    });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    const choices = selectManyWithAbort.mock.calls[0]?.[1] as Array<{
+      value: string;
+      label: string;
+    }>;
+    expect(choices.find((choice) => choice.value === 'ideas')?.label).toContain(
+      '(installed: project)',
+    );
+    expect(choices.find((choice) => choice.value === 'docs')?.label).toContain(
+      '(installed: user)',
+    );
+    expect(
+      choices.find((choice) => choice.value === 'research')?.label,
+    ).toContain('(installed: project + user)');
+  });
+
+  it('prechecks user-scope follow-up choices from current install location and labels both-scope packs clearly', async () => {
+    const { command, selectManyWithAbort } = createHarness({
+      interactive: true,
+      packSelection: [['ideas', 'docs', 'research'], ['docs']],
+      toolsByScope: {
+        project: [
+          createScannedTool('oat-idea-new', 'ideas', 'project'),
+          createScannedTool('analyze', 'research', 'project'),
+        ],
+        user: [
+          createScannedTool('oat-docs-analyze', 'docs', 'user'),
+          createScannedTool('analyze', 'research', 'user'),
+          createScannedTool('oat-docs', 'core', 'user'),
+        ],
+      },
+    });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    const choices = selectManyWithAbort.mock.calls[1]?.[1] as Array<{
+      value: string;
+      label: string;
+      checked?: boolean;
+    }>;
+    expect(choices.find((choice) => choice.value === 'ideas')).toEqual(
+      expect.objectContaining({
+        label: 'ideas (current: project)',
+        checked: false,
+      }),
+    );
+    expect(choices.find((choice) => choice.value === 'docs')).toEqual(
+      expect.objectContaining({
+        label: 'docs (current: user)',
+        checked: true,
+      }),
+    );
+    expect(choices.find((choice) => choice.value === 'research')).toEqual(
+      expect.objectContaining({
+        label: 'research (current: project + user)',
+        checked: true,
+      }),
+    );
+  });
+
+  it('defaults both-scope installs to keep both and updates both roots when the user keeps them', async () => {
+    const { command, installResearch, removeDirectory, removeFile, capture } =
+      createHarness({
+        interactive: true,
+        packSelection: [['research'], ['research']],
+        scopeSelection: ['both'],
+        toolsByScope: {
+          project: [createScannedTool('analyze', 'research', 'project')],
+          user: [createScannedTool('analyze', 'research', 'user')],
+        },
+      });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    expect(installResearch).toHaveBeenCalledTimes(2);
+    expect(installResearch).toHaveBeenNthCalledWith(
+      1,
+      expect.objectContaining({ targetRoot: '/tmp/workspace' }),
+    );
+    expect(installResearch).toHaveBeenNthCalledWith(
+      2,
+      expect.objectContaining({ targetRoot: '/tmp/home' }),
+    );
+    expect(removeDirectory).not.toHaveBeenCalled();
+    expect(removeFile).not.toHaveBeenCalled();
+    expect(capture.info.join('\n')).toContain(
+      'Installed tool packs: research (project + user)',
+    );
   });
 
   it('non-interactive installs everything to project scope (core always user)', async () => {
@@ -364,6 +546,75 @@ describe('createInitToolsCommand', () => {
     );
   });
 
+  it('reports final per-pack scopes instead of a coarse shared scope label', async () => {
+    const { command, capture } = createHarness({
+      interactive: true,
+      packSelection: [['core', 'ideas', 'docs'], ['ideas']],
+      toolsByScope: {
+        project: [createScannedTool('oat-docs-analyze', 'docs', 'project')],
+        user: [createScannedTool('oat-docs', 'core', 'user')],
+      },
+    });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    const output = capture.info.join('\n');
+    expect(output).toContain(
+      'Installed tool packs: core (user), ideas (user), docs (project)',
+    );
+    expect(output).not.toContain('User-eligible pack scope:');
+    expect(output).toContain('Run: oat sync --scope user');
+    expect(output).toContain('Also run: oat sync --scope project');
+  });
+
+  it('migrates user-eligible packs from project to user scope by removing project canonical content', async () => {
+    const { command, installIdeas, removeDirectory, removeFile } =
+      createHarness({
+        interactive: true,
+        packSelection: [['ideas'], ['ideas']],
+        toolsByScope: {
+          project: [createScannedTool('oat-idea-new', 'ideas', 'project')],
+          user: [],
+        },
+      });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    expect(installIdeas).toHaveBeenCalledWith(
+      expect.objectContaining({ targetRoot: '/tmp/home' }),
+    );
+    expect(removeDirectory).toHaveBeenCalledWith(
+      '/tmp/workspace/.agents/skills/oat-idea-new',
+    );
+    expect(removeDirectory).toHaveBeenCalledTimes(4);
+    expect(removeFile).not.toHaveBeenCalled();
+  });
+
+  it('normalizes a both-scopes install to project by removing user canonical content and agents', async () => {
+    const { command, installResearch, removeDirectory, removeFile } =
+      createHarness({
+        interactive: true,
+        packSelection: [['research'], []],
+        toolsByScope: {
+          project: [createScannedTool('analyze', 'research', 'project')],
+          user: [createScannedTool('analyze', 'research', 'user')],
+        },
+      });
+
+    await runCommand(command, [], ['--scope', 'all']);
+
+    expect(installResearch).toHaveBeenCalledWith(
+      expect.objectContaining({ targetRoot: '/tmp/workspace' }),
+    );
+    expect(removeDirectory).toHaveBeenCalledWith(
+      '/tmp/home/.agents/skills/analyze',
+    );
+    expect(removeDirectory).toHaveBeenCalledTimes(5);
+    expect(removeFile).toHaveBeenCalledWith(
+      '/tmp/home/.agents/agents/skeptical-evaluator.md',
+    );
+  });
+
   it('bare oat init tools cancellation exits without installing packs', async () => {
     const {
       command,
@@ -397,7 +648,7 @@ describe('createInitToolsCommand', () => {
       copyDirWithStatus,
     } = createHarness({
       interactive: true,
-      packSelection: [['workflows'], ['oat-project-new']],
+      packSelection: [['workflows'], ['oat-project-new:/tmp/workspace']],
     });
 
     installWorkflows.mockResolvedValueOnce({
@@ -495,7 +746,7 @@ describe('createInitToolsCommand', () => {
     await runCommand(command, [], ['--scope', 'all']);
 
     expect(capture.info.join('\n')).toContain(
-      'oat-project-new  (unversioned) -> 1.1.0',
+      'oat-project-new (/tmp/workspace)  (unversioned) -> 1.1.0',
     );
   });
 
@@ -514,24 +765,30 @@ describe('createInitToolsCommand', () => {
     );
   });
 
-  it('records installed tool packs in shared config', async () => {
-    const { command, writeOatConfig } = createHarness({
-      interactive: false,
+  it('records installed tool packs in shared config without rescanning scopes', async () => {
+    const { command, scanTools, writeOatConfig } = createHarness({
+      interactive: true,
+      packSelection: [['docs']],
+      toolsByScope: {
+        project: [createScannedTool('oat-project-new', 'workflows', 'project')],
+        user: [createScannedTool('oat-docs', 'core', 'user')],
+      },
     });
 
     await runCommand(command, [], ['--scope', 'all']);
 
+    expect(scanTools).toHaveBeenCalledTimes(2);
     expect(writeOatConfig).toHaveBeenCalledWith(
       '/tmp/workspace',
       expect.objectContaining({
         tools: {
           core: true,
-          ideas: true,
+          ideas: false,
           docs: true,
           workflows: true,
-          utility: true,
-          'project-management': true,
-          research: true,
+          utility: false,
+          'project-management': false,
+          research: false,
         },
       }),
     );
@@ -583,9 +840,7 @@ describe('createInitToolsCommand', () => {
     const body = upsertAgentsMdSection.mock.calls[0]?.[2] as string;
     expect(body).toMatch(/\*\*core\*\*.*_\(user scope\)_/);
     expect(body).toContain('`~/.agents/skills/`');
-    expect(capture.info.join('\n')).toContain(
-      'Also run: oat sync --scope user',
-    );
+    expect(capture.info.join('\n')).toContain('Run: oat sync --scope user');
   });
 
   it('does not call upsertAgentsMdSection when no packs are selected', async () => {
@@ -650,6 +905,18 @@ describe('buildToolPacksSectionBody', () => {
     expect(body).toContain('### Workflow Execution Continuation');
     expect(body).toContain('oat-project-subagent-implement');
     expect(body).not.toMatch(/\*\*workflows\*\*.*user scope/);
+  });
+
+  it('marks both-scope packs distinctly and still lists the user skills directory note', () => {
+    const body = buildToolPacksSectionBody([
+      { pack: 'research', scope: 'both' },
+      { pack: 'workflows', scope: 'project' },
+    ]);
+
+    expect(body).toContain(
+      '**research** — Research, analysis, verification, and synthesis _(project + user scope)_',
+    );
+    expect(body).toContain('`~/.agents/skills/`');
   });
 
   it('omits workflow continuation guidance when workflows pack is not selected', () => {
