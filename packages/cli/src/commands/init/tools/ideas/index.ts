@@ -8,6 +8,10 @@ import {
   type PromptContext,
 } from '@commands/shared/shared.prompts';
 import { readGlobalOptions } from '@commands/shared/shared.utils';
+import {
+  canonicalPathsForPack,
+  setInstalledCanonicalPaths,
+} from '@commands/tools/shared/install-sync-context';
 import { resolveAssetsRoot } from '@fs/assets';
 import { resolveProjectRoot, resolveScopeRoot } from '@fs/paths';
 import { Command } from 'commander';
@@ -90,7 +94,7 @@ async function runInitToolsIdeas(
   context: CommandContext,
   options: InitToolsIdeasOptions,
   dependencies: InitToolsIdeasDependencies,
-): Promise<void> {
+): Promise<boolean> {
   try {
     const scope = resolveInstallScope(context);
     const targetRoot =
@@ -108,7 +112,7 @@ async function runInitToolsIdeas(
           context.logger.info('Cancelled: no files were overwritten.');
         }
         process.exitCode = 0;
-        return;
+        return false;
       }
     }
 
@@ -121,6 +125,7 @@ async function runInitToolsIdeas(
 
     reportSuccess(context, scope, targetRoot, assetsRoot, result);
     process.exitCode = 0;
+    return true;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (context.json) {
@@ -129,6 +134,7 @@ async function runInitToolsIdeas(
       context.logger.error(message);
     }
     process.exitCode = 1;
+    return false;
   }
 }
 
@@ -147,6 +153,13 @@ export function createInitToolsIdeasCommand(
       const context = dependencies.buildCommandContext(
         readGlobalOptions(command),
       );
-      await runInitToolsIdeas(context, options, dependencies);
+      const didInstall = await runInitToolsIdeas(
+        context,
+        options,
+        dependencies,
+      );
+      if (didInstall) {
+        setInstalledCanonicalPaths(command, canonicalPathsForPack('ideas'));
+      }
     });
 }

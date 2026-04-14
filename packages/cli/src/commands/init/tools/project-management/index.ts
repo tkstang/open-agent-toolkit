@@ -4,6 +4,10 @@ import {
   type GlobalOptions,
 } from '@app/command-context';
 import { readGlobalOptions } from '@commands/shared/shared.utils';
+import {
+  canonicalPathsForPack,
+  setInstalledCanonicalPaths,
+} from '@commands/tools/shared/install-sync-context';
 import { resolveAssetsRoot } from '@fs/assets';
 import { resolveProjectRoot } from '@fs/paths';
 import { Command } from 'commander';
@@ -47,6 +51,7 @@ export function createInitToolsProjectManagementCommand(
     .option('--force', 'Overwrite existing files where applicable')
     .action(
       async (options: InitToolsProjectManagementOptions, command: Command) => {
+        let didInstall = false;
         try {
           const context = dependencies.buildCommandContext(
             readGlobalOptions(command),
@@ -78,6 +83,7 @@ export function createInitToolsProjectManagementCommand(
             );
             context.logger.info('Run: oat sync --scope project');
           }
+          didInstall = true;
           process.exitCode = 0;
         } catch (error) {
           const message =
@@ -91,6 +97,13 @@ export function createInitToolsProjectManagementCommand(
             context.logger.error(message);
           }
           process.exitCode = 1;
+        }
+
+        if (didInstall) {
+          setInstalledCanonicalPaths(
+            command,
+            canonicalPathsForPack('project-management'),
+          );
         }
       },
     );

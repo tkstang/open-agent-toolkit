@@ -8,6 +8,10 @@ import {
   type PromptContext,
 } from '@commands/shared/shared.prompts';
 import { readGlobalOptions } from '@commands/shared/shared.utils';
+import {
+  canonicalPathsForPack,
+  setInstalledCanonicalPaths,
+} from '@commands/tools/shared/install-sync-context';
 import { resolveAssetsRoot } from '@fs/assets';
 import { resolveProjectRoot } from '@fs/paths';
 import { Command } from 'commander';
@@ -84,7 +88,7 @@ async function runInitToolsWorkflows(
   context: CommandContext,
   options: InitToolsWorkflowsOptions,
   dependencies: InitToolsWorkflowsDependencies,
-): Promise<void> {
+): Promise<boolean> {
   try {
     if (context.scope === 'user') {
       throw new Error(PROJECT_SCOPE_ONLY_MESSAGE);
@@ -102,7 +106,7 @@ async function runInitToolsWorkflows(
           context.logger.info('Cancelled: no files were overwritten.');
         }
         process.exitCode = 0;
-        return;
+        return false;
       }
     }
 
@@ -115,6 +119,7 @@ async function runInitToolsWorkflows(
 
     reportSuccess(context, targetRoot, assetsRoot, result);
     process.exitCode = 0;
+    return true;
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     if (context.json) {
@@ -123,6 +128,7 @@ async function runInitToolsWorkflows(
       context.logger.error(message);
     }
     process.exitCode = 1;
+    return false;
   }
 }
 
@@ -141,6 +147,13 @@ export function createInitToolsWorkflowsCommand(
       const context = dependencies.buildCommandContext(
         readGlobalOptions(command),
       );
-      await runInitToolsWorkflows(context, options, dependencies);
+      const didInstall = await runInitToolsWorkflows(
+        context,
+        options,
+        dependencies,
+      );
+      if (didInstall) {
+        setInstalledCanonicalPaths(command, canonicalPathsForPack('workflows'));
+      }
     });
 }

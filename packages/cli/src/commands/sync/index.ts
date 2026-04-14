@@ -18,6 +18,7 @@ import {
   saveSyncConfig,
 } from '@config/index';
 import { computeSyncPlan, executeSyncPlan, scanCanonical } from '@engine/index';
+import { CliError } from '@errors/index';
 import { resolveProjectRoot, resolveScopeRoot } from '@fs/paths';
 import { loadManifest } from '@manifest/index';
 import { claudeAdapter } from '@providers/claude';
@@ -35,7 +36,7 @@ import {
   type ProviderAdapter,
 } from '@providers/shared';
 import { formatSyncPlan } from '@ui/output';
-import { Command } from 'commander';
+import { Command, Option } from 'commander';
 
 import { runSyncApply } from './apply';
 import { runSyncDryRun } from './dry-run';
@@ -79,6 +80,25 @@ function defaultDependencies(): SyncCommandDependencies {
     applyCodexProjectExtensionPlan,
     formatSyncPlan,
   };
+}
+
+const INSTALL_CANONICAL_PATH_PATTERN =
+  /^\.agents\/(skills|agents|rules)\/[^/\\]+$/;
+
+function validateInstallCanonicalPaths(
+  paths: string[] | undefined,
+): string[] | undefined {
+  if (!paths?.length) {
+    return undefined;
+  }
+
+  for (const path of paths) {
+    if (!INSTALL_CANONICAL_PATH_PATTERN.test(path)) {
+      throw new CliError(`Invalid --install-canonical path: ${path}`, 1);
+    }
+  }
+
+  return paths;
 }
 
 function hasProviderMismatches(mismatches: SyncProviderMismatches): boolean {
@@ -198,6 +218,7 @@ async function maybeResolveProviderMismatches(
 async function computePlans(
   context: CommandContext,
   dependencies: SyncCommandDependencies,
+  allowedRemovalCanonicalPaths?: string[],
 ): Promise<ScopeSyncPlan[]> {
   const scopePlans: ScopeSyncPlan[] = [];
 
@@ -238,6 +259,7 @@ async function computePlans(
       scope,
       config: resolved.config,
       scopeRoot,
+      allowedRemovalCanonicalPaths,
     });
 
     let codexExtensionPlan: ScopeSyncPlan['codexExtensionPlan'];
@@ -312,8 +334,13 @@ function logNonInteractiveMismatchGuidance(
 async function runSyncCommand(
   context: CommandContext,
   dependencies: SyncCommandDependencies,
+  allowedRemovalCanonicalPaths?: string[],
 ): Promise<void> {
-  const scopePlans = await computePlans(context, dependencies);
+  const scopePlans = await computePlans(
+    context,
+    dependencies,
+    allowedRemovalCanonicalPaths,
+  );
   logNonInteractiveMismatchGuidance(context, scopePlans);
 
   if (context.dryRun) {
@@ -335,10 +362,24 @@ export function createSyncCommand(
   return new Command('sync')
     .description('Sync canonical content to provider views')
     .option('--dry-run', 'Preview sync changes without applying')
+    .addOption(
+      new Option('--install-canonical <path>', 'Internal install sync filter')
+        .hideHelp()
+        .default([])
+        .argParser((value, previous?: string[]) => [
+          ...(previous ?? []),
+          value,
+        ]),
+    )
     .action(async (_options, command: Command) => {
       const context = dependencies.buildCommandContext(
         readGlobalOptions(command),
       );
-      await runSyncCommand(context, dependencies);
+      const options = command.opts<{ installCanonical?: string[] }>();
+      await runSyncCommand(
+        context,
+        dependencies,
+        validateInstallCanonicalPaths(options.installCanonical),
+      );
     });
 }
