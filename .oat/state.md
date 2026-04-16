@@ -1,32 +1,28 @@
 ---
 oat_generated: true
-oat_generated_at: 2026-04-15
+oat_generated_at: 2026-04-16
 ---
 
 # OAT Repo State Dashboard
 
-**Generated:** 2026-04-15
+**Generated:** 2026-04-16
 
 ## Active Project
 
 _(not set)_
-
-## Last Paused Project
-
-**npm-publish** (`.oat/projects/shared/npm-publish`)
 
 ## Knowledge Status
 
 | Field         | Value      |
 | ------------- | ---------- |
 | Generated     | 2026-04-02 |
-| Age           | 13 days    |
-| Files Changed | 291        |
+| Age           | 14 days    |
+| Files Changed | 293        |
 | Status        | stale      |
 
 ## Recommended Next Step
 
-**oat project open npm-publish** - Resume paused project or open a different one
+**oat-project-open** - Select an existing project to continue work
 
 ## Quick Commands
 

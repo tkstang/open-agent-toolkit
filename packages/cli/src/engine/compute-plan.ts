@@ -24,7 +24,7 @@ interface ComputeSyncPlanArgs {
   scope: EngineScope;
   config: SyncConfig;
   scopeRoot?: string;
-  allowedRemovalCanonicalPaths?: string[];
+  allowedCanonicalPaths?: string[];
 }
 
 function buildUpLevels(depth: number): string[] {
@@ -269,6 +269,17 @@ function entryContentTypeMatches(
   return entry.type === contentType;
 }
 
+function canonicalPathAllowed(
+  relativeCanonicalPath: string,
+  canonicalFilter: Set<string> | null,
+): boolean {
+  if (!canonicalFilter) {
+    return true;
+  }
+
+  return canonicalFilter.has(normalize(relativeCanonicalPath));
+}
+
 export async function computeSyncPlan({
   canonical,
   adapters,
@@ -276,18 +287,16 @@ export async function computeSyncPlan({
   scope,
   config,
   scopeRoot: explicitScopeRoot,
-  allowedRemovalCanonicalPaths,
+  allowedCanonicalPaths,
 }: ComputeSyncPlanArgs): Promise<SyncPlan> {
   const entries: SyncPlanEntry[] = [];
   const removals: RemovalSyncPlanEntry[] = [];
   const scopeRoot = resolveScopeRoot(canonical, explicitScopeRoot);
   const seenCanonicalKeys = new Set<string>();
   const activeProviderNames = new Set<string>();
-  const removalFilter = allowedRemovalCanonicalPaths
+  const canonicalFilter = allowedCanonicalPaths
     ? new Set(
-        allowedRemovalCanonicalPaths.map((canonicalPath) =>
-          normalize(canonicalPath),
-        ),
+        allowedCanonicalPaths.map((canonicalPath) => normalize(canonicalPath)),
       )
     : null;
 
@@ -310,6 +319,9 @@ export async function computeSyncPlan({
         }
 
         const relativeCanonicalPath = canonicalRelativePath(canonicalEntry);
+        if (!canonicalPathAllowed(relativeCanonicalPath, canonicalFilter)) {
+          continue;
+        }
         if (!entryInsideMapping(canonicalEntry, mapping.canonicalDir)) {
           continue;
         }
@@ -385,8 +397,8 @@ export async function computeSyncPlan({
       continue;
     }
     if (
-      removalFilter &&
-      !removalFilter.has(normalize(manifestEntry.canonicalPath))
+      canonicalFilter &&
+      !canonicalFilter.has(normalize(manifestEntry.canonicalPath))
     ) {
       continue;
     }
