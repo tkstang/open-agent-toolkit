@@ -19,6 +19,9 @@ build/
 packages/cli/assets/
 apps/oat-docs/site/
 
+# Next.js
+.next/
+
 # turborepo
 .turbo/
 
