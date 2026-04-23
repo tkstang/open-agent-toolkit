@@ -1,6 +1,6 @@
 ---
 name: oat-project-next
-version: 1.0.1
+version: 1.0.3
 description: Use when continuing work on the active OAT project. Reads project state, determines the next lifecycle action, and invokes the appropriate skill automatically.
 disable-model-invocation: true
 user-invocable: true
@@ -101,15 +101,14 @@ ls -d "$PROJECTS_ROOT"/*/ 2>/dev/null
 
 Read `"$PROJECT_PATH/state.md"` frontmatter and extract:
 
-| Field                  | Used For                                                                                |
-| ---------------------- | --------------------------------------------------------------------------------------- |
-| `oat_phase`            | Current lifecycle position (discovery, spec, design, plan, implement)                   |
-| `oat_phase_status`     | Phase completion state (in_progress, complete, pr_open)                                 |
-| `oat_workflow_mode`    | Routing table selection (spec-driven, quick, import). Default: `spec-driven`            |
-| `oat_execution_mode`   | Implementation skill variant (single-thread, subagent-driven). Default: `single-thread` |
-| `oat_hill_checkpoints` | Which phases require HiLL approval                                                      |
-| `oat_hill_completed`   | Which HiLL gates have been passed                                                       |
-| `oat_blockers`         | Informational warnings (not routing gates)                                              |
+| Field                  | Used For                                                                     |
+| ---------------------- | ---------------------------------------------------------------------------- |
+| `oat_phase`            | Current lifecycle position (discovery, spec, design, plan, implement)        |
+| `oat_phase_status`     | Phase completion state (in_progress, complete, pr_open)                      |
+| `oat_workflow_mode`    | Routing table selection (spec-driven, quick, import). Default: `spec-driven` |
+| `oat_hill_checkpoints` | Which phases require HiLL approval                                           |
+| `oat_hill_completed`   | Which HiLL gates have been passed                                            |
+| `oat_blockers`         | Informational warnings (not routing gates)                                   |
 
 **If state.md is missing or unreadable:** Report error and suggest running the relevant phase skill directly. STOP.
 
@@ -231,7 +230,7 @@ Otherwise, look up the target skill from the routing table for the current `oat_
 | plan          | complete     | tier 1        | `oat-project-implement` \* |
 | implement     | in_progress  | —             | `oat-project-implement` \* |
 
-\* When `oat_execution_mode: subagent-driven`, use `oat-project-subagent-implement` instead.
+\* `oat-project-implement` handles both sequential and parallel execution.
 
 ### Step 4: Check for Unprocessed Reviews (Review Safety Check)
 
@@ -261,7 +260,7 @@ Apply the following checks in priority order. Stop at the first match:
 **5.1: Incomplete revision tasks**
 
 Grep plan.md for `p-revN` phases. If any `p-revN` tasks exist with status != completed in implementation.md:
-→ Route to `oat-project-implement` (or `oat-project-subagent-implement` if subagent-driven)
+→ Route to `oat-project-implement`
 → Announce: "Revision tasks pending — continuing implementation"
 
 **5.2: Unprocessed reviews**

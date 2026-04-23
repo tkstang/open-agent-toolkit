@@ -3,8 +3,11 @@ import { DOCS_SKILLS } from '@commands/init/tools/docs/install-docs';
 import { IDEA_SKILLS } from '@commands/init/tools/ideas/install-ideas';
 import type { CopyStatus } from '@commands/init/tools/shared/copy-helpers';
 import {
+  DOCS_SCRIPTS,
   WORKFLOW_AGENTS,
   WORKFLOW_SKILLS,
+  WORKFLOW_SCRIPTS,
+  WORKFLOW_TEMPLATES,
 } from '@commands/init/tools/shared/skill-manifest';
 import type { ToolInfo } from '@commands/tools/shared/types';
 import { describe, expect, it } from 'vitest';
@@ -30,10 +33,12 @@ function createTool(overrides: Partial<ToolInfo> = {}): ToolInfo {
 
 function createDeps(
   toolsByScope: Record<string, ToolInfo[]> = {},
+  missingPaths: string[] = [],
 ): UpdateToolsDependencies & {
   copies: Array<{ source: string; dest: string }>;
 } {
   const copies: Array<{ source: string; dest: string }> = [];
+  const missing = new Set(missingPaths);
   return {
     copies,
     scanTools: async (options) => toolsByScope[options.scope] ?? [],
@@ -48,6 +53,7 @@ function createDeps(
       copies.push({ source, dest });
       return 'updated';
     },
+    fileExists: async (path) => !missing.has(path),
   };
 }
 
@@ -260,7 +266,14 @@ describe('updateTools', () => {
       expectedUpdated,
     );
     expect(result.current).toHaveLength(1);
-    expect(deps.copies).toHaveLength(expectedUpdated.length);
+    expect(
+      deps.copies.some((copy) => copy.source === `/assets/templates/plan.md`),
+    ).toBe(true);
+    expect(
+      deps.copies.some(
+        (copy) => copy.source === '/assets/scripts/resolve-tracking.sh',
+      ),
+    ).toBe(true);
   });
 
   it('reconciles only packs already installed in a scope when using --all', async () => {
@@ -369,5 +382,101 @@ describe('updateTools', () => {
       source: '/assets/agents/oat-reviewer.md',
       dest: '/project/.agents/agents/oat-reviewer.md',
     });
+  });
+
+  it('reconciles workflow templates and scripts during pack updates', async () => {
+    const tool = createTool({
+      name: 'oat-project-new',
+      pack: 'workflows',
+      status: 'current',
+      version: '1.0.0',
+      bundledVersion: '1.0.0',
+    });
+    const deps = createDeps({ project: [tool] });
+
+    await updateTools(
+      { kind: 'pack', pack: 'workflows' },
+      ['project'],
+      '/cwd',
+      '/home',
+      false,
+      deps,
+    );
+
+    expect(
+      deps.copies.some(
+        (copy) => copy.source === `/assets/templates/${WORKFLOW_TEMPLATES[0]}`,
+      ),
+    ).toBe(true);
+    expect(
+      deps.copies.some(
+        (copy) => copy.source === `/assets/scripts/${WORKFLOW_SCRIPTS[0]}`,
+      ),
+    ).toBe(true);
+  });
+
+  it('reconciles docs scripts during pack updates', async () => {
+    const tool = createTool({
+      name: 'oat-docs-analyze',
+      pack: 'docs',
+      status: 'current',
+      version: '1.0.0',
+      bundledVersion: '1.0.0',
+    });
+    const deps = createDeps({ project: [tool] });
+
+    await updateTools(
+      { kind: 'pack', pack: 'docs' },
+      ['project'],
+      '/cwd',
+      '/home',
+      false,
+      deps,
+    );
+
+    expect(
+      deps.copies.some(
+        (copy) => copy.source === `/assets/scripts/${DOCS_SCRIPTS[0]}`,
+      ),
+    ).toBe(true);
+  });
+
+  it('skips pack scripts that are not bundled in assets', async () => {
+    const tool = createTool({
+      name: 'oat-project-new',
+      pack: 'workflows',
+      status: 'current',
+      version: '1.0.0',
+      bundledVersion: '1.0.0',
+    });
+    const deps = createDeps({ project: [tool] }, [
+      '/assets/scripts/generate-oat-state.sh',
+      '/assets/scripts/generate-thin-index.sh',
+    ]);
+
+    await updateTools(
+      { kind: 'pack', pack: 'workflows' },
+      ['project'],
+      '/cwd',
+      '/home',
+      false,
+      deps,
+    );
+
+    expect(
+      deps.copies.some(
+        (copy) => copy.source === '/assets/scripts/generate-oat-state.sh',
+      ),
+    ).toBe(false);
+    expect(
+      deps.copies.some(
+        (copy) => copy.source === '/assets/scripts/generate-thin-index.sh',
+      ),
+    ).toBe(false);
+    expect(
+      deps.copies.some(
+        (copy) => copy.source === '/assets/scripts/resolve-tracking.sh',
+      ),
+    ).toBe(true);
   });
 });

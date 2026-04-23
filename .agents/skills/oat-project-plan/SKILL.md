@@ -1,6 +1,6 @@
 ---
 name: oat-project-plan
-version: 1.2.0
+version: 1.3.1
 description: Use when design.md is complete and executable implementation tasks are needed. Breaks design into bite-sized TDD tasks in canonical plan.md format.
 disable-model-invocation: true
 user-invocable: true
@@ -271,12 +271,13 @@ For each task, include:
 - **Files:** Exact paths for create/modify/delete
 - **Signatures:** Interface definitions, function signatures, type declarations
 - **Test cases:** Test file paths and test descriptions (pseudocode OK for test bodies)
-- **Commands:** Exact verification commands
+- **Commands:** Exact verification commands that match the claimed scope. If the task says "run this file" or "run this test target," use the real runner invocation that actually scopes to that target rather than a shortcut that may execute the full package suite.
 - **Commit:** Conventional commit message with task ID (e.g., `feat(p01-t03): ...`)
 
 **Avoid:**
 - Vague instructions ("update the file")
 - Missing verification steps
+- Verification shortcuts that claim file-scoped coverage but actually run a broader suite
 - Bundled unrelated changes
 - Full implementation code (leave that for oat-project-implement)
 
@@ -342,6 +343,25 @@ oat_last_updated: {today}
 ---
 ````
 
+### Step 14.5: Propose Parallel Groups (Optional)
+
+After all phases are drafted, evaluate whether any phases have non-overlapping file boundaries:
+
+1. For each pair of adjacent phases in the plan, check the `Files:` section of all tasks in each phase.
+2. If no file appears in both phases' task files sections, they are candidates for a parallel group.
+3. Propose to the user:
+
+   ```
+   I noticed phases p02 and p03 have disjoint file boundaries (no overlap).
+   Declare them as a parallel group? This lets oat-project-implement run them
+   concurrently in worktrees, cutting wall-clock time.
+   ```
+
+4. If the user confirms, update `oat_plan_parallel_groups` in the plan frontmatter.
+5. If no phases are obviously independent, skip this step silently — do not invent parallelism.
+
+Never silently infer parallelism without explicit user confirmation.
+
 ### Step 14: Update Project State
 
 Update `"$PROJECT_PATH/state.md"`:
@@ -400,9 +420,7 @@ Phases:
 
 Total: {N} tasks
 
-Next: Choose your implementation approach:
-- oat-project-implement — Sequential task execution (default)
-- oat-project-subagent-implement — Parallel worktree execution with autonomous review gates
+Next: Run oat-project-implement to begin execution.
 ```
 
 ## Success Criteria

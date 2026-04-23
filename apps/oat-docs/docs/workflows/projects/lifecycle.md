@@ -13,7 +13,7 @@ OAT lifecycle order:
 2. Spec (`oat-project-spec`)
 3. Design (`oat-project-design`)
 4. Plan (`oat-project-plan`)
-5. Implement (`oat-project-implement` or `oat-project-subagent-implement`)
+5. Implement (`oat-project-implement`)
 6. Review loop (`oat-project-review-provide` / `oat-project-review-receive`)
 7. Summary (`oat-project-summary`) — generates `summary.md` as institutional memory; `oat-project-pr-final` and `oat-project-complete` auto-refresh it when missing or stale
 8. PR (`oat-project-pr-progress` / `oat-project-pr-final`) — sets `pr_open` status
@@ -34,12 +34,8 @@ OAT lifecycle order:
 ```mermaid
 flowchart LR
   D["Discovery"] --> S["Spec"] --> G["Design"] --> P["Plan"]
-  P --> M{"Implementation mode"}
-  M --> I1["Sequential"]
-  M --> I2["Subagent-driven"]
-  I1 --> R["Review loop"]
-  I2 --> R
-  R --> PR["PR flow"]
+  P --> I["Implement (oat-project-implement)"]
+  I --> R["Review loop"] --> PR["PR flow"]
   PR --> DOC["Docs sync (optional)"]
   DOC --> C["Complete"]
 ```
@@ -83,16 +79,23 @@ Actual PR existence is tracked separately from `oat_phase_status`:
 
 This distinction matters during completion: `oat-project-complete` can skip the "Open a PR?" prompt when `oat_pr_status: open` is already present.
 
-### Auto-review at checkpoints
+### Auto-review at HiLL checkpoints
 
-When `autoReviewAtCheckpoints` is enabled (via `.oat/config.json` or `plan.md` frontmatter `oat_auto_review_at_checkpoints`), completing a plan phase checkpoint automatically spawns a subagent code review scoped to every implementation phase not already covered by a passed whole-phase code review, through the just-completed checkpoint. Mid-implementation multi-phase reviews use inclusive phase-range scopes such as `p02-p03`; the final implementation checkpoint uses `code final`. The review uses auto-disposition mode (minors auto-converted to fix tasks, no user prompts). Disabled by default.
+When `workflow.autoReviewAtHillCheckpoints` is enabled or `plan.md` frontmatter sets `oat_auto_review_at_hill_checkpoints`, completing a HiLL checkpoint automatically runs the extra lifecycle review scoped to every implementation phase not already covered by a passed whole-phase code review, through the just-completed checkpoint. Mid-implementation multi-phase reviews use inclusive phase-range scopes such as `p02-p03`; the final implementation checkpoint uses `code final`. The review uses auto-disposition mode (minors auto-converted to fix tasks, no user prompts). Disabled by default. Legacy `autoReviewAtCheckpoints` and `oat_auto_review_at_checkpoints` are still read as fallbacks. This does not control Tier 1 per-phase `oat-reviewer` gates.
 
 ## Implementation modes
 
-- **Sequential (default):** `oat-project-implement`
-- **Parallel/subagent-driven:** `oat-project-subagent-implement`
-- Use `oat project set-mode <single-thread|subagent-driven>` to persist mode in project state.
-- `oat-project-implement` remains the canonical consumer and redirects when mode is `subagent-driven`.
+`oat-project-implement` v2.0 dispatches one subagent per phase (not per task). Capability detection at skill start selects a tier, locked for the run:
+
+- **Tier 1 (subagents):** native subagent dispatch via Claude Code, Cursor, or Codex with spawn authorization.
+- **Tier 2 (inline):** orchestrator reads the agent files and executes the process itself when subagents are unavailable or authorization is declined.
+
+Within either tier, parallelism is expressed as plan metadata:
+
+- **Sequential (default):** plans with no `oat_plan_parallel_groups` field, or with an empty array. Phases run in plan order on the orchestration branch.
+- **Parallel groups:** phases listed together in `oat_plan_parallel_groups` run concurrently in worktrees (Tier 1 only) and merge back to the orchestration branch in plan order. Groups themselves execute sequentially.
+
+See [Implementation Execution](implementation-execution.md) for the full execution model — tier detection, bounded fix loop, fan-in, merge-conflict handling, dry-run, and resumption.
 
 ## Review receive behavior
 
@@ -106,18 +109,14 @@ When `autoReviewAtCheckpoints` is enabled (via `.oat/config.json` or `plan.md` f
 
 1. `oat-project-quick-start` (adaptive discovery — provide a project name and optional description; if only the name is provided, quick-start asks for the missing description before discovery. Well-understood requests synthesize quickly, exploratory requests invest in solution space exploration)
 2. Decision point: straight to plan, optional lightweight `design.md`, or promote to spec-driven
-3. Implement:
-   - `oat-project-implement` (sequential)
-   - `oat-project-subagent-implement` (parallel/subagent-driven)
+3. Implement: `oat-project-implement` (sequential by default; parallel when `oat_plan_parallel_groups` is declared)
 4. `oat-project-review-provide` / `oat-project-pr-final`
 5. Optional `oat-project-promote-spec-driven` to backfill spec-driven lifecycle artifacts in-place
 
 ### Import lane diagram
 
 1. `oat-project-import-plan`
-2. Implement:
-   - `oat-project-implement` (sequential)
-   - `oat-project-subagent-implement` (parallel/subagent-driven)
+2. Implement: `oat-project-implement` (sequential by default; parallel when `oat_plan_parallel_groups` is declared)
 3. `oat-project-review-provide` / `oat-project-pr-final`
 4. Optional `oat-project-promote-spec-driven` to switch project mode to spec-driven lifecycle
 
@@ -128,10 +127,8 @@ When `autoReviewAtCheckpoints` is enabled (via `.oat/config.json` or `plan.md` f
 ```mermaid
 flowchart LR
   D["Discover"] --> S["Spec"] --> G["Design"] --> P["Plan"]
-  P --> I1["Implement (oat-project-implement)"]
-  P --> I2["Implement (oat-project-subagent-implement)"]
-  I1 --> R["Review"] --> PR["PR"] --> Doc["Docs (optional)"] --> C["Complete"]
-  I2 --> R
+  P --> I["Implement (oat-project-implement)"]
+  I --> R["Review"] --> PR["PR"] --> Doc["Docs (optional)"] --> C["Complete"]
 ```
 
 ### Quick lane
@@ -142,10 +139,8 @@ flowchart LR
   D -->|Straight to plan| P["Plan"]
   D -->|Lightweight design| LD["Design (quick)"] --> P
   D -->|Promote| SD["→ Spec-Driven lane"]
-  P --> QI1["Implement (oat-project-implement)"]
-  P --> QI2["Implement (oat-project-subagent-implement)"]
-  QI1 --> QR["Review / PR"]
-  QI2 --> QR
+  P --> QI["Implement (oat-project-implement)"]
+  QI --> QR["Review / PR"]
 ```
 
 ### Import lane
@@ -153,9 +148,7 @@ flowchart LR
 ```mermaid
 flowchart LR
   I["Import Plan"] --> II1["Implement (oat-project-implement)"]
-  I --> II2["Implement (oat-project-subagent-implement)"]
   II1 --> IR["Review / PR"]
-  II2 --> IR
 ```
 
 ### Capture lane

@@ -18,6 +18,7 @@ import { scanTools } from '@commands/tools/shared/scan-tools';
 import type { PackName, ToolInfo } from '@commands/tools/shared/types';
 import { readOatConfig, writeOatConfig } from '@config/oat-config';
 import { resolveAssetsRoot } from '@fs/assets';
+import { fileExists } from '@fs/io';
 import { resolveProjectRoot, resolveScopeRoot } from '@fs/paths';
 import { Command } from 'commander';
 
@@ -37,15 +38,35 @@ const defaultDependencies: UpdateToolsDependencies = {
   resolveAssetsRoot,
   copyDirWithStatus,
   copyFileWithStatus,
+  fileExists,
 };
+
+export function buildSyncSubprocessArgs(
+  entrypoint: string,
+  execArgv: string[],
+  options: { cwd: string; scope: 'project' | 'user' },
+): string[] {
+  return [
+    ...execArgv,
+    entrypoint,
+    '--cwd',
+    options.cwd,
+    '--scope',
+    options.scope,
+    'sync',
+  ];
+}
 
 const defaultSyncDependencies: AutoSyncDependencies = {
   runSync: async ({ scope, cwd }) => {
     await new Promise<void>((resolve, reject) => {
       execFile(
         process.execPath,
-        [...process.execArgv, process.argv[1]!, 'sync', '--scope', scope],
-        { cwd },
+        buildSyncSubprocessArgs(process.argv[1]!, process.execArgv, {
+          cwd,
+          scope,
+        }),
+        { cwd: process.cwd() },
         (error) => {
           if (error) reject(error);
           else resolve();

@@ -1,4 +1,12 @@
-import { readFileSync, readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import {
+  existsSync,
+  mkdtempSync,
+  readFileSync,
+  readdirSync,
+  rmSync,
+} from 'node:fs';
+import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 
 import { describe, expect, it } from 'vitest';
@@ -9,7 +17,11 @@ import { IDEA_SKILLS } from '../ideas/install-ideas';
 import { PROJECT_MANAGEMENT_SKILLS } from '../project-management/install-project-management';
 import { RESEARCH_SKILLS } from '../research/install-research';
 import { UTILITY_SKILLS } from '../utility/install-utility';
-import { WORKFLOW_SKILLS } from '../workflows/install-workflows';
+import {
+  WORKFLOW_AGENTS,
+  WORKFLOW_SKILLS,
+} from '../workflows/install-workflows';
+import { RESEARCH_AGENTS } from './skill-manifest';
 
 /**
  * Parse the SKILLS=(...) bash array from bundle-assets.sh.
@@ -20,11 +32,7 @@ import { WORKFLOW_SKILLS } from '../workflows/install-workflows';
  * the bundled asset on the next `pnpm build`.
  */
 function parseBundleSkills(): string[] {
-  const scriptPath = join(
-    import.meta.dirname,
-    '../../../../../scripts/bundle-assets.sh',
-  );
-  const content = readFileSync(scriptPath, 'utf8');
+  const content = readFileSync(getBundleScriptPath(), 'utf8');
   const match = content.match(/SKILLS=\(\s*([\s\S]*?)\)/);
   if (!match)
     throw new Error('Could not parse SKILLS array from bundle-assets.sh');
@@ -32,6 +40,21 @@ function parseBundleSkills(): string[] {
     .split('\n')
     .map((line) => line.trim())
     .filter((line) => line.length > 0 && !line.startsWith('#'));
+}
+
+function parseBundleAgents(): string[] {
+  const content = readFileSync(getBundleScriptPath(), 'utf8');
+  const match = content.match(/for agent in ([\s\S]*?); do/);
+  if (!match)
+    throw new Error('Could not parse agent list from bundle-assets.sh');
+  return match[1]
+    .split(/\s+/)
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length > 0);
+}
+
+function getBundleScriptPath(): string {
+  return join(import.meta.dirname, '../../../../../scripts/bundle-assets.sh');
 }
 
 function isUserInvocableSkill(skillName: string): boolean {
@@ -47,6 +70,7 @@ function isUserInvocableSkill(skillName: string): boolean {
 
 describe('bundle-assets.sh consistency', () => {
   const bundleSkills = parseBundleSkills();
+  const bundleAgents = parseBundleAgents();
   const repoSkillsRoot = join(
     import.meta.dirname,
     '../../../../../../../.agents/skills',
@@ -134,6 +158,26 @@ describe('bundle-assets.sh consistency', () => {
     ).toEqual([]);
   });
 
+  it('bundles every workflow agent', () => {
+    const missing = WORKFLOW_AGENTS.filter(
+      (agent) => !bundleAgents.includes(agent),
+    );
+    expect(
+      missing,
+      `Missing from bundle-assets.sh agent list: ${missing.join(', ')}`,
+    ).toEqual([]);
+  });
+
+  it('bundles every research agent', () => {
+    const missing = RESEARCH_AGENTS.filter(
+      (agent) => !bundleAgents.includes(agent),
+    );
+    expect(
+      missing,
+      `Missing from bundle-assets.sh agent list: ${missing.join(', ')}`,
+    ).toEqual([]);
+  });
+
   it('does not bundle skills that belong to no pack', () => {
     const allPackSkills = new Set<string>([
       ...CORE_SKILLS,
@@ -158,5 +202,29 @@ describe('bundle-assets.sh consistency', () => {
         .filter((skill) => !WORKFLOW_SKILLS.includes(skill))
         .join(', ')}`,
     ).toEqual(expect.arrayContaining(workflowLifecycleSkills));
+  });
+
+  it('does not bundle skill test directories', () => {
+    const assetsRoot = mkdtempSync(join(tmpdir(), 'oat-assets-'));
+
+    try {
+      execFileSync('bash', [getBundleScriptPath()], {
+        env: { ...process.env, OAT_ASSETS_DIR: assetsRoot },
+        stdio: 'pipe',
+      });
+
+      expect(
+        existsSync(
+          join(assetsRoot, 'skills', 'oat-project-implement', 'tests'),
+        ),
+      ).toBe(false);
+      expect(
+        existsSync(
+          join(assetsRoot, 'skills', 'oat-project-implement', 'SKILL.md'),
+        ),
+      ).toBe(true);
+    } finally {
+      rmSync(assetsRoot, { recursive: true, force: true });
+    }
   });
 });

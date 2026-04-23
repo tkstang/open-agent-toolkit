@@ -33,7 +33,6 @@ export const WORKFLOW_SKILLS = [
   'oat-project-review-receive',
   'oat-project-review-receive-remote',
   'oat-project-spec',
-  'oat-project-subagent-implement',
   'oat-project-summary',
   'oat-repo-knowledge-index',
   'oat-worktree-bootstrap',
@@ -43,6 +42,7 @@ export const WORKFLOW_SKILLS = [
 
 export const WORKFLOW_AGENTS = [
   'oat-codebase-mapper.md',
+  'oat-phase-implementer.md',
   'oat-reviewer.md',
 ] as const;
 

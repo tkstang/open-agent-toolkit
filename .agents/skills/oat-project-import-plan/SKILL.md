@@ -1,6 +1,6 @@
 ---
 name: oat-project-import-plan
-version: 1.2.0
+version: 1.2.1
 description: Use when you have an external markdown plan to execute with OAT. Preserves the source plan and normalizes it into canonical plan.md format.
 argument-hint: '<path-to-plan.md> [--provider codex|cursor|claude] [--project <name>]'
 disable-model-invocation: true
@@ -212,8 +212,7 @@ Report:
 - active project pointer path
 - dashboard refresh status
 - next options:
-  - `oat-project-implement` (sequential, default)
-  - `oat-project-subagent-implement` (parallel with autonomous review gates)
+  - `oat-project-implement` (sequential by default; parallel when `oat_plan_parallel_groups` is declared)
 
 ## Success Criteria
 
