@@ -1,11 +1,11 @@
 ---
 oat_generated: true
-oat_generated_at: 2026-04-23
+oat_generated_at: 2026-04-30
 ---
 
 # OAT Repo State Dashboard
 
-**Generated:** 2026-04-23
+**Generated:** 2026-04-30
 
 ## Active Project
 
@@ -16,8 +16,8 @@ _(not set)_
 | Field         | Value      |
 | ------------- | ---------- |
 | Generated     | 2026-04-02 |
-| Age           | 21 days    |
-| Files Changed | 356        |
+| Age           | 28 days    |
+| Files Changed | 395        |
 | Status        | stale      |
 
 ## Recommended Next Step
