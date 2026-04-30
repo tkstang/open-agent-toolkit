@@ -17,7 +17,7 @@ _(not set)_
 | ------------- | ---------- |
 | Generated     | 2026-04-02 |
 | Age           | 28 days    |
-| Files Changed | 395        |
+| Files Changed | 382        |
 | Status        | stale      |
 
 ## Recommended Next Step

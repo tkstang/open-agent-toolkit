@@ -29,6 +29,23 @@ export interface EnsureS3ArchiveAccessOptions {
   mode: 'completion' | 'sync';
   s3Uri?: string | null;
   syncOnComplete: boolean;
+  /**
+   * Config-only fallback AWS profile (e.g., `archive.awsProfile`). This helper
+   * applies the value only when the parent env does not already provide
+   * `AWS_PROFILE`, matching discovery decision #3 ("config does not clobber an
+   * explicit shell env"). Callers that override via flags must layer the
+   * override into `dependencies.env` (the helper's second argument) —
+   * `buildAwsEnv` is non-clobbering and will not overwrite a value already
+   * present in the parent env. Passing a flag value through this option alone
+   * is not sufficient.
+   */
+  awsProfile?: string | null;
+  /**
+   * Config-only fallback AWS region. Same non-clobbering semantics as
+   * `awsProfile`: flag-style overrides must be layered into
+   * `dependencies.env`, not passed through this option.
+   */
+  awsRegion?: string | null;
 }
 
 interface EnsureS3ArchiveAccessDependencies {
@@ -49,6 +66,17 @@ export interface ArchiveProjectOnCompletionOptions {
   s3Uri?: string | null;
   s3SyncOnComplete: boolean;
   summaryExportPath?: string | null;
+  /**
+   * Config-only AWS profile (`archive.awsProfile`). The completion path has no
+   * flag override; this value is forwarded as-is into the env merge, where the
+   * parent env wins if it already supplies `AWS_PROFILE`. Discovery decision #3.
+   */
+  awsProfile?: string | null;
+  /**
+   * Config-only AWS region (`archive.awsRegion`). Same non-clobbering semantics
+   * as `awsProfile`.
+   */
+  awsRegion?: string | null;
 }
 
 interface ArchiveProjectOnCompletionDependencies extends EnsureS3ArchiveAccessDependencies {
@@ -89,6 +117,53 @@ export interface ArchiveSnapshotMetadata {
 
 function normalizeS3Uri(s3Uri: string): string {
   return s3Uri.trim().replace(/\/+$/, '');
+}
+
+/**
+ * Build the env passed to every `aws` spawn in this module.
+ *
+ * Non-clobbering merge: a non-empty value in `opts` is applied only when
+ * `parentEnv` does not already provide that key (treating empty/whitespace
+ * parent values as unset). If parent env has a non-empty value, it is left
+ * untouched even when `opts` supplies a non-empty value. Callers that need
+ * flag-style overrides must set the env entry themselves before calling this
+ * helper. This matches discovery decision #3 — config does not clobber an
+ * explicit shell env.
+ *
+ * An empty/whitespace value in `opts` is also treated as unset, and we never
+ * inject a key when neither source supplies one — so the spawned process sees
+ * the same "unset" signal it would have seen without this plumbing.
+ *
+ * Exported as a package-internal helper so the archive sync command (which
+ * also spawns `aws`) can layer flag/env/config precedence and produce the same
+ * env shape without duplicating this logic. This symbol is **not** part of the
+ * public package surface — keep usage limited to files inside
+ * `commands/project/archive/`.
+ */
+export function buildAwsEnv(
+  parentEnv: NodeJS.ProcessEnv,
+  opts: { awsProfile?: string | null; awsRegion?: string | null },
+): NodeJS.ProcessEnv {
+  const env: NodeJS.ProcessEnv = { ...parentEnv };
+
+  const parentHas = (key: 'AWS_PROFILE' | 'AWS_REGION'): boolean => {
+    const value = parentEnv[key];
+    return typeof value === 'string' && value.trim().length > 0;
+  };
+
+  const profile =
+    typeof opts.awsProfile === 'string' ? opts.awsProfile.trim() : '';
+  if (profile.length > 0 && !parentHas('AWS_PROFILE')) {
+    env.AWS_PROFILE = profile;
+  }
+
+  const region =
+    typeof opts.awsRegion === 'string' ? opts.awsRegion.trim() : '';
+  if (region.length > 0 && !parentHas('AWS_REGION')) {
+    env.AWS_REGION = region;
+  }
+
+  return env;
 }
 
 function resolveRepoSlug(repoRoot: string): string {
@@ -417,6 +492,8 @@ export async function archiveProjectOnCompletion(
         mode: 'completion',
         s3Uri: options.s3Uri,
         syncOnComplete: options.s3SyncOnComplete,
+        awsProfile: options.awsProfile,
+        awsRegion: options.awsRegion,
       },
       {
         execFile,
@@ -439,7 +516,10 @@ export async function archiveProjectOnCompletion(
         }
         await execFile('aws', syncArgs, {
           cwd: options.repoRoot,
-          env: dependencies.env ?? process.env,
+          env: buildAwsEnv(dependencies.env ?? process.env, {
+            awsProfile: options.awsProfile,
+            awsRegion: options.awsRegion,
+          }),
         });
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -466,7 +546,12 @@ export async function ensureS3ArchiveAccess(
   }
 
   const execFile = dependencies.execFile ?? execFileAsync;
-  const execOptions = { env: dependencies.env ?? process.env };
+  const execOptions = {
+    env: buildAwsEnv(dependencies.env ?? process.env, {
+      awsProfile: options.awsProfile,
+      awsRegion: options.awsRegion,
+    }),
+  };
 
   try {
     await execFile('aws', ['--version'], execOptions);

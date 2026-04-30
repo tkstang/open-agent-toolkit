@@ -14,6 +14,7 @@ import { Command } from 'commander';
 import {
   ARCHIVE_SNAPSHOT_METADATA_FILENAME,
   S3_ARCHIVE_SYNC_EXCLUDES,
+  buildAwsEnv,
   buildProjectArchiveS3Uri,
   buildRepoArchiveS3Uri,
   ensureS3ArchiveAccess,
@@ -27,6 +28,67 @@ const execFileAsync = promisify(execFileCallback);
 interface ArchiveSyncOptions {
   dryRun?: boolean;
   force?: boolean;
+  profile?: string;
+  region?: string;
+}
+
+/**
+ * Resolve effective AWS profile/region for an archive sync invocation, honoring
+ * the discovery decision #3 precedence: flag > parent shell env > config.
+ *
+ * The returned `env` is suitable for passing into every `aws` spawn in this
+ * command. The returned `awsProfile`/`awsRegion` are forwarded to
+ * `ensureS3ArchiveAccess` so its non-clobbering merge sees the same source of
+ * truth (parent env wins inside the helper, so injecting the flag value into
+ * the env up-front is what makes "flag > parent env" hold end-to-end).
+ */
+function resolveSyncAwsEnv(
+  processEnv: NodeJS.ProcessEnv,
+  options: ArchiveSyncOptions,
+  config: OatConfig,
+): {
+  env: NodeJS.ProcessEnv;
+  awsProfile: string | undefined;
+  awsRegion: string | undefined;
+} {
+  const flagProfile =
+    typeof options.profile === 'string' && options.profile.trim().length > 0
+      ? options.profile.trim()
+      : undefined;
+  const flagRegion =
+    typeof options.region === 'string' && options.region.trim().length > 0
+      ? options.region.trim()
+      : undefined;
+
+  // Layer the flag onto the parent env BEFORE delegating to buildAwsEnv. The
+  // helper's non-clobbering rule treats parent env as authoritative, so this
+  // is how the flag wins over both parent env and config.
+  const effectiveParent: NodeJS.ProcessEnv = { ...processEnv };
+  if (flagProfile !== undefined) {
+    effectiveParent.AWS_PROFILE = flagProfile;
+  }
+  if (flagRegion !== undefined) {
+    effectiveParent.AWS_REGION = flagRegion;
+  }
+
+  const configProfile = config.archive?.awsProfile;
+  const configRegion = config.archive?.awsRegion;
+
+  // Forward the same precedence into `awsProfile`/`awsRegion` for downstream
+  // helpers: prefer flag, fall back to config. Parent env is *not* substituted
+  // here because callers will pass the returned `env` (which already has the
+  // flag layered onto a clone of the parent env) as `dependencies.env` to the
+  // helper, so `buildAwsEnv`'s non-clobbering rule preserves "flag > parent
+  // env > config" against `effectiveParent` rather than the raw `process.env`.
+  const awsProfile = flagProfile ?? configProfile ?? undefined;
+  const awsRegion = flagRegion ?? configRegion ?? undefined;
+
+  const env = buildAwsEnv(effectiveParent, {
+    awsProfile,
+    awsRegion,
+  });
+
+  return { env, awsProfile, awsRegion };
 }
 
 export interface ProjectArchiveCommandDependencies {
@@ -91,6 +153,7 @@ async function runArchiveSync(
   source: string,
   target: string,
   options: ArchiveSyncOptions,
+  awsEnv: NodeJS.ProcessEnv,
   dependencies: ProjectArchiveCommandDependencies,
 ): Promise<void> {
   await dependencies.execFile(
@@ -98,7 +161,7 @@ async function runArchiveSync(
     buildArchiveSyncArgs(source, target, options),
     {
       cwd: repoRoot,
-      env: dependencies.processEnv,
+      env: awsEnv,
     },
   );
 }
@@ -115,6 +178,7 @@ async function listArchiveSnapshots(
   repoRoot: string,
   projectsRoot: string,
   s3Uri: string,
+  awsEnv: NodeJS.ProcessEnv,
   dependencies: ProjectArchiveCommandDependencies,
 ): Promise<ArchiveSnapshotEntry[]> {
   const repoPrefix = `${dependencies.buildRepoArchiveS3Uri(s3Uri, repoRoot)}/`;
@@ -123,7 +187,7 @@ async function listArchiveSnapshots(
     ['s3', 'ls', repoPrefix],
     {
       cwd: repoRoot,
-      env: dependencies.processEnv,
+      env: awsEnv,
     },
   );
 
@@ -202,6 +266,7 @@ async function syncArchiveSnapshot(
   repoRoot: string,
   snapshot: ArchiveSnapshotEntry,
   options: ArchiveSyncOptions,
+  awsEnv: NodeJS.ProcessEnv,
   dependencies: ProjectArchiveCommandDependencies,
 ): Promise<boolean> {
   const currentSnapshotName = await readLocalSnapshotName(
@@ -225,6 +290,7 @@ async function syncArchiveSnapshot(
     snapshot.source,
     snapshot.target,
     options,
+    awsEnv,
     dependencies,
   );
   return true;
@@ -251,6 +317,8 @@ export function createProjectArchiveCommand(
           '--force',
           'Replace the named local archive before syncing it from S3',
         )
+        .option('--profile <profile>', 'AWS profile override for this sync')
+        .option('--region <region>', 'AWS region override for this sync')
         .action(
           async (
             projectName: string | undefined,
@@ -280,11 +348,22 @@ export function createProjectArchiveCommand(
                 );
               }
 
-              await dependencies.ensureS3ArchiveAccess({
-                mode: 'sync',
-                s3Uri,
-                syncOnComplete: config.archive?.s3SyncOnComplete ?? false,
-              });
+              const {
+                env: awsEnv,
+                awsProfile,
+                awsRegion,
+              } = resolveSyncAwsEnv(dependencies.processEnv, options, config);
+
+              await dependencies.ensureS3ArchiveAccess(
+                {
+                  mode: 'sync',
+                  s3Uri,
+                  syncOnComplete: config.archive?.s3SyncOnComplete ?? false,
+                  awsProfile,
+                  awsRegion,
+                },
+                { env: awsEnv },
+              );
 
               const projectsRoot = await dependencies.resolveProjectsRoot(
                 repoRoot,
@@ -294,6 +373,7 @@ export function createProjectArchiveCommand(
                 repoRoot,
                 projectsRoot,
                 s3Uri,
+                awsEnv,
                 dependencies,
               );
 
@@ -341,6 +421,7 @@ export function createProjectArchiveCommand(
                   repoRoot,
                   snapshot,
                   options,
+                  awsEnv,
                   dependencies,
                 );
                 if (synced) {
