@@ -1,6 +1,6 @@
 ---
 name: oat-project-reconcile
-version: 1.0.0
+version: 1.0.1
 description: Use when human-implemented commits need to be mapped back to planned tasks. Reconciles implementation.md and state.md after manual work outside the OAT workflow.
 disable-model-invocation: true
 user-invocable: true
@@ -104,9 +104,13 @@ Verify the project is ready for reconciliation:
 
 2. **Check project phase:**
 
+   The shell snippet below is indented so it remains inside this numbered list;
+   the leading whitespace is shell-safe when copied.
+
    ```bash
-   PHASE=$(grep "^oat_phase:" "$PROJECT_PATH/state.md" 2>/dev/null | awk '{print $2}')
-   PHASE_STATUS=$(grep "^oat_phase_status:" "$PROJECT_PATH/state.md" 2>/dev/null | awk '{print $2}')
+   eval "$(oat project status --shell \
+     PHASE=project.phase \
+     PHASE_STATUS=project.phaseStatus 2>/dev/null)"
    ```
 
    - If `PHASE` is `implement`: proceed

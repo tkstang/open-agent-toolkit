@@ -1,6 +1,6 @@
 ---
 name: oat-project-progress
-version: 1.2.2
+version: 1.2.3
 description: Use when resuming work, checking status, or unsure which OAT skill to run next. Evaluates project progress and routes to the appropriate next step.
 disable-model-invocation: true
 user-invocable: true
@@ -202,8 +202,8 @@ PLAN_TASKS=$(grep -cE '^### Task p[0-9]+-t[0-9]+:' "$ACTIVE_PROJECT_PATH/plan.md
 IMPL_COMPLETED=$(grep -cE '^\*\*Status:\*\* completed' "$ACTIVE_PROJECT_PATH/implementation.md" 2>/dev/null || echo 0)
 
 # Check for commits since last tracked SHA
-LAST_SHA=$(grep "^oat_last_commit:" "$ACTIVE_PROJECT_PATH/state.md" 2>/dev/null | awk '{print $2}')
-if [ -n "$LAST_SHA" ]; then
+LAST_SHA=$(oat project status --project-path "$ACTIVE_PROJECT_PATH" --field project.lastCommit 2>/dev/null || echo null)
+if [ -n "$LAST_SHA" ] && [ "$LAST_SHA" != "null" ]; then
   UNTRACKED_COMMITS=$(git rev-list --count "$LAST_SHA"..HEAD 2>/dev/null || echo 0)
 else
   UNTRACKED_COMMITS=0

@@ -1,6 +1,6 @@
 ---
 name: create-oat-skill
-version: 1.2.0
+version: 1.2.1
 description: Use when adding a new oat-* workflow skill or lifecycle action. Scaffolds the skill with OAT conventions like mode assertions, progress banners, and project-root resolution.
 argument-hint: '[skill-name]'
 disable-model-invocation: true
@@ -172,6 +172,51 @@ pnpm test
 ```
 
 Verify the skill appears in `packages/cli/assets/skills/` after build. If a test asserts the exact skill list for the category (e.g., non-interactive mode expectations), update that test to include the new skill.
+
+## Reading project state
+
+Skills that need to read fields from the active project's `state.md` (e.g. `phase`, `phaseStatus`, `workflowMode`, `docsUpdated`, `lastCommit`) MUST query the CLI instead of hand-parsing YAML with `grep`/`awk`.
+
+For one field, use `--field`:
+
+```bash
+WORKFLOW_MODE=$(oat project status --field project.workflowMode 2>/dev/null || echo null)
+```
+
+If the skill is reading a resolved project path instead of the active project pointer, add `--project-path`:
+
+```bash
+WORKFLOW_MODE=$(oat project status --project-path "$PROJECT_PATH" --field project.workflowMode 2>/dev/null || echo null)
+```
+
+For multiple fields, use `--shell` so the CLI fetches project state once and prints shell-safe assignments:
+
+```bash
+eval "$(oat project status --shell \
+  PHASE=project.phase \
+  PHASE_STATUS=project.phaseStatus \
+  WORKFLOW_MODE=project.workflowMode 2>/dev/null)"
+```
+
+### Contract notes
+
+- **Null sentinel behavior:** YAML `null` in `state.md` surfaces as the literal string `null`, matching the prior `grep | awk` behavior. Missing fields also print or assign `null` after project status resolves successfully.
+- `--field <path>` reads arbitrary dot paths from the project status payload. Scalars print as raw values; objects and arrays print as compact JSON.
+- `--shell NAME=path ...` prints shell-safe single-quoted assignments. Variable names must match `[A-Za-z_][A-Za-z0-9_]*`.
+- `--project-path <path>` reads from a repo-relative or absolute project path instead of `.oat/config.local.json`'s active project pointer.
+- Skill snippets assume `oat` is available on `PATH`; do not repeat per-skill `command -v oat` fallback blocks. CI/cloud environments without a global install can provide this `npx`-backed shim once per checkout:
+
+  ```bash
+  mkdir -p .oat/bin
+  cat > .oat/bin/oat <<'EOF'
+  #!/usr/bin/env bash
+  exec npx @open-agent-toolkit/cli "$@"
+  EOF
+  chmod +x .oat/bin/oat
+  export PATH="$PWD/.oat/bin:$PATH"
+  ```
+
+- Do **not** use this pattern to write state — state writes stay in their existing skill sections.
 
 ## Examples
 

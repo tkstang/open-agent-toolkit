@@ -1,6 +1,6 @@
 ---
 name: oat-project-plan
-version: 1.3.1
+version: 1.3.2
 description: Use when design.md is complete and executable implementation tasks are needed. Breaks design into bite-sized TDD tasks in canonical plan.md format.
 disable-model-invocation: true
 user-invocable: true
@@ -105,8 +105,7 @@ PROJECTS_ROOT="${PROJECTS_ROOT%/}"
 ### Step 1: Determine Workflow Mode and Route
 
 ```bash
-WORKFLOW_MODE=$(grep "^oat_workflow_mode:" "$PROJECT_PATH/state.md" 2>/dev/null | awk '{print $2}')
-WORKFLOW_MODE="${WORKFLOW_MODE:-spec-driven}"
+WORKFLOW_MODE=$(oat project status --field project.workflowMode 2>/dev/null || echo null)
 ```
 
 **Mode: `quick`** — **STOP.** Print:

@@ -1,6 +1,6 @@
 ---
 name: oat-project-review-provide
-version: 1.3.1
+version: 1.3.2
 description: Use when completed work in an active OAT project needs a quality gate before merge. Performs a lifecycle-scoped review after a task, phase, or full implementation, unlike oat-review-provide.
 disable-model-invocation: true
 user-invocable: true
@@ -122,9 +122,10 @@ If validation passes, derive `{project-name}` as basename of `PROJECT_PATH`.
 Read `state.md` frontmatter to propose the most likely review type and scope:
 
 ```bash
-PHASE=$(grep "^oat_phase:" "$PROJECT_PATH/state.md" 2>/dev/null | awk '{print $2}')
-PHASE_STATUS=$(grep "^oat_phase_status:" "$PROJECT_PATH/state.md" 2>/dev/null | awk '{print $2}')
-WORKFLOW_MODE=$(grep "^oat_workflow_mode:" "$PROJECT_PATH/state.md" 2>/dev/null | awk '{print $2}')
+eval "$(oat project status --shell \
+  PHASE=project.phase \
+  PHASE_STATUS=project.phaseStatus \
+  WORKFLOW_MODE=project.workflowMode 2>/dev/null)"
 ```
 
 Inference rules (first match wins):
@@ -244,11 +245,12 @@ If the review is intentionally inline-only and the user explicitly wants to insp
 
 ### Step 2: Validate Artifacts Exist (Mode-Aware)
 
-Resolve workflow mode from state (default `spec-driven`):
+Resolve workflow mode from the resolved project state path:
 
 ```bash
-WORKFLOW_MODE=$(grep "^oat_workflow_mode:" "$PROJECT_PATH/state.md" 2>/dev/null | head -1 | awk '{print $2}')
-WORKFLOW_MODE=${WORKFLOW_MODE:-spec-driven}
+# Step 1.5 may retarget PROJECT_PATH into another worktree, so read from the
+# resolved project path instead of the active-project pointer.
+WORKFLOW_MODE=$(oat project status --project-path "$PROJECT_PATH" --field project.workflowMode 2>/dev/null || echo null)
 ```
 
 **Required for code review (by mode):**

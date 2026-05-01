@@ -59,6 +59,47 @@ Skill behavior is defined by frontmatter plus the process contract in each `SKIL
 - Use `create-agnostic-skill` when you want a reusable workflow skill that is not OAT-specific.
 - Use existing lifecycle skills as examples for progress banners, prerequisites, and artifact updates.
 
+## Reading project state
+
+Skills that need fields from the active project's `state.md` (e.g. `phase`, `phaseStatus`, `workflowMode`, `docsUpdated`, `lastCommit`) MUST query the CLI instead of hand-parsing YAML with `grep`/`awk`.
+
+For one field, use `--field`:
+
+```bash
+WORKFLOW_MODE=$(oat project status --field project.workflowMode 2>/dev/null || echo null)
+```
+
+If the skill is reading a resolved project path instead of the active project pointer, add `--project-path`:
+
+```bash
+WORKFLOW_MODE=$(oat project status --project-path "$PROJECT_PATH" --field project.workflowMode 2>/dev/null || echo null)
+```
+
+For multiple fields, use `--shell` so the CLI reads project state once and emits shell-safe assignments:
+
+```bash
+eval "$(oat project status --shell \
+  PHASE=project.phase \
+  PHASE_STATUS=project.phaseStatus \
+  WORKFLOW_MODE=project.workflowMode 2>/dev/null)"
+```
+
+Skill snippets assume `oat` is available on `PATH`. Environments without a global install, including CI or cloud runners, can provide an `oat` shim backed by `npx`:
+
+```bash
+mkdir -p .oat/bin
+cat > .oat/bin/oat <<'EOF'
+#!/usr/bin/env bash
+exec npx @open-agent-toolkit/cli "$@"
+EOF
+chmod +x .oat/bin/oat
+export PATH="$PWD/.oat/bin:$PATH"
+```
+
+Create the shim once per checkout or CI job instead of putting `command -v oat` fallback branches in every skill. The same snippet also supports setups where `oat` is intentionally provided on `PATH` by `npx`.
+
+The JSON output is a stable contract: the field set consumed by migrated skills is locked by `MIGRATED_FIELDS` in `packages/cli/src/commands/project/status.test.ts`, so removing or renaming any of those keys is a real test failure rather than a silent runtime break. See [CLI Reference](../reference/cli-reference.md) for the full locked field set.
+
 ## Reference artifacts
 
 - `.agents/skills/*/SKILL.md`

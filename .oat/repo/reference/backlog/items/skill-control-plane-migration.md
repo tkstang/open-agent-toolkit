@@ -2,14 +2,14 @@
 id: bl-281c
 title: 'Migrate skills to control-plane-backed CLI with cloud-env fallback'
 status: open
-priority: high
-priority_reviewed: '2026-04-24'
+priority: medium
+priority_reviewed: '2026-04-27'
 scope: initiative
-scope_estimate: L
+scope_estimate: M
 labels: [skills, control-plane, cli, refactor, cloud]
 assignee: null
 created: '2026-04-10T00:00:00Z'
-updated: '2026-04-24T00:00:00Z'
+updated: '2026-04-27T00:00:00Z'
 associated_issues: []
 oat_template: false
 ---
@@ -41,19 +41,19 @@ The migration should follow the guidance from the PR #38 follow-up discussion: "
 
 Currently, skills invoke `oat` directly (e.g., `oat config get activeProject`). In cloud environments where OAT isn't installed globally (mobile agents, ephemeral runtime sandboxes, fresh CI containers), these calls fail silently or hard-error, forcing the skill into brittle fallback paths.
 
-As part of the migration, skills should be refactored to use a consistent invocation pattern that falls back to `npx @open-agent-toolkit/cli` when the `oat` binary isn't available. Rough shape:
+As part of the migration, skills should use concise status-read commands and avoid duplicating fallback branches. Skill snippets assume `oat` is available on `PATH`; CI/cloud environments can provide a checkout-local `oat` shim backed by `npx @open-agent-toolkit/cli`:
 
 ```bash
-if command -v oat >/dev/null 2>&1; then
-  OAT="oat"
-else
-  OAT="npx --yes @open-agent-toolkit/cli"
-fi
-
-PROJECT_STATE=$($OAT project status --json)
+mkdir -p .oat/bin
+cat > .oat/bin/oat <<'EOF'
+#!/usr/bin/env bash
+exec npx @open-agent-toolkit/cli "$@"
+EOF
+chmod +x .oat/bin/oat
+export PATH="$PWD/.oat/bin:$PATH"
 ```
 
-This pattern (or a shell helper sourced by skills) should be documented and applied consistently across migrated skills. Any new skill that invokes CLI commands should adopt the same pattern.
+The migrated state-read snippets use `oat project status --field <path>`, `oat project status --shell NAME=path ...`, and `--project-path <path>` when the skill has already resolved a target project.
 
 ### Prior context
 
@@ -63,13 +63,26 @@ This pattern (or a shell helper sourced by skills) should be documented and appl
 
 ## Acceptance Criteria
 
-- [ ] A migration pattern is documented for skills: bash snippet with `oat` detection and `npx @open-agent-toolkit/cli` fallback
-- [ ] A first-pass candidate list is agreed (starting with the 3 named above plus any obvious bootstrap-heavy skills)
-- [ ] Each migrated skill replaces manual `state.md` / `plan.md` / `implementation.md` parsing with a single `oat project status --json` call (or similar) where the skill is purely a read consumer
-- [ ] All migrated skills detect the `oat` binary at invocation time and fall back to `npx @open-agent-toolkit/cli` when unavailable
-- [ ] A smoke test confirms migrated skills work in an environment without global `oat` installed (cloud-env parity)
-- [ ] Skills that both read and write state are explicitly left untouched in this pass and tracked separately
-- [ ] Documentation updated to describe the invocation pattern and when to use control-plane CLI commands vs direct file reads
+- [x] A migration pattern is documented for skills: concise `oat project status --field` / `--shell` / `--project-path` reads, plus a checkout-local `oat` shim backed by `npx @open-agent-toolkit/cli` for CI/cloud environments — landed in `.agents/skills/create-oat-skill/SKILL.md` "Reading project state" section (skill-cli-migration project, 2026-04-27)
+- [x] A first-pass candidate list is agreed — the seven `state.md` grep consumers shipped under skill-cli-migration: `oat-project-progress`, `oat-project-pr-progress`, `oat-project-plan`, `oat-project-pr-final`, `oat-project-review-provide`, `oat-project-reconcile`, `oat-project-complete`
+- [ ] Each migrated skill replaces manual `state.md` / `plan.md` / `implementation.md` parsing with CLI-owned reads where the skill is purely a read consumer — `state.md` slice complete via `--field` / `--shell` / `--project-path`; `plan.md` and `implementation.md` parsing in skills NOT yet migrated
+- [x] CI/cloud parity documented without per-skill fallback duplication — skills call `oat`; environments without a global install can provide the documented `npx @open-agent-toolkit/cli` shim on `PATH`
+- [x] A smoke test confirms migrated status reads work with the documented CLI contract — field/shell/project-path behavior is covered in `packages/cli/src/commands/project/status.test.ts`, with the JSON field set locked by `MIGRATED_FIELDS`.
+- [x] Skills that both read and write state are explicitly left untouched in this pass and tracked separately — write paths in `oat-project-plan`, `oat-project-pr-final`, `oat-project-reconcile`, `oat-project-complete` were left untouched per discovery scope guard
+- [x] Documentation updated to describe the invocation pattern and when to use control-plane CLI commands vs direct file reads — `apps/oat-docs/docs/contributing/skills.md` "Reading project state" + `apps/oat-docs/docs/reference/cli-reference.md` status-read contract annotation + `.oat/repo/reference/current-state.md` "Skill state reads" bullet
+
+## Remaining Scope (2026-04-27)
+
+The state.md slice is shipped. Remaining work for bl-281c:
+
+- Migrate skills that consume `plan.md` and/or `implementation.md` via grep/awk — equivalent JSON read surface needs to land first (or a CLI reader added). Decide: extend `oat project status --json` with plan/implementation fields, OR ship a separate `oat project plan --json` / `oat project implementation --json` command, OR keep these skills on direct file reads if the JSON layer is overkill for write-adjacent flows.
+- Migrate the named candidates not covered by the state.md grep scan: `oat-project-next`, `docs-completed-projects-gap-review`, plus any other bootstrap-heavy skills that resolve active project state without grepping `state.md`.
+- Cross-skill consistency sweep: a few migrated skills retain dead bash defaults (e.g., `${WORKFLOW_MODE:-spec-driven}`) that no longer fire because the JSON path emits the literal string `null`. Optional cleanup; not behavioral.
+- Plan-template recipe fix: the skill-cli-migration plan's literal `env PATH="/usr/bin:/bin"` recipe for fallback verification fails on nvm-managed hosts (excludes `npx`). Replace with a portable PATH-trim that strips only the `oat`-bearing dir for any future similar verification.
+
+## Priority Review (2026-04-27)
+
+Reduced to **medium** after the strategic state.md slice shipped under skill-cli-migration. The high-leverage portion (cloud-env fallback pattern + canonical preamble + JSON contract test) is now in place, so the residual is incremental rather than blocking. Re-elevate if a future project needs the plan.md/implementation.md JSON read surface.
 
 ## Priority Review (2026-04-24)
 

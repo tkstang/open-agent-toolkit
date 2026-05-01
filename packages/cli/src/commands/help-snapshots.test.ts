@@ -592,9 +592,32 @@ describe('help output snapshots', () => {
         open [options] <name>                    Open or switch to an OAT project
         pause [options] [name]                   Pause an OAT project
         set-mode <mode>                          [deprecated] No-op. Execution mode is no longer selectable.
-        status                                   Show the current OAT project state
+        status [options]                         Show the current OAT project state
         validate-plan [options]                  Validate plan.md parallelism metadata against the plan phase list
         help [command]                           display help for command
+      "
+    `);
+  });
+
+  it('project status --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, [
+      'project',
+      'status',
+    ]).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat project status [options]
+
+      Show the current OAT project state
+
+      Options:
+        --field <path>           Print a single field from the project status payload
+                                 by dot path
+        --project-path <path>    Read status from an explicit project path instead of
+                                 the active project
+        --shell <assignment...>  Print shell-safe NAME=value assignments for one or
+                                 more NAME=path pairs
+        -h, --help               display help for command
       "
     `);
   });

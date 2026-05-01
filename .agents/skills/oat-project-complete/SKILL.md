@@ -1,6 +1,6 @@
 ---
 name: oat-project-complete
-version: 1.4.3
+version: 1.4.4
 description: Use when all implementation work is finished and the project is ready to close. Marks the OAT project lifecycle as complete.
 disable-model-invocation: true
 user-invocable: true
@@ -183,8 +183,7 @@ fi
 #### 3.3: Documentation Sync Status
 
 ```bash
-STATE_FILE="${PROJECT_PATH}/state.md"
-DOCS_UPDATED=$(grep "^oat_docs_updated:" "$STATE_FILE" 2>/dev/null | awk '{print $2}' || true)
+DOCS_UPDATED=$(oat project status --field project.docsUpdated 2>/dev/null || echo null)
 
 # Read policy from config (default: false = soft suggestion)
 REQUIRE_DOCS=$(oat config get documentation.requireForProjectCompletion 2>/dev/null || echo "false")

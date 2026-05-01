@@ -1,6 +1,6 @@
 ---
 name: oat-project-pr-progress
-version: 1.2.0
+version: 1.2.1
 description: Use when an active OAT project needs a mid-project PR for a completed phase (pNN). Generates a phase-scoped progress PR description from OAT artifacts and commit history, with optional PR creation.
 disable-model-invocation: true
 user-invocable: true
@@ -159,8 +159,7 @@ If scope is `range`/`base_sha`, set:
 Resolve workflow mode from `state.md` (default `spec-driven`):
 
 ```bash
-WORKFLOW_MODE=$(grep "^oat_workflow_mode:" "$PROJECT_PATH/state.md" 2>/dev/null | head -1 | awk '{print $2}')
-WORKFLOW_MODE=${WORKFLOW_MODE:-spec-driven}
+WORKFLOW_MODE=$(oat project status --field project.workflowMode 2>/dev/null || echo null)
 ```
 
 Read (as available):

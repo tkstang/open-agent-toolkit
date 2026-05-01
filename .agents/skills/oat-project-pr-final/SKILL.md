@@ -1,6 +1,6 @@
 ---
 name: oat-project-pr-final
-version: 1.3.3
+version: 1.3.4
 description: Use when an active OAT project has completed all phases and is ready for final merge to main. Generates the final OAT lifecycle PR description from artifacts and review status, then creates the PR automatically.
 disable-model-invocation: true
 user-invocable: true
@@ -134,8 +134,7 @@ Rules:
 Resolve workflow mode from `state.md` (default `spec-driven`):
 
 ```bash
-WORKFLOW_MODE=$(grep "^oat_workflow_mode:" "$PROJECT_PATH/state.md" 2>/dev/null | head -1 | awk '{print $2}')
-WORKFLOW_MODE=${WORKFLOW_MODE:-spec-driven}
+WORKFLOW_MODE=$(oat project status --field project.workflowMode 2>/dev/null || echo null)
 ```
 
 ```bash
