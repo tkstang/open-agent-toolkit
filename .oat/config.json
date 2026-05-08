@@ -18,7 +18,8 @@
     "workflows": true,
     "utility": true,
     "project-management": true,
-    "research": true
+    "research": true,
+    "brainstorm": true
   },
   "documentation": {
     "root": "apps/oat-docs",
@@ -31,6 +32,7 @@
     ".oat/**/analysis",
     ".oat/**/pr",
     ".oat/**/reviews/archived",
+    ".oat/brainstorm",
     ".oat/ideas"
   ],
   "workflow": {

@@ -137,7 +137,8 @@ export type OatToolsConfig = Partial<
     | 'workflows'
     | 'utility'
     | 'project-management'
-    | 'research',
+    | 'research'
+    | 'brainstorm',
     boolean
   >
 >;
@@ -335,6 +336,7 @@ function normalizeOatConfig(parsed: unknown): OatConfig {
       'utility',
       'project-management',
       'research',
+      'brainstorm',
     ] as const;
     const tools: OatToolsConfig = {};
 

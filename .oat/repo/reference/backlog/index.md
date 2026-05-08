@@ -30,10 +30,12 @@
 | bl-ff5d | Backlog Refinement Flow (Jira ticket generation)                                     | open        | medium   | feature    | L        |
 | bl-3a4a | Codified sub-project split escape hatch                                              | open        | medium   | feature    | L        |
 | bl-0738 | Define per-phase model selection guidance for phase-subagent dispatch                | open        | medium   | feature    | S        |
+| bl-7d5b | Live dogfood for `oat-brainstorm` (fold-back commit safety + 9 destination families) | open        | medium   | task       | M        |
 | bl-281c | Migrate skills to control-plane-backed CLI with cloud-env fallback                   | open        | medium   | initiative | M        |
 | bl-0ace | Move oat-project-complete state mutations into a CLI helper                          | in_progress | medium   | feature    | M        |
 | bl-28ce | Persist instruction sync strategy in config and expose it in init                    | open        | medium   | feature    | M        |
-| bl-53f0 | Project-independent brainstorming mode                                               | open        | medium   | feature    | L        |
+| bl-53f0 | Project-independent brainstorming mode                                               | closed      | medium   | feature    | L        |
+| bl-f19a | Strict-YAML validation in `oat:validate-skills`                                      | open        | medium   | task       | S        |
 | bl-e582 | Wire .oat/repo/reference artifacts into lifecycle skill reads                        | open        | medium   | feature    | M        |
 | bl-3327 | Add dependency intelligence skill family                                             | open        | low      | feature    | L        |
 | bl-b3f7 | Add idea promotion and auto-discovery flow to oat-project-new                        | open        | low      | feature    | L        |
