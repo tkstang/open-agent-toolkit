@@ -44,6 +44,13 @@ You will be given a "Review Scope" block including:
 - **workflow_mode**: `spec-driven` | `quick` | `import` (default to `spec-driven` if absent)
 - **artifact_paths**: Paths to available artifacts (spec/design/plan/implementation/discovery/import reference)
 - **tasks_in_scope**: Task IDs being reviewed (if task/phase scope)
+- **model_axis**: Optional model dispatch state selected by the orchestrator (`selected:<value>`, `inherited`, `not-applicable`, or `host-auto`)
+- **effort_axis**: Optional effort dispatch state selected by the orchestrator (`selected:<value>`, `inherited`, `not-applicable`, or `host-auto`)
+- **dispatch_rationale**: Optional short rationale for the model/effort axis choices
+
+## Dispatch Control
+
+Reviews, re-reviews, and review-fix evaluation inherit the parent session's model and effort axes unless the user explicitly requested a review override. In Codex, the orchestrator should omit `model` and `reasoning_effort` overrides when spawning this reviewer; in Claude Code, it should not pass a per-review model override. The review scope should record `model_axis=inherited` and `effort_axis=inherited` on hosts that expose an effort axis (such as Codex), or `effort_axis=not-applicable` on hosts that do not (such as Claude Code). Do not read `plan.md` Dispatch Profile rows to self-select a tier; the orchestrator owns dispatch control.
 
 ## Mode Contract
 

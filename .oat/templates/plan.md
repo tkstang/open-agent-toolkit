@@ -51,6 +51,20 @@ Default is `[]` (fully sequential, no worktrees). Only declare parallelism when 
 
 ---
 
+## Dispatch Profile
+
+_Optional override surface. Use only for explicit user-authored constraints or preferences. Omit this section when runtime selection should choose the lowest confident tier._
+
+Blank or `auto` means there is no explicit constraint for that provider. Do not generate rows by default; a missing phase row uses runtime selection.
+
+| Phase | Claude model              | Codex effort                   | Rationale                     |
+| ----- | ------------------------- | ------------------------------ | ----------------------------- |
+| pNN   | haiku\|sonnet\|opus\|auto | low\|medium\|high\|xhigh\|auto | why this constraint is needed |
+
+Codex `low`, `medium`, and `high` effort values map to effort-specific implementer roles. `xhigh` is inherited-only: it can be honored only when the parent/orchestrator session is already xhigh, not by selecting an `xhigh` implementer variant.
+
+---
+
 ## Phase 1: {Phase Name}
 
 ### Task p01-t01: {Task Name}

@@ -1,17 +1,18 @@
 ---
 title: Implementation Execution
-description: 'Phase-subagent dispatch, tier detection, bounded fix loop, plan-declared parallelism, and dry-run mode in oat-project-implement v2.0.'
+description: 'Phase-subagent dispatch, tier detection, runtime dispatch selection, bounded fix loop, plan-declared parallelism, and dry-run mode in oat-project-implement v2.0.'
 ---
 
 # Implementation Execution
 
-This page covers how `oat-project-implement` actually runs a plan: tier selection, phase-level subagent dispatch, the review + fix loop, plan-declared parallelism with worktree fan-in, and dry-run.
+This page covers how `oat-project-implement` actually runs a plan: tier selection, phase-level subagent dispatch, runtime dispatch selection, the review + fix loop, plan-declared parallelism with worktree fan-in, and dry-run.
 
 ## Quick Look
 
 - **When to use:** you have a plan ready and want to understand what happens during `oat-project-implement`.
 - **Unit of dispatch:** one phase at a time (not one task). A phase implementer executes all tasks in the phase, commits per task, and returns a single summary.
 - **Two tiers, one lock:** capability detection picks Tier 1 (native subagents) or Tier 2 (inline) at start. The tier is locked for the whole run — no mid-run downgrades.
+- **Runtime dispatch:** each phase uses the lowest available model/effort/control that can confidently complete the work, unless `plan.md` includes an explicit Dispatch Profile override.
 
 ## Execution model
 
@@ -33,18 +34,80 @@ The selected tier is reported to the user and locked for the remainder of the ru
   → Selected: Tier 1 — Subagents
 ```
 
+### Runtime dispatch selection
+
+Tier selection decides whether OAT uses native subagents or inline fallback. Runtime dispatch selection is separate: it decides which provider-specific model and effort controls to use for a specific phase when the host exposes those axes.
+
+The default rule is conservative: use the lowest available model and/or effort that can confidently complete the phase. Escalate before dispatch when the phase is high-risk, broad, cross-cutting, or when retry evidence suggests the current control is underpowered.
+
+The orchestrator considers, in order:
+
+1. A valid `## Dispatch Profile` override row in `plan.md`, if present and the host can honor it.
+2. The phase's files, risk, requirements, and recent review/fix-loop evidence.
+3. The host's actual control surface by axis.
+
+Model and effort are separate axes. Each axis logs one of four states:
+
+- `selected:<value>` — the host exposes the axis and the orchestrator chose a value.
+- `inherited` — the host exposes the axis and the orchestrator deliberately defers to the parent session.
+- `not-applicable` — this host/API has no meaningful per-dispatch concept for that axis.
+- `host-auto` — exceptional; the host uses that axis internally but the orchestrator cannot read or pin it.
+
+In Codex, the normal model choice is inherited unless the user requested a model override or the phase clearly requires one. Implementation dispatch maps selected `low`, `medium`, and `high` effort to configured Codex implementer roles (`oat-phase-implementer-low`, `oat-phase-implementer-medium`, and `oat-phase-implementer-high`) rather than relying on per-call effort overrides. The base `oat-phase-implementer` role represents inherited effort. `xhigh` is inherited-only: use it when the parent/orchestrator session is already xhigh, otherwise split/revise the phase or stop for user re-invocation instead of inventing an `xhigh` variant. In Claude Code, subagent model selection is a model axis when available; the separate effort axis is `not-applicable`.
+
+Dispatch logs use a consistent structured block so provider behavior is comparable without flattening the model and effort axes:
+
+```text
+OAT Dispatch: Phase p01 implementation
+Host: Claude Code
+Model axis: selected:sonnet
+Effort axis: not-applicable
+Dispatch target: oat-phase-implementer
+Rationale: multi-file integration with mock wiring; sonnet is the lowest sufficient Claude model.
+
+OAT Dispatch: Phase p02 implementation
+Host: Codex
+Model axis: inherited
+Effort axis: selected:medium
+Dispatch target: oat-phase-implementer-medium
+Rationale: shared TypeScript/config substrate; medium is the lowest sufficient Codex effort.
+
+OAT Dispatch: Phase p03 review
+Host: Codex
+Model axis: inherited
+Effort axis: inherited
+Dispatch target: oat-reviewer
+Rationale: reviewer dispatches inherit parent controls by default.
+
+OAT Dispatch: Phase p04 implementation
+Host: Other
+Model axis: host-auto
+Effort axis: host-auto
+Dispatch target: host default
+Rationale: host does not expose readable or pinnable dispatch controls; rationale maps to standard effort.
+```
+
+Phase scope packets include implementation `model_axis`, `effort_axis`, and `dispatch_rationale` when the orchestrator has resolved them. Review dispatches inherit the parent session controls unless the user explicitly requests a review override; their review scope should record `model_axis=inherited` and `effort_axis=inherited` on hosts that expose an effort axis (such as Codex), or `effort_axis=not-applicable` on hosts that do not (such as Claude Code).
+
+### Dispatch Profile overrides
+
+`plan.md` should omit `## Dispatch Profile` by default. Missing dispatch rows are normal, because runtime selection has fresher phase context and host capability information at execution time.
+
+Add Dispatch Profile rows only when the user has an explicit constraint or preference, such as "use high reasoning effort for the security implementation phase" or "keep documentation-only phases on the lowest tier." Override rows should include a rationale explaining why runtime selection should not decide on its own.
+
 ### Per-phase loop
 
 For each phase in the plan (whether sequential or inside a parallel group):
 
-1. **Dispatch `oat-phase-implementer`** with a Phase Scope block (project path, phase id, artifact paths, commit convention, workflow mode).
-2. **Receive the summary:** `DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED`.
+1. **Select runtime dispatch control** for the phase and log the chosen control plus rationale.
+2. **Dispatch the selected implementer role** with a Phase Scope block (project path, phase id, artifact paths, commit convention, workflow mode, and dispatch context when known). In Codex, `effort_axis=selected:low|medium|high` uses `oat-phase-implementer-low|medium|high`; inherited effort uses base `oat-phase-implementer`.
+3. **Receive the summary:** `DONE | DONE_WITH_CONCERNS | NEEDS_CONTEXT | BLOCKED`.
    - `BLOCKED` stops the run and surfaces the blocker to the user.
-3. **Dispatch `oat-reviewer`** with a Review Scope block (phase id, commit range, optional files-changed hint). The commit range is authoritative; the file list is only orientation metadata. In Codex, pass this as a self-contained packet and keep fresh context (`fork_context: false`) so the reviewer reads git/OAT artifacts directly instead of inheriting the orchestration thread. If the reviewer does not conclude on the first wait, poll once more, then send a concise "return now with current findings" nudge before falling back inline for that phase.
-4. **Parse the verdict:** zero Critical + zero Important findings → `pass`; otherwise `fail`.
-5. **On fail, run the bounded fix loop** (see below).
-6. **Update artifacts** (`implementation.md`, `plan.md` review row, `state.md`) and make the mandatory bookkeeping commit.
-7. **HiLL checkpoint** if the phase id is listed in `oat_plan_hill_phases`.
+4. **Dispatch `oat-reviewer`** with a Review Scope block (phase id, commit range, optional files-changed hint, and inherited review dispatch context). Review dispatches inherit the parent session's model and effort axes unless the user explicitly requested an override. The commit range is authoritative; the file list is only orientation metadata. In Codex, pass this as a self-contained packet with `fork_context: false`, use the base reviewer role without model or effort overrides, and record `model_axis=inherited, effort_axis=inherited` so the reviewer reads git/OAT artifacts directly instead of inheriting the orchestration thread. In Claude Code, do not pass a per-review model override and record `effort_axis=not-applicable` since Claude Code does not expose a per-dispatch effort axis. If the reviewer does not conclude on the first wait, poll once more, then send a concise "return now with current findings" nudge before falling back inline for that phase.
+5. **Parse the verdict:** zero Critical + zero Important findings → `pass`; otherwise `fail`.
+6. **On fail, run the bounded fix loop** (see below).
+7. **Update artifacts** (`implementation.md`, `plan.md` review row, `state.md`) and make the mandatory bookkeeping commit.
+8. **HiLL checkpoint** if the phase id is listed in `oat_plan_hill_phases`.
 
 ### Bounded fix loop
 
@@ -58,6 +121,15 @@ On a `fail` verdict:
   - **Parallel group mode:** mark the phase `excluded`, do not merge its worktree, continue the remaining phases in the group, and report it in Outstanding Items.
 
 Tier is never silently downgraded. If a Tier 1 dispatch has a transient failure, the orchestrator retries exactly once; a second failure is treated the same as fix-loop exhaustion for that phase.
+
+### Escalation termini
+
+When escalation re-dispatches at a stronger control, the ladder is provider-specific:
+
+- **Codex:** `selected:low → selected:medium → selected:high`. `high` is the strongest selectable effort variant. Beyond `high`, dispatch uses `effort_axis=inherited` only when the parent session is already `xhigh`; otherwise escalation is exhausted — stop, split the phase, or have the user re-invoke at `xhigh`.
+- **Claude Code:** `selected:haiku → selected:sonnet → selected:opus`. `opus` is directly selectable via the Task `model` parameter — there is no inherited-only restriction.
+
+Escalation re-dispatches still count against the bounded retry budget; escalation changes the dispatch control, it does not grant extra retry attempts.
 
 ## Plan-declared parallelism
 
@@ -149,7 +221,7 @@ First-ever invocations skip resumption detection.
 
 After each phase (or parallel group) completes, `oat-project-implement` updates:
 
-- `implementation.md` — appends a `### Run N` entry between the `<!-- orchestration-runs-start -->` markers with tier, policy, phase outcomes, parallel groups, and outstanding items.
+- `implementation.md` — appends a `### Run N` entry between the `<!-- orchestration-runs-start -->` markers with tier, dispatch rationale, phase outcomes, parallel groups, and outstanding items.
 - `plan.md` — updates the reviews table lifecycle (`pending` → `passed` or `fixes_added` → `fixes_completed` → `passed`).
 - `state.md` — updates `oat_current_task`, `oat_last_commit`, `oat_project_state_updated`, and persists `oat_orchestration_retry_limit` if the user overrode the default.
 

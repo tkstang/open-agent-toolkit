@@ -1,5 +1,6 @@
 # oat-managed: true
-# oat-role: oat-phase-implementer
+# oat-role: oat-phase-implementer-high
+model_reasoning_effort = "high"
 developer_instructions = """
 
 ## Role
