@@ -1,6 +1,6 @@
 ---
 name: oat-brainstorm
-version: 1.0.2
+version: 1.0.4
 description: Use when the user explicitly invokes the `brainstorm` verb, including `/oat-brainstorm`, "let's brainstorm", "brainstorm this", "can we brainstorm X", or "help me brainstorm X". For ambiguous exploratory phrasing ("I've been thinking", "what if", "help me think through"), do NOT auto-enter; respond conversationally and offer mode only after ≥2 sustained exploratory turns. Do NOT use for review, debug, PR, status, implementation, or active-workflow questions.
 disable-model-invocation: false
 user-invocable: true
@@ -28,6 +28,21 @@ Enter OAT brainstorm mode immediately when the user invokes `/oat-brainstorm` or
 - "help me brainstorm X"
 
 Hard Activation runs the full Process flow below: print the mode banner (Step 2), assess visual need (Step 3), detect packs and active project (Step 4), and proceed.
+
+### Declared Multi-Project Mode
+
+If the opening request explicitly says the scope is multiple projects, several sub-projects, an umbrella project, or otherwise declares decomposition intent, still enter brainstorm mode through Hard Activation, but switch the conversation shape immediately to umbrella framing. This is a first-class split path, not an ordinary destination guess.
+
+Do not treat ambiguous exploratory phrasing as declared mode. Put another way: do not treat ambiguous exploratory phrasing as declared mode. Messages like "help me think through a broad thing", "what if this has multiple parts", or "this might get big" remain on the Soft Exploratory Path unless the user explicitly declares that the desired outcome is multiple projects.
+
+In declared mode, ask this boundary question before ordinary free brainstorming:
+
+> "Do you already know the child projects, or should we decompose the scope together?"
+
+- If the user already knows the children, capture light parent-level context: shared context, child list, dependencies, sequencing, and integration risks.
+- If the children are unknown, brainstorm the boundaries first until a child list is clear.
+
+Once the child list is clear, invoke `oat-project-split` with a `SplitPayload` using `origin: "declared"`, `interactive: true`, `declaredChildren`, and the parent/umbrella slug when known. The brainstorm hook only frames and hands off; `oat-project-split` owns normalization, parent writing, child scaffolding, and activation.
 
 ### Soft Exploratory Path
 
@@ -278,7 +293,21 @@ If "keep going", return to step 5. If "wrap up", surface the **pack-filtered ter
    - Gated by `PJM_INSTALLED == "true"`: `Scoped backlog item`.
    - Gated by `WORKFLOWS_INSTALLED == "true"` AND `ACTIVE_PROJECT_VALID != "true"`: `Promote to new OAT project`.
    - Gated by `WORKFLOWS_INSTALLED == "true"` AND `ACTIVE_PROJECT_VALID == "true"`: `Active project: fold-back` and `Active project: brainstorming reference file`. When this branch fires, present the **3-way active-project router first** (see step 9 active-project branches) — its outcome controls whether the rest of the picker is even surfaced.
-3. Present the filtered list to the user. Wait for selection.
+3. Evaluate whether the accumulated brainstorm scope is large enough to offer a split destination. Track the same four split signals used by discovery and evaluate them through the installed CLI:
+
+   ```bash
+   oat project split evaluate-signals --fired "<comma-list>"
+   ```
+
+   Use the local-development fallback only when the installed `oat` command is unavailable:
+
+   ```bash
+   pnpm run cli -- project split evaluate-signals --fired "<comma-list>"
+   ```
+
+   If the JSON result has `triggered: true`, add `Promote to N projects` to the picker. Below 2 split signals, do not show this option.
+
+4. Present the filtered list to the user. Wait for selection.
 
 Once a destination is identified (either path), proceed to step 7.
 
@@ -581,6 +610,16 @@ git commit -m "chore(oat): capture brainstorming reference for <project-name>"
 
 Use only `git add -- <path>` so unrelated working-tree changes are not swept into the commit. After the commit succeeds, capture the short hash via `git rev-parse --short HEAD` and report it alongside the absolute path written (for example: "Wrote `<absolute-path>` and committed as `<hash>`."). End mode assertion.
 
+#### 9k — Promote to N projects
+
+This branch is available only when the step 6 picker added `Promote to N projects` after `oat project split evaluate-signals` returned `triggered: true`.
+
+Confirm the parent/umbrella slug and the inferred child list at step 8 using the minimal confirmation pattern. If the child list is still unclear, ask one boundary question and return briefly to step 5 to decompose the scope.
+
+When confirmed, invoke `oat-project-split` with a `SplitPayload` using `origin: "brainstorm-picker"`, `interactive: true`, `inferredChildren`, the parent/umbrella slug when known, and the brainstorm session note as inherited parent context. The brainstorm hook does not create project directories itself; `oat-project-split` owns normalization, `SplitPlanDocument` validation, coordination-parent writing, child seeding, activation, and dashboard refresh.
+
+End mode assertion when the split handoff completes or reports its own blocker.
+
 ## Success Criteria
 
 - ✅ Activation Contract is honored: Hard Activation fires only on explicit brainstorm-verb phrasing or `/oat-brainstorm`; Soft Exploratory Path messages ("help me think through", "I've been thinking about", "what if we") respond conversationally without the banner and offer mode only after ≥2 sustained exploratory turns; No Activation Path messages (advisory / review / debug / PR / status / implementation / active-workflow) get a direct response with no banner and no offer.
@@ -590,9 +629,10 @@ Use only `git add -- <path>` so unrelated working-tree changes are not swept int
 - ✅ Pack and active-project detection (`oat config get tools.<pack>` and `oat config get activeProject`) runs once per session at step 4, before the conversation starts.
 - ✅ Conversation cadence holds the Superpowers contract: one question at a time, multiple-choice preferred, 2-3 distinct approaches with a recommendation, per-question visual-companion routing.
 - ✅ Destination is identified via either trigger-phrase opportunistic surfacing (loose substring + paraphrase tolerance, not regex; ambiguity → ask) or convergence cue (pack-filtered terminal-state picker).
+- ✅ The terminal-state picker conditionally includes `Promote to N projects` only when `oat project split evaluate-signals` reports `triggered: true`; small-scope convergence keeps the option hidden.
 - ✅ Synthesis payload is built per the design Data Models `SynthesizedPayload` schema: `title`, `summary`, `motivation`, `vision`, `approachesConsidered[]`, `chosenDirection`, `openQuestions[]`, `nextSteps[]`, `transcriptSessionNote`.
 - ✅ Confirmation pattern matches `references/destinations.md`: `full` for scoped backlog item (field-by-field with example wording), `minimal` for slug/path/artifact destinations, `none` for inline-only and summarize-idea-directly.
-- ✅ Each handoff branch (9a-9j) reads the correct downstream `SKILL.md` path and enters at the documented step. Project promotion writes `discovery.md` only — never `design.md` — and does not auto-chain into the next phase.
+- ✅ Each handoff branch (9a-9k) reads the correct downstream `SKILL.md` path and enters at the documented step. Project promotion writes `discovery.md` only — never `design.md` — and does not auto-chain into the next phase.
 - ✅ Doc-to-path validation handles all four cases: path-is-directory, parent-missing (with explicit out-of-repo confirmation), file-already-exists (overwrite or rename), unwritable (surface OS error).
 - ✅ Fold-back commit safety contract honored: preflight `git status --porcelain -- "$ARTIFACT_PATH"` runs before any artifact mutation; clean → append + `git add -- "$ARTIFACT_PATH"` (explicit `--`, never `-A`, never globs) + scoped commit; dirty → three-option picker (commit-prior-first / mix / abort-to-reference-file); handoff prompt prints only after `git commit` succeeds.
 - ✅ Handoff target for fold-back resolves correctly per `oat_workflow_mode` + `oat_pr_status`: `oat-project-plan` (spec-driven, no/closed PR) / `oat-project-quick-start` (quick, no/closed PR) / `oat-project-revise` (either mode, open PR).
