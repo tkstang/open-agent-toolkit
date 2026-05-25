@@ -158,13 +158,38 @@ oat config get lastPausedProject
 oat config describe activeIdea
 ```
 
+## Dispatch ceiling resolution
+
+`oat config get workflow.dispatchCeiling.<provider>` shows only the effective
+config value. Implementation workflows should use the project-aware resolver
+instead:
+
+```bash
+oat project dispatch-ceiling resolve --provider codex --json
+oat project dispatch-ceiling resolve --provider claude --json
+```
+
+The resolver checks effective config first, then project `state.md`
+`oat_dispatch_ceiling` frontmatter. For Codex it also reports
+`providerDefaultEffort`, which is informational for base/unpinned roles and is
+not treated as the OAT ceiling.
+
+For non-interactive preflight checks, use:
+
+```bash
+oat project dispatch-ceiling resolve --provider codex --preflight --non-interactive
+```
+
+If unresolved, the command exits non-zero with the same `BLOCKED:` guidance used
+by `oat-project-implement`.
+
 ## Workflow preferences (`workflow.*`)
 
 Workflow preferences let power users answer repetitive confirmation prompts once and have OAT workflow skills respect those answers automatically. They are the highest-value escape hatch from interactive friction when you always make the same choices.
 
 ### Preference keys
 
-All eight workflow preference keys live under the `workflow.*` namespace:
+Workflow preference keys live under the `workflow.*` namespace:
 
 - `workflow.designMode` — `collaborative`, `selective`, or `draft`. Default design interaction mode. `selective` applies only to full `oat-project-design`; quick-start lightweight design treats it as collaborative because quick-start keeps the smaller collaborative/draft choice.
 - `workflow.hillCheckpointDefault` — `every` or `final`. Default HiLL checkpoint behavior in `oat-project-implement`: pause after every phase or only after the last phase. When unset, the skill prompts.
@@ -174,6 +199,8 @@ All eight workflow preference keys live under the `workflow.*` namespace:
 - `workflow.reviewExecutionModel` — `subagent`, `inline`, or `fresh-session`. Default final-review execution model in `oat-project-implement`. `subagent` and `inline` run automatically. `fresh-session` is a soft preference: the skill prints guidance to run the review in another session but still offers escape hatches to `subagent` or `inline` if you change your mind. When unset, the skill prompts.
 - `workflow.autoReviewAtHillCheckpoints` — boolean. Automatically run the extra lifecycle review when a HiLL checkpoint is reached. This does not control Tier 1 per-phase `oat-reviewer` gates, which run after each phase in Tier 1 regardless of this setting. When unset, the skill prompts.
 - `workflow.autoNarrowReReviewScope` — boolean. Auto-narrow re-review scope to fix-task commits only in `oat-project-review-provide`. When unset, the skill prompts.
+- `workflow.dispatchCeiling.codex` — `low`, `medium`, `high`, or `xhigh`. Maximum Codex reasoning effort OAT may select through deterministic pinned implementer/reviewer variants. Provider default effort is informational for base/unpinned roles and is not treated as this ceiling.
+- `workflow.dispatchCeiling.claude` — `haiku`, `sonnet`, or `opus`. Maximum Claude model tier OAT may select for provider-native subagent dispatch. Claude has no separate per-dispatch effort axis, so the effort axis remains `not-applicable`.
 
 ### Three-layer resolution
 
@@ -197,14 +224,19 @@ oat config set workflow.reviewExecutionModel subagent --user
 oat config set workflow.autoReviewAtHillCheckpoints true --user
 oat config set workflow.autoNarrowReReviewScope true --user
 oat config set workflow.designMode selective --user
+oat config set workflow.dispatchCeiling.codex high --user
+oat config set workflow.dispatchCeiling.claude sonnet --user
 
 # Shared repo: team decision for this repo
 oat config set workflow.createPrOnComplete false --shared
 oat config set workflow.designMode collaborative --shared
+oat config set workflow.dispatchCeiling.codex high --shared
+oat config set workflow.dispatchCeiling.claude sonnet --shared
 
 # Repo-local: personal override for this repo (default when no flag)
 oat config set workflow.hillCheckpointDefault every
 oat config set workflow.designMode draft
+oat config set workflow.dispatchCeiling.codex medium
 ```
 
 Default (no flag) targets `.oat/config.local.json` for workflow keys. Pass at most one of `--user`, `--shared`, or `--local`. Structural keys (`projects.root`, `worktrees.root`, `git.*`, `documentation.*`, `archive.*`, `tools.*`) are still shared-only regardless of flag.

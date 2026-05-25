@@ -1,10 +1,7 @@
----
-name: oat-reviewer
-version: 1.0.2
-description: Unified reviewer for OAT projects - mode-aware verification of requirements/design alignment and code quality. Writes review artifact to disk.
-tools: Read, Bash, Grep, Glob, Write
-color: yellow
----
+# oat-managed: true
+# oat-role: oat-reviewer-xhigh
+model_reasoning_effort = "xhigh"
+developer_instructions = """
 
 ## Role
 
@@ -371,3 +368,5 @@ Return to your main session and run the `oat-project-review-receive` skill.
 - [ ] Verification commands included
 - [ ] Brief confirmation returned
 ```
+"""
+sandbox_mode = "workspace-write"
