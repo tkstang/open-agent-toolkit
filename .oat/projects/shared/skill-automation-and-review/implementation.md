@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-06-03
-oat_current_task_id: p03-t01
+oat_current_task_id: p05-t01
 oat_generated: false
 ---
 
@@ -28,12 +28,12 @@ oat_generated: false
 | ------------------------------------------------- | -------- | ----- | --------- |
 | Phase 1 — config + review-latest CLI              | complete | 3     | 3/3       |
 | Phase 2 — reviewer modes + loop contract          | complete | 3     | 3/3       |
-| Phase 3 — wire plan-review loop + quick-start fix | pending  | 4     | 0/4       |
-| Phase 4 — wire analyze review loop                | pending  | 2     | 0/2       |
+| Phase 3 — wire plan-review loop + quick-start fix | complete | 4     | 4/4       |
+| Phase 4 — wire analyze review loop                | complete | 2     | 2/2       |
 | Phase 5 — model-invocability pass                 | pending  | 5     | 0/5       |
 | Phase 6 — docs + release + DoD                    | pending  | 3     | 0/3       |
 
-**Total:** 6/20 tasks completed
+**Total:** 12/20 tasks completed
 
 ---
 
@@ -235,6 +235,168 @@ oat_generated: false
 
 ---
 
+## Phase 3: Wire C — plan-write integration (all three plan paths)
+
+**Status:** complete
+**Started:** 2026-06-03
+**Completed:** 2026-06-03
+**Review:** passed — `reviews/p03-code-review-2026-06-03.md`
+
+### Phase Summary
+
+**Outcome (what changed):**
+
+- Wired the shared bounded plan-review loop into spec-driven plan finalization.
+- Wired the same loop into quick-start planning, including the review row/update behavior.
+- Wired import-plan through the import-aware plan-review checklist.
+- Fixed the quick-start lightweight-design path so discovery is completed before plan generation.
+
+**Key files touched:**
+
+- `.agents/skills/oat-project-plan/SKILL.md` - spec-driven plan finalization now runs the plan artifact review loop.
+- `.agents/skills/oat-project-quick-start/SKILL.md` - quick-start planning now runs the plan review loop and completes discovery in the lightweight-design path.
+- `.agents/skills/oat-project-import-plan/SKILL.md` - imported plans now run the import-aware review loop.
+- `packages/cli/src/validation/skills.test.ts` - updated quick-start skill version contract expectations.
+
+**Verification:**
+
+- Run: `pnpm exec tsx --tsconfig packages/cli/tsconfig.json packages/cli/src/index.ts internal validate-oat-skills --base-ref 8f3df4e153ed4df548454ddd69a9f7884bce6035`; result: passed in phase worktree.
+- Run: `pnpm exec tsx --tsconfig packages/cli/tsconfig.json packages/cli/src/index.ts internal validate-skill-version-bumps --base-ref 8f3df4e153ed4df548454ddd69a9f7884bce6035`; result: passed in phase worktree.
+- Run: `pnpm --dir packages/cli exec vitest run src/validation/skills.test.ts src/commands/project/complete-discovery/index.test.ts`; result: passed in phase worktree.
+- Manual smoke: quick-start lightweight-design temp project left `discovery.md` complete after `complete-discovery`.
+- Merged verification: `pnpm test`; `pnpm lint`; `pnpm type-check`; result: passed.
+- Phase review: PASS, zero findings.
+
+**Notes / Decisions:**
+
+- The implementer reported `DONE_WITH_CONCERNS` because quick-start has an explicit version-contract test; the p03 reviewer confirmed the test update was justified and in scope.
+
+### Task p03-t01: Invoke loop from `oat-project-plan` (spec-driven)
+
+**Status:** completed
+**Commit:** 061e4777
+
+**Outcome (required when completed):**
+
+- Spec-driven plan finalization now runs the shared plan artifact-review loop before setting `oat_ready_for: oat-project-implement`.
+
+**Verification:**
+
+- Run: skill validation and version-bump validation.
+- Result: passed in phase worktree; p03 review passed.
+
+---
+
+### Task p03-t02: Invoke loop from `oat-project-quick-start`
+
+**Status:** completed
+**Commit:** ea63229e
+
+**Outcome (required when completed):**
+
+- Quick-start plan generation now routes through the shared plan artifact-review loop and records the plan review row.
+
+**Verification:**
+
+- Run: skill validation, version-bump validation, and `src/validation/skills.test.ts`.
+- Result: passed in phase worktree; p03 review passed.
+
+---
+
+### Task p03-t03: Invoke loop from `oat-project-import-plan` (import-aware)
+
+**Status:** completed
+**Commit:** 2f298aaf
+
+**Outcome (required when completed):**
+
+- Imported plans now invoke the plan-review loop with import-aware guidance that checks conformance and completeness without rewriting imported intent.
+
+**Verification:**
+
+- Run: skill validation and version-bump validation.
+- Result: passed in phase worktree; p03 review passed.
+
+---
+
+### Task p03-t04: Fix quick-start lightweight-design discovery-completion gap
+
+**Status:** completed
+**Commit:** 769073ae
+
+**Outcome (required when completed):**
+
+- The lightweight-design quick-start path now completes discovery before plan generation, matching the straight-to-plan path's artifact state.
+
+**Verification:**
+
+- Run: `src/commands/project/complete-discovery/index.test.ts` and manual quick-start lightweight-design smoke.
+- Result: passed in phase worktree; p03 review passed.
+
+---
+
+## Phase 4: Wire D — analyze integration
+
+**Status:** complete
+**Started:** 2026-06-03
+**Completed:** 2026-06-03
+**Review:** passed — `reviews/p04-code-review-2026-06-03.md`
+
+### Phase Summary
+
+**Outcome (what changed):**
+
+- Wired `oat-docs-analyze` through the analysis accuracy-review loop after artifact write.
+- Wired `oat-agent-instructions-analyze` through the analysis accuracy-review loop after artifact write.
+- Both analysis skills now record verified analysis artifacts before handoff to apply workflows.
+
+**Key files touched:**
+
+- `.agents/skills/oat-docs-analyze/SKILL.md` - docs-analysis accuracy review loop.
+- `.agents/skills/oat-agent-instructions-analyze/SKILL.md` - agent-instructions accuracy review loop.
+
+**Verification:**
+
+- Run: `pnpm --filter @open-agent-toolkit/cli test -- src/validation/skills.test.ts` after each task in phase worktree.
+- Merged verification: `pnpm test`; `pnpm lint`; `pnpm type-check`; result: passed.
+- Phase review: PASS, zero findings.
+
+**Notes / Decisions:**
+
+- p04 review noted residual end-to-end live analyze/reviewer-dispatch coverage remains deferred to the p06/final verification pass.
+
+### Task p04-t01: Invoke loop from `oat-docs-analyze`
+
+**Status:** completed
+**Commit:** 8679be4f
+
+**Outcome (required when completed):**
+
+- Docs analysis artifacts now run through the bounded `type: analysis`, sub-kind `docs` accuracy-review loop before downstream apply work.
+
+**Verification:**
+
+- Run: `pnpm --filter @open-agent-toolkit/cli test -- src/validation/skills.test.ts`.
+- Result: passed in phase worktree; p04 review passed.
+
+---
+
+### Task p04-t02: Invoke loop from `oat-agent-instructions-analyze`
+
+**Status:** completed
+**Commit:** c3f0d660
+
+**Outcome (required when completed):**
+
+- Agent-instruction analysis artifacts now run through the bounded `type: analysis`, sub-kind `agent-instructions` accuracy-review loop before downstream apply work.
+
+**Verification:**
+
+- Run: `pnpm --filter @open-agent-toolkit/cli test -- src/validation/skills.test.ts`.
+- Result: passed in phase worktree; p04 review passed.
+
+---
+
 ## Orchestration Runs
 
 _Each run from `oat-project-implement` appends an entry below with:_
@@ -283,6 +445,42 @@ Run-scoped snapshot only. The durable record is `## Deviations from Plan / Desig
 | ------------- | --------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | --------------- | --------- |
 | p01-t01       | plan.md         | File list focused on `oat-config.*` and possible control-plane config types. | Also changed `packages/cli/src/config/resolve.*` and `packages/cli/src/commands/config/index.*`. | Required for `oat config get workflow.autoArtifactReview.*` and command catalog support promised by the task behavior. | implementation  | None.     |
 
+### Run 2 — 2026-06-03 15:12Z
+
+**Branch:** feat/model-invokable-workflow-skills
+**Tier:** 1
+**Policy:** merge-strategy=merge, retry-limit=2
+**Phases:** 2 executed, 2 passed, 0 failed, 0 stopped
+
+#### Phase Outcomes
+
+| Phase | Implementer        | Review | Fix Iterations | Disposition |
+| ----- | ------------------ | ------ | -------------- | ----------- |
+| p03   | DONE_WITH_CONCERNS | pass   | 0/2            | merged      |
+| p04   | DONE               | pass   | 0/2            | merged      |
+
+#### Parallel Groups
+
+- Group 2 [p03, p04]: worktree-based, merged in order after both implementation reviews passed.
+
+#### Dispatch Notes
+
+- Dispatch: p03 and p04 implementation ran with model_axis=inherited, effort_axis=selected:high, ceiling=xhigh.
+- Dispatch: p03 and p04 reviews ran with model_axis=inherited, effort_axis=selected:xhigh, ceiling=xhigh.
+- p03's `DONE_WITH_CONCERNS` was advisory: quick-start's explicit version-contract test required an in-scope test update, and the p03 reviewer accepted that scope.
+
+#### Outstanding Items
+
+- None.
+
+#### Artifact / Design Deltas
+
+Run-scoped snapshot only. The durable record is `## Deviations from Plan / Design`.
+
+| Task / Review   | Source Artifact | Planned / Documented                        | Actual / Accepted                                          | Reason                                                                                           | Source of Truth | Follow-up |
+| --------------- | --------------- | ------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------- | --------- |
+| p03-t02/p03-t04 | plan.md         | Phase 3 file lists were skill-file focused. | Also changed `packages/cli/src/validation/skills.test.ts`. | Required to update the quick-start skill version contract after the planned skill version bumps. | implementation  | None.     |
+
 <!-- orchestration-runs-end -->
 
 ---
@@ -293,7 +491,7 @@ Chronological log of implementation progress.
 
 ### 2026-06-03
 
-**Session:** Group 1 implementation and fan-in.
+**Session:** Group 1 and Group 2 implementation and fan-in.
 
 - [x] p01-t01: Add `workflow.autoArtifactReview` config schema — fd406fe7
 - [x] p01-t02: Implement `oat review latest` CLI command — 392f6234
@@ -301,21 +499,30 @@ Chronological log of implementation progress.
 - [x] p02-t01: Extend `oat-reviewer` with `plan` artifact scope — 535f4753
 - [x] p02-t02: Extend `oat-reviewer` with `analysis` review type — 45f667a8
 - [x] p02-t03: Author shared auto artifact-review loop contract — d9a30ad8
+- [x] p03-t01: Invoke loop from `oat-project-plan` — 061e4777
+- [x] p03-t02: Invoke loop from `oat-project-quick-start` — ea63229e
+- [x] p03-t03: Invoke loop from `oat-project-import-plan` — 2f298aaf
+- [x] p03-t04: Fix quick-start lightweight-design discovery-completion gap — 769073ae
+- [x] p04-t01: Invoke loop from `oat-docs-analyze` — 8679be4f
+- [x] p04-t02: Invoke loop from `oat-agent-instructions-analyze` — c3f0d660
 
 **What changed (high level):**
 
 - Group 1 foundations are merged into the orchestration branch.
 - p01 and p02 code reviews passed with zero findings.
-- The project is stopped at the configured post-p02 HiLL checkpoint before Group 2.
+- Group 2 wiring is merged into the orchestration branch.
+- p03 and p04 code reviews passed with zero findings.
+- The project is ready to continue with sequential Phase 5 (`p05-t01`).
 
 **Decisions:**
 
 - Kept the p01 resolver/config-command support as an accepted plan file-list expansion because it is required for the requested `oat config get` behavior.
 - Treated repeated `apps/oat-docs/index.md` regeneration during verification as unrelated generated churn and restored it before bookkeeping.
+- Accepted the p03 quick-start version-contract test update as part of the planned skill version bump work.
 
 **Follow-ups / TODO:**
 
-- Continue with Group 2 (`p03`, `p04`) after checkpoint approval.
+- Continue with Phase 5 (`p05`) model-invocability work.
 
 **Blockers:**
 
@@ -327,9 +534,10 @@ Chronological log of implementation progress.
 
 Document any intentional deviations from the original plan, spec, or design. Include accepted review findings where the shipped implementation is source of truth and a lifecycle artifact needs alignment.
 
-| Task / Review | Source Artifact | Planned / Documented                                                         | Actual / Accepted                                                                                | Reason                                                                                                                 | Source of Truth | Follow-up |
-| ------------- | --------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | --------------- | --------- |
-| p01-t01       | plan.md         | File list focused on `oat-config.*` and possible control-plane config types. | Also changed `packages/cli/src/config/resolve.*` and `packages/cli/src/commands/config/index.*`. | Required for `oat config get workflow.autoArtifactReview.*` and command catalog support promised by the task behavior. | implementation  | None.     |
+| Task / Review   | Source Artifact | Planned / Documented                                                         | Actual / Accepted                                                                                | Reason                                                                                                                 | Source of Truth | Follow-up |
+| --------------- | --------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | --------------- | --------- |
+| p01-t01         | plan.md         | File list focused on `oat-config.*` and possible control-plane config types. | Also changed `packages/cli/src/config/resolve.*` and `packages/cli/src/commands/config/index.*`. | Required for `oat config get workflow.autoArtifactReview.*` and command catalog support promised by the task behavior. | implementation  | None.     |
+| p03-t02/p03-t04 | plan.md         | Phase 3 file lists were skill-file focused.                                  | Also changed `packages/cli/src/validation/skills.test.ts`.                                       | Required to update the quick-start skill version contract after the planned skill version bumps.                       | implementation  | None.     |
 
 ## Test Results
 
@@ -339,6 +547,8 @@ Track test execution during implementation.
 | ----- | --------------------------------------------------------- | ------ | ------ | -------------------------------------------------- |
 | 1     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p01 review passed |
 | 2     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p02 review passed |
+| 3     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p03 review passed |
+| 4     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p04 review passed |
 
 ## Final Summary (for PR/docs)
 

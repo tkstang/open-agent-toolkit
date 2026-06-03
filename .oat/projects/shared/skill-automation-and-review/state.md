@@ -1,6 +1,6 @@
 ---
-oat_current_task: p03-t01
-oat_last_commit: 68860b70
+oat_current_task: p05-t01
+oat_last_commit: ad196bdc
 oat_blockers: []
 associated_issues: [] # [{type: backlog|project|jira|linear, ref: "identifier"}]
 oat_kind: implementation # implementation | coordination; coordination parents may use oat_phase: decomposition
@@ -8,8 +8,8 @@ oat_parent: null # optional child-only coordination parent slug
 oat_siblings: [] # optional child-only sibling slugs
 oat_depends_on: [] # optional child-only sibling dependencies
 oat_children: [] # optional coordination-parent child slugs
-oat_hill_checkpoints: [] # Configured: which phases require human-in-the-loop lifecycle approval
-oat_hill_completed: [] # Progress: which HiLL checkpoints have been completed
+oat_hill_checkpoints: ['p02'] # Configured: which phases require human-in-the-loop lifecycle approval
+oat_hill_completed: ['p02'] # Progress: which HiLL checkpoints have been completed
 oat_parallel_execution: true
 oat_phase: implement # Current phase: discovery | spec | design | plan | implement | decomposition
 oat_phase_status: in_progress # Status: in_progress | complete | pr_open
@@ -27,7 +27,7 @@ oat_pr_status: null # null | ready | open | closed | merged — actual PR state 
 oat_pr_url: null # null | string — tracked PR URL when a PR exists
 oat_project_created: '2026-06-03T02:53:10.059Z' # ISO 8601 UTC timestamp — set once at project creation
 oat_project_completed: null # ISO 8601 UTC timestamp — set when project is completed/archived
-oat_project_state_updated: '2026-06-03T12:30:17Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
+oat_project_state_updated: '2026-06-03T15:14:21Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
 oat_generated: false
 ---
 
@@ -39,7 +39,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Group 1 complete; next task is `p03-t01`
+Implementation - Groups 1 and 2 complete; next task is `p05-t01`
 
 ## Artifacts
 
@@ -56,7 +56,9 @@ Implementation - Group 1 complete; next task is `p03-t01`
 - ✓ Plan complete
 - ✓ Phase 1 complete
 - ✓ Phase 2 complete
-- ⧗ Ready to execute implementation task `p03-t01`
+- ✓ Phase 3 complete
+- ✓ Phase 4 complete
+- ⧗ Ready to execute implementation task `p05-t01`
 
 ## Blockers
 
@@ -64,4 +66,4 @@ None
 
 ## Next Milestone
 
-HiLL checkpoint reached after `p02`. Continue with Group 2 (`p03`, `p04`) when approved.
+Continue with sequential Phase 5 (`p05`) model-invocability work.
