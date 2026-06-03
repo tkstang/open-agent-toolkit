@@ -28,7 +28,9 @@ Install the workflow skills with `oat tools install docs` (preferred) or
   name distinct from package name), labeled post-patches for open CLI gaps,
   build verification, config inspection, and an educational walkthrough
 - `oat-docs-analyze` evaluates a docs surface for structure, drift, coverage,
-  contributor guidance, and docs-app contract issues
+  contributor guidance, and docs-app contract issues, then runs the shared
+  auto artifact-review loop to verify the generated analysis artifact's
+  evidence, severities, and recommendations
 - `oat-docs-apply` consumes the analysis artifact and applies only approved,
   evidence-backed recommendations
 - `oat-project-document` performs post-implementation docs sync for a tracked project,
@@ -42,6 +44,9 @@ Install the workflow skills with `oat tools install docs` (preferred) or
 The docs workflow mirrors the agent-instructions analyze/apply split:
 
 - Analyze owns discovery, evidence gathering, confidence, and disclosure decisions
+- Analyze also owns accuracy verification of the generated analysis artifact
+  through the shared auto artifact-review loop before the apply workflow consumes
+  it
 - Apply consumes the artifact, asks for approval, and must not invent new docs conventions
 
 This keeps deterministic behavior in the CLI and judgment-heavy behavior in the
@@ -56,7 +61,8 @@ skills.
 5. Sync navigation:
    - **MkDocs:** `oat docs nav sync`
    - **Fumadocs:** `oat docs generate-index` (runs automatically via `predev`/`prebuild` hooks)
-6. Run `oat-docs-analyze`
+6. Run `oat-docs-analyze`; by default it verifies the generated analysis artifact
+   through `workflow.autoArtifactReview.analysis`
 7. Review the artifact and run `oat-docs-apply`
 
 ## Progressive disclosure

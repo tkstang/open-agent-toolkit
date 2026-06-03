@@ -76,6 +76,18 @@ Tool-pack installation state also lives here as shared repo config:
 
 Use `oat config get tools.<pack>` when you need an explicit installed-capability signal for workflows or troubleshooting.
 
+Workflow automation preferences are also visible through `oat config` and can be set at local, shared, or user scope. Notable review-loop keys:
+
+- `workflow.autoArtifactReview.plan` - default-on bounded artifact review for generated `plan.md` files before implementation handoff
+- `workflow.autoArtifactReview.analysis` - default-on bounded accuracy review for generated docs and agent-instructions analysis artifacts before apply workflows consume them
+
+Use `oat config describe workflow.autoArtifactReview.plan` or `oat config describe workflow.autoArtifactReview.analysis` to inspect precedence, defaults, and writable surfaces. Set either key to `false` only when you intentionally want to bypass that generated-artifact review loop:
+
+```bash
+oat config set workflow.autoArtifactReview.plan false --shared
+oat config set workflow.autoArtifactReview.analysis false --local
+```
+
 When archive settings are configured, completion uploads dated archive snapshots to S3, exports dated summary snapshots into the configured summary reference directory, and lets `oat-wrap-up` write tracked wrap-up reports into the configured wrap-up directory.
 
 Use these reference pages for file ownership and schema details:
