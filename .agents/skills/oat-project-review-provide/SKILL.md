@@ -1,8 +1,8 @@
 ---
 name: oat-project-review-provide
-version: 1.3.5
-description: Use when completed work in an active OAT project needs a quality gate before merge. Performs a lifecycle-scoped review after a task, phase, or full implementation, unlike oat-review-provide.
-disable-model-invocation: true
+version: 1.3.6
+description: Use when the user explicitly asks to review an OAT project — e.g. "review project", "review the project", "run project review", or confirms a previously offered review. Do NOT auto-invoke on completed work alone. Resolves a project review scope and offers before running.
+disable-model-invocation: false
 user-invocable: true
 allowed-tools: Read, Glob, Grep, Bash(git:*), AskUserQuestion
 ---
@@ -22,6 +22,14 @@ Reviewers should distinguish implementation defects from artifact drift. If code
 **Required:** Active project with at least one completed task.
 
 **Required:** Core project artifacts are already committed before the review begins. Review should not be the first step that notices an untracked project tree or pending bookkeeping-only artifact edits.
+
+## Model Invocation Gate
+
+This skill is model-invokable only for explicit review asks such as "review project" or "review the project", or when the user confirms a previously offered project-review step. Do NOT auto-invoke merely because a task, phase, or implementation appears complete.
+
+Before acting, verify that there is an active OAT project or a user-provided review target that can be resolved to project state. If neither exists, do not run this skill; offer `oat-project-open` / `oat-project-quick-start` for project workflow setup, or `oat-review-provide` for a non-project ad-hoc review.
+
+When the gate passes, summarize the inferred review type and scope, then ask before running the review.
 
 ## Mode Assertion
 
