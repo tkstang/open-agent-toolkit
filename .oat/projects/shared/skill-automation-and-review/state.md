@@ -1,6 +1,6 @@
 ---
-oat_current_task: p05-t01
-oat_last_commit: ad196bdc
+oat_current_task: p06-t01
+oat_last_commit: 6ec01fc1
 oat_blockers: []
 associated_issues: [] # [{type: backlog|project|jira|linear, ref: "identifier"}]
 oat_kind: implementation # implementation | coordination; coordination parents may use oat_phase: decomposition
@@ -27,7 +27,7 @@ oat_pr_status: null # null | ready | open | closed | merged — actual PR state 
 oat_pr_url: null # null | string — tracked PR URL when a PR exists
 oat_project_created: '2026-06-03T02:53:10.059Z' # ISO 8601 UTC timestamp — set once at project creation
 oat_project_completed: null # ISO 8601 UTC timestamp — set when project is completed/archived
-oat_project_state_updated: '2026-06-03T15:14:21Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
+oat_project_state_updated: '2026-06-03T15:44:09Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
 oat_generated: false
 ---
 
@@ -39,7 +39,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Groups 1 and 2 complete; next task is `p05-t01`
+Implementation - Phases 1 through 5 complete; next task is `p06-t01`
 
 ## Artifacts
 
@@ -58,7 +58,8 @@ Implementation - Groups 1 and 2 complete; next task is `p05-t01`
 - ✓ Phase 2 complete
 - ✓ Phase 3 complete
 - ✓ Phase 4 complete
-- ⧗ Ready to execute implementation task `p05-t01`
+- ✓ Phase 5 complete
+- ⧗ Ready to execute implementation task `p06-t01`
 
 ## Blockers
 
@@ -66,4 +67,4 @@ None
 
 ## Next Milestone
 
-Continue with sequential Phase 5 (`p05`) model-invocability work.
+Continue with Phase 6 (`p06`) documentation, lockstep version bump, and definition-of-done work.

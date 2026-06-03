@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-06-03
-oat_current_task_id: p05-t01
+oat_current_task_id: p06-t01
 oat_generated: false
 ---
 
@@ -30,10 +30,10 @@ oat_generated: false
 | Phase 2 — reviewer modes + loop contract          | complete | 3     | 3/3       |
 | Phase 3 — wire plan-review loop + quick-start fix | complete | 4     | 4/4       |
 | Phase 4 — wire analyze review loop                | complete | 2     | 2/2       |
-| Phase 5 — model-invocability pass                 | pending  | 5     | 0/5       |
+| Phase 5 — model-invocability pass                 | complete | 5     | 5/5       |
 | Phase 6 — docs + release + DoD                    | pending  | 3     | 0/3       |
 
-**Total:** 12/20 tasks completed
+**Total:** 17/20 tasks completed
 
 ---
 
@@ -397,6 +397,125 @@ oat_generated: false
 
 ---
 
+## Phase 5: Wire A — model-invocability pass
+
+**Status:** complete
+**Started:** 2026-06-03
+**Completed:** 2026-06-03
+**Review:** passed — `reviews/p05-code-review-2026-06-03.md`
+
+### Phase Summary
+
+**Outcome (what changed):**
+
+- Made `oat-project-review-provide` model-invokable for explicit project-review asks, with active-project or explicit-target gating and ask-before-run behavior.
+- Made `oat-project-review-receive` model-invokable for explicit receive/process-review asks and replaced latest-review discovery prose with `oat review latest`.
+- Made `oat-project-discover` model-invokable only for active spec-driven projects, routing new/quick/import cases elsewhere.
+- Made `oat-project-progress` model-invokable as a read-only progress router for explicit progress/next-step asks.
+- Added contract coverage for the four flipped skills and the corrected `review-provide` operational gate.
+
+**Key files touched:**
+
+- `.agents/skills/oat-project-review-provide/SKILL.md` - explicit model-invocation gate and resolvable-target Step 0 behavior.
+- `.agents/skills/oat-project-review-receive/SKILL.md` - explicit model-invocation gate and `oat review latest` resolution.
+- `.agents/skills/oat-project-discover/SKILL.md` - spec-driven active-project gate.
+- `.agents/skills/oat-project-progress/SKILL.md` - read-only explicit progress routing.
+- `packages/cli/src/commands/init/tools/shared/review-skill-contracts.test.ts` - invocability/description and Step 0 regression coverage.
+
+**Verification:**
+
+- Phase worktree: `pnpm run cli -- internal validate-oat-skills --base-ref f5a1c09a0c62611a3378729c85b804779ea5e1ac`; result: passed.
+- Phase worktree: `pnpm run cli -- internal validate-skill-version-bumps --base-ref f5a1c09a0c62611a3378729c85b804779ea5e1ac`; result: passed.
+- Phase worktree: `pnpm --filter @open-agent-toolkit/cli exec vitest run src/commands/init/tools/shared/review-skill-contracts.test.ts src/commands/review/__tests__/latest.test.ts src/validation/skills.test.ts`; result: passed.
+- Merged verification: `pnpm test`; `pnpm lint`; `pnpm type-check`; result: passed.
+- Provider sync: `pnpm run cli -- sync --scope all`; result: no changes required.
+- Phase review: PASS after one fix iteration.
+
+**Notes / Decisions:**
+
+- The first p05 review found that `review-provide` advertised an active-project OR explicit-target gate while Step 0 still hard-required `activeProject`. Fix commit `36a5248c` aligned the operational procedure and added regression coverage.
+
+### Task p05-t01: Flip `oat-project-review-provide`
+
+**Status:** completed
+**Commit:** 83ae26d6
+**Fix Commit:** 36a5248c
+
+**Outcome (required when completed):**
+
+- `oat-project-review-provide` is model-invokable for explicit project-review asks, refuses automatic invocation on completion alone, resolves active project or explicit project/review target, and asks before running.
+
+**Verification:**
+
+- Run: review skill contract test, skill validation, version-bump validation.
+- Result: passed in phase worktree; p05 review passed after the Step 0 gate fix.
+
+---
+
+### Task p05-t02: Flip `oat-project-review-receive` + CLI target resolution
+
+**Status:** completed
+**Commit:** 37daded0
+
+**Outcome (required when completed):**
+
+- `oat-project-review-receive` is model-invokable for explicit receive/process-review asks and uses `oat review latest` for project/ad-hoc target resolution with a documented fallback.
+
+**Verification:**
+
+- Run: review skill contract test and review-latest test.
+- Result: passed in phase worktree; p05 review passed.
+
+---
+
+### Task p05-t03: Flip `oat-project-discover` (gated)
+
+**Status:** completed
+**Commit:** cce16882
+
+**Outcome (required when completed):**
+
+- `oat-project-discover` is model-invokable only when an active spec-driven project is in discovery; otherwise it routes to new/quick/import workflows.
+
+**Verification:**
+
+- Run: skill validation.
+- Result: passed in phase worktree; p05 review passed.
+
+---
+
+### Task p05-t04: Flip `oat-project-progress`
+
+**Status:** completed
+**Commit:** 5fc56685
+
+**Outcome (required when completed):**
+
+- `oat-project-progress` is model-invokable for explicit progress/next-step asks and remains a read-only router that offers before routing.
+
+**Verification:**
+
+- Run: skill validation.
+- Result: passed in phase worktree; p05 review passed.
+
+---
+
+### Task p05-t05: Update skill-contract tests for flipped invocation
+
+**Status:** completed
+**Commit:** d424df7b
+
+**Outcome (required when completed):**
+
+- Contract tests assert the four flipped skills are model-invokable and retain the expected explicit-trigger/do-not-auto-invoke contract language.
+
+**Verification:**
+
+- Run: `pnpm --filter @open-agent-toolkit/cli exec vitest run src/commands/init/tools/shared/review-skill-contracts.test.ts src/commands/review/__tests__/latest.test.ts src/validation/skills.test.ts`.
+- Result: passed in phase worktree; p05 review passed.
+
+---
+
 ## Orchestration Runs
 
 _Each run from `oat-project-implement` appends an entry below with:_
@@ -481,6 +600,41 @@ Run-scoped snapshot only. The durable record is `## Deviations from Plan / Desig
 | --------------- | --------------- | ------------------------------------------- | ---------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------- | --------- |
 | p03-t02/p03-t04 | plan.md         | Phase 3 file lists were skill-file focused. | Also changed `packages/cli/src/validation/skills.test.ts`. | Required to update the quick-start skill version contract after the planned skill version bumps. | implementation  | None.     |
 
+### Run 3 — 2026-06-03 15:44Z
+
+**Branch:** feat/model-invokable-workflow-skills
+**Tier:** 1
+**Policy:** merge-strategy=merge, retry-limit=2
+**Phases:** 1 executed, 1 passed, 0 failed, 0 stopped
+
+#### Phase Outcomes
+
+| Phase | Implementer | Review | Fix Iterations | Disposition |
+| ----- | ----------- | ------ | -------------- | ----------- |
+| p05   | DONE        | pass   | 1/2            | merged      |
+
+#### Parallel Groups
+
+- None. Phase 5 ran sequentially in a dedicated phase worktree.
+
+#### Dispatch Notes
+
+- Dispatch: p05 implementation ran with model_axis=inherited, effort_axis=selected:high, ceiling=xhigh.
+- Dispatch: p05 review ran with model_axis=inherited, effort_axis=selected:xhigh, ceiling=xhigh.
+- First p05 review failed with one Important finding in `oat-project-review-provide`; fix commit `36a5248c` aligned Step 0 with the advertised active-project OR explicit-target gate.
+
+#### Outstanding Items
+
+- Continue with Phase 6 (`p06`) documentation, lockstep package version bump, and definition-of-done gate.
+
+#### Artifact / Design Deltas
+
+Run-scoped snapshot only. The durable record is `## Deviations from Plan / Design`.
+
+| Task / Review | Source Artifact | Planned / Documented                         | Actual / Accepted                                                | Reason                                                                              | Source of Truth | Follow-up |
+| ------------- | --------------- | -------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------- | --------- |
+| p05 review    | plan.md         | p05 should pass review after implementation. | One fix iteration was needed for `review-provide` Step 0 gating. | Reviewer found a mismatch between the model-invocation gate and executable process. | implementation  | None.     |
+
 <!-- orchestration-runs-end -->
 
 ---
@@ -491,7 +645,7 @@ Chronological log of implementation progress.
 
 ### 2026-06-03
 
-**Session:** Group 1 and Group 2 implementation and fan-in.
+**Session:** Group 1, Group 2, and Phase 5 implementation and fan-in.
 
 - [x] p01-t01: Add `workflow.autoArtifactReview` config schema — fd406fe7
 - [x] p01-t02: Implement `oat review latest` CLI command — 392f6234
@@ -505,6 +659,11 @@ Chronological log of implementation progress.
 - [x] p03-t04: Fix quick-start lightweight-design discovery-completion gap — 769073ae
 - [x] p04-t01: Invoke loop from `oat-docs-analyze` — 8679be4f
 - [x] p04-t02: Invoke loop from `oat-agent-instructions-analyze` — c3f0d660
+- [x] p05-t01: Flip `oat-project-review-provide` — 83ae26d6 (+ fix 36a5248c)
+- [x] p05-t02: Flip `oat-project-review-receive` + CLI target resolution — 37daded0
+- [x] p05-t03: Flip `oat-project-discover` — cce16882
+- [x] p05-t04: Flip `oat-project-progress` — 5fc56685
+- [x] p05-t05: Update skill-contract tests for flipped invocation — d424df7b
 
 **What changed (high level):**
 
@@ -512,17 +671,20 @@ Chronological log of implementation progress.
 - p01 and p02 code reviews passed with zero findings.
 - Group 2 wiring is merged into the orchestration branch.
 - p03 and p04 code reviews passed with zero findings.
-- The project is ready to continue with sequential Phase 5 (`p05-t01`).
+- Phase 5 model-invocability changes are merged into the orchestration branch.
+- p05 code review passed after one fix iteration.
+- The project is ready to continue with Phase 6 (`p06-t01`).
 
 **Decisions:**
 
 - Kept the p01 resolver/config-command support as an accepted plan file-list expansion because it is required for the requested `oat config get` behavior.
 - Treated repeated `apps/oat-docs/index.md` regeneration during verification as unrelated generated churn and restored it before bookkeeping.
 - Accepted the p03 quick-start version-contract test update as part of the planned skill version bump work.
+- Accepted the p05 review-provide Step 0 fix as an implementation correction, with added contract coverage to prevent the gate from drifting again.
 
 **Follow-ups / TODO:**
 
-- Continue with Phase 5 (`p05`) model-invocability work.
+- Continue with Phase 6 (`p06`) docs, lockstep version bump, and definition-of-done work.
 
 **Blockers:**
 
@@ -549,6 +711,7 @@ Track test execution during implementation.
 | 2     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p02 review passed |
 | 3     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p03 review passed |
 | 4     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p04 review passed |
+| 5     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p05 review passed |
 
 ## Final Summary (for PR/docs)
 
