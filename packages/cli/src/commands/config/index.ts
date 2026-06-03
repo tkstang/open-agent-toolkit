@@ -55,6 +55,8 @@ type ConfigKey =
   | 'tools.workflows'
   | 'workflow.archiveOnComplete'
   | 'workflow.autoNarrowReReviewScope'
+  | 'workflow.autoArtifactReview.analysis'
+  | 'workflow.autoArtifactReview.plan'
   | 'workflow.autoReviewAtHillCheckpoints'
   | 'workflow.createPrOnComplete'
   | 'workflow.designMode'
@@ -144,6 +146,8 @@ const KEY_ORDER: ConfigKey[] = [
   'workflow.reviewExecutionModel',
   'workflow.autoReviewAtHillCheckpoints',
   'workflow.autoNarrowReReviewScope',
+  'workflow.autoArtifactReview.plan',
+  'workflow.autoArtifactReview.analysis',
   'workflow.designMode',
   'workflow.dispatchCeiling.preset',
   'workflow.dispatchCeiling.providers.codex',
@@ -541,6 +545,32 @@ const CONFIG_CATALOG: ConfigCatalogEntry[] = [
       'Auto-narrow re-review scope to fix-task commits in oat-project-review-provide when re-reviewing completed fix tasks. Has no effect on initial reviews (there is nothing to narrow to). When unset, the skill prompts. Resolution: env > local > shared > user > default.',
   },
   {
+    key: 'workflow.autoArtifactReview.plan',
+    group: 'Workflow Preferences (3-layer: local > shared > user)',
+    file: '.oat/config.local.json | .oat/config.json | ~/.oat/config.json',
+    scope: 'workflow',
+    type: 'boolean',
+    defaultValue: 'true',
+    mutability: 'read/write',
+    owningCommand:
+      'oat config set workflow.autoArtifactReview.plan <true|false>',
+    description:
+      'Automatically run the bounded artifact-review loop for generated plan artifacts before implementation handoff. Resolution: env > local > shared > user > default.',
+  },
+  {
+    key: 'workflow.autoArtifactReview.analysis',
+    group: 'Workflow Preferences (3-layer: local > shared > user)',
+    file: '.oat/config.local.json | .oat/config.json | ~/.oat/config.json',
+    scope: 'workflow',
+    type: 'boolean',
+    defaultValue: 'true',
+    mutability: 'read/write',
+    owningCommand:
+      'oat config set workflow.autoArtifactReview.analysis <true|false>',
+    description:
+      'Automatically run the bounded accuracy-review loop for generated analysis artifacts before apply workflows consume them. Resolution: env > local > shared > user > default.',
+  },
+  {
     key: 'workflow.designMode',
     group: 'Workflow Preferences (3-layer: local > shared > user)',
     file: '.oat/config.local.json | .oat/config.json | ~/.oat/config.json',
@@ -673,6 +703,8 @@ const WORKFLOW_BOOLEAN_KEYS = new Set<ConfigKey>([
   'workflow.createPrOnComplete',
   'workflow.autoReviewAtHillCheckpoints',
   'workflow.autoNarrowReReviewScope',
+  'workflow.autoArtifactReview.plan',
+  'workflow.autoArtifactReview.analysis',
 ]);
 
 function isWorkflowKey(key: ConfigKey): boolean {
@@ -820,6 +852,17 @@ function applyWorkflowValue(
           ...workflow.dispatchCeiling?.providers,
           [providerKey]: value,
         },
+      },
+    } as OatWorkflowConfig;
+  }
+
+  if (subKey.startsWith('autoArtifactReview.')) {
+    const reviewKey = subKey.slice('autoArtifactReview.'.length);
+    return {
+      ...workflow,
+      autoArtifactReview: {
+        ...workflow.autoArtifactReview,
+        [reviewKey]: value,
       },
     } as OatWorkflowConfig;
   }

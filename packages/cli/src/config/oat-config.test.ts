@@ -584,6 +584,10 @@ describe('oat-config', () => {
             reviewExecutionModel: 'subagent',
             autoReviewAtHillCheckpoints: true,
             autoNarrowReReviewScope: false,
+            autoArtifactReview: {
+              plan: true,
+              analysis: true,
+            },
           },
         }),
         'utf8',
@@ -598,7 +602,59 @@ describe('oat-config', () => {
         reviewExecutionModel: 'subagent',
         autoReviewAtHillCheckpoints: true,
         autoNarrowReReviewScope: false,
+        autoArtifactReview: {
+          plan: true,
+          analysis: true,
+        },
       });
+    });
+
+    it('accepts workflow.autoArtifactReview boolean overrides', async () => {
+      const repoRoot = await createRepoRoot();
+      const configPath = join(repoRoot, '.oat', 'config.json');
+      await writeFile(
+        configPath,
+        JSON.stringify({
+          version: 1,
+          workflow: {
+            autoArtifactReview: {
+              plan: false,
+              analysis: true,
+            },
+          },
+        }),
+        'utf8',
+      );
+
+      const config = await readOatConfig(repoRoot);
+      expect(config.workflow).toEqual({
+        autoArtifactReview: {
+          plan: false,
+          analysis: true,
+        },
+      });
+    });
+
+    it('drops non-boolean workflow.autoArtifactReview values', async () => {
+      const repoRoot = await createRepoRoot();
+      const configPath = join(repoRoot, '.oat', 'config.json');
+      await writeFile(
+        configPath,
+        JSON.stringify({
+          version: 1,
+          workflow: {
+            autoArtifactReview: {
+              plan: 'yes',
+              analysis: 1,
+            },
+            archiveOnComplete: true,
+          },
+        }),
+        'utf8',
+      );
+
+      const config = await readOatConfig(repoRoot);
+      expect(config.workflow).toEqual({ archiveOnComplete: true });
     });
 
     it('strips invalid enum values from workflow config', async () => {
