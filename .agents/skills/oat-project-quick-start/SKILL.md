@@ -1,6 +1,6 @@
 ---
 name: oat-project-quick-start
-version: 2.1.5
+version: 2.1.6
 description: Use when a task is small enough for quick mode or rapid iteration is preferred. Scaffolds a lightweight OAT project from discovery directly to a runnable plan, with optional brainstorming and lightweight design.
 argument-hint: '<project-name> ["project description"]'
 disable-model-invocation: true
@@ -422,6 +422,14 @@ Before proceeding to plan generation or pausing for validation, persist the desi
 ```bash
 git add "$PROJECT_PATH/design.md" "$PROJECT_PATH/state.md"
 git diff --cached --quiet || git commit -m "chore(oat): capture quick-start design for {project-name}"
+```
+
+Complete discovery through the CLI validation boundary before proceeding to plan generation:
+
+```bash
+oat project complete-discovery "$PROJECT_PATH" --ready-for oat-project-quick-start
+git add "$PROJECT_PATH/discovery.md" "$PROJECT_PATH/state.md"
+git diff --cached --quiet || git commit -m "chore(oat): complete quick-start discovery for {project-name}"
 ```
 
 ### Step 3: Generate Plan Directly
