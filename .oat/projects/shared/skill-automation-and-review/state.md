@@ -1,6 +1,6 @@
 ---
-oat_current_task: p06-t01
-oat_last_commit: 6ec01fc1
+oat_current_task: null
+oat_last_commit: 9c008a75
 oat_blockers: []
 associated_issues: [] # [{type: backlog|project|jira|linear, ref: "identifier"}]
 oat_kind: implementation # implementation | coordination; coordination parents may use oat_phase: decomposition
@@ -22,12 +22,12 @@ oat_dispatch_ceiling:
   source: project-state
 oat_workflow_mode: quick # spec-driven | quick | import
 oat_workflow_origin: native # native | imported
-oat_docs_updated: null # null | skipped | complete — documentation sync status
+oat_docs_updated: complete # null | skipped | complete — documentation sync status
 oat_pr_status: null # null | ready | open | closed | merged — actual PR state for the current project
 oat_pr_url: null # null | string — tracked PR URL when a PR exists
 oat_project_created: '2026-06-03T02:53:10.059Z' # ISO 8601 UTC timestamp — set once at project creation
 oat_project_completed: null # ISO 8601 UTC timestamp — set when project is completed/archived
-oat_project_state_updated: '2026-06-03T15:44:09Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
+oat_project_state_updated: '2026-06-03T16:14:58Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
 oat_generated: false
 ---
 
@@ -39,7 +39,7 @@ oat_generated: false
 
 ## Current Phase
 
-Implementation - Phases 1 through 5 complete; next task is `p06-t01`
+Implementation - all planned tasks complete; final code review is next
 
 ## Artifacts
 
@@ -59,7 +59,8 @@ Implementation - Phases 1 through 5 complete; next task is `p06-t01`
 - ✓ Phase 3 complete
 - ✓ Phase 4 complete
 - ✓ Phase 5 complete
-- ⧗ Ready to execute implementation task `p06-t01`
+- ✓ Phase 6 complete
+- ⧗ Ready for final code review
 
 ## Blockers
 
@@ -67,4 +68,4 @@ None
 
 ## Next Milestone
 
-Continue with Phase 6 (`p06`) documentation, lockstep version bump, and definition-of-done work.
+Run final code review, then continue to PR/final handoff.

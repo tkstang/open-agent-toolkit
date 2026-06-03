@@ -1,9 +1,9 @@
 ---
-oat_status: in_progress
+oat_status: complete
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-06-03
-oat_current_task_id: p06-t01
+oat_current_task_id: null
 oat_generated: false
 ---
 
@@ -31,9 +31,9 @@ oat_generated: false
 | Phase 3 — wire plan-review loop + quick-start fix | complete | 4     | 4/4       |
 | Phase 4 — wire analyze review loop                | complete | 2     | 2/2       |
 | Phase 5 — model-invocability pass                 | complete | 5     | 5/5       |
-| Phase 6 — docs + release + DoD                    | pending  | 3     | 0/3       |
+| Phase 6 — docs + release + DoD                    | complete | 3     | 3/3       |
 
-**Total:** 17/20 tasks completed
+**Total:** 20/20 tasks completed
 
 ---
 
@@ -516,6 +516,97 @@ oat_generated: false
 
 ---
 
+## Phase 6: Release, docs, and definition-of-done
+
+**Status:** complete
+**Started:** 2026-06-03
+**Completed:** 2026-06-03
+**Review:** passed — `reviews/p06-code-review-2026-06-03.md`
+
+### Phase Summary
+
+**Outcome (what changed):**
+
+- Documented the auto artifact-review config keys, plan/analysis review loops, `oat review latest`, and the new model-invokable workflow skill behavior.
+- Regenerated the docs index.
+- Bumped the five lockstep public packages to `0.1.18` and updated the CLI public-package version asset.
+- Ran the full definition-of-done gate in the phase worktree; no optional p06-t03 commit was needed because no residual tracked output remained.
+
+**Key files touched:**
+
+- `apps/oat-docs/docs/cli-utilities/configuration.md` - workflow auto artifact-review preferences and accurate config precedence.
+- `apps/oat-docs/docs/cli-utilities/config-and-local-state.md` - config/local-state docs for new workflow preferences.
+- `apps/oat-docs/docs/reference/cli-reference.md` - `oat review latest` and workflow key reference.
+- `apps/oat-docs/docs/workflows/projects/reviews.md` - project review and auto-review behavior.
+- `apps/oat-docs/docs/docs-tooling/workflows.md` - analysis-review workflow docs.
+- `apps/oat-docs/index.md` - generated docs index.
+- `packages/*/package.json` and `packages/cli/assets/public-package-versions.json` - lockstep public-package version bump.
+
+**Verification:**
+
+- Phase worktree: `pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md`; result: passed.
+- Phase worktree: `pnpm build:docs`; result: passed.
+- Phase worktree: `pnpm release:validate`; result: passed.
+- Phase worktree: `pnpm build && pnpm lint && pnpm format && pnpm type-check && pnpm test`; result: passed.
+- Phase worktree: `pnpm release:validate`; result: passed.
+- Phase worktree: `git diff --check`; result: passed.
+- Primary after merge: `pnpm build:docs`; `pnpm release:validate`; `git diff --check`; result: passed.
+- Phase review: PASS after one docs-accuracy fix iteration.
+
+**Notes / Decisions:**
+
+- The first p06 review found two docs statements that incorrectly implied environment-variable precedence for `workflow.autoArtifactReview.*`. Fix commit `e97bbc38` corrected the docs to match implemented config-file/default resolution.
+- The full DoD gate emitted existing non-fatal warnings from Next config module typing and YAML tag parsing; all commands exited successfully.
+
+### Task p06-t01: Documentation updates
+
+**Status:** completed
+**Commit:** ee85376c
+**Fix Commit:** e97bbc38
+
+**Outcome (required when completed):**
+
+- Documentation now covers `workflow.autoArtifactReview`, `oat review latest`, plan/analysis auto-review behavior, and the model-invocability changes.
+
+**Verification:**
+
+- Run: `pnpm -w run cli -- docs generate-index --docs-dir apps/oat-docs/docs --output apps/oat-docs/index.md`; `pnpm build:docs`.
+- Result: passed in phase worktree; p06 review passed after the precedence docs fix.
+
+---
+
+### Task p06-t02: Lockstep public-package version bump
+
+**Status:** completed
+**Commit:** b34f2d83
+
+**Outcome (required when completed):**
+
+- The five public package manifests and CLI public-package version asset are lockstep at `0.1.18`.
+
+**Verification:**
+
+- Run: `pnpm release:validate`.
+- Result: passed in phase worktree and primary worktree.
+
+---
+
+### Task p06-t03: Full definition-of-done gate
+
+**Status:** completed
+**Commit:** n/a
+
+**Outcome (required when completed):**
+
+- Full DoD verification passed and produced no additional tracked output requiring an optional final commit.
+
+**Verification:**
+
+- Run: `pnpm build && pnpm lint && pnpm format && pnpm type-check && pnpm test`; `pnpm release:validate`; `git diff --check`.
+- Result: passed in phase worktree.
+
+---
+
 ## Orchestration Runs
 
 _Each run from `oat-project-implement` appends an entry below with:_
@@ -635,6 +726,41 @@ Run-scoped snapshot only. The durable record is `## Deviations from Plan / Desig
 | ------------- | --------------- | -------------------------------------------- | ---------------------------------------------------------------- | ----------------------------------------------------------------------------------- | --------------- | --------- |
 | p05 review    | plan.md         | p05 should pass review after implementation. | One fix iteration was needed for `review-provide` Step 0 gating. | Reviewer found a mismatch between the model-invocation gate and executable process. | implementation  | None.     |
 
+### Run 4 — 2026-06-03 16:14Z
+
+**Branch:** feat/model-invokable-workflow-skills
+**Tier:** 1
+**Policy:** merge-strategy=merge, retry-limit=2
+**Phases:** 1 executed, 1 passed, 0 failed, 0 stopped
+
+#### Phase Outcomes
+
+| Phase | Implementer | Review | Fix Iterations | Disposition |
+| ----- | ----------- | ------ | -------------- | ----------- |
+| p06   | DONE        | pass   | 1/2            | merged      |
+
+#### Parallel Groups
+
+- None. Phase 6 ran sequentially in a dedicated phase worktree.
+
+#### Dispatch Notes
+
+- Dispatch: p06 implementation ran with model_axis=inherited, effort_axis=selected:high, ceiling=xhigh.
+- Dispatch: p06 review ran with model_axis=inherited, effort_axis=selected:xhigh, ceiling=xhigh.
+- First p06 review failed with one Important docs accuracy finding; fix commit `e97bbc38` corrected config precedence docs for `workflow.autoArtifactReview.*`.
+
+#### Outstanding Items
+
+- Run final code review and complete project handoff.
+
+#### Artifact / Design Deltas
+
+Run-scoped snapshot only. The durable record is `## Deviations from Plan / Design`.
+
+| Task / Review | Source Artifact | Planned / Documented                                     | Actual / Accepted                                                            | Reason                                                                       | Source of Truth | Follow-up |
+| ------------- | --------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------------- | --------- |
+| p06 review    | plan.md         | p06 docs should accurately document new config behavior. | One fix iteration corrected `workflow.autoArtifactReview.*` precedence docs. | Reviewer found the docs claimed env precedence for keys without env aliases. | implementation  | None.     |
+
 <!-- orchestration-runs-end -->
 
 ---
@@ -645,7 +771,7 @@ Chronological log of implementation progress.
 
 ### 2026-06-03
 
-**Session:** Group 1, Group 2, and Phase 5 implementation and fan-in.
+**Session:** Full implementation and fan-in.
 
 - [x] p01-t01: Add `workflow.autoArtifactReview` config schema — fd406fe7
 - [x] p01-t02: Implement `oat review latest` CLI command — 392f6234
@@ -664,6 +790,9 @@ Chronological log of implementation progress.
 - [x] p05-t03: Flip `oat-project-discover` — cce16882
 - [x] p05-t04: Flip `oat-project-progress` — 5fc56685
 - [x] p05-t05: Update skill-contract tests for flipped invocation — d424df7b
+- [x] p06-t01: Documentation updates — ee85376c (+ fix e97bbc38)
+- [x] p06-t02: Lockstep public-package version bump — b34f2d83
+- [x] p06-t03: Full definition-of-done gate — no commit needed
 
 **What changed (high level):**
 
@@ -673,7 +802,9 @@ Chronological log of implementation progress.
 - p03 and p04 code reviews passed with zero findings.
 - Phase 5 model-invocability changes are merged into the orchestration branch.
 - p05 code review passed after one fix iteration.
-- The project is ready to continue with Phase 6 (`p06-t01`).
+- Phase 6 documentation, release bump, and DoD verification are merged into the orchestration branch.
+- p06 code review passed after one fix iteration.
+- All 20 planned implementation tasks are complete.
 
 **Decisions:**
 
@@ -681,10 +812,11 @@ Chronological log of implementation progress.
 - Treated repeated `apps/oat-docs/index.md` regeneration during verification as unrelated generated churn and restored it before bookkeeping.
 - Accepted the p03 quick-start version-contract test update as part of the planned skill version bump work.
 - Accepted the p05 review-provide Step 0 fix as an implementation correction, with added contract coverage to prevent the gate from drifting again.
+- Accepted the p06 docs precedence correction so documentation reflects the implemented config resolver rather than implying env aliases that do not exist.
 
 **Follow-ups / TODO:**
 
-- Continue with Phase 6 (`p06`) docs, lockstep version bump, and definition-of-done work.
+- Run final code review and final project handoff.
 
 **Blockers:**
 
@@ -700,41 +832,61 @@ Document any intentional deviations from the original plan, spec, or design. Inc
 | --------------- | --------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | --------------- | --------- |
 | p01-t01         | plan.md         | File list focused on `oat-config.*` and possible control-plane config types. | Also changed `packages/cli/src/config/resolve.*` and `packages/cli/src/commands/config/index.*`. | Required for `oat config get workflow.autoArtifactReview.*` and command catalog support promised by the task behavior. | implementation  | None.     |
 | p03-t02/p03-t04 | plan.md         | Phase 3 file lists were skill-file focused.                                  | Also changed `packages/cli/src/validation/skills.test.ts`.                                       | Required to update the quick-start skill version contract after the planned skill version bumps.                       | implementation  | None.     |
+| p06 review      | docs            | Documentation should describe workflow config precedence accurately.         | Corrected auto artifact-review docs to config-file/default precedence; no env aliases.           | Resolver only exposes env aliases for specific root path keys, not `workflow.autoArtifactReview.*`.                    | implementation  | None.     |
 
 ## Test Results
 
 Track test execution during implementation.
 
-| Phase | Tests Run                                                 | Passed | Failed | Coverage                                           |
-| ----- | --------------------------------------------------------- | ------ | ------ | -------------------------------------------------- |
-| 1     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p01 review passed |
-| 2     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p02 review passed |
-| 3     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p03 review passed |
-| 4     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p04 review passed |
-| 5     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p05 review passed |
+| Phase | Tests Run                                                               | Passed | Failed | Coverage                                                                                   |
+| ----- | ----------------------------------------------------------------------- | ------ | ------ | ------------------------------------------------------------------------------------------ |
+| 1     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review               | yes    | 0      | Full workspace gate after merge; p01 review passed                                         |
+| 2     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review               | yes    | 0      | Full workspace gate after merge; p02 review passed                                         |
+| 3     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review               | yes    | 0      | Full workspace gate after merge; p03 review passed                                         |
+| 4     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review               | yes    | 0      | Full workspace gate after merge; p04 review passed                                         |
+| 5     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review               | yes    | 0      | Full workspace gate after merge; p05 review passed                                         |
+| 6     | `pnpm build:docs`; `pnpm release:validate`; full DoD gate; phase review | yes    | 0      | Full p06 DoD in phase worktree; primary docs/release checks after merge; p06 review passed |
 
 ## Final Summary (for PR/docs)
 
 **What shipped:**
 
-- {capability 1}
-- {capability 2}
+- Default-on `workflow.autoArtifactReview.plan` and `workflow.autoArtifactReview.analysis` config keys.
+- `oat review latest` for newest-review discovery across project/ad-hoc review locations.
+- `oat-reviewer` support for plan artifact reviews and docs/agent-instructions analysis accuracy reviews.
+- Shared bounded auto artifact-review loop contract and wiring in plan, quick-start, import-plan, docs-analyze, and agent-instructions-analyze workflows.
+- Model-invokable project review/progress/discovery skills with explicit gating and contract coverage.
+- Documentation updates and lockstep public package bump to `0.1.18`.
 
 **Behavioral changes (user-facing):**
 
-- {bullet}
+- Generated plans and analysis artifacts now run through bounded reviewer loops by default unless explicitly disabled.
+- Users can run `oat review latest` to resolve the newest review artifact.
+- Explicit natural-language asks can invoke selected project review/progress/discovery skills, while do-not-auto-invoke clauses prevent surprise workflow jumps.
 
 **Key files / modules:**
 
-- `{path}` - {purpose}
+- `packages/cli/src/config/oat-config.ts` - auto artifact-review config schema/defaults.
+- `packages/cli/src/commands/review/latest.ts` - latest review resolver.
+- `.agents/agents/oat-reviewer.md` - plan and analysis review modes.
+- `.agents/skills/oat-project-plan-writing/SKILL.md` - shared auto artifact-review loop contract.
+- `.agents/skills/oat-project-plan/SKILL.md`, `.agents/skills/oat-project-quick-start/SKILL.md`, `.agents/skills/oat-project-import-plan/SKILL.md` - plan review loop wiring.
+- `.agents/skills/oat-docs-analyze/SKILL.md`, `.agents/skills/oat-agent-instructions-analyze/SKILL.md` - analysis accuracy-review loop wiring.
+- `.agents/skills/oat-project-review-provide/SKILL.md`, `.agents/skills/oat-project-review-receive/SKILL.md`, `.agents/skills/oat-project-discover/SKILL.md`, `.agents/skills/oat-project-progress/SKILL.md` - model-invocation gating.
 
 **Verification performed:**
 
-- {tests/lint/typecheck/build/manual steps}
+- `pnpm test`, `pnpm lint`, `pnpm type-check` after merged phase groups.
+- `pnpm build:docs` and `pnpm release:validate` after p06 merge.
+- Full p06 DoD in phase worktree: `pnpm build && pnpm lint && pnpm format && pnpm type-check && pnpm test`, `pnpm release:validate`, and `git diff --check`.
+- Phase code reviews p01 through p06 all passed.
 
 **Design deltas (if any):**
 
-- {what changed vs design.md and why}
+- p01 expanded beyond the initial file list to update config resolver/config command support required by `oat config get workflow.autoArtifactReview.*`.
+- p03 updated quick-start skill version contract tests alongside planned quick-start skill version bumps.
+- p05 needed one review-fix commit to align `review-provide` Step 0 with its advertised active-project OR explicit-target model-invocation gate.
+- p06 needed one review-fix commit to correct docs precedence for `workflow.autoArtifactReview.*`.
 
 ## References
 
