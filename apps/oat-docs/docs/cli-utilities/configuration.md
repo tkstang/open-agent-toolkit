@@ -274,7 +274,7 @@ The loops use `oat-reviewer` structured-output mode. They do not write standalon
 
 ### Three-layer resolution
 
-Workflow preferences resolve through three config surfaces, with `env > local > shared > user > default` precedence per key. This is the same generic resolution used by `oat config dump`:
+Workflow preferences resolve through three config surfaces, with `local > shared > user > default` precedence per key. `oat config dump` can also report an `env` source for keys that have explicit environment aliases, such as `projects.root` and `worktrees.root`; `workflow.autoArtifactReview.plan` and `workflow.autoArtifactReview.analysis` do not have environment aliases and use config-file/default resolution.
 
 - **User-level** (`~/.oat/config.json`): personal defaults that apply to every repo. This is where most power users should start — set preferences once, never worry about them again.
 - **Shared repo** (`.oat/config.json`): team decisions for this repo. Overrides user defaults when present.

@@ -77,4 +77,4 @@ The `workflow.*` namespace holds user-facing workflow preferences that let you a
 - `workflow.autoArtifactReview.plan` (`boolean`, default `true`) — auto-run the bounded `plan.md` artifact-review loop before implementation handoff
 - `workflow.autoArtifactReview.analysis` (`boolean`, default `true`) — auto-run the bounded accuracy-review loop for generated analysis artifacts before apply workflows consume them
 
-These keys resolve through the 3-layer precedence chain (`env > local > shared > user > default`). See [Workflow preferences in the Configuration guide](../cli-utilities/configuration.md#workflow-preferences-workflow) for full descriptions, surface guidance, and cross-repo foot-gun examples.
+These workflow keys resolve through config files and defaults (`local > shared > user > default`). Some config keys have explicit environment aliases, but `workflow.autoArtifactReview.plan` and `workflow.autoArtifactReview.analysis` do not. See [Workflow preferences in the Configuration guide](../cli-utilities/configuration.md#workflow-preferences-workflow) for full descriptions, surface guidance, and cross-repo foot-gun examples.
