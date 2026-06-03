@@ -3,7 +3,7 @@ oat_status: in_progress
 oat_ready_for: null
 oat_blockers: []
 oat_last_updated: 2026-06-03
-oat_current_task_id: p01-t01
+oat_current_task_id: p03-t01
 oat_generated: false
 ---
 
@@ -24,16 +24,16 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase                                             | Status      | Tasks | Completed |
-| ------------------------------------------------- | ----------- | ----- | --------- |
-| Phase 1 — config + review-latest CLI              | in_progress | 3     | 0/3       |
-| Phase 2 — reviewer modes + loop contract          | pending     | 3     | 0/3       |
-| Phase 3 — wire plan-review loop + quick-start fix | pending     | 4     | 0/4       |
-| Phase 4 — wire analyze review loop                | pending     | 2     | 0/2       |
-| Phase 5 — model-invocability pass                 | pending     | 5     | 0/5       |
-| Phase 6 — docs + release + DoD                    | pending     | 3     | 0/3       |
+| Phase                                             | Status   | Tasks | Completed |
+| ------------------------------------------------- | -------- | ----- | --------- |
+| Phase 1 — config + review-latest CLI              | complete | 3     | 3/3       |
+| Phase 2 — reviewer modes + loop contract          | complete | 3     | 3/3       |
+| Phase 3 — wire plan-review loop + quick-start fix | pending  | 4     | 0/4       |
+| Phase 4 — wire analyze review loop                | pending  | 2     | 0/2       |
+| Phase 5 — model-invocability pass                 | pending  | 5     | 0/5       |
+| Phase 6 — docs + release + DoD                    | pending  | 3     | 0/3       |
 
-**Total:** 0/20 tasks completed
+**Total:** 6/20 tasks completed
 
 ---
 
@@ -53,78 +53,185 @@ oat_generated: false
 
 ---
 
-## Phase 1: {Phase Name}
+## Phase 1: Foundations — config schema + review-discovery CLI
 
-**Status:** in_progress
+**Status:** complete
 **Started:** 2026-06-03
+**Completed:** 2026-06-03
+**Review:** passed — `reviews/p01-code-review-2026-06-03.md`
 
-### Phase Summary (fill when phase is complete)
+### Phase Summary
 
 **Outcome (what changed):**
 
-- {2-5 bullets describing user-visible / behavior-level changes delivered in this phase}
+- Added default-on `workflow.autoArtifactReview.plan` and `workflow.autoArtifactReview.analysis` config keys.
+- Added `oat review latest` for resolving the newest project/ad-hoc review by `oat_generated_at` frontmatter.
+- Registered the new review command group and covered help/command registry behavior.
 
 **Key files touched:**
 
-- `{path}` - {why}
+- `packages/cli/src/config/oat-config.ts` - config schema/defaults for auto artifact review.
+- `packages/cli/src/config/resolve.ts` - effective config path resolution for the new keys.
+- `packages/cli/src/commands/config/index.ts` - `oat config get/set/list/describe` support for nested workflow keys.
+- `packages/cli/src/commands/review/latest.ts` - latest-review resolver and CLI output behavior.
+- `packages/cli/src/commands/index.ts` - review command registration.
 
 **Verification:**
 
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: `pnpm test`; result: passed after p01 merge.
+- Run: `pnpm lint`; result: passed after p01 merge.
+- Run: `pnpm type-check`; result: passed after p01 merge.
+- Phase review: PASS, zero findings.
 
 **Notes / Decisions:**
 
-- {trade-offs or deviations discovered during implementation}
+- `p01-t01` needed resolver/catalog support beyond the initial file list so `oat config get workflow.autoArtifactReview.*` works through the same path as other workflow config.
 
-### Task p01-t01: {Task Name}
+### Task p01-t01: Add `workflow.autoArtifactReview` config schema
 
-**Status:** completed / in_progress / pending / blocked
-**Commit:** {sha} (if completed)
+**Status:** completed
+**Commit:** fd406fe7
 
 **Outcome (required when completed):**
 
-- {what materially changed (not “did task”, but “system now does X”)}
+- The CLI config schema accepts boolean plan/analysis auto artifact-review keys, defaults them to `true`, rejects invalid values, and resolves them through effective config.
 
 **Files changed:**
 
-- `{path}` - {why}
+- `packages/cli/src/config/oat-config.ts` - schema/defaults.
+- `packages/cli/src/config/oat-config.test.ts` - default/override/invalid-value coverage.
+- `packages/cli/src/config/resolve.ts` - resolver key path support.
+- `packages/cli/src/config/resolve.test.ts` - resolver coverage.
+- `packages/cli/src/commands/config/index.ts` - nested key get/set/list/describe support.
+- `packages/cli/src/commands/config/index.test.ts` - config command coverage.
 
 **Verification:**
 
-- Run: `{command(s)}`
-- Result: {pass/fail + notes}
+- Run: focused config/config-command vitest, `pnpm lint`, `pnpm type-check`.
+- Result: passed in phase worktree; full merged verification passed.
+
+---
+
+### Task p01-t02: Implement `oat review latest` CLI command
+
+**Status:** completed
+**Commit:** 392f6234
+
+**Outcome (required when completed):**
+
+- `oat review latest` scans project reviews, archived project reviews, ad-hoc repo reviews, and orphan reviews, returning the newest candidate by `oat_generated_at` with a clean empty result when none exists.
+
+**Files changed:**
+
+- `packages/cli/src/commands/review/index.ts` - review command group.
+- `packages/cli/src/commands/review/latest.ts` - resolver and command implementation.
+- `packages/cli/src/commands/review/__tests__/latest.test.ts` - ordering, output, and empty-result coverage.
+- `packages/cli/src/commands/index.ts` - top-level registration.
+
+**Verification:**
+
+- Run: focused review-command vitest, `pnpm lint`, `pnpm type-check`.
+- Result: passed in phase worktree; full merged verification passed.
+
+---
+
+### Task p01-t03: Help/snapshot + command-registry coverage
+
+**Status:** completed
+**Commit:** aec8612b
+
+**Outcome (required when completed):**
+
+- Root help, review help, latest help, and command integration tests now cover `oat review latest`.
+
+**Files changed:**
+
+- `packages/cli/src/commands/help-snapshots.test.ts` - help snapshot expectations.
+- `packages/cli/src/commands/commands.integration.test.ts` - command registry/callability coverage.
+
+**Verification:**
+
+- Run: focused help/registry vitest, `pnpm lint`, `pnpm type-check`.
+- Result: passed in phase worktree; full merged verification passed.
+
+---
+
+## Phase 2: Core — reviewer extension + shared auto-review-loop contract
+
+**Status:** complete
+**Started:** 2026-06-03
+**Completed:** 2026-06-03
+**Review:** passed — `reviews/p02-code-review-2026-06-03.md`
+
+### Phase Summary
+
+**Outcome (what changed):**
+
+- Extended `oat-reviewer` so artifact reviews can cover `plan` artifacts with canonical-format and import-aware checks.
+- Added `analysis` review mode for accuracy checks of docs and agent-instruction analysis artifacts.
+- Added the canonical Auto Artifact-Review Loop contract to `oat-project-plan-writing`.
+
+**Key files touched:**
+
+- `.agents/agents/oat-reviewer.md` - plan artifact scope, analysis mode, and version bump.
+- `.agents/skills/oat-project-plan-writing/SKILL.md` - shared loop procedure and plan review-row rule.
+
+**Verification:**
+
+- Run: `pnpm test`; result: passed after p02 merge.
+- Run: `pnpm lint`; result: passed after p02 merge.
+- Run: `pnpm type-check`; result: passed after p02 merge.
+- Phase review: PASS, zero findings.
 
 **Notes / Decisions:**
 
-- {gotchas, trade-offs, design deltas, important context for future sessions}
+- The loop contract lives with plan-writing as the canonical plan artifact authority and is referenced by follow-on wiring phases.
 
-**Issues Encountered:**
+### Task p02-t01: Extend `oat-reviewer` with `plan` artifact scope
 
-- {Issue and resolution}
+**Status:** completed
+**Commit:** 535f4753
+
+**Outcome (required when completed):**
+
+- `oat-reviewer` accepts `plan` artifact review scope and includes the plan-specific checklist for format, stable IDs, required sections, review-table preservation, task quality, coverage, and parallelism sanity.
+
+**Verification:**
+
+- Run: `pnpm lint`, `pnpm test -- review`.
+- Result: passed in phase worktree; p02 review passed.
 
 ---
 
-### Task p01-t02: {Task Name}
+### Task p02-t02: Extend `oat-reviewer` with `analysis` review type
 
-**Status:** pending
-**Commit:** -
+**Status:** completed
+**Commit:** 45f667a8
 
-**Notes:**
+**Outcome (required when completed):**
 
-- {Notes will be added during implementation}
+- `oat-reviewer` accepts `type: analysis` with `docs` and `agent-instructions` sub-kinds for evidence, severity, and recommendation accuracy checks.
+
+**Verification:**
+
+- Run: `pnpm lint`, `pnpm test -- review`.
+- Result: passed in phase worktree; p02 review passed.
 
 ---
 
-## Phase 2: {Phase Name}
+### Task p02-t03: Author the shared "Auto Artifact-Review Loop" contract
 
-**Status:** pending
-**Started:** -
+**Status:** completed
+**Commit:** d9a30ad8
 
-### Task p02-t01: {Task Name}
+**Outcome (required when completed):**
 
-**Status:** pending
-**Commit:** -
+- `oat-project-plan-writing` defines the shared bounded loop: config gate, retry bound, structured reviewer dispatch, severity handling, redispatch, residual finding surfacing, and review-row preservation.
+
+**Verification:**
+
+- Run: `pnpm run cli -- internal validate-oat-skills --base-ref 5992dd0b38e533db109dbb0b638937a9bc68bc07`, `pnpm run cli -- internal validate-skill-version-bumps --base-ref 5992dd0b38e533db109dbb0b638937a9bc68bc07`, `pnpm lint`, `pnpm test -- review`.
+- Result: passed in phase worktree; p02 review passed.
 
 ---
 
@@ -140,6 +247,42 @@ _- Outstanding Items_
 
 _Orchestration runs from `oat-project-implement` are appended here, most-recent-first within the file but append-only at the bottom of the log._
 
+### Run 1 — 2026-06-03 12:30
+
+**Branch:** feat/model-invokable-workflow-skills
+**Tier:** 1
+**Policy:** merge-strategy=merge, retry-limit=2
+**Phases:** 2 executed, 2 passed, 0 failed, 0 stopped
+
+#### Phase Outcomes
+
+| Phase | Implementer | Review | Fix Iterations | Disposition |
+| ----- | ----------- | ------ | -------------- | ----------- |
+| p01   | DONE        | pass   | 0/2            | merged      |
+| p02   | DONE        | pass   | 0/2            | merged      |
+
+#### Parallel Groups
+
+- Group 1 [p01, p02]: worktree-based, merged in order.
+
+#### Dispatch Notes
+
+- Dispatch: p01 implementation ran with model_axis=inherited, effort_axis=selected:high, ceiling=xhigh.
+- Dispatch: p02 implementation retry ran with model_axis=inherited, effort_axis=selected:high, ceiling=xhigh after the first p02 dispatch produced no work.
+- Dispatch: p01 and p02 reviews ran with model_axis=inherited, effort_axis=selected:xhigh, ceiling=xhigh.
+
+#### Outstanding Items
+
+- None.
+
+#### Artifact / Design Deltas
+
+Run-scoped snapshot only. The durable record is `## Deviations from Plan / Design`.
+
+| Task / Review | Source Artifact | Planned / Documented                                                         | Actual / Accepted                                                                                | Reason                                                                                                                 | Source of Truth | Follow-up |
+| ------------- | --------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | --------------- | --------- |
+| p01-t01       | plan.md         | File list focused on `oat-config.*` and possible control-plane config types. | Also changed `packages/cli/src/config/resolve.*` and `packages/cli/src/commands/config/index.*`. | Required for `oat config get workflow.autoArtifactReview.*` and command catalog support promised by the task behavior. | implementation  | None.     |
+
 <!-- orchestration-runs-end -->
 
 ---
@@ -150,36 +293,33 @@ Chronological log of implementation progress.
 
 ### 2026-06-03
 
-**Session Start:** {time}
+**Session:** Group 1 implementation and fan-in.
 
-- [x] p01-t01: {Task name} - {commit sha}
-- [ ] p01-t02: {Task name} - in progress
+- [x] p01-t01: Add `workflow.autoArtifactReview` config schema — fd406fe7
+- [x] p01-t02: Implement `oat review latest` CLI command — 392f6234
+- [x] p01-t03: Help/snapshot + command-registry coverage — aec8612b
+- [x] p02-t01: Extend `oat-reviewer` with `plan` artifact scope — 535f4753
+- [x] p02-t02: Extend `oat-reviewer` with `analysis` review type — 45f667a8
+- [x] p02-t03: Author shared auto artifact-review loop contract — d9a30ad8
 
 **What changed (high level):**
 
-- {short bullets suitable for PR/docs}
+- Group 1 foundations are merged into the orchestration branch.
+- p01 and p02 code reviews passed with zero findings.
+- The project is stopped at the configured post-p02 HiLL checkpoint before Group 2.
 
 **Decisions:**
 
-- {Decision made and rationale}
+- Kept the p01 resolver/config-command support as an accepted plan file-list expansion because it is required for the requested `oat config get` behavior.
+- Treated repeated `apps/oat-docs/index.md` regeneration during verification as unrelated generated churn and restored it before bookkeeping.
 
 **Follow-ups / TODO:**
 
-- {anything discovered during implementation that should be captured for later}
+- Continue with Group 2 (`p03`, `p04`) after checkpoint approval.
 
 **Blockers:**
 
-- {Blocker description} - {status: resolved/pending}
-
-**Session End:** {time}
-
----
-
-### 2026-06-03
-
-**Session Start:** {time}
-
-{Continue log...}
+- None.
 
 ---
 
@@ -187,18 +327,18 @@ Chronological log of implementation progress.
 
 Document any intentional deviations from the original plan, spec, or design. Include accepted review findings where the shipped implementation is source of truth and a lifecycle artifact needs alignment.
 
-| Task / Review | Source Artifact | Planned / Documented | Actual / Accepted | Reason | Source of Truth | Follow-up |
-| ------------- | --------------- | -------------------- | ----------------- | ------ | --------------- | --------- |
-| -             | -               | -                    | -                 | -      | -               | -         |
+| Task / Review | Source Artifact | Planned / Documented                                                         | Actual / Accepted                                                                                | Reason                                                                                                                 | Source of Truth | Follow-up |
+| ------------- | --------------- | ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------------- | --------------- | --------- |
+| p01-t01       | plan.md         | File list focused on `oat-config.*` and possible control-plane config types. | Also changed `packages/cli/src/config/resolve.*` and `packages/cli/src/commands/config/index.*`. | Required for `oat config get workflow.autoArtifactReview.*` and command catalog support promised by the task behavior. | implementation  | None.     |
 
 ## Test Results
 
 Track test execution during implementation.
 
-| Phase | Tests Run | Passed | Failed | Coverage |
-| ----- | --------- | ------ | ------ | -------- |
-| 1     | -         | -      | -      | -        |
-| 2     | -         | -      | -      | -        |
+| Phase | Tests Run                                                 | Passed | Failed | Coverage                                           |
+| ----- | --------------------------------------------------------- | ------ | ------ | -------------------------------------------------- |
+| 1     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p01 review passed |
+| 2     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review | yes    | 0      | Full workspace gate after merge; p02 review passed |
 
 ## Final Summary (for PR/docs)
 

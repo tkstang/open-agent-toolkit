@@ -300,8 +300,8 @@ Expected: RED then GREEN after assertions updated.
 
 | Scope  | Type     | Status  | Date       | Artifact                                            |
 | ------ | -------- | ------- | ---------- | --------------------------------------------------- |
-| p01    | code     | pending | -          | -                                                   |
-| p02    | code     | pending | -          | -                                                   |
+| p01    | code     | passed  | 2026-06-03 | reviews/p01-code-review-2026-06-03.md               |
+| p02    | code     | passed  | 2026-06-03 | reviews/p02-code-review-2026-06-03.md               |
 | p03    | code     | pending | -          | -                                                   |
 | p04    | code     | pending | -          | -                                                   |
 | p05    | code     | pending | -          | -                                                   |
