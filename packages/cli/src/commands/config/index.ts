@@ -555,7 +555,7 @@ const CONFIG_CATALOG: ConfigCatalogEntry[] = [
     owningCommand:
       'oat config set workflow.autoArtifactReview.plan <true|false>',
     description:
-      'Automatically run the bounded artifact-review loop for generated plan artifacts before implementation handoff. Resolution: env > local > shared > user > default.',
+      'Automatically run the bounded artifact-review loop for generated plan artifacts before implementation handoff. Resolution: local > shared > user > default.',
   },
   {
     key: 'workflow.autoArtifactReview.analysis',
@@ -568,7 +568,7 @@ const CONFIG_CATALOG: ConfigCatalogEntry[] = [
     owningCommand:
       'oat config set workflow.autoArtifactReview.analysis <true|false>',
     description:
-      'Automatically run the bounded accuracy-review loop for generated analysis artifacts before apply workflows consume them. Resolution: env > local > shared > user > default.',
+      'Automatically run the bounded accuracy-review loop for generated analysis artifacts before apply workflows consume them. Resolution: local > shared > user > default.',
   },
   {
     key: 'workflow.designMode',

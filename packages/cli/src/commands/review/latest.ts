@@ -26,6 +26,7 @@ export interface LatestReview {
 
 interface ReviewCandidate extends LatestReview {
   generatedTime: number;
+  lifecycleRank: number;
   priority: number;
 }
 
@@ -67,6 +68,28 @@ function normalizeRepoRelativePath(
   }
 
   return normalizeToPosixPath(relative(repoRoot, rawPath));
+}
+
+function reviewLifecycleRank(scope: string): number {
+  const normalizedScope = scope.trim().toLowerCase();
+  if (normalizedScope === 'final') {
+    return Number.MAX_SAFE_INTEGER;
+  }
+
+  const phases = [...normalizedScope.matchAll(/p(\d+)/g)].map((match) =>
+    Number.parseInt(match[1] ?? '0', 10),
+  );
+  if (phases.length === 0) {
+    return 0;
+  }
+
+  const tasks = [...normalizedScope.matchAll(/(?:^|[-_])t(\d+)/g)].map(
+    (match) => Number.parseInt(match[1] ?? '0', 10),
+  );
+  const latestPhase = Math.max(...phases);
+  const latestTask = tasks.length > 0 ? Math.max(...tasks) : 9999;
+
+  return latestPhase * 10_000 + latestTask;
 }
 
 async function listMarkdownFiles(
@@ -115,12 +138,15 @@ async function readReviewCandidate(
     return null;
   }
 
+  const scope = getFrontmatterField(frontmatter, 'oat_review_scope') ?? '';
+
   return {
     path: relativePath,
-    scope: getFrontmatterField(frontmatter, 'oat_review_scope') ?? '',
+    scope,
     generatedAt,
     kind,
     generatedTime,
+    lifecycleRank: reviewLifecycleRank(scope),
     priority,
   };
 }
@@ -131,6 +157,9 @@ function sortReviewCandidates(a: ReviewCandidate, b: ReviewCandidate): number {
   }
   if (a.priority !== b.priority) {
     return a.priority - b.priority;
+  }
+  if (a.lifecycleRank !== b.lifecycleRank) {
+    return b.lifecycleRank - a.lifecycleRank;
   }
   return a.path.localeCompare(b.path);
 }

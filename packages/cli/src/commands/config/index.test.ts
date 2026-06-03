@@ -1301,6 +1301,37 @@ describe('oat config', () => {
       expect(process.exitCode).toBe(0);
     });
 
+    it('describe workflow.autoArtifactReview keys omit env precedence', async () => {
+      const root = await createRepoRoot();
+      const planHarness = createHarness({ cwd: root });
+      await runCommand(planHarness.command, [
+        'describe',
+        'workflow.autoArtifactReview.plan',
+      ]);
+
+      expect(planHarness.capture.info[0]).toContain(
+        'Resolution: local > shared > user > default.',
+      );
+      expect(planHarness.capture.info[0]).not.toContain('Resolution: env >');
+      expect(process.exitCode).toBe(0);
+
+      process.exitCode = undefined;
+
+      const analysisHarness = createHarness({ cwd: root });
+      await runCommand(analysisHarness.command, [
+        'describe',
+        'workflow.autoArtifactReview.analysis',
+      ]);
+
+      expect(analysisHarness.capture.info[0]).toContain(
+        'Resolution: local > shared > user > default.',
+      );
+      expect(analysisHarness.capture.info[0]).not.toContain(
+        'Resolution: env >',
+      );
+      expect(process.exitCode).toBe(0);
+    });
+
     it('describe supports workflow keys via json mode', async () => {
       const root = await createRepoRoot();
       const { command, capture } = createHarness({ cwd: root });

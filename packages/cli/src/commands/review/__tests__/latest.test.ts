@@ -202,6 +202,55 @@ describe('oat review latest', () => {
     expect(result?.scope).toBe('p01');
   });
 
+  it('prefers final review scope when active project reviews share a generated time', async () => {
+    const root = await createRepoRoot();
+    const projectPath = '.oat/projects/shared/demo';
+    const generatedAt = '2026-06-03';
+
+    await writeReview(root, `${projectPath}/reviews/p01-review.md`, {
+      generatedAt,
+      scope: 'p01',
+      project: projectPath,
+    });
+    await writeReview(root, `${projectPath}/reviews/p06-review.md`, {
+      generatedAt,
+      scope: 'p06',
+      project: projectPath,
+    });
+    await writeReview(root, `${projectPath}/reviews/project-final-review.md`, {
+      generatedAt,
+      scope: 'final',
+      project: projectPath,
+    });
+
+    const result = await findLatestReview({ repoRoot: root, projectPath });
+
+    expect(result?.path).toBe(`${projectPath}/reviews/project-final-review.md`);
+    expect(result?.scope).toBe('final');
+  });
+
+  it('prefers higher phase scope when active project reviews share a generated time', async () => {
+    const root = await createRepoRoot();
+    const projectPath = '.oat/projects/shared/demo';
+    const generatedAt = '2026-06-03';
+
+    await writeReview(root, `${projectPath}/reviews/p01-review.md`, {
+      generatedAt,
+      scope: 'p01',
+      project: projectPath,
+    });
+    await writeReview(root, `${projectPath}/reviews/p06-review.md`, {
+      generatedAt,
+      scope: 'p06',
+      project: projectPath,
+    });
+
+    const result = await findLatestReview({ repoRoot: root, projectPath });
+
+    expect(result?.path).toBe(`${projectPath}/reviews/p06-review.md`);
+    expect(result?.scope).toBe('p06');
+  });
+
   it('emits json for the latest review', async () => {
     const root = await createRepoRoot();
     const projectPath = '.oat/projects/shared/demo';
