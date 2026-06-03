@@ -37,6 +37,22 @@ oat_generated: false
 
 ---
 
+## Review Received: plan (artifact)
+
+**Date:** 2026-06-03
+**Review artifact:** reviews/archived/artifact-plan-review-2026-06-03.md
+**Type:** artifact (manual) — resolved directly in artifacts, no plan tasks added.
+
+**Findings:** Critical: 0 · Important: 2 · Medium: 1 · Minor: 0 — all resolved in-artifact.
+
+- `I1` (resolve_in_artifact): plan.md verification commands used non-existent filter `@oat/cli`; corrected to `@open-agent-toolkit/cli` (5 occurrences). Verified against `packages/cli/package.json`.
+- `I2` (resolve_in_artifact): literal `## Reviews` in p02-t03 prose anchored status tooling before the real table; reworded to "the Reviews table". `oat project status` now merges the plan row correctly.
+- `M1` (resolve_in_artifact): `discovery.md` was `in_progress` while plan was `complete`; set discovery to `oat_status: complete`. Root cause: the quick-mode lightweight-design path skips the `complete-discovery` CLI step — a candidate fix worth noting for a future OAT improvement.
+
+**Verification:** `rg @oat/cli plan.md` empty; single `## Reviews` heading; `oat project validate-plan` passed; `oat project status` recommends `oat-project-implement`.
+
+---
+
 ## Phase 1: {Phase Name}
 
 **Status:** in_progress

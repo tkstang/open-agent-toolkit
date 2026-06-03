@@ -58,12 +58,12 @@ Groups run in order: Group 1 → Group 2 → p05 → p06.
 
 **Step 1: Write test (RED)** — assert `workflow.autoArtifactReview.plan` and `.analysis` default to `true`, accept boolean overrides, reject non-boolean, and resolve via `oat config get`.
 
-Run: `pnpm --filter @oat/cli exec vitest run src/config/oat-config.test.ts`
+Run: `pnpm --filter @open-agent-toolkit/cli exec vitest run src/config/oat-config.test.ts`
 Expected: RED.
 
 **Step 2: Implement (GREEN)** — add the nested `autoArtifactReview` keys to the `workflow` config schema with default-on, mirroring existing `workflow.*` resolution (config → project override → default).
 
-Run: `pnpm --filter @oat/cli exec vitest run src/config/oat-config.test.ts`
+Run: `pnpm --filter @open-agent-toolkit/cli exec vitest run src/config/oat-config.test.ts`
 Expected: GREEN.
 
 **Step 3: Refactor** — keep key naming consistent with existing `workflow.postImplementSequence` / `workflow.designMode`.
@@ -85,7 +85,7 @@ Expected: GREEN.
 
 **Step 1: Write test (RED)** — given fixture review dirs (`<project>/reviews/`, `<project>/reviews/archived/`, ad-hoc location), assert `latest` returns the newest by `oat_generated_at` frontmatter (NOT mtime), prefers a tie-break order, emits `--json` `{path, scope, generatedAt, kind}`, and handles the no-review case with a clean non-error empty result.
 
-Run: `pnpm --filter @oat/cli exec vitest run src/commands/review/__tests__/latest.test.ts`
+Run: `pnpm --filter @open-agent-toolkit/cli exec vitest run src/commands/review/__tests__/latest.test.ts`
 Expected: RED.
 
 **Step 2: Implement (GREEN)** — scan project + ad-hoc review locations, parse frontmatter `oat_generated_at`, sort descending, return newest. Reuse existing frontmatter-parsing util if present.
@@ -95,7 +95,7 @@ Expected: GREEN.
 
 **Step 3: Refactor** — extract the scan/sort into a small exported helper so `review-receive` semantics and tests share one implementation.
 
-**Step 4: Verify** — `pnpm lint && pnpm type-check` and `pnpm --filter @oat/cli exec vitest run src/commands/review` (scoped to the new group).
+**Step 4: Verify** — `pnpm lint && pnpm type-check` and `pnpm --filter @open-agent-toolkit/cli exec vitest run src/commands/review` (scoped to the new group).
 
 **Step 5: Commit** — `feat(p01-t02): add oat review latest review-discovery command`
 
@@ -110,7 +110,7 @@ Expected: GREEN.
 
 **Step 1: Update test (RED)** — expect `review latest` to appear in help output / command registry.
 
-Run: `pnpm --filter @oat/cli exec vitest run src/commands/help-snapshots.test.ts`
+Run: `pnpm --filter @open-agent-toolkit/cli exec vitest run src/commands/help-snapshots.test.ts`
 Expected: RED (snapshot mismatch), then update snapshot intentionally.
 
 **Step 2: Implement (GREEN)** — ensure help text + registration are correct; update snapshots.
@@ -166,7 +166,7 @@ Expected: GREEN.
 
 **Step 1: Author (spec)** — Write the canonical procedure (the single source the other skills reference): (1) resolve `workflow.autoArtifactReview.<target>` gate → skip+note if off; (2) resolve bound `oat_orchestration_retry_limit` (default 2); (3) dispatch `oat-reviewer` (Tier 1 subagent → Tier 2 inline fallback) in structured mode; (4) apply (default) or offer fixes ≥ actionable severity, re-write, re-dispatch, decrement bound; (5) on clean or bound-exhausted, record outcome + surface residual findings before handoff. Define the actionable-severity threshold (apply Important+, offer Minor).
 
-**Step 2: Author (spec)** — Add the `plan` artifact row to the `## Reviews` table rules alongside `spec`/`design`; reaffirm preserve-never-delete.
+**Step 2: Author (spec)** — Add the `plan` artifact row to the Reviews table rules alongside `spec`/`design`; reaffirm preserve-never-delete.
 
 **Step 3: Verify** — Validate against `create-oat-skill` conventions (step indicators match, required sections present). Bump `version:`. Run plan-writing contract test if present.
 
@@ -283,18 +283,18 @@ Expected: RED then GREEN after assertions updated.
 
 ## Reviews
 
-| Scope  | Type     | Status   | Date       | Artifact                                   |
-| ------ | -------- | -------- | ---------- | ------------------------------------------ |
-| p01    | code     | pending  | -          | -                                          |
-| p02    | code     | pending  | -          | -                                          |
-| p03    | code     | pending  | -          | -                                          |
-| p04    | code     | pending  | -          | -                                          |
-| p05    | code     | pending  | -          | -                                          |
-| p06    | code     | pending  | -          | -                                          |
-| final  | code     | pending  | -          | -                                          |
-| spec   | artifact | pending  | -          | -                                          |
-| design | artifact | pending  | -          | -                                          |
-| plan   | artifact | received | 2026-06-03 | reviews/artifact-plan-review-2026-06-03.md |
+| Scope  | Type     | Status  | Date       | Artifact                                            |
+| ------ | -------- | ------- | ---------- | --------------------------------------------------- |
+| p01    | code     | pending | -          | -                                                   |
+| p02    | code     | pending | -          | -                                                   |
+| p03    | code     | pending | -          | -                                                   |
+| p04    | code     | pending | -          | -                                                   |
+| p05    | code     | pending | -          | -                                                   |
+| p06    | code     | pending | -          | -                                                   |
+| final  | code     | pending | -          | -                                                   |
+| spec   | artifact | pending | -          | -                                                   |
+| design | artifact | pending | -          | -                                                   |
+| plan   | artifact | passed  | 2026-06-03 | reviews/archived/artifact-plan-review-2026-06-03.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
