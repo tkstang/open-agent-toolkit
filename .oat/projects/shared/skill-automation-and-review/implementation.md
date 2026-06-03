@@ -53,6 +53,21 @@ oat_generated: false
 
 ---
 
+## Review Received: final (code)
+
+**Date:** 2026-06-03
+**Review artifact:** reviews/final-code-review-2026-06-03.md
+**Type:** code — final branch review.
+
+**Findings:** Initial final review found 1 Critical and 1 Minor finding; both resolved in `d4851777` and merged as `eaf859e8`. Re-review passed with 0 findings.
+
+- Critical: `oat review latest` returned stale same-day phase reviews because ties fell through to path order. Added lifecycle recency ordering so final reviews rank above phases and higher phase/task scopes rank above lower scopes when `oat_generated_at` ties.
+- Minor: `workflow.autoArtifactReview.plan` and `.analysis` config catalog descriptions claimed env precedence even though these keys have no env aliases. Updated descriptions and tests to use config-file/default precedence.
+
+**Verification:** focused vitest suite passed (3 files / 113 tests); live `oat review latest --project ... --json` returned the final review artifact; config describe smokes for plan and analysis report `Resolution: local > shared > user > default`; `git diff --check` passed; `pnpm release:validate` passed.
+
+---
+
 ## Phase 1: Foundations — config schema + review-discovery CLI
 
 **Status:** complete
@@ -761,6 +776,41 @@ Run-scoped snapshot only. The durable record is `## Deviations from Plan / Desig
 | ------------- | --------------- | -------------------------------------------------------- | ---------------------------------------------------------------------------- | ---------------------------------------------------------------------------- | --------------- | --------- |
 | p06 review    | plan.md         | p06 docs should accurately document new config behavior. | One fix iteration corrected `workflow.autoArtifactReview.*` precedence docs. | Reviewer found the docs claimed env precedence for keys without env aliases. | implementation  | None.     |
 
+### Run 5 — 2026-06-03 16:41Z
+
+**Branch:** feat/model-invokable-workflow-skills
+**Tier:** 1
+**Policy:** merge-strategy=merge, retry-limit=2
+**Phases:** final review executed, final review passed, 0 failed, 0 stopped
+
+#### Phase Outcomes
+
+| Phase | Implementer | Review | Fix Iterations | Disposition |
+| ----- | ----------- | ------ | -------------- | ----------- |
+| final | DONE        | pass   | 1/2            | merged      |
+
+#### Parallel Groups
+
+- None. The final review fix ran sequentially in a dedicated final-fixes worktree.
+
+#### Dispatch Notes
+
+- Dispatch: final-fix implementation ran with model_axis=inherited, effort_axis=selected:xhigh, ceiling=xhigh.
+- Dispatch: final re-review ran with model_axis=inherited, effort_axis=selected:xhigh, ceiling=xhigh.
+- First final review failed with one Critical same-day review-latest ordering finding and one Minor config catalog precedence wording finding; fix commit `d4851777` resolved both and was merged as `eaf859e8`.
+
+#### Outstanding Items
+
+- Continue to final PR handoff.
+
+#### Artifact / Design Deltas
+
+Run-scoped snapshot only. The durable record is `## Deviations from Plan / Design`.
+
+| Task / Review | Source Artifact | Planned / Documented                                  | Actual / Accepted                                                          | Reason                                                                                           | Source of Truth | Follow-up |
+| ------------- | --------------- | ----------------------------------------------------- | -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ | --------------- | --------- |
+| final review  | plan.md         | `oat review latest` should resolve the newest review. | Same-day generated-at ties now use lifecycle recency before path fallback. | Final review found phase review artifacts often share date-only timestamps and could sort stale. | implementation  | None.     |
+
 <!-- orchestration-runs-end -->
 
 ---
@@ -793,6 +843,7 @@ Chronological log of implementation progress.
 - [x] p06-t01: Documentation updates — ee85376c (+ fix e97bbc38)
 - [x] p06-t02: Lockstep public-package version bump — b34f2d83
 - [x] p06-t03: Full definition-of-done gate — no commit needed
+- [x] final review: Code review passed — reviews/final-code-review-2026-06-03.md (+ fix d4851777, merge eaf859e8)
 
 **What changed (high level):**
 
@@ -805,6 +856,7 @@ Chronological log of implementation progress.
 - Phase 6 documentation, release bump, and DoD verification are merged into the orchestration branch.
 - p06 code review passed after one fix iteration.
 - All 20 planned implementation tasks are complete.
+- Final code review passed after one fix iteration.
 
 **Decisions:**
 
@@ -813,10 +865,11 @@ Chronological log of implementation progress.
 - Accepted the p03 quick-start version-contract test update as part of the planned skill version bump work.
 - Accepted the p05 review-provide Step 0 fix as an implementation correction, with added contract coverage to prevent the gate from drifting again.
 - Accepted the p06 docs precedence correction so documentation reflects the implemented config resolver rather than implying env aliases that do not exist.
+- Accepted the final-review same-day lifecycle ordering correction so `oat review latest` resolves the latest lifecycle review even when review artifacts use date-only generated-at values.
 
 **Follow-ups / TODO:**
 
-- Run final code review and final project handoff.
+- Run final PR handoff.
 
 **Blockers:**
 
@@ -833,19 +886,22 @@ Document any intentional deviations from the original plan, spec, or design. Inc
 | p01-t01         | plan.md         | File list focused on `oat-config.*` and possible control-plane config types. | Also changed `packages/cli/src/config/resolve.*` and `packages/cli/src/commands/config/index.*`. | Required for `oat config get workflow.autoArtifactReview.*` and command catalog support promised by the task behavior. | implementation  | None.     |
 | p03-t02/p03-t04 | plan.md         | Phase 3 file lists were skill-file focused.                                  | Also changed `packages/cli/src/validation/skills.test.ts`.                                       | Required to update the quick-start skill version contract after the planned skill version bumps.                       | implementation  | None.     |
 | p06 review      | docs            | Documentation should describe workflow config precedence accurately.         | Corrected auto artifact-review docs to config-file/default precedence; no env aliases.           | Resolver only exposes env aliases for specific root path keys, not `workflow.autoArtifactReview.*`.                    | implementation  | None.     |
+| final review    | plan.md         | `oat review latest` should resolve the newest review artifact.               | Same-day generated-at ties now use lifecycle recency before path fallback.                       | Final review found date-only review artifacts could otherwise sort stale same-day phase reviews first.                 | implementation  | None.     |
+| final review    | config catalog  | Config catalog should match resolver precedence.                             | `workflow.autoArtifactReview.plan` and `.analysis` describe `local > shared > user > default`.   | These keys have no environment-variable aliases.                                                                       | implementation  | None.     |
 
 ## Test Results
 
 Track test execution during implementation.
 
-| Phase | Tests Run                                                               | Passed | Failed | Coverage                                                                                   |
-| ----- | ----------------------------------------------------------------------- | ------ | ------ | ------------------------------------------------------------------------------------------ |
-| 1     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review               | yes    | 0      | Full workspace gate after merge; p01 review passed                                         |
-| 2     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review               | yes    | 0      | Full workspace gate after merge; p02 review passed                                         |
-| 3     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review               | yes    | 0      | Full workspace gate after merge; p03 review passed                                         |
-| 4     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review               | yes    | 0      | Full workspace gate after merge; p04 review passed                                         |
-| 5     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review               | yes    | 0      | Full workspace gate after merge; p05 review passed                                         |
-| 6     | `pnpm build:docs`; `pnpm release:validate`; full DoD gate; phase review | yes    | 0      | Full p06 DoD in phase worktree; primary docs/release checks after merge; p06 review passed |
+| Phase | Tests Run                                                                             | Passed | Failed | Coverage                                                                                   |
+| ----- | ------------------------------------------------------------------------------------- | ------ | ------ | ------------------------------------------------------------------------------------------ |
+| 1     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review                             | yes    | 0      | Full workspace gate after merge; p01 review passed                                         |
+| 2     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review                             | yes    | 0      | Full workspace gate after merge; p02 review passed                                         |
+| 3     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review                             | yes    | 0      | Full workspace gate after merge; p03 review passed                                         |
+| 4     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review                             | yes    | 0      | Full workspace gate after merge; p04 review passed                                         |
+| 5     | `pnpm test`; `pnpm lint`; `pnpm type-check`; phase review                             | yes    | 0      | Full workspace gate after merge; p05 review passed                                         |
+| 6     | `pnpm build:docs`; `pnpm release:validate`; full DoD gate; phase review               | yes    | 0      | Full p06 DoD in phase worktree; primary docs/release checks after merge; p06 review passed |
+| final | focused vitest; CLI smokes; `git diff --check`; `pnpm release:validate`; final review | yes    | 0      | Final review passed after same-day ordering and config catalog fixes                       |
 
 ## Final Summary (for PR/docs)
 
@@ -880,6 +936,7 @@ Track test execution during implementation.
 - `pnpm build:docs` and `pnpm release:validate` after p06 merge.
 - Full p06 DoD in phase worktree: `pnpm build && pnpm lint && pnpm format && pnpm type-check && pnpm test`, `pnpm release:validate`, and `git diff --check`.
 - Phase code reviews p01 through p06 all passed.
+- Final review passed after one fix iteration; focused vitest, review-latest/config smokes, `git diff --check`, and `pnpm release:validate` passed.
 
 **Design deltas (if any):**
 
@@ -887,6 +944,7 @@ Track test execution during implementation.
 - p03 updated quick-start skill version contract tests alongside planned quick-start skill version bumps.
 - p05 needed one review-fix commit to align `review-provide` Step 0 with its advertised active-project OR explicit-target model-invocation gate.
 - p06 needed one review-fix commit to correct docs precedence for `workflow.autoArtifactReview.*`.
+- Final review needed one fix commit to add lifecycle recency for same-day `oat review latest` ties and correct the config catalog precedence wording.
 
 ## References
 
