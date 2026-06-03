@@ -70,9 +70,16 @@ After `oat-docs-analyze` and `oat-agent-instructions-analyze` write their severi
 - Reuse `oat-reviewer` structured-output mode + the Tier 1/Tier 2 dispatch pattern where it fits, or a thin analysis-reviewer variant.
 - Same bounded-loop discipline as C.
 
+### E. Fix quick-start lightweight-design discovery-completion gap
+
+Surfaced as finding `M1` during this project's own plan review: the quick-start **lightweight-design path (Step 2.75)** never calls `oat project complete-discovery`. That call lives only in Step 2.6 (straight-to-plan) and the promote path, and Step 2.6 is explicitly skipped when "Lightweight design first" is chosen. Result: `discovery.md` stays `oat_status: in_progress` while the plan is marked `complete` — an internally inconsistent lifecycle record.
+
+- Fix: in Step 2.75, mark discovery complete (via `oat project complete-discovery --ready-for oat-project-quick-start`) before plan generation.
+- Folded into scope by user direction after the plan review; lands in Phase 3 alongside the quick-start loop wiring (same file).
+
 ## Key Decisions
 
-1. **Single project, four workstreams:** quick-mode project covering A–D (user choice).
+1. **Single project, five workstreams:** quick-mode project covering A–D plus the E quick-start discovery-completion fix (E folded in after the plan review).
 2. **Shared primitive for C and D:** both are a bounded auto subagent-review loop over an artifact. Design it once, apply it twice, so the two stay consistent and it can later generalize to spec/design artifact reviews.
 3. **Invocability is offer-and-confirm, never silent:** model-invocability is opt-in per skill with mandatory offer + gating predicates.
 4. **docs-pr enforcement dropped:** not a real defect (confirmed by history).
@@ -92,6 +99,7 @@ After `oat-docs-analyze` and `oat-agent-instructions-analyze` write their severi
 - Writing a `plan.md` via any of the three paths automatically runs a bounded reviewer loop and records a `plan` review row (C).
 - Running either analyze skill automatically produces a verified analysis artifact before its `-apply` step (D).
 - C and D share a single documented auto-review-loop primitive.
+- A quick-start run that chooses lightweight design leaves `discovery.md` `oat_status: complete` before plan generation (E).
 - All quality gates pass, including `pnpm release:validate` with the lockstep version bumps.
 
 ## Out of Scope

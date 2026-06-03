@@ -206,6 +206,20 @@ Expected: GREEN.
 
 ---
 
+### Task p03-t04: Fix quick-start lightweight-design discovery-completion gap
+
+**Files:** Modify `.agents/skills/oat-project-quick-start/SKILL.md` — close the gap where the lightweight-design path leaves `discovery.md` `in_progress` while the plan is `complete`. Bump `version:`.
+
+**Context:** Step 2.6 (straight-to-plan) is the only quick path that calls `oat project complete-discovery`, and it is explicitly skipped when "Lightweight design first" is chosen (`SKILL.md:210`). So the design path never marks discovery complete — surfaced as finding `M1` in this project's own plan review.
+
+**Step 1: Author** — In the lightweight-design path (Step 2.75, after design is captured and before Step 3 plan generation), call `oat project complete-discovery "$PROJECT_PATH" --ready-for oat-project-quick-start` so `discovery.md` reaches `oat_status: complete`. Update step indicators if the step count changes; commit the completed discovery artifact per the existing persist-before-pause rules.
+
+**Step 2: Verify** — convention check (step indicators match actual steps); confirm `complete-discovery` accepts a design-path completion (does not reject when `design.md` exists); manually confirm a lightweight-design quick-start run leaves discovery `complete`.
+
+**Step 3: Commit** — `fix(p03-t04): complete discovery in quick-start lightweight-design path`
+
+---
+
 ## Phase 4: Wire D — analyze integration
 
 ### Task p04-t01: Invoke loop from `oat-docs-analyze`
@@ -306,12 +320,12 @@ Expected: RED then GREEN after assertions updated.
 
 - Phase 1: 3 tasks — config schema + `oat review latest` CLI (+ help coverage)
 - Phase 2: 3 tasks — reviewer `plan` + `analysis` modes + shared loop contract
-- Phase 3: 3 tasks — wire plan-review loop into all three plan paths
+- Phase 3: 4 tasks — wire plan-review loop into all three plan paths + fix quick-start discovery-completion gap
 - Phase 4: 2 tasks — wire accuracy review loop into both analyze skills
 - Phase 5: 5 tasks — model-invocability pass (4 skills + contract tests)
 - Phase 6: 3 tasks — docs, lockstep bump, DoD
 
-**Total: 19 tasks**
+**Total: 20 tasks**
 
 Ready for code review and merge.
 

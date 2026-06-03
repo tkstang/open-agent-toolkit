@@ -24,16 +24,16 @@ oat_generated: false
 
 ## Progress Overview
 
-| Phase                                    | Status      | Tasks | Completed |
-| ---------------------------------------- | ----------- | ----- | --------- |
-| Phase 1 — config + review-latest CLI     | in_progress | 3     | 0/3       |
-| Phase 2 — reviewer modes + loop contract | pending     | 3     | 0/3       |
-| Phase 3 — wire plan-review loop          | pending     | 3     | 0/3       |
-| Phase 4 — wire analyze review loop       | pending     | 2     | 0/2       |
-| Phase 5 — model-invocability pass        | pending     | 5     | 0/5       |
-| Phase 6 — docs + release + DoD           | pending     | 3     | 0/3       |
+| Phase                                             | Status      | Tasks | Completed |
+| ------------------------------------------------- | ----------- | ----- | --------- |
+| Phase 1 — config + review-latest CLI              | in_progress | 3     | 0/3       |
+| Phase 2 — reviewer modes + loop contract          | pending     | 3     | 0/3       |
+| Phase 3 — wire plan-review loop + quick-start fix | pending     | 4     | 0/4       |
+| Phase 4 — wire analyze review loop                | pending     | 2     | 0/2       |
+| Phase 5 — model-invocability pass                 | pending     | 5     | 0/5       |
+| Phase 6 — docs + release + DoD                    | pending     | 3     | 0/3       |
 
-**Total:** 0/19 tasks completed
+**Total:** 0/20 tasks completed
 
 ---
 

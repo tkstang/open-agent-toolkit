@@ -48,16 +48,17 @@ Authoring skill (plan-writing / docs-analyze / agent-instructions-analyze)
 
 ### Key components
 
-| #   | Component                                                                    | Type                         | Workstream | Change                                                                                |
-| --- | ---------------------------------------------------------------------------- | ---------------------------- | ---------- | ------------------------------------------------------------------------------------- |
-| 1   | `oat-reviewer` agent                                                         | agent def                    | C, D       | Add `plan` artifact scope + `analysis` review type (mode-aware checklist)             |
-| 2   | Shared auto-review-loop contract                                             | skill prose (shared section) | C, D       | New canonical "Auto Artifact-Review Loop" procedure referenced by authoring skills    |
-| 3   | `oat-project-plan-writing`                                                   | skill                        | C          | Anchor the loop after plan authoring; add `plan` row to `## Reviews` table convention |
-| 4   | `oat-project-plan` / `-quick-start` / `-import-plan`                         | skills                       | C          | Invoke the shared loop at their plan-finalization step                                |
-| 5   | `oat-docs-analyze` / `oat-agent-instructions-analyze`                        | skills                       | D          | Invoke the shared loop after writing the analysis artifact                            |
-| 6   | `oat review latest` CLI                                                      | CLI command                  | B          | New command resolving most-recent review by `oat_generated_at`                        |
-| 7   | `oat-project-review-receive` / `-review-provide` / `-discover` / `-progress` | skills                       | A          | Flip `disable-model-invocation`, #71-style description rewrite + gating               |
-| 8   | Config schema                                                                | control-plane/cli            | C, D       | Add `workflow.autoArtifactReview` keys (default-on, per-target opt-out)               |
+| #   | Component                                                                    | Type                         | Workstream | Change                                                                                                               |
+| --- | ---------------------------------------------------------------------------- | ---------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------- |
+| 1   | `oat-reviewer` agent                                                         | agent def                    | C, D       | Add `plan` artifact scope + `analysis` review type (mode-aware checklist)                                            |
+| 2   | Shared auto-review-loop contract                                             | skill prose (shared section) | C, D       | New canonical "Auto Artifact-Review Loop" procedure referenced by authoring skills                                   |
+| 3   | `oat-project-plan-writing`                                                   | skill                        | C          | Anchor the loop after plan authoring; add `plan` row to `## Reviews` table convention                                |
+| 4   | `oat-project-plan` / `-quick-start` / `-import-plan`                         | skills                       | C          | Invoke the shared loop at their plan-finalization step                                                               |
+| 5   | `oat-docs-analyze` / `oat-agent-instructions-analyze`                        | skills                       | D          | Invoke the shared loop after writing the analysis artifact                                                           |
+| 6   | `oat review latest` CLI                                                      | CLI command                  | B          | New command resolving most-recent review by `oat_generated_at`                                                       |
+| 7   | `oat-project-review-receive` / `-review-provide` / `-discover` / `-progress` | skills                       | A          | Flip `disable-model-invocation`, #71-style description rewrite + gating                                              |
+| 8   | Config schema                                                                | control-plane/cli            | C, D       | Add `workflow.autoArtifactReview` keys (default-on, per-target opt-out)                                              |
+| 9   | `oat-project-quick-start` discovery completion                               | skill                        | E          | Call `complete-discovery` in the lightweight-design path so `discovery.md` reaches `complete` before plan generation |
 
 ### Data flow / control
 
@@ -121,6 +122,10 @@ workflow.autoArtifactReview.analysis  = true   # D
 ```
 
 Resolution mirrors existing `workflow.*` keys (config → optional project override → default). Schema + `oat config` validation + docs updated.
+
+### 9. Quick-start discovery completion (E)
+
+`oat-project-quick-start` Step 2.75 (lightweight design) currently returns to Step 3 (plan generation) without ever completing discovery — Step 2.6, the only straight-to-plan step that calls `oat project complete-discovery`, is skipped on this path. Add a `complete-discovery "$PROJECT_PATH" --ready-for oat-project-quick-start` call at the end of the lightweight-design path so `discovery.md` reaches `oat_status: complete` before the plan is written, then commit it under the existing persist-before-pause rules. Verify `complete-discovery` accepts a design-path completion (it validates discovery and sets `oat_ready_for`; presence of `design.md` must not cause rejection).
 
 ## Testing Strategy
 
