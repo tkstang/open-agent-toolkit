@@ -1,10 +1,10 @@
 ---
 name: oat-docs-analyze
-version: 1.2.0
+version: 1.3.0
 description: Run when you need to evaluate documentation structure, navigation, and coverage against the OAT docs app contract. Produces a severity-rated analysis artifact for oat-docs-apply.
 disable-model-invocation: true
 user-invocable: true
-allowed-tools: Read, Write, Bash(git:*), Glob, Grep, AskUserQuestion
+allowed-tools: Read, Write, Bash(git:*), Glob, Grep, AskUserQuestion, Task
 ---
 
 # Docs Analysis
@@ -32,6 +32,7 @@ Scan a repository's documentation surface, evaluate it against the OAT docs cont
 
 - Reading docs trees, MkDocs config, and related repository metadata.
 - Writing a docs analysis artifact to `.oat/repo/analysis/`.
+- Reviewing and correcting the docs analysis artifact itself through the shared Auto Artifact-Review Loop.
 - Updating docs analysis tracking metadata.
 
 ## Analyze vs Apply Boundary
@@ -66,15 +67,16 @@ When executing this skill, provide lightweight progress feedback so the user can
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 - Use step indicators:
-  - `[1/9] Resolving docs target + mode…`
-  - `[2/9] Inventorying docs files…`
-  - `[3/9] Evaluating index contract…`
-  - `[4/9] Assessing quality + coverage…`
-  - `[5/9] Verifying substantive claims…`
-  - `[6/9] Finding content opportunities…`
-  - `[7/9] Checking nav and drift…`
-  - `[8/9] Writing analysis artifact…`
-  - `[9/9] Updating tracking + summary…`
+  - `[1/10] Resolving docs target + mode…`
+  - `[2/10] Inventorying docs files…`
+  - `[3/10] Evaluating index contract…`
+  - `[4/10] Assessing quality + coverage…`
+  - `[5/10] Verifying substantive claims…`
+  - `[6/10] Finding content opportunities…`
+  - `[7/10] Checking nav and drift…`
+  - `[8/10] Writing analysis artifact…`
+  - `[9/10] Reviewing artifact accuracy…`
+  - `[10/10] Updating verified tracking + summary…`
 
 ## Process
 
@@ -302,7 +304,32 @@ Populate the artifact with:
 - Progressive disclosure decisions (`inline`, `link_only`, `omit`, `ask_user`)
 - Canonical link targets when deeper detail should stay out of always-on docs pages
 
-### Step 9: Update Tracking and Output Summary
+### Step 9: Review Analysis Artifact Accuracy
+
+Run the shared **Auto Artifact-Review Loop** from `oat-project-plan-writing` after `$ARTIFACT_PATH` is written and before tracking is updated or `oat-docs-apply` is recommended.
+
+Use the `analysis` target:
+
+- `type: analysis`
+- `scope: docs`
+- `analysis_artifact: $ARTIFACT_PATH`
+- `oat_output_mode: structured`
+
+Follow the canonical loop exactly:
+
+1. Resolve `workflow.autoArtifactReview.analysis`; missing config means enabled, and only explicit `false` skips the loop.
+2. Resolve `oat_orchestration_retry_limit`; default to `2` if unavailable.
+3. Dispatch `oat-reviewer` in structured mode via Tier 1 subagent when available, falling back to the same reviewer prompt inline when needed.
+4. Apply Critical and Important fixes when they are local to the analysis artifact and unambiguous.
+5. Offer Medium and Minor fixes rather than applying them silently.
+6. Rewrite `$ARTIFACT_PATH` after applied fixes and re-dispatch while retries remain.
+7. Stop when the reviewer is clean or the retry bound is exhausted.
+
+The review loop may only edit the analysis artifact. It must not edit docs content, `mkdocs.yml`, navigation files, or any other downstream apply target. If a finding cannot be fixed inside the analysis artifact, preserve it as a residual review finding and surface it in the summary before handoff.
+
+If the loop is disabled, note `Auto artifact review: skipped (workflow.autoArtifactReview.analysis=false)` in the summary and do not describe the artifact as verified.
+
+### Step 10: Update Verified Tracking and Output Summary
 
 Update docs tracking using the shared helper:
 
@@ -319,6 +346,8 @@ bash "$TRACKING_SCRIPT" write \
   "{mode}" \
   --artifact-path "$ARTIFACT_PATH"
 ```
+
+Only run this tracking write after Step 9 finishes. A tracked docs analysis artifact is therefore reviewed/verified unless the summary explicitly says the auto artifact-review loop was skipped.
 
 Output a summary:
 
@@ -337,6 +366,7 @@ Analysis complete.
     Low:       {N}
 
   Artifact: {artifact_path}
+  Auto artifact review: {passed|passed with residual findings|skipped}
 
 Next step: Run oat-docs-apply to act on these findings.
 ```
