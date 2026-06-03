@@ -21,6 +21,8 @@ describe('review skill contracts', () => {
           '## Model Invocation Gate',
           'Do NOT auto-invoke merely because a task, phase, or implementation appears complete.',
           'active OAT project or a user-provided review target',
+          '### Step 0: Resolve Project or Explicit Review Target',
+          'If neither an active project nor an explicit target resolves to a valid `PROJECT_PATH` with `state.md`',
           'ask before running the review',
         ],
       },
