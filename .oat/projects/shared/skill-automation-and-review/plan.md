@@ -283,18 +283,18 @@ Expected: RED then GREEN after assertions updated.
 
 ## Reviews
 
-| Scope  | Type     | Status  | Date | Artifact |
-| ------ | -------- | ------- | ---- | -------- |
-| p01    | code     | pending | -    | -        |
-| p02    | code     | pending | -    | -        |
-| p03    | code     | pending | -    | -        |
-| p04    | code     | pending | -    | -        |
-| p05    | code     | pending | -    | -        |
-| p06    | code     | pending | -    | -        |
-| final  | code     | pending | -    | -        |
-| spec   | artifact | pending | -    | -        |
-| design | artifact | pending | -    | -        |
-| plan   | artifact | pending | -    | -        |
+| Scope  | Type     | Status   | Date       | Artifact                                   |
+| ------ | -------- | -------- | ---------- | ------------------------------------------ |
+| p01    | code     | pending  | -          | -                                          |
+| p02    | code     | pending  | -          | -                                          |
+| p03    | code     | pending  | -          | -                                          |
+| p04    | code     | pending  | -          | -                                          |
+| p05    | code     | pending  | -          | -                                          |
+| p06    | code     | pending  | -          | -                                          |
+| final  | code     | pending  | -          | -                                          |
+| spec   | artifact | pending  | -          | -                                          |
+| design | artifact | pending  | -          | -                                          |
+| plan   | artifact | received | 2026-06-03 | reviews/artifact-plan-review-2026-06-03.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 
