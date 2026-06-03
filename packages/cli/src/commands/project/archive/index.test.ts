@@ -127,10 +127,12 @@ describe('oat project archive sync', () => {
   beforeEach(() => {
     originalExitCode = process.exitCode;
     process.exitCode = undefined;
+    vi.spyOn(process.stderr, 'write').mockReturnValue(true);
   });
 
   afterEach(async () => {
     process.exitCode = originalExitCode;
+    vi.restoreAllMocks();
     await Promise.all(
       tempDirs.map(async (dir) => rm(dir, { recursive: true, force: true })),
     );
@@ -145,6 +147,61 @@ describe('oat project archive sync', () => {
     });
     return root;
   }
+
+  it('prints a deprecation notice to stderr before forwarding', async () => {
+    const { command, execFile } = createHarness();
+
+    await runArchiveSyncCommand(command);
+
+    expect(process.stderr.write).toHaveBeenCalledWith(
+      'oat project archive sync is deprecated; use oat repo archive sync\n',
+    );
+    expect(execFile).toHaveBeenCalledWith(
+      'aws',
+      [
+        's3',
+        'ls',
+        's3://example-bucket/oat-archive/open-agent-toolkit/projects/',
+      ],
+      expect.objectContaining({
+        cwd: '/tmp/workspace/open-agent-toolkit',
+      }),
+    );
+    expect(process.exitCode).toBe(0);
+  });
+
+  it('keeps json output parseable while printing the deprecation notice to stderr', async () => {
+    const { command, capture } = createHarness({ json: true });
+
+    await runArchiveSyncCommand(command, {
+      globalArgs: ['--json'],
+      commandArgs: ['demo-project'],
+    });
+
+    expect(process.stderr.write).toHaveBeenCalledWith(
+      'oat project archive sync is deprecated; use oat repo archive sync\n',
+    );
+    expect(capture.jsonPayloads).toHaveLength(1);
+    const serializedPayload = JSON.stringify(capture.jsonPayloads[0]);
+    expect(JSON.parse(serializedPayload)).toMatchObject({
+      status: 'ok',
+      projectName: 'demo-project',
+    });
+    expect(process.exitCode).toBe(0);
+  });
+
+  it('points archive help at the relocated sync command', () => {
+    let help = '';
+    createProjectArchiveCommand()
+      .configureOutput({
+        writeOut: (value) => {
+          help += value;
+        },
+      })
+      .outputHelp();
+
+    expect(help).toContain('oat repo archive sync');
+  });
 
   it('syncs all archived projects when no project name is provided', async () => {
     const { command, ensureS3ArchiveAccess, execFile, removeDirectory } =
@@ -487,7 +544,7 @@ describe('oat project archive sync', () => {
   it('fails when AWS CLI is missing', async () => {
     const { command, capture, execFile } = createHarness({
       preflightError: new CliError(
-        'AWS CLI is required for `oat project archive sync`, but it was not found on PATH. Install `aws` and retry.',
+        'AWS CLI is required for `oat repo archive sync`, but it was not found on PATH. Install `aws` and retry.',
       ),
     });
 
@@ -495,7 +552,7 @@ describe('oat project archive sync', () => {
 
     expect(execFile).not.toHaveBeenCalled();
     expect(capture.error[0]).toBe(
-      'AWS CLI is required for `oat project archive sync`, but it was not found on PATH. Install `aws` and retry.',
+      'AWS CLI is required for `oat repo archive sync`, but it was not found on PATH. Install `aws` and retry.',
     );
     expect(process.exitCode).toBe(1);
   });
@@ -503,7 +560,7 @@ describe('oat project archive sync', () => {
   it('fails when AWS CLI credentials are unusable', async () => {
     const { command, capture, execFile } = createHarness({
       preflightError: new CliError(
-        'AWS CLI is required for `oat project archive sync`, but it is not configured for access to `archive.s3Uri`. Configure AWS credentials or profile settings and retry.',
+        'AWS CLI is required for `oat repo archive sync`, but it is not configured for access to `archive.s3Uri`. Configure AWS credentials or profile settings and retry.',
       ),
     });
 
@@ -511,7 +568,7 @@ describe('oat project archive sync', () => {
 
     expect(execFile).not.toHaveBeenCalled();
     expect(capture.error[0]).toBe(
-      'AWS CLI is required for `oat project archive sync`, but it is not configured for access to `archive.s3Uri`. Configure AWS credentials or profile settings and retry.',
+      'AWS CLI is required for `oat repo archive sync`, but it is not configured for access to `archive.s3Uri`. Configure AWS credentials or profile settings and retry.',
     );
     expect(process.exitCode).toBe(1);
   });
