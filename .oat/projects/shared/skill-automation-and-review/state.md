@@ -1,6 +1,6 @@
 ---
 oat_current_task: null
-oat_last_commit: eaf859e8
+oat_last_commit: 41cb9177
 oat_blockers: []
 associated_issues: [] # [{type: backlog|project|jira|linear, ref: "identifier"}]
 oat_kind: implementation # implementation | coordination; coordination parents may use oat_phase: decomposition
@@ -12,7 +12,7 @@ oat_hill_checkpoints: ['p02'] # Configured: which phases require human-in-the-lo
 oat_hill_completed: ['p02'] # Progress: which HiLL checkpoints have been completed
 oat_parallel_execution: true
 oat_phase: implement # Current phase: discovery | spec | design | plan | implement | decomposition
-oat_phase_status: complete # Status: in_progress | complete | pr_open
+oat_phase_status: pr_open # Status: in_progress | complete | pr_open
 # oat_orchestration_retry_limit: 2  # optional; override fix-loop retry limit (range 0-5)
 oat_dispatch_ceiling:
   preset: maximum
@@ -27,19 +27,19 @@ oat_pr_status: ready # null | ready | open | closed | merged — actual PR state
 oat_pr_url: null # null | string — tracked PR URL when a PR exists
 oat_project_created: '2026-06-03T02:53:10.059Z' # ISO 8601 UTC timestamp — set once at project creation
 oat_project_completed: null # ISO 8601 UTC timestamp — set when project is completed/archived
-oat_project_state_updated: '2026-06-04T01:18:02Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
+oat_project_state_updated: '2026-06-04T01:37:00Z' # ISO 8601 UTC timestamp — updated on every state.md mutation
 oat_generated: false
 ---
 
 # Project State: skill-automation-and-review
 
-**Status:** Implementation Complete
+**Status:** PR Ready
 **Started:** 2026-06-03
-**Last Updated:** 2026-06-03
+**Last Updated:** 2026-06-04
 
 ## Current Phase
 
-Implementation complete - final code review passed; ready for final PR handoff
+Implementation - branch pushed and PR body prepared; manual PR creation required.
 
 ## Artifacts
 
@@ -61,6 +61,9 @@ Implementation complete - final code review passed; ready for final PR handoff
 - ✓ Phase 5 complete
 - ✓ Phase 6 complete
 - ✓ Final code review passed
+- ✓ PR description prepared
+- ✓ Branch pushed for PR
+- ⧗ Awaiting manual PR creation
 
 ## Blockers
 
@@ -68,4 +71,9 @@ None
 
 ## Next Milestone
 
-Run final PR handoff.
+PR branch is pushed and ready to open manually:
+
+https://github.com/voxmedia/open-agent-toolkit/pull/new/feat/model-invokable-workflow-skills
+
+- To incorporate feedback after the PR is opened: run `oat-project-revise`
+- When approved: run `oat-project-complete`
