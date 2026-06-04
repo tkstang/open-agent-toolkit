@@ -298,19 +298,19 @@ Expected: RED then GREEN after assertions updated.
 
 ## Reviews
 
-| Scope  | Type     | Status   | Date       | Artifact                                            |
-| ------ | -------- | -------- | ---------- | --------------------------------------------------- |
-| p01    | code     | passed   | 2026-06-03 | reviews/p01-code-review-2026-06-03.md               |
-| p02    | code     | passed   | 2026-06-03 | reviews/p02-code-review-2026-06-03.md               |
-| p03    | code     | passed   | 2026-06-03 | reviews/p03-code-review-2026-06-03.md               |
-| p04    | code     | passed   | 2026-06-03 | reviews/p04-code-review-2026-06-03.md               |
-| p05    | code     | passed   | 2026-06-03 | reviews/p05-code-review-2026-06-03.md               |
-| p06    | code     | passed   | 2026-06-03 | reviews/p06-code-review-2026-06-03.md               |
-| final  | code     | passed   | 2026-06-03 | reviews/final-code-review-2026-06-03.md             |
-| final  | code     | received | 2026-06-03 | reviews/final-review-2026-06-03.md                  |
-| spec   | artifact | pending  | -          | -                                                   |
-| design | artifact | pending  | -          | -                                                   |
-| plan   | artifact | passed   | 2026-06-03 | reviews/archived/artifact-plan-review-2026-06-03.md |
+| Scope  | Type     | Status  | Date       | Artifact                                            |
+| ------ | -------- | ------- | ---------- | --------------------------------------------------- |
+| p01    | code     | passed  | 2026-06-03 | reviews/archived/p01-code-review-2026-06-03.md      |
+| p02    | code     | passed  | 2026-06-03 | reviews/archived/p02-code-review-2026-06-03.md      |
+| p03    | code     | passed  | 2026-06-03 | reviews/archived/p03-code-review-2026-06-03.md      |
+| p04    | code     | passed  | 2026-06-03 | reviews/archived/p04-code-review-2026-06-03.md      |
+| p05    | code     | passed  | 2026-06-03 | reviews/archived/p05-code-review-2026-06-03.md      |
+| p06    | code     | passed  | 2026-06-03 | reviews/archived/p06-code-review-2026-06-03.md      |
+| final  | code     | passed  | 2026-06-03 | reviews/archived/final-code-review-2026-06-03.md    |
+| final  | code     | passed  | 2026-06-03 | reviews/archived/final-review-2026-06-03.md         |
+| spec   | artifact | pending | -          | -                                                   |
+| design | artifact | pending | -          | -                                                   |
+| plan   | artifact | passed  | 2026-06-03 | reviews/archived/artifact-plan-review-2026-06-03.md |
 
 **Status values:** `pending` → `received` → `fixes_added` → `fixes_completed` → `passed`
 

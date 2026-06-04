@@ -56,7 +56,7 @@ oat_generated: false
 ## Review Received: final (code)
 
 **Date:** 2026-06-03
-**Review artifact:** reviews/final-code-review-2026-06-03.md
+**Review artifact:** reviews/archived/final-code-review-2026-06-03.md
 **Type:** code — final branch review.
 
 **Findings:** Initial final review found 1 Critical and 1 Minor finding; both resolved in `d4851777` and merged as `eaf859e8`. Re-review passed with 0 findings.
@@ -73,7 +73,7 @@ oat_generated: false
 **Status:** complete
 **Started:** 2026-06-03
 **Completed:** 2026-06-03
-**Review:** passed — `reviews/p01-code-review-2026-06-03.md`
+**Review:** passed — `reviews/archived/p01-code-review-2026-06-03.md`
 
 ### Phase Summary
 
@@ -176,7 +176,7 @@ oat_generated: false
 **Status:** complete
 **Started:** 2026-06-03
 **Completed:** 2026-06-03
-**Review:** passed — `reviews/p02-code-review-2026-06-03.md`
+**Review:** passed — `reviews/archived/p02-code-review-2026-06-03.md`
 
 ### Phase Summary
 
@@ -255,7 +255,7 @@ oat_generated: false
 **Status:** complete
 **Started:** 2026-06-03
 **Completed:** 2026-06-03
-**Review:** passed — `reviews/p03-code-review-2026-06-03.md`
+**Review:** passed — `reviews/archived/p03-code-review-2026-06-03.md`
 
 ### Phase Summary
 
@@ -355,7 +355,7 @@ oat_generated: false
 **Status:** complete
 **Started:** 2026-06-03
 **Completed:** 2026-06-03
-**Review:** passed — `reviews/p04-code-review-2026-06-03.md`
+**Review:** passed — `reviews/archived/p04-code-review-2026-06-03.md`
 
 ### Phase Summary
 
@@ -417,7 +417,7 @@ oat_generated: false
 **Status:** complete
 **Started:** 2026-06-03
 **Completed:** 2026-06-03
-**Review:** passed — `reviews/p05-code-review-2026-06-03.md`
+**Review:** passed — `reviews/archived/p05-code-review-2026-06-03.md`
 
 ### Phase Summary
 
@@ -536,7 +536,7 @@ oat_generated: false
 **Status:** complete
 **Started:** 2026-06-03
 **Completed:** 2026-06-03
-**Review:** passed — `reviews/p06-code-review-2026-06-03.md`
+**Review:** passed — `reviews/archived/p06-code-review-2026-06-03.md`
 
 ### Phase Summary
 
@@ -843,7 +843,7 @@ Chronological log of implementation progress.
 - [x] p06-t01: Documentation updates — ee85376c (+ fix e97bbc38)
 - [x] p06-t02: Lockstep public-package version bump — b34f2d83
 - [x] p06-t03: Full definition-of-done gate — no commit needed
-- [x] final review: Code review passed — reviews/final-code-review-2026-06-03.md (+ fix d4851777, merge eaf859e8)
+- [x] final review: Code review passed — reviews/archived/final-code-review-2026-06-03.md (+ fix d4851777, merge eaf859e8)
 
 **What changed (high level):**
 
