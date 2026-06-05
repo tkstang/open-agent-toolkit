@@ -7,7 +7,71 @@ function repoFilePath(relativePath: string): string {
   return join(import.meta.dirname, '../../../../../../../', relativePath);
 }
 
+function readRepoFile(relativePath: string): string {
+  return readFileSync(repoFilePath(relativePath), 'utf8');
+}
+
 describe('review skill contracts', () => {
+  it('keeps the model-invokable project workflow skills gated by explicit asks', () => {
+    const skills = [
+      {
+        path: '.agents/skills/oat-project-review-provide/SKILL.md',
+        descriptionTriggers: ['"review project"', '"review the project"'],
+        bodyContracts: [
+          '## Model Invocation Gate',
+          'Do NOT auto-invoke merely because a task, phase, or implementation appears complete.',
+          'active OAT project or a user-provided review target',
+          '### Step 0: Resolve Project or Explicit Review Target',
+          'If neither an active project nor an explicit target resolves to a valid `PROJECT_PATH` with `state.md`',
+          'ask before running the review',
+        ],
+      },
+      {
+        path: '.agents/skills/oat-project-review-receive/SKILL.md',
+        descriptionTriggers: ['"receive review"', '"process review"'],
+        bodyContracts: [
+          '## Model Invocation Gate',
+          'oat review latest --project "$PROJECT_PATH" --json',
+          'kind: "adhoc"',
+          'Fallback when the CLI is unavailable',
+          'ask before updating artifacts',
+        ],
+      },
+      {
+        path: '.agents/skills/oat-project-discover/SKILL.md',
+        descriptionTriggers: ['"continue discovery"', '"run discovery"'],
+        bodyContracts: [
+          '## Model Invocation Gate',
+          'active spec-driven OAT project',
+          '`oat-project-new` for a new spec-driven project',
+          '`oat-project-quick-start` for a quick project',
+        ],
+      },
+      {
+        path: '.agents/skills/oat-project-progress/SKILL.md',
+        descriptionTriggers: ['"check progress"', `"what's next"`],
+        bodyContracts: [
+          '## Model Invocation Routing',
+          'no active-project gate',
+          'Do NOT auto-invoke only because another workflow step finished.',
+          'offer the recommended next skill before routing',
+        ],
+      },
+    ];
+
+    for (const skill of skills) {
+      const content = readRepoFile(skill.path);
+      expect(content).toContain('disable-model-invocation: false');
+      expect(content).toContain('Do NOT auto-invoke');
+      for (const trigger of skill.descriptionTriggers) {
+        expect(content).toContain(trigger);
+      }
+      for (const contract of skill.bodyContracts) {
+        expect(content).toContain(contract);
+      }
+    }
+  });
+
   it('allows quick/import design artifact reviews without spec.md', () => {
     const skillPath = repoFilePath(
       '.agents/skills/oat-project-review-provide/SKILL.md',

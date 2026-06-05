@@ -54,6 +54,11 @@ export interface WorkflowDispatchCeiling {
   };
 }
 
+export interface WorkflowAutoArtifactReview {
+  plan?: boolean;
+  analysis?: boolean;
+}
+
 export interface OatWorkflowConfig {
   hillCheckpointDefault?: WorkflowHillCheckpointDefault;
   archiveOnComplete?: boolean;
@@ -62,6 +67,7 @@ export interface OatWorkflowConfig {
   reviewExecutionModel?: WorkflowReviewExecutionModel;
   autoReviewAtHillCheckpoints?: boolean;
   autoNarrowReReviewScope?: boolean;
+  autoArtifactReview?: WorkflowAutoArtifactReview;
   designMode?: WorkflowDesignMode;
   dispatchCeiling?: WorkflowDispatchCeiling;
 }
@@ -140,6 +146,19 @@ function normalizeWorkflowConfig(
 
   if (typeof parsed.autoNarrowReReviewScope === 'boolean') {
     next.autoNarrowReReviewScope = parsed.autoNarrowReReviewScope;
+  }
+
+  if (isRecord(parsed.autoArtifactReview)) {
+    const autoArtifactReview: WorkflowAutoArtifactReview = {};
+    if (typeof parsed.autoArtifactReview.plan === 'boolean') {
+      autoArtifactReview.plan = parsed.autoArtifactReview.plan;
+    }
+    if (typeof parsed.autoArtifactReview.analysis === 'boolean') {
+      autoArtifactReview.analysis = parsed.autoArtifactReview.analysis;
+    }
+    if (Object.keys(autoArtifactReview).length > 0) {
+      next.autoArtifactReview = autoArtifactReview;
+    }
   }
 
   if (

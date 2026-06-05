@@ -49,6 +49,7 @@ describe('help output snapshots', () => {
         providers         Inspect provider capabilities and paths
         remove            Remove installed skills and managed provider views
         repo              Repository-level analysis and insight tools
+        review            OAT review artifact commands
         doctor            Run environment and setup diagnostics
         cleanup           Cleanup OAT project and artifact hygiene issues
         docs              OAT documentation bootstrap and maintenance commands
@@ -273,6 +274,42 @@ describe('help output snapshots', () => {
         --enabled <providers>   Comma-separated providers to enable
         --disabled <providers>  Comma-separated providers to disable
         -h, --help              display help for command
+      "
+    `);
+  });
+
+  it('review --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, ['review']).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat review [options] [command]
+
+      OAT review artifact commands
+
+      Options:
+        -h, --help        display help for command
+
+      Commands:
+        latest [options]  Find the most recent OAT review artifact
+        help [command]    display help for command
+      "
+    `);
+  });
+
+  it('review latest --help matches snapshot', () => {
+    const program = createRegisteredProgram();
+    const help = getCommandByPath(program, [
+      'review',
+      'latest',
+    ]).helpInformation();
+    expect(help).toMatchInlineSnapshot(`
+      "Usage: oat review latest [options]
+
+      Find the most recent OAT review artifact
+
+      Options:
+        --project <path>  Project path to scan in addition to ad-hoc review locations
+        -h, --help        display help for command
       "
     `);
   });

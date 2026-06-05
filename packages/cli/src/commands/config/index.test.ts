@@ -875,6 +875,60 @@ describe('oat config', () => {
       });
     });
 
+    it('sets workflow.autoArtifactReview.plan and resolves it via get', async () => {
+      const root = await createRepoRoot();
+      const home = await createHome();
+      const { command } = createHarness({ cwd: root, home });
+
+      await runCommand(command, [
+        'set',
+        'workflow.autoArtifactReview.plan',
+        'false',
+        '--shared',
+      ]);
+
+      const raw = await readFile(join(root, '.oat', 'config.json'), 'utf8');
+      expect(JSON.parse(raw)).toMatchObject({
+        version: 1,
+        workflow: { autoArtifactReview: { plan: false } },
+      });
+
+      const { command: getCmd, capture: getCap } = createHarness({
+        cwd: root,
+        home,
+      });
+      await runCommand(
+        getCmd,
+        ['get', 'workflow.autoArtifactReview.plan'],
+        ['--json'],
+      );
+      expect(getCap.jsonPayloads[0]).toMatchObject({
+        status: 'ok',
+        key: 'workflow.autoArtifactReview.plan',
+        value: 'false',
+        source: 'shared',
+      });
+    });
+
+    it('gets default-on workflow.autoArtifactReview.analysis when unset', async () => {
+      const root = await createRepoRoot();
+      const home = await createHome();
+      const { command, capture } = createHarness({ cwd: root, home });
+
+      await runCommand(
+        command,
+        ['get', 'workflow.autoArtifactReview.analysis'],
+        ['--json'],
+      );
+
+      expect(capture.jsonPayloads[0]).toMatchObject({
+        status: 'ok',
+        key: 'workflow.autoArtifactReview.analysis',
+        value: 'true',
+        source: 'default',
+      });
+    });
+
     it('sets workflow.dispatchCeiling.providers.codex at shared level (legacy key updated)', async () => {
       const root = await createRepoRoot();
       const home = await createHome();
@@ -1152,6 +1206,8 @@ describe('oat config', () => {
       expect(capture.info[0]).toContain('workflow.reviewExecutionModel');
       expect(capture.info[0]).toContain('workflow.autoReviewAtHillCheckpoints');
       expect(capture.info[0]).toContain('workflow.autoNarrowReReviewScope');
+      expect(capture.info[0]).toContain('workflow.autoArtifactReview.plan');
+      expect(capture.info[0]).toContain('workflow.autoArtifactReview.analysis');
       expect(capture.info[0]).toContain('workflow.designMode');
       expect(capture.info[0]).toContain('workflow.dispatchCeiling.preset');
       expect(capture.info[0]).toContain(
@@ -1242,6 +1298,37 @@ describe('oat config', () => {
 
       expect(capture.info[0]).toContain('Key: workflow.reviewExecutionModel');
       expect(capture.info[0]).toContain('subagent | inline | fresh-session');
+      expect(process.exitCode).toBe(0);
+    });
+
+    it('describe workflow.autoArtifactReview keys omit env precedence', async () => {
+      const root = await createRepoRoot();
+      const planHarness = createHarness({ cwd: root });
+      await runCommand(planHarness.command, [
+        'describe',
+        'workflow.autoArtifactReview.plan',
+      ]);
+
+      expect(planHarness.capture.info[0]).toContain(
+        'Resolution: local > shared > user > default.',
+      );
+      expect(planHarness.capture.info[0]).not.toContain('Resolution: env >');
+      expect(process.exitCode).toBe(0);
+
+      process.exitCode = undefined;
+
+      const analysisHarness = createHarness({ cwd: root });
+      await runCommand(analysisHarness.command, [
+        'describe',
+        'workflow.autoArtifactReview.analysis',
+      ]);
+
+      expect(analysisHarness.capture.info[0]).toContain(
+        'Resolution: local > shared > user > default.',
+      );
+      expect(analysisHarness.capture.info[0]).not.toContain(
+        'Resolution: env >',
+      );
       expect(process.exitCode).toBe(0);
     });
 

@@ -33,6 +33,7 @@ The CLI is also a standalone value path. You can use `oat init`, `oat sync`, `oa
 | `oat docs ...`                                  | Docs app bootstrap, migration, index generation, nav sync, and docs workflow entrypoints.                                               | [Docs Tooling Commands](../docs-tooling/commands.md)                           |
 | `oat status` / `oat sync` / `oat providers ...` | Provider sync, drift inspection, provider configuration, and adoption behavior.                                                         | [Provider Sync](../provider-sync/index.md)                                     |
 | `oat project ...` / `oat cleanup ...`           | Project scaffolding, active-project status inspection, tracked-project listing, plan validation, archive creation, and project/artifact cleanup commands. | [Workflow & Projects](../workflows/projects/index.md)                          |
+| `oat review ...`                                | Review artifact discovery helpers, including latest-review resolution for project and ad-hoc review flows.                             | [Reviews](../workflows/projects/reviews.md)                                    |
 | `oat repo ...`                                  | Repository-level workflows such as archive sync and PR-comment analysis.                                                                 | [Repository Analysis](../workflows/projects/repo-analysis.md)                  |
 
 Notable commands introduced in the current CLI surface:
@@ -42,6 +43,7 @@ Notable commands introduced in the current CLI surface:
 - `oat project status --field <path>` - print one arbitrary dot-path field from the same status payload, e.g. `project.workflowMode` or `project.timestamps.stateUpdated`. Missing/null fields print `null`; object and array fields print compact JSON.
 - `oat project status --project-path <path>` - read from a repo-relative or absolute project path instead of `.oat/config.local.json`'s active project pointer. Combine it with `--field` or `--shell` when a skill has already resolved the target project path.
 - `oat project status --shell NAME=path ...` - print shell-safe assignments for one or more fields from one status read, e.g. `WORKFLOW_MODE='quick'`. This is the preferred multi-field read API for skills. See [Writing Skills → Reading project state](../contributing/skills.md#reading-project-state) for examples and the `npx`-backed `oat` shim contract.
+- `oat review latest --json` - find the newest review artifact by `oat_generated_at`, scanning the active or specified project's `reviews/` and `reviews/archived/` directories plus ad-hoc review locations. Same-time candidates use target priority, then lifecycle recency (`final` > higher phase/task > lower phase/task). The JSON contract returns `path`, `scope`, `generatedAt`, and `kind` (`project` or `adhoc`), with `null` values when no review exists.
 - `oat project list --json` - summary state for tracked projects under the configured projects root
 - `oat project complete-state <project-path>` - apply the canonical completed-state mutation to a project's `state.md`; used by `oat-project-complete` during lifecycle closeout
 - `oat project archive [project-path]` - archive a tracked project through the same local move, summary export, and optional S3 upload path used by completion. When omitted, the project path falls back to the active project.
@@ -63,7 +65,7 @@ Per-key restrictions apply: structural keys can only be written at shared scope,
 
 ## `workflow.*` preference keys
 
-The `workflow.*` namespace holds user-facing workflow preferences that let you answer repetitive confirmation prompts once and have OAT skills respect the answer automatically. Seven keys:
+The `workflow.*` namespace holds user-facing workflow preferences that let you answer repetitive confirmation prompts once and have OAT skills respect the answer automatically. Common keys:
 
 - `workflow.hillCheckpointDefault` (`every` | `final`) — default HiLL checkpoint behavior in `oat-project-implement`
 - `workflow.archiveOnComplete` (`boolean`) — skip the archive prompt in `oat-project-complete`
@@ -72,5 +74,7 @@ The `workflow.*` namespace holds user-facing workflow preferences that let you a
 - `workflow.reviewExecutionModel` (`subagent` | `inline` | `fresh-session`) — default final-review execution model
 - `workflow.autoReviewAtHillCheckpoints` (`boolean`) — auto-run the extra lifecycle review at HiLL checkpoints
 - `workflow.autoNarrowReReviewScope` (`boolean`) — auto-narrow re-review scope to fix-task commits
+- `workflow.autoArtifactReview.plan` (`boolean`, default `true`) — auto-run the bounded `plan.md` artifact-review loop before implementation handoff
+- `workflow.autoArtifactReview.analysis` (`boolean`, default `true`) — auto-run the bounded accuracy-review loop for generated analysis artifacts before apply workflows consume them
 
-All seven keys resolve through the 3-layer precedence chain (`env > local > shared > user > default`). See [Workflow preferences in the Configuration guide](../cli-utilities/configuration.md#workflow-preferences-workflow) for full descriptions, surface guidance, and cross-repo foot-gun examples.
+These workflow keys resolve through config files and defaults (`local > shared > user > default`). Some config keys have explicit environment aliases, but `workflow.autoArtifactReview.plan` and `workflow.autoArtifactReview.analysis` do not. See [Workflow preferences in the Configuration guide](../cli-utilities/configuration.md#workflow-preferences-workflow) for full descriptions, surface guidance, and cross-repo foot-gun examples.

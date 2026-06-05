@@ -19,6 +19,19 @@ Review loop:
 - `reviews/archived/` is the local-only historical surface. Active `reviews/` content is not gitignored by default.
 - Ad-hoc review artifacts still default to local-only orphan storage under `.oat/projects/local/orphan-reviews/`.
 
+## Latest review resolver
+
+Use `oat review latest` when a skill or operator needs to resolve "the most recent review" without hand-selecting a file.
+
+```bash
+oat review latest --json
+oat review latest --project .oat/projects/shared/example --json
+```
+
+The resolver orders candidates by `oat_generated_at` frontmatter, not filesystem mtime. With an active or explicit project, it scans the project's `reviews/` directory first, then `reviews/archived/`, then ad-hoc review locations (`.oat/repo/reviews/` and `.oat/projects/local/orphan-reviews/`). When candidates share the same generated time, active project reviews outrank archived and ad-hoc reviews, then lifecycle recency breaks remaining ties (`final` > higher phase/task scope > lower phase/task scope). The JSON response contains `path`, `scope`, `generatedAt`, and `kind` (`project` or `adhoc`). If no review exists, those fields are `null`.
+
+`oat-project-review-receive` uses this resolver when it is invoked from natural language and needs to offer the latest project review, or route an ad-hoc result to `oat-review-receive`.
+
 ## Bookkeeping commits (required)
 
 Both `oat-project-review-receive` and `oat-project-review-receive-remote` conclude with a required atomic commit of `plan.md`, `implementation.md`, `state.md`, and the archived review artifact (when tracked). This is the safety net that prevents cross-agent bookkeeping drift: when a subagent runs a receive skill in isolation, the commit ensures the original agent sees a clean checkout on return.
@@ -42,6 +55,17 @@ The commit is scoped and explicit — it stages only the project's tracking file
 - `oat-review-receive-remote` processes GitHub PR comment feedback in ad-hoc mode (standalone task-list output, optional reply posting).
 
 The `*-provide-remote` and `*-receive-remote` skills are the two halves of the cross-machine loop: one agent posts a review to a PR; an agent on the PR's own machine receives it and turns it into fix tasks.
+
+## Model-invokable review skills
+
+The project review skills are model-invokable only for explicit user asks and confirmation flows. They are not auto-invoked just because a phase completed, a review artifact exists, or a checkout looks ready for review.
+
+- `oat-project-review-provide` handles explicit asks such as "review project" after resolving an active project and summarizing the inferred scope for confirmation.
+- `oat-project-review-receive` handles explicit asks such as "receive review" or "process review" after resolving the latest review target. If the latest target is ad-hoc, it offers to route to `oat-review-receive`.
+- `oat-project-progress` is also model-invokable for read-only status asks such as "check progress" or "what's next"; it reports before offering any next-step routing.
+- `oat-project-discover` is model-invokable only when an active spec-driven project exists. Otherwise it declines and points to `oat-project-new`, `oat-project-quick-start`, or `oat-project-open`.
+
+The common rule is offer-and-confirm: the model may recognize the request and propose the matching workflow skill, but must ask before mutating project artifacts or starting a review.
 
 ## Remote provide
 
@@ -82,6 +106,23 @@ This is separate from Tier 1 phase gate reviews. Tier 1 implementation always ru
 Auto-triggered reviews use `oat_review_invocation: auto` in the review artifact frontmatter. In auto mode, `oat-project-review-receive` auto-converts all findings to fix tasks without user prompts (Minor findings that are clearly out of scope are deferred with a note).
 
 This feature is opt-in and disabled by default. When disabled, the manual `oat-project-review-provide` workflow applies.
+
+## Auto artifact-review loops
+
+Generated planning and analysis artifacts have a separate review loop from code/phase reviews.
+
+For plans, `oat-project-plan`, `oat-project-quick-start`, and `oat-project-import-plan` run a bounded `plan.md` artifact review before marking the plan ready for implementation. The loop dispatches `oat-reviewer` in structured-output artifact mode with `scope: plan`, applies unambiguous Critical and Important artifact-local fixes, offers Medium and Minor fixes, and re-runs until clean or the retry bound is exhausted. A clean result records the `plan` row in the plan's `## Reviews` table as `passed`.
+
+For analysis artifacts, `oat-docs-analyze` and `oat-agent-instructions-analyze` run a bounded accuracy review after writing their severity-rated artifacts. The reviewer checks cited evidence, severity, and recommendations before the matching apply workflow consumes the artifact. The analysis loop updates tracking metadata to mark the artifact verified.
+
+Both loops are default-on and controlled through:
+
+```bash
+oat config set workflow.autoArtifactReview.plan false
+oat config set workflow.autoArtifactReview.analysis false
+```
+
+Only an explicit `false` skips a loop. The retry bound comes from `oat_orchestration_retry_limit` and defaults to `2`.
 
 ## Re-review scope narrowing
 

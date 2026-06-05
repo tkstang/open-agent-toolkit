@@ -270,6 +270,14 @@ describe('resolveEffectiveConfig', () => {
         value: null,
         source: 'default',
       });
+      expect(result.resolved['workflow.autoArtifactReview.plan']).toEqual({
+        value: true,
+        source: 'default',
+      });
+      expect(result.resolved['workflow.autoArtifactReview.analysis']).toEqual({
+        value: true,
+        source: 'default',
+      });
       expect(result.resolved['workflow.designMode']).toEqual({
         value: null,
         source: 'default',
@@ -308,6 +316,7 @@ describe('resolveEffectiveConfig', () => {
                 hillCheckpointDefault: 'final',
                 archiveOnComplete: true,
                 autoReviewAtHillCheckpoints: true,
+                autoArtifactReview: { plan: false },
               },
             }) satisfies UserConfig,
         },
@@ -324,6 +333,14 @@ describe('resolveEffectiveConfig', () => {
       expect(result.resolved['workflow.autoReviewAtHillCheckpoints']).toEqual({
         value: true,
         source: 'user',
+      });
+      expect(result.resolved['workflow.autoArtifactReview.plan']).toEqual({
+        value: false,
+        source: 'user',
+      });
+      expect(result.resolved['workflow.autoArtifactReview.analysis']).toEqual({
+        value: true,
+        source: 'default',
       });
     });
 

@@ -1,10 +1,10 @@
 ---
 name: oat-agent-instructions-analyze
-version: 1.10.0
+version: 1.11.0
 description: Run when you need to evaluate agent instruction file coverage, quality, and drift. Produces a severity-rated analysis artifact. Run before oat-agent-instructions-apply to identify what needs improvement.
 disable-model-invocation: true
 user-invocable: true
-allowed-tools: Read, Write, Bash(git:*), Glob, Grep, AskUserQuestion
+allowed-tools: Read, Write, Bash(git:*), Glob, Grep, AskUserQuestion, Task
 ---
 
 # Agent Instructions Analysis
@@ -32,6 +32,7 @@ Scan, evaluate, and report on agent instruction file coverage, quality, and drif
 - Reading all instruction files and project configuration.
 - Running helper scripts for discovery.
 - Writing analysis artifact to `.oat/repo/analysis/`.
+- Reviewing and correcting the analysis artifact and companion bundle through the shared Auto Artifact-Review Loop.
 - Updating `.oat/tracking.json`.
 
 ## Analyze vs Apply Boundary
@@ -58,16 +59,17 @@ or fill in missing evidence gaps on its own.
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 - Step indicators:
-  - `[1/10] Resolving providers + mode…`
-  - `[2/10] Discovering instruction files…`
-  - `[3/10] Discovering documentation surfaces…`
-  - `[4/10] Evaluating quality + validating existing rules…`
-  - `[5/10] Assessing directory coverage gaps…`
-  - `[6/10] Discovering file-type patterns…`
-  - `[7/10] Checking for drift…`
-  - `[8/10] Checking cross-format consistency…`
-  - `[9/10] Writing analysis artifact…`
-  - `[10/10] Updating tracking + summary…`
+  - `[1/11] Resolving providers + mode…`
+  - `[2/11] Discovering instruction files…`
+  - `[3/11] Discovering documentation surfaces…`
+  - `[4/11] Evaluating quality + validating existing rules…`
+  - `[5/11] Assessing directory coverage gaps…`
+  - `[6/11] Discovering file-type patterns…`
+  - `[7/11] Checking for drift…`
+  - `[8/11] Checking cross-format consistency…`
+  - `[9/11] Writing analysis artifact…`
+  - `[10/11] Reviewing artifact accuracy…`
+  - `[11/11] Updating verified tracking + summary…`
 
 ## Process
 
@@ -435,7 +437,32 @@ The markdown artifact and companion bundle together are the contract for apply. 
   recommendation that requires judgment during generation
 - stable recommendation IDs and pack references for any recommendation that apply may execute
 
-### Step 9: Update Tracking and Output Summary
+### Step 9: Review Analysis Artifact Accuracy
+
+Run the shared **Auto Artifact-Review Loop** from `oat-project-plan-writing` after `$ARTIFACT_PATH` and `$BUNDLE_DIR` are written and before tracking is updated or `oat-agent-instructions-apply` is recommended.
+
+Use the `analysis` target:
+
+- `type: analysis`
+- `scope: agent-instructions`
+- `analysis_artifact: $ARTIFACT_PATH`
+- `oat_output_mode: structured`
+
+Follow the canonical loop exactly:
+
+1. Resolve `workflow.autoArtifactReview.analysis`; missing config means enabled, and only explicit `false` skips the loop.
+2. Resolve `oat_orchestration_retry_limit`; default to `2` if unavailable.
+3. Dispatch `oat-reviewer` in structured mode via Tier 1 subagent when available, falling back to the same reviewer prompt inline when needed.
+4. Apply Critical and Important fixes when they are local to the analysis artifact, companion bundle, and unambiguous.
+5. Offer Medium and Minor fixes rather than applying them silently.
+6. Rewrite `$ARTIFACT_PATH` and any affected bundle files after applied fixes, then re-dispatch while retries remain.
+7. Stop when the reviewer is clean or the retry bound is exhausted.
+
+The review loop may only edit the markdown analysis artifact and its companion bundle. It must not modify or create instruction files, provider rules, repo configuration, or any other downstream apply target. If a finding cannot be fixed inside the analysis artifact or bundle, preserve it as a residual review finding and surface it in the summary before handoff.
+
+If the loop is disabled, note `Auto artifact review: skipped (workflow.autoArtifactReview.analysis=false)` in the summary and do not describe the artifact as verified.
+
+### Step 10: Update Verified Tracking and Output Summary
 
 **Update tracking:**
 
@@ -453,6 +480,8 @@ bash "$TRACKING_SCRIPT" write \
   --artifact-path "$ARTIFACT_PATH" \
   {providers...}
 ```
+
+Only run this tracking write after Step 9 finishes. A tracked agent-instructions analysis artifact is therefore reviewed/verified unless the summary explicitly says the auto artifact-review loop was skipped.
 
 **Output summary to the user:**
 
@@ -472,6 +501,7 @@ Analysis complete.
 
   Artifact: {artifact_path}
   Bundle:   {bundle_dir}
+  Auto artifact review: {passed|passed with residual findings|skipped}
 
 Next step: Run oat-agent-instructions-apply to act on these findings.
 ```

@@ -89,6 +89,10 @@ const DEFAULT_WORKFLOW_CONFIG = {
     reviewExecutionModel: null,
     autoReviewAtHillCheckpoints: null,
     autoNarrowReReviewScope: null,
+    autoArtifactReview: {
+      plan: true,
+      analysis: true,
+    },
     designMode: null,
     dispatchCeiling: {
       preset: null,

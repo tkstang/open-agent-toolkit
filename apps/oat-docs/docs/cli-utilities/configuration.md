@@ -255,13 +255,26 @@ Workflow preference keys live under the `workflow.*` namespace:
 - `workflow.reviewExecutionModel` — `subagent`, `inline`, or `fresh-session`. Default final-review execution model in `oat-project-implement`. `subagent` and `inline` run automatically. `fresh-session` is a soft preference: the skill prints guidance to run the review in another session but still offers escape hatches to `subagent` or `inline` if you change your mind. When unset, the skill prompts.
 - `workflow.autoReviewAtHillCheckpoints` — boolean. Automatically run the extra lifecycle review when a HiLL checkpoint is reached. This does not control Tier 1 per-phase `oat-reviewer` gates, which run after each phase in Tier 1 regardless of this setting. When unset, the skill prompts.
 - `workflow.autoNarrowReReviewScope` — boolean. Auto-narrow re-review scope to fix-task commits only in `oat-project-review-provide`. When unset, the skill prompts.
+- `workflow.autoArtifactReview.plan` — boolean, default `true`. Automatically run the bounded artifact-review loop for generated `plan.md` files before implementation handoff. Set to `false` only when you intentionally want to skip the plan artifact review.
+- `workflow.autoArtifactReview.analysis` — boolean, default `true`. Automatically run the bounded accuracy-review loop for generated docs and agent-instructions analysis artifacts before the matching apply workflow consumes them.
 - `workflow.dispatchCeiling.preset` — `balanced`, `maximum`, or `cost-conscious`. Convenience preset that compiles to per-provider values at write time. Setting this key is the recommended way to configure the ceiling.
 - `workflow.dispatchCeiling.providers.codex` — `low`, `medium`, `high`, or `xhigh`. Concrete Codex ceiling. Set automatically when a preset is selected; also settable directly for Advanced (no preset) configurations. Provider default effort is informational for base/unpinned roles and is not treated as this ceiling.
 - `workflow.dispatchCeiling.providers.claude` — `haiku`, `sonnet`, or `opus`. Concrete Claude ceiling. Set automatically when a preset is selected; also settable directly for Advanced configurations. Claude has no separate per-dispatch effort axis, so the effort axis remains `not-applicable`.
 
+### Auto artifact-review preferences
+
+`workflow.autoArtifactReview.*` controls the artifact-quality loops that run before downstream workflow steps consume generated artifacts. Both keys are default-on. Only an explicit `false` disables the matching loop:
+
+| Key                                    | Default | Controls                                                                 |
+| -------------------------------------- | ------- | ------------------------------------------------------------------------ |
+| `workflow.autoArtifactReview.plan`     | `true`  | `plan.md` artifact review after plan authoring and before implementation |
+| `workflow.autoArtifactReview.analysis` | `true`  | Accuracy review for generated docs and agent-instructions analysis files |
+
+The loops use `oat-reviewer` structured-output mode. They do not write standalone review artifacts unless the calling workflow records an outcome row or tracking metadata. The retry bound comes from the project `oat_orchestration_retry_limit` setting and defaults to `2`.
+
 ### Three-layer resolution
 
-Workflow preferences resolve through three config surfaces, with `env > local > shared > user > default` precedence per key. This is the same generic resolution used by `oat config dump`:
+Workflow preferences resolve through three config surfaces, with `local > shared > user > default` precedence per key. `oat config dump` can also report an `env` source for keys that have explicit environment aliases, such as `projects.root` and `worktrees.root`; `workflow.autoArtifactReview.plan` and `workflow.autoArtifactReview.analysis` do not have environment aliases and use config-file/default resolution.
 
 - **User-level** (`~/.oat/config.json`): personal defaults that apply to every repo. This is where most power users should start — set preferences once, never worry about them again.
 - **Shared repo** (`.oat/config.json`): team decisions for this repo. Overrides user defaults when present.
@@ -282,16 +295,20 @@ oat config set workflow.autoReviewAtHillCheckpoints true --user
 oat config set workflow.autoNarrowReReviewScope true --user
 oat config set workflow.designMode selective --user
 oat config set workflow.dispatchCeiling.preset balanced --user
+oat config set workflow.autoArtifactReview.plan true --user
+oat config set workflow.autoArtifactReview.analysis true --user
 
 # Shared repo: team decision for this repo
 oat config set workflow.createPrOnComplete false --shared
 oat config set workflow.designMode collaborative --shared
 oat config set workflow.dispatchCeiling.preset balanced --shared
+oat config set workflow.autoArtifactReview.plan false --shared
 
 # Repo-local: personal override for this repo (default when no flag)
 oat config set workflow.hillCheckpointDefault every
 oat config set workflow.designMode draft
 oat config set workflow.dispatchCeiling.providers.codex medium  # Advanced: per-provider override
+oat config set workflow.autoArtifactReview.analysis false
 ```
 
 Default (no flag) targets `.oat/config.local.json` for workflow keys. Pass at most one of `--user`, `--shared`, or `--local`. Structural keys (`projects.root`, `worktrees.root`, `git.*`, `documentation.*`, `archive.*`, `tools.*`) are still shared-only regardless of flag.
@@ -312,6 +329,7 @@ Some preferences are **genuinely personal** — their correct value is the same 
 
 Other preferences **depend on per-repo configuration** to be safe. These should be set at `--shared` (in each repo where they apply), not `--user`:
 
+- `workflow.autoArtifactReview.plan` / `workflow.autoArtifactReview.analysis` — default to `true`; use shared config only when a repo intentionally opts out of generated-artifact review loops, and local config for one-off debugging or emergency bypasses.
 - `workflow.archiveOnComplete` — correctness depends on the repo's `archive.s3Uri` / `archive.s3SyncOnComplete` being configured. A user-level `true` would try to archive in repos that aren't set up for it.
 - `workflow.postImplementSequence` — correctness depends on `documentation.requireForProjectCompletion`. Setting `pr` at user level would foot-gun you in any repo that requires docs, because completion would later block on the docs gate while the PR is already open.
 - `workflow.createPrOnComplete` — this key is almost always redundant with `postImplementSequence`-driven flows. When it's meaningful, its correctness depends on the same per-repo docs and PR gates. Prefer shared scope, or omit it entirely and rely on `postImplementSequence: pr` or `docs-pr` to handle PR creation at the end of implement.

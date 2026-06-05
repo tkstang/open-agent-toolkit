@@ -309,6 +309,25 @@ describe('CLI command integration', () => {
     );
   });
 
+  it('review latest is registered and emits an empty json result when no reviews exist', async () => {
+    const root = await createWorkspace();
+    tempDirs.push(root);
+
+    const result = await runCli(
+      root,
+      ['review', 'latest', '--json'],
+      ['--json'],
+    );
+
+    expect(result.exitCode).toBe(0);
+    expect(JSON.parse(result.stdout)).toEqual({
+      path: null,
+      scope: null,
+      generatedAt: null,
+      kind: null,
+    });
+  });
+
   it('providers set writes provider enablement to sync config', async () => {
     const root = await createWorkspace();
     tempDirs.push(root);
