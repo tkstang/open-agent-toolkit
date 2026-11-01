@@ -23,6 +23,7 @@
 - `pnpm format` - Check formatting (oxfmt --check); use `pnpm format:fix` to auto-fix
 - `pnpm type-check` - TypeScript type checking across all packages
 - `pnpm test` - Run tests across the workspace
+- `pnpm worktree:validate` - Require a clean tree and run package builds, lint, type checks, formatting and tests. Run `pnpm build:docs` separately; CI also checks release and skill-version contracts. The qualified docs test task builds upstream packages without its own production build, avoiding asset regeneration during CLI tests.
 
 ### Development Workflow
 

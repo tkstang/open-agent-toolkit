@@ -32,6 +32,12 @@
       "dependsOn": ["build"],
       "outputs": []
     },
+    // The docs app has no test script. Keep upstream builds available without
+    // scheduling its production prebuild, which regenerates CLI assets that
+    // concurrent CLI tests read. Validate the site separately with build:docs.
+    "oat-docs#test": {
+      "dependsOn": ["^build"]
+    },
     "lint": {
       "dependsOn": ["^build"]
     },

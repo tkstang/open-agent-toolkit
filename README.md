@@ -49,6 +49,13 @@ For local repo development:
 - `pnpm type-check`
 - `pnpm test`
 
+`pnpm worktree:validate` runs package builds, lint, type checks, formatting and
+all workspace tests, and requires a clean tree before and after. It does not
+build the docs site. Run `pnpm build:docs` separately for docs verification; CI
+also runs release and skill-version checks beyond the local worktree gate.
+The docs test task depends on upstream package builds without scheduling its
+own production build, whose prebuild regenerates assets used by CLI tests.
+
 CI and the path-scoped Release Dry Run validate ready PRs targeting `main`,
 including the `ready_for_review` transition. Draft PRs skip those jobs. Main
 pushes still run CI, and Release Dry Run can still be started manually. Run the
