@@ -52,7 +52,9 @@ For local repo development:
 CI and the path-scoped Release Dry Run validate ready PRs targeting `main`,
 including the `ready_for_review` transition. Draft PRs skip those jobs. Main
 pushes still run CI, and Release Dry Run can still be started manually. Run the
-full local checks before handoff.
+full local checks before handoff. New CI verification cancels earlier CI runs for
+the same ready PR. Draft events and main pushes use isolated groups; existing
+release workflow concurrency is unchanged.
 
 ## Docs
 

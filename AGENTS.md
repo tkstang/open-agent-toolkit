@@ -29,7 +29,7 @@
 - `pnpm dev` - Run workspace development tasks
 - `pnpm run cli -- help` - Run the OAT CLI help from repo root
 - `pnpm run cli -- <command> [options]` - Execute specific OAT CLI commands during local testing
-- CI and path-scoped Release Dry Run run for ready PRs targeting `main`, including `ready_for_review` and subsequent code updates. Draft PRs skip jobs before runner allocation. Main-push CI and manual release dry runs remain available; local checks are unchanged.
+- CI and path-scoped Release Dry Run run for ready PRs targeting `main`, including `ready_for_review` and subsequent code updates. Draft PRs skip jobs before runner allocation. Main-push CI and manual release dry runs remain available; local checks are unchanged. New CI verification cancels earlier CI runs only for the same ready PR. Draft events and main pushes use isolated groups. Release workflow concurrency is unchanged.
 - After creating or switching to a worktree, run `pnpm run worktree:init` before using the CLI workflow.
 
 ### Web Retrieval Convention
