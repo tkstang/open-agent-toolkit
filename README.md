@@ -49,6 +49,11 @@ For local repo development:
 - `pnpm type-check`
 - `pnpm test`
 
+CI and the path-scoped Release Dry Run validate ready PRs targeting `main`,
+including the `ready_for_review` transition. Draft PRs skip those jobs. Main
+pushes still run CI, and Release Dry Run can still be started manually. Run the
+full local checks before handoff.
+
 ## Docs
 
 Full documentation lives on the docs site:
