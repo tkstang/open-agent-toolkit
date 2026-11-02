@@ -95,3 +95,11 @@ Full documentation lives on the docs site:
 - [`@open-agent-toolkit/docs-config`](./packages/docs-config/README.md)
 - [`@open-agent-toolkit/docs-theme`](./packages/docs-theme/README.md)
 - [`@open-agent-toolkit/docs-transforms`](./packages/docs-transforms/README.md)
+
+### Release candidate verification
+
+The Release workflow validates the exact selected tag before publication: it must
+resolve to the checked-out commit and be reachable from `origin/main`. Checks,
+types, tests and docs build run with forced Turbo execution. Publication retains
+its independent build and package/archive validation. PR success does not stand
+in for this tagged-candidate gate.

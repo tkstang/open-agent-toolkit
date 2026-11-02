@@ -2,10 +2,18 @@
   "$schema": "https://turbo.build/schema.json",
 
   // Files outside any package that affect builds. Paths are repo-root-relative.
-  // .agents/skills/** is included because bundle-assets.sh copies skill files
-  // into packages/cli/assets/ during build. Without this, Turbo won't cache-miss
-  // when skill content changes (since skills live outside the package directory).
-  "globalDependencies": [".agents/skills/**"],
+  // bundle-assets.sh consumes these root-owned resources and public versions.
+  // Keep restored build/test outputs invalidated when any bundled input changes.
+  "globalDependencies": [
+    ".agents/skills/**",
+    ".agents/agents/**",
+    ".oat/templates/**",
+    ".oat/scripts/**",
+    "apps/oat-docs/docs/**",
+    "packages/docs-config/package.json",
+    "packages/docs-theme/package.json",
+    "packages/docs-transforms/package.json"
+  ],
 
   "tasks": {
     "build": {

@@ -43,9 +43,14 @@ jobs:
       - name: Resolve release tag
         id: resolve_release
         shell: bash
+        env:
+          RELEASE_EVENT: ${{ github.event_name }}
+          INPUT_TAG: ${{ inputs.tag }}
+          BASE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
         run: |
-          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
-            release_tag="${{ inputs.tag }}"
+          if [ "$RELEASE_EVENT" = "workflow_dispatch" ]; then
+            release_tag="$INPUT_TAG"
             if [[ ! "$release_tag" =~ ^v[0-9] ]]; then
               echo "Release tag must start with 'v': $release_tag" >&2
               exit 1
@@ -61,12 +66,66 @@ jobs:
           fi
 
           pnpm exec tsx tools/release/create-public-package-tag.ts \
-            --base-ref "${{ github.event.before }}" \
-            --head-ref "${{ github.sha }}" \
+            --base-ref "$BASE_SHA" \
+            --head-ref "$HEAD_SHA" \
             --push
 
-  publish:
+  validate:
     needs: prepare
+    if: ${{ needs.prepare.outputs.release_tag != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
+      TURBO_FORCE: 'true'
+    steps:
+      - name: Checkout exact release candidate
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ env.RELEASE_TAG }}
+          persist-credentials: false
+
+      - name: Require candidate tag on main
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/${RELEASE_TAG}^{commit}")"
+          git merge-base --is-ancestor HEAD origin/main
+          node --input-type=module <<'NODE'
+          import { readFileSync } from 'node:fs';
+          for (const name of ['cli', 'control-plane', 'docs-config', 'docs-theme', 'docs-transforms']) {
+            const pkg = JSON.parse(readFileSync(`packages/${name}/package.json`, 'utf8'));
+            if (`v${pkg.version}` !== process.env.RELEASE_TAG) {
+              throw new Error(`Release tag does not match ${name}'s package version`);
+            }
+          }
+          NODE
+
+      - name: Setup pnpm
+        uses: ./.github/actions/setup-pnpm
+        with:
+          node-version: '24'
+          pnpm-version: '10.13.1'
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check
+        run: pnpm check
+
+      - name: Type check
+        run: pnpm type-check
+
+      - name: Test exact candidate
+        run: pnpm test
+
+      - name: Build docs
+        run: pnpm build:docs
+
+  publish:
+    needs: [prepare, validate]
     if: ${{ needs.prepare.outputs.release_tag != '' }}
     runs-on: ubuntu-latest
     env:
