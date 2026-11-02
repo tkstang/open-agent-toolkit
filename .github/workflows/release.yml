@@ -77,6 +77,8 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
+    outputs:
+      candidate_sha: ${{ steps.candidate.outputs.sha }}
     env:
       RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
       TURBO_FORCE: 'true'
@@ -85,10 +87,11 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ env.RELEASE_TAG }}
+          ref: refs/tags/${{ env.RELEASE_TAG }}
           persist-credentials: false
 
       - name: Require candidate tag on main
+        id: candidate
         shell: bash
         run: |
           test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/${RELEASE_TAG}^{commit}")"
@@ -102,11 +105,12 @@ jobs:
             }
           }
           NODE
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Setup pnpm
         uses: ./.github/actions/setup-pnpm
         with:
-          node-version: '24'
+          node-version-file: '.nvmrc'
           pnpm-version: '10.13.1'
 
       - name: Install dependencies
@@ -142,7 +146,7 @@ jobs:
         uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ env.RELEASE_TAG }}
+          ref: ${{ needs.validate.outputs.candidate_sha }}
 
       # Release flows stay on Node 24 because trusted publishing uses the npm
       # runtime from this job, not the repo's general development baseline.

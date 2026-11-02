@@ -100,6 +100,7 @@ Full documentation lives on the docs site:
 
 The Release workflow validates the exact selected tag before publication: it must
 resolve to the checked-out commit and be reachable from `origin/main`. Checks,
-types, tests and docs build run with forced Turbo execution. Publication retains
-its independent build and package/archive validation. PR success does not stand
+types, tests and docs build run on the `.nvmrc` baseline with forced Turbo execution.
+Publication checks out the validated commit SHA, rather than resolving a mutable
+tag again, and retains its independent build and package/archive validation. PR success does not stand
 in for this tagged-candidate gate.
