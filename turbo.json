@@ -40,6 +40,13 @@
       "dependsOn": ["build"],
       "outputs": []
     },
+    // CLI tests spawn real bundlers and subprocesses. The root test command
+    // supplies a bounded worker budget; hash it only for this package's tests.
+    "@open-agent-toolkit/cli#test": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "env": ["VITEST_MAX_WORKERS"]
+    },
     // The docs app has no test script. Keep upstream builds available without
     // scheduling its production prebuild, which regenerates CLI assets that
     // concurrent CLI tests read. Validate the site separately with build:docs.

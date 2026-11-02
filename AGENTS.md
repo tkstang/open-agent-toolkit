@@ -22,7 +22,7 @@
 - `pnpm lint` - Lint code using oxlint
 - `pnpm format` - Check formatting (oxfmt --check); use `pnpm format:fix` to auto-fix
 - `pnpm type-check` - TypeScript type checking across all packages
-- `pnpm test` - Run tests across the workspace
+- `pnpm test` - Run every workspace test with a default two-worker CLI budget. Override `VITEST_MAX_WORKERS` deliberately for that package; Turbo forwards and hashes it only for CLI tests. Assertions and timeouts are unchanged.
 - `pnpm worktree:validate` - Require a clean tree and run package builds, lint, type checks, formatting and tests. Run `pnpm build:docs` separately; CI also checks release and skill-version contracts. The qualified docs test task builds upstream packages without its own production build, avoiding asset regeneration during CLI tests.
 
 ### Development Workflow

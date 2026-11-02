@@ -104,3 +104,16 @@ types, tests and docs build run on the `.nvmrc` baseline with forced Turbo execu
 Publication checks out the validated commit SHA, rather than resolving a mutable
 tag again, and retains its independent build and package/archive validation. PR success does not stand
 in for this tagged-candidate gate.
+
+### CLI test worker budget
+
+`pnpm test` runs every workspace suite. Its private root command defaults
+`VITEST_MAX_WORKERS` to `2`, and the qualified CLI test task alone declares that
+environment input. Other packages retain their existing worker selection. This
+bounds concurrent subprocess and filesystem work on many-core developer hosts;
+it preserves every test, assertion and timeout. Set the variable explicitly when
+measuring another CLI budget. Turbo hashes the selected value for CLI test reuse.
+
+The budget reduces competing subprocess and filesystem work on many-core hosts.
+It does not promise a hosted speedup; measure the complete workload when changing
+it, and preserve the suite's existing timeout and failure protections.
