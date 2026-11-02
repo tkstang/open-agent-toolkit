@@ -49,6 +49,20 @@ For local repo development:
 - `pnpm type-check`
 - `pnpm test`
 
+`pnpm worktree:validate` runs package builds, lint, type checks, formatting and
+all workspace tests, and requires a clean tree before and after. It does not
+build the docs site. Run `pnpm build:docs` separately for docs verification; CI
+also runs release and skill-version checks beyond the local worktree gate.
+The docs test task depends on upstream package builds without scheduling its
+own production build, whose prebuild regenerates assets used by CLI tests.
+
+CI and the path-scoped Release Dry Run validate ready PRs targeting `main`,
+including the `ready_for_review` transition. Draft PRs skip those jobs. Main
+pushes still run CI, and Release Dry Run can still be started manually. Run the
+full local checks before handoff. New CI verification cancels earlier CI runs for
+the same ready PR. Draft events and main pushes use isolated groups; existing
+release workflow concurrency is unchanged.
+
 ## Docs
 
 Full documentation lives on the docs site:
@@ -81,3 +95,25 @@ Full documentation lives on the docs site:
 - [`@open-agent-toolkit/docs-config`](./packages/docs-config/README.md)
 - [`@open-agent-toolkit/docs-theme`](./packages/docs-theme/README.md)
 - [`@open-agent-toolkit/docs-transforms`](./packages/docs-transforms/README.md)
+
+### Release candidate verification
+
+The Release workflow validates the exact selected tag before publication: it must
+resolve to the checked-out commit and be reachable from `origin/main`. Checks,
+types, tests and docs build run on the `.nvmrc` baseline with forced Turbo execution.
+Publication checks out the validated commit SHA, rather than resolving a mutable
+tag again, and retains its independent build and package/archive validation. PR success does not stand
+in for this tagged-candidate gate.
+
+### CLI test worker budget
+
+`pnpm test` runs every workspace suite. Its private root command defaults
+`VITEST_MAX_WORKERS` to `2`, and the qualified CLI test task alone declares that
+environment input. Other packages retain their existing worker selection. This
+bounds concurrent subprocess and filesystem work on many-core developer hosts;
+it preserves every test, assertion and timeout. Set the variable explicitly when
+measuring another CLI budget. Turbo hashes the selected value for CLI test reuse.
+
+The budget reduces competing subprocess and filesystem work on many-core hosts.
+It does not promise a hosted speedup; measure the complete workload when changing
+it, and preserve the suite's existing timeout and failure protections.

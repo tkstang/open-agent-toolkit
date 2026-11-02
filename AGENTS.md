@@ -22,13 +22,15 @@
 - `pnpm lint` - Lint code using oxlint
 - `pnpm format` - Check formatting (oxfmt --check); use `pnpm format:fix` to auto-fix
 - `pnpm type-check` - TypeScript type checking across all packages
-- `pnpm test` - Run tests across the workspace
+- `pnpm test` - Run every workspace test with a default two-worker CLI budget. Override `VITEST_MAX_WORKERS` deliberately for that package; Turbo forwards and hashes it only for CLI tests. Assertions and timeouts are unchanged.
+- `pnpm worktree:validate` - Require a clean tree and run package builds, lint, type checks, formatting and tests. Run `pnpm build:docs` separately; CI also checks release and skill-version contracts. The qualified docs test task builds upstream packages without its own production build, avoiding asset regeneration during CLI tests.
 
 ### Development Workflow
 
 - `pnpm dev` - Run workspace development tasks
 - `pnpm run cli -- help` - Run the OAT CLI help from repo root
 - `pnpm run cli -- <command> [options]` - Execute specific OAT CLI commands during local testing
+- CI and path-scoped Release Dry Run run for ready PRs targeting `main`, including `ready_for_review` and subsequent code updates. Draft PRs skip jobs before runner allocation. Main-push CI and manual release dry runs remain available; local checks are unchanged. New CI verification cancels earlier CI runs only for the same ready PR. Draft events and main pushes use isolated groups. Release workflow concurrency is unchanged.
 - After creating or switching to a worktree, run `pnpm run worktree:init` before using the CLI workflow.
 
 ### Web Retrieval Convention
@@ -48,7 +50,7 @@
 - Uses pnpm workspaces with Turborepo for efficient monorepo management
 - All packages use `workspace:*` for internal dependencies
 - Build dependencies are automatically handled by Turborepo (`^build` dependency)
-- Publishable packages under `packages/` are released from npm and participate in PR release dry-runs.
+- Publishable packages under `packages/` are released from npm and participate in PR release dry-runs. Tagged publication requires forced checks, types, tests and docs validation of that exact tag on `origin/main`; the publish job checks out the validated SHA, then rebuilds and validates its own archives. Turbo global inputs include every root asset family and cross-package version manifest consumed by the CLI bundler.
 - Publishable package guardrail: the lockstep public package set is `packages/cli`, `packages/control-plane`, `packages/docs-config`, `packages/docs-theme`, and `packages/docs-transforms`. If a PR changes shipped functionality for any of them, bump all five public package versions together in the same PR.
 - For release policy, bundled assets count as shipped CLI functionality. Changes under `.agents/skills`, `.agents/agents`, `.oat/templates`, `.oat/scripts`, or `apps/oat-docs/docs` require the same lockstep public package version bump even if no file under `packages/cli/src` changed.
 - Definition of done for publishable package changes: run `pnpm release:validate` before finishing. A publishable-package PR is not done until that command passes.

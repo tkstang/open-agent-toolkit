@@ -2,10 +2,18 @@
   "$schema": "https://turbo.build/schema.json",
 
   // Files outside any package that affect builds. Paths are repo-root-relative.
-  // .agents/skills/** is included because bundle-assets.sh copies skill files
-  // into packages/cli/assets/ during build. Without this, Turbo won't cache-miss
-  // when skill content changes (since skills live outside the package directory).
-  "globalDependencies": [".agents/skills/**"],
+  // bundle-assets.sh consumes these root-owned resources and public versions.
+  // Keep restored build/test outputs invalidated when any bundled input changes.
+  "globalDependencies": [
+    ".agents/skills/**",
+    ".agents/agents/**",
+    ".oat/templates/**",
+    ".oat/scripts/**",
+    "apps/oat-docs/docs/**",
+    "packages/docs-config/package.json",
+    "packages/docs-theme/package.json",
+    "packages/docs-transforms/package.json"
+  ],
 
   "tasks": {
     "build": {
@@ -31,6 +39,19 @@
       // build (not ^build): tests depend on the SAME package's build, not just dependencies
       "dependsOn": ["build"],
       "outputs": []
+    },
+    // CLI tests spawn real bundlers and subprocesses. The root test command
+    // supplies a bounded worker budget; hash it only for this package's tests.
+    "@open-agent-toolkit/cli#test": {
+      "dependsOn": ["build"],
+      "outputs": [],
+      "env": ["VITEST_MAX_WORKERS"]
+    },
+    // The docs app has no test script. Keep upstream builds available without
+    // scheduling its production prebuild, which regenerates CLI assets that
+    // concurrent CLI tests read. Validate the site separately with build:docs.
+    "oat-docs#test": {
+      "dependsOn": ["^build"]
     },
     "lint": {
       "dependsOn": ["^build"]

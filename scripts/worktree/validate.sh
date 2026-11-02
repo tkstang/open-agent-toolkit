@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Worktree validation gate.
 #
-# Runs the same checks CI runs locally so contributors can confirm a
-# worktree is ready to push. Fails if the worktree is dirty before or
-# after validation (catches generators that leave uncommitted output).
+# Runs package builds, lint, type checks, formatting and tests. Build the docs
+# site separately with pnpm build:docs; CI also checks release and skill-version
+# contracts. Fails if the worktree is dirty before or after validation (catches
+# generators that leave uncommitted output).
 #
 # Usage:
 #   pnpm run worktree:validate
