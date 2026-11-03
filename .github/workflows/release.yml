@@ -90,21 +90,35 @@ jobs:
           ref: refs/tags/${{ env.RELEASE_TAG }}
           persist-credentials: false
 
-      - name: Require candidate tag on main
-        id: candidate
+      - name: Require release tag to match all five public package versions
         shell: bash
         run: |
-          test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/${RELEASE_TAG}^{commit}")"
-          git merge-base --is-ancestor HEAD origin/main
           node --input-type=module <<'NODE'
           import { readFileSync } from 'node:fs';
-          for (const name of ['cli', 'control-plane', 'docs-config', 'docs-theme', 'docs-transforms']) {
+
+          const publicPackages = [
+            'cli',
+            'control-plane',
+            'docs-config',
+            'docs-theme',
+            'docs-transforms',
+          ];
+          for (const name of publicPackages) {
             const pkg = JSON.parse(readFileSync(`packages/${name}/package.json`, 'utf8'));
             if (`v${pkg.version}` !== process.env.RELEASE_TAG) {
               throw new Error(`Release tag does not match ${name}'s package version`);
             }
           }
           NODE
+
+      # Record the immutable SHA only after package versions and Git ancestry pass.
+      # Both checks precede candidate-owned setup and dependency installation.
+      - name: Bind release candidate to its tag and require main ancestry
+        id: candidate
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$(git rev-parse "refs/tags/${RELEASE_TAG}^{commit}")"
+          git merge-base --is-ancestor HEAD origin/main
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
 
       - name: Setup pnpm
